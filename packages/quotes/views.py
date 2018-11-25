@@ -1,5 +1,5 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def home(request):
-    return HttpResponse("It's working.....")
+    return render(request, 'quotes/landing_page.html', {})
