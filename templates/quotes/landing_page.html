@@ -1,9 +1,4 @@
-{% extends 'root_base.html' %}
-{% load static %}
-
-{% block head_css %}
-    <link rel="stylesheet" href="{% static 'quotes/css/quotes.css' %}">
-{% endblock %}
+{% extends 'quotes/base.html' %}
 
 {% block main_content %}
     <section>
@@ -41,10 +36,8 @@
                             <a href="#" class="btn btn-primary">Click Here</a>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </section>
-
 {% endblock %}
