@@ -7,7 +7,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Quote Turbo</title>
+    <title>
+        {% block title %}Quote Turbo{% endblock %}
+    </title>
 
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
@@ -23,7 +25,7 @@
     <header class="mb-5">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
-                <a class="navbar-brand font-weight-bold" href="#">
+                <a class="navbar-brand font-weight-bold" href="{% url 'quotes:home' %}">
                     <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote<i class="text-uppercase text-primary">turbo</i></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_items" aria-controls="navbar_items" aria-expanded="false"
                         aria-label="Toggle navigation">

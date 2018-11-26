@@ -3,8 +3,8 @@
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
 
 $fonts: (font-xl: 48px, font-lg: 36px,
-        font-md: 24px, font-sm: 16px,
-        font-xs: 12px,);
+        font-md: 24px, font-mm: 20px,
+        font-sm: 16px, font-xs: 12px,);
 $font-weight: 400 600 700;
 
 @each $cls, $size in $fonts {
@@ -23,9 +23,19 @@ $font-weight: 400 600 700;
     outline: 0 !important;
 }
 
+.cur-p{
+    cursor: pointer !important;
+}
+
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
     min-height: calc(100vh - 60px - 3rem - 72px - 3rem);
+}
+
+.qt-single-icon{
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
 }
 
 #separator {
@@ -41,6 +51,12 @@ $font-weight: 400 600 700;
     transform: translateY(-50%);
 }
 
+svg{
+    path{
+        fill: $primary;
+    }
+}
+
 .heading-slogan {
     line-height: 1.2;
 }
@@ -51,9 +67,25 @@ $font-weight: 400 600 700;
             border-bottom: 4px solid transparent;
             @include transition($btn-transition);
             &:hover, &:focus {
-                color: $blue;
-                border-color: $blue;
+                color: $primary;
+                border-color: $primary;
             }
         }
     }
+}
+
+.qt-tooltip{
+    padding: 0 7.5px;
+    &:hover{
+        border-color: $primary !important;
+        background-color: $primary !important;
+        color: $white !important;
+    }
+}
+
+.qt-survey-input{
+    padding: 10px 16px;
+    width: 200px;
+    height: 50px;
+    
 }

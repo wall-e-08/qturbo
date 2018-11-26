@@ -9,7 +9,8 @@
                     <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000<br>Insurance Plans</h2>
 
                     <div id="find-plans">
-                        <form novalidate>
+                        <form novalidate action="{% url 'quotes:survey_members' %}" method="post">
+                            {% csrf_token %}
                             <div class="d-flex border border-tertiary rounded">
                                 <div class="col-sm-4 py-1 border-right border-tertiary">
                                     <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
@@ -28,12 +29,12 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 text-right">
+                <div class="col-md-4 text-center">
                     <div class="position-absolute d-none d-md-block rounded" id="separator"></div>
-                    <div class="h-100 d-flex align-items-center justify-content-md-end">
+                    <div class="h-100 d-flex align-items-center justify-content-center">
                         <div class="">
-                            <h2 class="font-lg font-wight-600">Assistant by Agent?</h2>
-                            <a href="#" class="btn btn-primary">Click Here</a>
+                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assistant by Agent?</a>
+                            <p class="small text-secondary pt-2">If you are being assisting by agent, click the button</p>
                         </div>
                     </div>
                 </div>
