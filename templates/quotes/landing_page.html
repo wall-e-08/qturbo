@@ -9,30 +9,32 @@
     <section>
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <h1>Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
-                    <h2>Instantly Compare Over 4,000<br>Insurance Plans</h2>
+                <div class="col-md-8">
+                    <h1 class="font-wight-600 mb-3 font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
+                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000<br>Insurance Plans</h2>
 
-                    <div>I'm Looking For:
-                        <div>Health Insurance</div>
-                    </div>
-                    <form novalidate="">
-                        <div>
-                            <div>
-                                <label for="zip-input-top">Zip Code</label>
-                                <input type="tel" name="zip" placeholder="Enter Zip Code" maxlength="5" autocomplete="off" id="zip-input-top" autofocus="">
+                    <div id="find-plans">
+                        <form novalidate>
+                            <div class="d-flex border border-tertiary rounded">
+                                <div class="col-sm-4 py-1 border-right border-tertiary">
+                                    <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
+                                    <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                                </div>
+                                <div class="col-sm-4 py-1">
+                                    <label for="home-zip-code" class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip Code</label>
+                                    <input type="text" id="home-zip-code" class="font-md border-0 outline-0" placeholder="Enter Zip Code">
+                                    <div class="home-zc-err"></div>
+                                </div>
+                                <div class="col-sm-4 pr-0">
+                                    <button class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-sm">Find plans</button>
+                                </div>
                             </div>
-                        </div>
-                        <div>We did not detect your Area</div>
-                        <button type="submit" id="product-button-top">Find Plans</button>
-                    </form>
-
-                </div>
-                <div class="col-md-6">
-                    <div>We help you compare quotes from health insurance companies listed on&nbsp;<u><a
-                            href="https://www.nationshealthinsurance.com/">nationshealthinsurance</a></u>,
-                        plus many more.
+                        </form>
                     </div>
+                </div>
+
+                <div class="col-md-4 text-right">
+                    <div class="position-absolute d-none d-md-block rounded" id="separator"></div>
                 </div>
             </div>
         </div>

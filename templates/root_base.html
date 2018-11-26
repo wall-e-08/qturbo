@@ -10,6 +10,7 @@
     <title>Quote Turbo</title>
 
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
 
@@ -53,14 +54,14 @@
     </header>
 {% endblock %}
 
-<div id="quote_turbo">
+<div id="QUOTE_TURBO">
     {% block main_content %}{% endblock %}
 </div>
 
 {% block footer %}
-    <footer>
-        <div>
-            <div>Copyright © 20017-2018 nationshealthinsurance, Inc.</div>
+    <footer class="bg-dark text-center mt-5">
+        <div class="text-white py-4">
+            Copyright © 20017-2018 <a class="font-wight-600" href="https://www.nationshealthinsurance.com/">nationshealthinsurance</a>, Inc.
         </div>
     </footer>
 {% endblock %}

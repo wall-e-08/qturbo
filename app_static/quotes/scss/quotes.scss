@@ -2,6 +2,49 @@
 @import "../../../global_static_libs/bootstrap/scss/variables";
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
 
+$fonts: (font-xl: 48px, font-lg: 32px,
+        font-md: 24px, font-sm: 16px,
+        font-xs: 12px,);
+$font-weight: 400 600 700;
+
+@each $cls, $size in $fonts {
+    .#{$cls} {
+        font-size: $size;
+    }
+}
+
+@each $fw in $font-weight {
+    .font-wight-#{$fw} {
+        font-weight: $fw !important;
+    }
+}
+
+.outline-0 {
+    outline: 0 !important;
+}
+
+#QUOTE_TURBO {
+    //full vertical height - header height - header margin - footer height - footer margin
+    min-height: calc(100vh - 60px - 3rem - 72px - 3rem);
+}
+
+#separator {
+    background-color: $gray-400;
+    width: 3px;
+    height: 70%;
+    left: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.heading-slogan {
+    line-height: 1.2;
+}
+
 .navbar-light {
     .navbar-nav {
         .nav-link {
