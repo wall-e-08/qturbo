@@ -1,0 +1,91 @@
+@import "../../../global_static_libs/bootstrap/scss/functions";
+@import "../../../global_static_libs/bootstrap/scss/variables";
+@import "../../../global_static_libs/bootstrap/scss/mixins/transition";
+
+$fonts: (font-xl: 48px, font-lg: 36px,
+        font-md: 24px, font-mm: 20px,
+        font-sm: 16px, font-xs: 12px,);
+$font-weight: 400 600 700;
+
+@each $cls, $size in $fonts {
+    .#{$cls} {
+        font-size: $size !important;
+    }
+}
+
+@each $fw in $font-weight {
+    .font-wight-#{$fw} {
+        font-weight: $fw !important;
+    }
+}
+
+.outline-0 {
+    outline: 0 !important;
+}
+
+.cur-p{
+    cursor: pointer !important;
+}
+
+#QUOTE_TURBO {
+    //full vertical height - header height - header margin - footer height - footer margin
+    min-height: calc(100vh - 60px - 3rem - 72px - 3rem);
+}
+
+.qt-single-icon{
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+}
+
+#separator {
+    background-color: $gray-400;
+    width: 3px;
+    height: 70%;
+    left: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+svg{
+    path{
+        fill: $primary;
+    }
+}
+
+.heading-slogan {
+    line-height: 1.2;
+}
+
+.navbar-light {
+    .navbar-nav {
+        .nav-link {
+            border-bottom: 4px solid transparent;
+            @include transition($btn-transition);
+            &:hover, &:focus {
+                color: $primary;
+                border-color: $primary;
+            }
+        }
+    }
+}
+
+.qt-tooltip{
+    padding: 0 7.5px;
+    &:hover{
+        border-color: $primary !important;
+        background-color: $primary !important;
+        color: $white !important;
+    }
+}
+
+.qt-survey-input{
+    padding: 10px 16px;
+    width: 200px;
+    height: 50px;
+    
+}

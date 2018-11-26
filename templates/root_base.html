@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>
+        {% block title %}Quote Turbo{% endblock %}
+    </title>
+
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+
+    {% block head_css %}{% endblock %}
+    {% block head_js %}{% endblock %}
+</head>
+<body>
+
+{% block header %}
+    <header class="mb-5">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand font-weight-bold" href="{% url 'quotes:home' %}">
+                    <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote<i class="text-uppercase text-primary">turbo</i></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_items" aria-controls="navbar_items" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbar_items">
+                    <ul class="navbar-nav font-weight-bold ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Health Insurance</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Medicare</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Learn</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Blog</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{% endblock %}
+
+<div id="QUOTE_TURBO">
+    {% block main_content %}{% endblock %}
+</div>
+
+{% block footer %}
+    <footer class="bg-dark text-center mt-5">
+        <div class="text-white py-4">
+            Copyright © 20017-2018 <a class="font-wight-600" href="https://www.nationshealthinsurance.com/">nationshealthinsurance</a>, Inc.
+        </div>
+    </footer>
+{% endblock %}
+
+</body>
+</html>
