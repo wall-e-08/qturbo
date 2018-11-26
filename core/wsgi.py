@@ -13,7 +13,9 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)
+))
 sys.path.append(os.path.join(PROJECT_ROOT, "packages"))
 
 
