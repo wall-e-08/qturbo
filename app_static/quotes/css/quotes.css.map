@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAMQ,mCAAU,CACN,aAAa,CAAE,qBAAqB,CCF1C,UAAU,CAAE,sHAAW,CAI3B,kDAAmD,CDH7C,mCAAU,CCId,UAAU,CAAE,IAAI,EDDR,mFAAiB,CACb,KAAK,CEm1Be,OAAqB,CFl1BzC,YAAY,CEk1BQ,OAAqB",
+"sources": ["../scss/quotes.scss","../../../global_static_libs/bootstrap/scss/mixins/_transition.scss","../../../global_static_libs/bootstrap/scss/_variables.scss"],
+"names": [],
+"file": "quotes.css"
+}

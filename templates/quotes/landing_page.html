@@ -1,6 +1,41 @@
 {% extends 'root_base.html' %}
+{% load static %}
 
+{% block head_css %}
+    <link rel="stylesheet" href="{% static 'quotes/css/quotes.css' %}">
+{% endblock %}
 
 {% block main_content %}
-    <h1 class="text-danger">Templates working</h1>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
+                    <h2>Instantly Compare Over 4,000<br>Insurance Plans</h2>
+
+                    <div>I'm Looking For:
+                        <div>Health Insurance</div>
+                    </div>
+                    <form novalidate="">
+                        <div>
+                            <div>
+                                <label for="zip-input-top">Zip Code</label>
+                                <input type="tel" name="zip" placeholder="Enter Zip Code" maxlength="5" autocomplete="off" id="zip-input-top" autofocus="">
+                            </div>
+                        </div>
+                        <div>We did not detect your Area</div>
+                        <button type="submit" id="product-button-top">Find Plans</button>
+                    </form>
+
+                </div>
+                <div class="col-md-6">
+                    <div>We help you compare quotes from health insurance companies listed on&nbsp;<u><a
+                            href="https://www.nationshealthinsurance.com/">nationshealthinsurance</a></u>,
+                        plus many more.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 {% endblock %}

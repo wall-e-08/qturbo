@@ -1,0 +1,16 @@
+@import "../../../global_static_libs/bootstrap/scss/functions";
+@import "../../../global_static_libs/bootstrap/scss/variables";
+@import "../../../global_static_libs/bootstrap/scss/mixins/transition";
+
+.navbar-light {
+    .navbar-nav {
+        .nav-link {
+            border-bottom: 4px solid transparent;
+            @include transition($btn-transition);
+            &:hover, &:focus {
+                color: $blue;
+                border-color: $blue;
+            }
+        }
+    }
+}
