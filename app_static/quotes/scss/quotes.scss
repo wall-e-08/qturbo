@@ -1,6 +1,11 @@
 @import "../../../global_static_libs/bootstrap/scss/functions";
 @import "../../../global_static_libs/bootstrap/scss/variables";
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
+@import "../../../global_static_libs/bootstrap/scss/mixins/breakpoints";
+@import "../../../global_static_libs/bootstrap/scss/mixins/box-shadow";
+
+$fixed-header-body-spacing: 57.55px;
+$navbar-items-spacing: 15px;
 
 $fonts: (font-xl: 48px, font-lg: 36px,
         font-md: 24px, font-mm: 20px,
@@ -23,16 +28,16 @@ $font-weight: 400 600 700;
     outline: 0 !important;
 }
 
-.cur-p{
+.cur-p {
     cursor: pointer !important;
 }
 
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
-    min-height: calc(100vh - 60px - 3rem - 72px - 3rem);
+    min-height: calc(100vh - 60px - 0px - 72px - 3rem);
 }
 
-.qt-single-icon{
+.qt-single-icon {
     width: 16px;
     height: 16px;
     border-radius: 3px;
@@ -51,8 +56,8 @@ $font-weight: 400 600 700;
     transform: translateY(-50%);
 }
 
-svg{
-    path{
+svg {
+    path {
         fill: $primary;
     }
 }
@@ -74,18 +79,84 @@ svg{
     }
 }
 
-.qt-tooltip{
+.qt-tooltip {
     padding: 0 7.5px;
-    &:hover{
+    &:hover {
         border-color: $primary !important;
         background-color: $primary !important;
         color: $white !important;
     }
 }
 
-.qt-survey-input{
+.qt-survey-input {
     padding: 10px 16px;
     width: 200px;
     height: 50px;
-    
+}
+
+@media (max-width: map_get($grid-breakpoints, lg)) {
+    body {
+        padding-top: $fixed-header-body-spacing;
+    }
+    header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 2;
+        @include box-shadow(0 2px 4px 0 #d8d8d8);
+        #navbar_items {
+            background: $tertiary;
+            margin: 0 -#{$navbar-items-spacing};
+            padding: 0 $navbar-items-spacing * 2;
+            .nav-item {
+                .nav-link {
+                    color: $white !important;
+                    text-align: center;
+                    &:hover, &:focus {
+                        border-color: $white !important;
+                    }
+                }
+            }
+        }
+    }
+    .responsive-font-xl {
+        font-size: 33px !important;
+        font-weight: 700 !important;
+    }
+
+    .swap-div-mobile {
+        -webkit-box-direction: reverse;
+        -webkit-box-orient: vertical;
+        -ms-flex-direction: column-reverse;
+        flex-direction: column-reverse;
+    }
+}
+
+@each $breakpoint in map-keys(map-remove($grid-breakpoints, xs, xl)) {
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+        .border#{$infix} {
+            border-width: $border-width !important;
+            border-style: solid !important;
+        }
+        .border#{$infix}-0 {
+            border: 0 !important;
+        }
+        .border#{$infix}-top {
+            border-top-width: $border-width !important;
+            border-style: solid !important;
+        }
+        .border#{$infix}-right {
+            border-right-width: $border-width !important;
+            border-style: solid !important;
+        }
+        .border#{$infix}-bottom {
+            border-bottom-width: $border-width !important;
+            border-style: solid !important;
+        }
+        .border#{$infix}-left {
+            border-left-width: $border-width !important;
+            border-style: solid !important;
+        }
+    }
 }

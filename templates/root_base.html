@@ -14,59 +14,63 @@
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
 
+    {# bootstra-vue | no need jquery #}
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-vue/bootstrap-vue.min.css' %}">
+    {# bootstrap-vue | scripts #}
+    <script src="{% static 'vue/vue.dev.js' %}"></script>
+    <script src="{% static 'bootstrap-vue/polyfill.min.js' %}"></script>
+    <script src="{% static 'bootstrap-vue/bootstrap-vue.min.js' %}"></script>
 
     {% block head_css %}{% endblock %}
     {% block head_js %}{% endblock %}
 </head>
 <body>
 
-{% block header %}
-    <header class="mb-5">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
-                <a class="navbar-brand font-weight-bold" href="{% url 'quotes:home' %}">
-                    <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote<i class="text-uppercase text-primary">turbo</i></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_items" aria-controls="navbar_items" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbar_items">
-                    <ul class="navbar-nav font-weight-bold ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Health Insurance</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Medicare</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Learn</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Blog</a>
-                        </li>
-                    </ul>
+<div id="bootstrap-vue">
+    {% block header %}
+        <header>
+            <b-navbar toggleable="lg" type="light" variant="light">
+                <div class="container">
+                    <b-navbar-toggle target="navbar_items" class="border-0 outline-0"></b-navbar-toggle>
+                    <b-navbar-brand href="{% url 'quotes:home' %}" class="font-weight-bold">
+                        <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote <i class="text-uppercase text-primary">turbo</i>
+                    </b-navbar-brand>
+                    <b-collapse is-nav id="navbar_items">
+                        <b-navbar-nav class="ml-auto">
+                            <b-nav-item href="#">Health Insurance</b-nav-item>
+                            <b-nav-item href="#">About</b-nav-item>
+                            <b-nav-item href="#">Medicare</b-nav-item>
+                            <b-nav-item href="#">Learn</b-nav-item>
+                            <b-nav-item href="#">Blog</b-nav-item>
+                        </b-navbar-nav>
+                    </b-collapse>
                 </div>
-            </div>
-        </nav>
-    </header>
-{% endblock %}
+            </b-navbar>
+        </header>
+    {% endblock %}
 
-<div id="QUOTE_TURBO">
-    {% block main_content %}{% endblock %}
+    <div id="QUOTE_TURBO" class="pt-5">
+        {% block main_content %}{% endblock %}
+    </div>
+
+    {% block footer %}
+        <footer class="bg-dark text-center mt-5">
+            <div class="text-white py-4">
+                Copyright © 2018
+            </div>
+        </footer>
+    {% endblock %}
 </div>
 
-{% block footer %}
-    <footer class="bg-dark text-center mt-5">
-        <div class="text-white py-4">
-            Copyright © 2018
-        </div>
-    </footer>
-{% endblock %}
-
+{% block bottom_js %}{% endblock %}
+<script type="application/javascript">
+    // this should be initialized at last.
+    // this is bootstrap-vue
+    new Vue({
+        el: '#bootstrap-vue',
+        delimiters: ['[[', ']]'],
+    })
+</script>
 </body>
 </html>

@@ -3,40 +3,47 @@
 {% block main_content %}
     <section>
         <div class="container">
-            <div class="row">
-                <div class="col-md-8">
-                    <h1 class="font-wight-600 mb-3 font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
+            <div class="row swap-div-mobile">
+                <div class="col-lg-8">
+                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
                     <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000<br>Insurance Plans</h2>
 
-                    <div id="find-plans">
-                        <form novalidate action="{% url 'quotes:survey_members' %}" method="post">
+                    <div id="find-plans" class="mb-5">
+                        <form novalidate action="{% url 'quotes:survey_members' %}" method="post" class="border-sm border-0 border-tertiary rounded">
                             {% csrf_token %}
-                            <div class="d-flex border border-tertiary rounded">
-                                <div class="col-sm-4 py-1 border-right border-tertiary">
-                                    <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
-                                    <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                            <div class="row">
+                                <div class="col-sm-4 border-sm-right border-0 border-tertiary">
+                                    <div class="py-1 pr-sm-0 pl-sm-3 px-3 mb-sm-0 mb-3 border-sm-0 border border-tertiary rounded">
+                                        <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
+                                        <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                                    </div>
                                 </div>
-                                <div class="col-sm-4 py-1">
-                                    <label for="home-zip-code" class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip Code</label>
-                                    <input type="text" id="home-zip-code" class="font-md border-0 outline-0" placeholder="Enter Zip Code">
-                                    <div class="home-zc-err"></div>
+                                <div class="col-sm-4">
+                                    <div class="py-1 px-sm-0 px-3 mb-sm-0 mb-3 border-sm-0 border border-tertiary rounded">
+                                        <label for="home-zip-code" class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip Code</label>
+                                        <input type="text" id="home-zip-code" class="font-md border-0 outline-0 w-100" placeholder="Enter Zip Code">
+                                        <div class="home-zc-err"></div>
+                                    </div>
                                 </div>
-                                <div class="col-sm-4 pr-0">
-                                    <button class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-sm">Find plans</button>
+                                <div class="col-sm-4">
+                                    <div class="h-100 rounded" style="min-height: 50px;">
+                                        <button class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-sm">Find plans</button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="col-md-4 text-center">
-                    <div class="position-absolute d-none d-md-block rounded" id="separator"></div>
+                <div class="col-lg-4 text-center">
+                    <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
                     <div class="h-100 d-flex align-items-center justify-content-center">
                         <div class="">
-                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">'Assisted by Agent?</a>
+                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
                             <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>
                         </div>
                     </div>
+                    <hr class="mb-5 d-block d-lg-none">
                 </div>
             </div>
         </div>
