@@ -6,6 +6,7 @@
 
 $fixed-header-body-spacing: 57.55px;
 $navbar-items-spacing: 15px;
+$svg-dimension: 15px;
 
 $fonts: (font-xl: 48px, font-lg: 36px,
         font-md: 24px, font-mm: 20px,
@@ -43,11 +44,7 @@ $font-weight: 400 600 700;
     border-radius: 3px;
 }
 
-#separator {
-    background-color: $gray-400;
-    width: 3px;
-    height: 70%;
-    left: 0;
+.vertical-center {
     top: 50%;
     -webkit-transform: translateY(-50%);
     -moz-transform: translateY(-50%);
@@ -56,9 +53,24 @@ $font-weight: 400 600 700;
     transform: translateY(-50%);
 }
 
+#separator {
+    background-color: $gray-400;
+    width: 3px;
+    height: 70%;
+    left: 0;
+    @extend .vertical-center;
+}
+
 svg {
-    path {
-        fill: $primary;
+    width: $svg-dimension;
+    height: $svg-dimension;
+}
+
+@each $col in map-keys($theme-colors) {
+    svg.#{$col} {
+        path {
+            fill: map_get($theme-colors, $col);
+        }
     }
 }
 
