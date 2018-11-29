@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
     <title>
         {% block title %}Quote Turbo{% endblock %}
@@ -36,9 +37,9 @@
             <b-navbar toggleable="lg" type="light" variant="light">
                 <div class="container">
                     <b-navbar-toggle target="navbar_items" class="border-0 outline-0"></b-navbar-toggle>
-                    <b-navbar-brand href="{% url 'quotes:home' %}" class="font-weight-bold">
+                    <router-link :to="{ name: 'root'}" class="navbar-brand font-weight-bold">
                         <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote <i class="text-uppercase text-primary">turbo</i>
-                    </b-navbar-brand>
+                    </router-link>
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
                             <b-nav-item href="#">Health Insurance</b-nav-item>

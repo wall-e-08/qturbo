@@ -17,6 +17,10 @@ const cccc = {
 
 const router = new VueRouter({
     routes: [{
+        path: '/',
+        component: root_component,
+        name: 'root',
+    },{
         path: '/fff',
         component: ppp,
         name: 'parent',
