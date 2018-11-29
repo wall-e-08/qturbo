@@ -11,7 +11,7 @@
 
                     <div id="find-plans" class="mb-5">
                         <form novalidate action="{% url 'quotes:survey_members' %}" method="post" class="border-md border-0 border-tertiary rounded"
-                            style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
+                              style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-4 border-md-right border-0 border-tertiary">
@@ -50,6 +50,18 @@
             </div>
         </div>
     </section>
+
+    <div class="container"> {# TEST TEST #}
+        <!-- use router-link component for navigation. -->
+        <!-- specify the link by passing the `to` prop. -->
+        <!-- `<router-link>` will be rendered as an `<a>` tag by default -->
+        <router-link :to="{ name: 'parent'}">Parent</router-link> <br>
+        <router-link :to="{ name: 'child'}">child</router-link>
+    
+        <!-- route outlet -->
+        <!-- component matched by the route will render here -->
+        <router-view></router-view>
+    </div>
 {% endblock %}
 
 

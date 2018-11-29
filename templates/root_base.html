@@ -67,13 +67,6 @@
 </div>
 
 {% block bottom_js %}{% endblock %}
-<script type="text/javascript">
-    // this should be initialized at last.
-    // this is bootstrap-vue
-    new Vue({
-        el: '#bootstrap-vue',
-        delimiters: ['[[', ']]'],
-    })
-</script>
+<script src="{% static 'quotes/js/bootstrap-vue.init.js' %}"></script>
 </body>
 </html>
