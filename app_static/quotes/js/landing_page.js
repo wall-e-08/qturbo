@@ -1,6 +1,13 @@
-const svg_format = function (svg_attr, path_d) {
+'use strict';
+
+const v_templates = {
+    zip_code: '#zipcode-template',
+    root: '#root-template',
+};
+
+const svg_format = (svg_attr, path_d) => {
     let attrs = '';
-    for (k in svg_attr) {
+    for (let k in svg_attr) {
         attrs += ` ${k}="${svg_attr[k]}" `;
     }
     return `<svg xmlns="http://www.w3.org/2000/svg" ${attrs}><path d="${path_d}"/></svg>`
@@ -39,15 +46,24 @@ Vue.component('zip-code', {
             }
         }
     },
-    template:
-        `<div class="position-relative">
-            <input type="text" id="home-zip-code"
-                    class="font-md border-0 outline-0 w-100"
-                    :placeholder="placeholder" v-model="zip_code" maxlength="5" v-on:keypress="validate_zip($event)">
-            <div class="position-absolute vertical-center" style="left:99%" v-html="current_marker"></div>
-        </div>`,
+    template: v_templates.zip_code,
 });
 
-const root_component = {
-    template: '#root-template'
-};
+const router = new VueRouter({
+    routes: [{
+        path: '/',
+        component: {
+            template: v_templates.root,
+        },
+        name: 'root',
+    }, /*{
+        path: '/fff',
+        component: ppp,
+        name: 'parent',
+        children: [{
+            path: 'ggg',
+            component: cccc,
+            name: 'child',
+        },]
+    },*/]
+});

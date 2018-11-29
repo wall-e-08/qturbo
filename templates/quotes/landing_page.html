@@ -6,7 +6,16 @@
 {% endblock %}
 
 
-{% block bottom_js %}
+{% block vue_templates %}
+    <script type="text/x-template" id="zipcode-template">
+        <div class="position-relative">
+            <input type="text" id="home-zip-code"
+                   class="font-md border-0 outline-0 w-100"
+                   :placeholder="placeholder" v-model="zip_code" maxlength="5" v-on:keypress="validate_zip($event)">
+            <div class="position-absolute vertical-center" style="left:99%" v-html="current_marker"></div>
+        </div>
+    </script>
+
     <script type="text/x-template" id="root-template">
         <section>
             <div class="container">
@@ -55,6 +64,8 @@
             </div>
         </section>
     </script>
+{% endblock %}
 
+{% block bottom_js %}
     <script src="{% static 'quotes/js/landing_page.js' %}"></script>
 {% endblock %}

@@ -67,7 +67,19 @@
     {% endblock %}
 </div>
 
+{% block vue_templates %}{% endblock %}
 {% block bottom_js %}{% endblock %}
-<script src="{% static 'quotes/js/bootstrap-vue.init.js' %}"></script>
+
+<script type="text/javascript">
+    /****************
+    * bootstrap-vue *
+    *****************/
+    // this should be initialized at last.
+    new Vue({
+        delimiters: ['[[', ']]'],
+        router,
+    }).$mount('#bootstrap-vue');
+
+</script>
 </body>
 </html>
