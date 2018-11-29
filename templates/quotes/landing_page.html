@@ -2,67 +2,154 @@
 {% load static %}
 
 {% block main_content %}
-    <router-view></router-view>
+    <section>
+        <div class="container">
+            {#<router-link :to="{ name: 'survey-member'}" class="btn btn-danger">survey-member</router-link>#}
+            <div class="row swap-div-mobile">
+                <div class="col-lg-8">
+                    <router-view></router-view>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="">
+                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
+                            <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>
+                        </div>
+                    </div>
+                    <hr class="mb-5 d-block d-lg-none">
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
 
 
 {% block vue_templates %}
-    <script type="text/x-template" id="zipcode-template">
-        <div class="position-relative">
-            <input type="text" id="home-zip-code"
-                   class="font-md border-0 outline-0 w-100"
-                   :placeholder="placeholder" v-model="zip_code" maxlength="5" v-on:keypress="validate_zip($event)">
-            <div class="position-absolute vertical-center" style="left:99%" v-html="current_marker"></div>
+    {# REMEMBER:: no multiple tags for vue component!! #}
+    <script type="text/x-template" id="root-template">
+        <div>
+            <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
+            <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000<br>Insurance Plans</h2>
+            <div id="find-plans" class="mb-5">
+                <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
+                      style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
+                    <div class="row">
+                        <div class="col-md-4 border-md-right border-0 border-tertiary">
+                            <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
+                                <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                <label for="home-zip-code" class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip Code</label>
+                                <div class="position-relative">
+                                    <input type="text" id="home-zip-code"
+                                           class="font-md border-0 outline-0 w-100"
+                                           :placeholder="zip_placeholder" v-model="zip_code" maxlength="5" v-on:keypress="validate_zip($event)">
+                                    <div class="position-absolute vertical-center" style="left:99%" v-html="current_marker"></div>
+                                </div>
+                                <div class="home-zc-err"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="h-100 rounded" style="min-height: 50px;">
+                                <button type="submit" class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">Find plans</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </script>
 
-    <script type="text/x-template" id="root-template">
-        <section>
-            <div class="container">
-                <div class="row swap-div-mobile">
-                    <div class="col-lg-8">
-                        <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>That’s Right for You</h1>
-                        <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000<br>Insurance Plans</h2>
-                        <div id="find-plans" class="mb-5">
-                            <form novalidate action="{% url 'quotes:survey_members' %}" method="post" class="border-md border-0 border-tertiary rounded"
-                                  style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="col-md-4 border-md-right border-0 border-tertiary">
-                                        <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
-                                            <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking For:</div>
-                                            <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
-                                            <label for="home-zip-code" class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip Code</label>
-                                            <zip-code></zip-code>
-                                            <div class="home-zc-err"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="h-100 rounded" style="min-height: 50px;">
-                                            <button class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">Find plans</button>
-                                        </div>
+    <script type="text/x-template" id="survey-template">
+        <div>
+            <router-link :to="{ name: 'root'}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                </svg>
+                Back
+            </router-link>
+            <div class="card text-center mt-2">
+                <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
+                <div class="card-body">
+                    <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
+                    <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for this new coverage.</p>
+                    <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+                        </svg>
+                    </a>
+                    <br>
+                    <div class="row text-left">
+                        <div class="col-6 offset-3">
+                            <div class="card py-3 my-3 px-4 qt-survey">
+                                <div class="d-flex align-items-center qt-survey-who">
+                                    <svg aria-hidden="true" data-prefix="fas" data-icon="user" class="svg-inline--fa fa-user fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg"
+                                         viewBox="0 0 448 512" width="18">
+                                        <path fill="currentColor"
+                                              d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path>
+                                    </svg>
+                                    <span class="font-md pl-2 font-md font-wight-600">Me</span>
+                                </div>
+                                <p>What’s your date of birth?
+                                    <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
+                                </p>
+                                <input type="text" placeholder="mm/dd/yyyy" class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+
+                                <div class="qt-survey-gender my-3">
+                                    <p>What’s your gender?
+                                        <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
+                                    </p>
+                                    <div class="btn-group w-100" role="group">
+                                        <label class="btn btn-primary btn-lg active col">
+                                            <input class="d-none" type="radio" name="gender" value="m">Male
+                                        </label>
+                                        <label class="btn btn-outline-primary btn-lg col">
+                                            <input class="d-none" type="radio" name="gender" value="f">Female
+                                        </label>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 text-center">
-                        <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
-                        <div class="h-100 d-flex align-items-center justify-content-center">
-                            <div class="">
-                                <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
-                                <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>
+
+                                <div class="qt-survey-tobacco my-3">
+                                    <p>Do you use tobacco products?
+                                        <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
+                                    </p>
+                                    <div class="btn-group w-100" role="group">
+                                        <label class="btn btn-outline-primary btn-lg col">
+                                            <input class="d-none" type="radio" name="tobacco" value="y">Yes
+                                        </label>
+                                        <label class="btn btn-primary btn-lg active col">
+                                            <input class="d-none" type="radio" name="tobacco" value="n">No
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="card py-3 my-3 px-4 cur-p qt-survey">
+                                <div class="d-flex align-items-center qt-survey-who">
+                                    <div class="font-md pl-2 font-sm font-wight-600 text-primary" @click="add_spouse">
+                                        <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
+                                        <span class="pl-2">Add a Spouse</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card py-3 my-3 px-4 cur-p qt-survey">
+                                <div class="d-flex align-items-center qt-survey-who">
+                                    <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                        <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
+                                        <span class="pl-2">Add a Dependent</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="https://www.nationshealthinsurance.com/health-insurance-quote/" class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600">next</a>
                         </div>
-                        <hr class="mb-5 d-block d-lg-none">
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </script>
 {% endblock %}
 

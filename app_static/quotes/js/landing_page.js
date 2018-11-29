@@ -1,8 +1,10 @@
 'use strict';
 
 const v_templates = {
+    children: '<router-view></router-view>', // for children templates
     zip_code: '#zipcode-template',
     root: '#root-template',
+    survey_member: '#survey-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -10,7 +12,7 @@ const svg_format = (svg_attr, path_d) => {
     for (let k in svg_attr) {
         attrs += ` ${k}="${svg_attr[k]}" `;
     }
-    return `<svg xmlns="http://www.w3.org/2000/svg" ${attrs}><path d="${path_d}"/></svg>`
+    return `<svg xmlns="http://www.w3.org/2000/svg" ${attrs}><path d="${path_d}"></path></svg>`
 };
 
 const marker = {
@@ -22,48 +24,74 @@ const marker = {
         "M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"),
 };
 
-Vue.component('zip-code', {
-    delimiters: ['[[', ']]'],
-    data: function () {
-        return {
-            placeholder: 'Enter Zip Code',
-            zip_code: '',
-            current_marker: undefined,
-        }
-    },
-    methods: {
-        validate_zip: function (e) {
-            if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
-            else return true;
-        }
-    },
-    watch: {
-        zip_code: function () {
-            if (this.zip_code.length === 5) {
-                this.current_marker = marker.success_icon;
-            } else {
-                this.current_marker = marker.error_icon;
-            }
-        }
-    },
-    template: v_templates.zip_code,
-});
-
 const router = new VueRouter({
     routes: [{
         path: '/',
+        name: 'root',
         component: {
             template: v_templates.root,
+            data: function () {
+                return {
+                    zip_placeholder: 'Enter Zip Code',
+                    zip_code: '',
+                    is_valid_zip: false,
+                    current_marker: undefined,
+                }
+            },
+            methods: {
+                validate_zip: function (e) {
+                    if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
+                    else return true;
+                },
+                check_zipcode: function () {
+                    if (this.is_valid_zip) {
+                        router.push({name: 'survey-member'});
+                    } else {
+
+                    }
+                }
+            },
+            watch: {
+                zip_code: function () {
+                    if (this.zip_code.length === 5) {
+                        this.current_marker = marker.success_icon;
+                        this.is_valid_zip = true;
+                    } else {
+                        this.current_marker = marker.error_icon;
+                        this.is_valid_zip = false;
+                    }
+                }
+            },
         },
-        name: 'root',
-    }, /*{
-        path: '/fff',
-        component: ppp,
-        name: 'parent',
+    }, {
+        path: '/health-insurance',
+        name: 'survey',
+        component: {
+            template: v_templates.children,
+        },
         children: [{
-            path: 'ggg',
-            component: cccc,
-            name: 'child',
+            path: 'member',
+            component: {
+                template: v_templates.survey_member,
+                data: function () {
+                    return {
+                        dob: "",
+                        gender: "",
+                        tobacco: "",
+                        spouse: "",
+                        dependents: "",
+                    }
+                },
+                methods: {
+                    add_spouse() {
+                        console.log("Adding spouse")
+                    },
+                },
+                created() {
+                    //check zip code
+                }
+            },
+            name: 'survey-member',
         },]
-    },*/]
+    },]
 });
