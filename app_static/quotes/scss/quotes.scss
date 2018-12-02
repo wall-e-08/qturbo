@@ -110,6 +110,12 @@ svg {
     height: 50px;
 }
 
+input.controlled-by-label:checked + label{
+    color: #fff;
+    background-color: #0599db;
+    border-color: #0599db;
+}
+
 @media (max-width: map_get($grid-breakpoints, lg)) {
     body {
         padding-top: $fixed-header-body-spacing;

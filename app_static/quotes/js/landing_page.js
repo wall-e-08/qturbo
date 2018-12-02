@@ -5,6 +5,7 @@ const v_templates = {
     zip_code: '#zipcode-template',
     root: '#root-template',
     survey_member: '#survey-template',
+    survey_card: '#survey-card-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -22,6 +23,51 @@ const marker = {
     error_icon: svg_format(
         {class: "danger", viewBox: '0 0 24 24'},
         "M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"),
+};
+
+const holder_types_enum = {
+    own: "me",
+    spouse: "spouse",
+    child: "dependent"
+};
+
+const survey_card_stages = ["dob", "gender", "tobacco"]
+
+const v_survey_card = {
+    delimiters: ['[[', ']]'],
+    props: {
+        index: {    // needs only for dependents list
+            default: 0,
+            type: Number,
+        },
+        survey_type: {
+            validator: function (val) {
+                // The value must match one of the value of holder_types_enum
+                for (var key in holder_types_enum) {
+                    if (holder_types_enum[key] === val) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        current_stage: {
+            validator: function (val) {
+                // The value must match one of these strings
+                return survey_card_stages.indexOf(val) !== -1
+            }
+        },
+    },
+    data: function () {
+        return {}
+    },
+    methods: {
+        txt_whos: function () {
+            // return "your" or "his/her" depending on who is the insurance holder
+            return this.survey_type === holder_types_enum.own ? "your" : "his/her";
+        }
+    },
+    template: v_templates.survey_card
 };
 
 const router = new VueRouter({
@@ -69,22 +115,27 @@ const router = new VueRouter({
         component: {
             template: v_templates.children,
         },
-        children: [{
+        children: [{    // this is path-children, it's not dependent
             path: 'member',
             component: {
                 template: v_templates.survey_member,
+                components: {
+                    'survey-card': v_survey_card,
+                },
                 data: function () {
                     return {
-                        dob: "",
-                        gender: "",
-                        tobacco: "",
-                        spouse: "",
-                        dependents: "",
+                        holder_types_enum: holder_types_enum,
+                        spouse: false,
+                        dependents: [],
+                        max_dependents: 5,
                     }
                 },
                 methods: {
-                    add_spouse() {
-                        console.log("Adding spouse")
+                    add_spouse: function () {
+                        this.spouse = true;
+                    },
+                    add_dependent: function () {
+                        this.dependents.push('baccha');
                     },
                 },
                 created() {
