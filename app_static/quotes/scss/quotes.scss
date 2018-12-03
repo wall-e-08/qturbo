@@ -37,6 +37,17 @@ a:hover {
     cursor: pointer !important;
 }
 
+input[type="date"] {
+    &::-webkit-input-placeholder {
+        visibility: hidden !important;
+    }
+    &::-webkit-inner-spin-button,
+    &::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+}
+
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
     min-height: calc(100vh - 60px - 0px - 72px - 3rem);
@@ -108,6 +119,12 @@ svg {
     padding: 10px 16px;
     width: 200px;
     height: 50px;
+}
+
+input.controlled-by-label:checked + label {
+    color: #fff;
+    background-color: #0599db;
+    border-color: #0599db;
 }
 
 @media (max-width: map_get($grid-breakpoints, lg)) {

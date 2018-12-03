@@ -65,6 +65,49 @@
         </div>
     </script>
 
+    <script type="text/x-template" id="survey-card-template">
+        <div class="card py-3 my-3 px-4 qt-survey">
+            <div class="d-flex align-items-center qt-survey-who">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="15" height="15" viewBox="0 0 24 24">
+                    <path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"></path>
+                </svg>
+                <span class="font-md pl-2 font-md font-wight-600 text-capitalize">[[ survey_type ]]</span>
+            </div>
+            <p>What’s [[ txt_whos() ]] date of birth?
+                <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
+            </p>
+            <input type="text" placeholder="mm/dd/yyyy" v-model="dob" @input="validate_dob($event)" class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+
+            <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1"><!--show only if current stage is gender or tobacco-->
+                <p>What’s [[ txt_whos() ]] gender?
+                    <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m" :id="'gender_m-'+survey_type+index" v-model="gender">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
+
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f" :id="'gender_f-'+survey_type+index" v-model="gender">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female</label>
+                </div>
+            </div>
+
+            <div class="qt-survey-tobacco my-3" v-if="current_stage === 'tobacco'">
+                <p>
+                    <span v-if="survey_type == 'me'">Do you</span>
+                    <span v-else>Does your [[ survey_type ]]</span> use tobacco products?
+                    <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="true" :id="'tobacco_y-'+survey_type+index" v-model="tobacco">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_y-'+survey_type+index">Yes</label>
+
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="false" :id="'tobacco_n-'+survey_type+index" v-model="tobacco">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_n-'+survey_type+index">No</label>
+                </div>
+            </div>
+        </div>
+    </script>
+
     <script type="text/x-template" id="survey-template">
         <div>
             <router-link :to="{ name: 'root'}">
@@ -86,65 +129,34 @@
                     <br>
                     <div class="row text-left">
                         <div class="col-6 offset-3">
-                            <div class="card py-3 my-3 px-4 qt-survey">
-                                <div class="d-flex align-items-center qt-survey-who">
-                                    <svg aria-hidden="true" data-prefix="fas" data-icon="user" class="svg-inline--fa fa-user fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg"
-                                         viewBox="0 0 448 512" width="18">
-                                        <path fill="currentColor"
-                                              d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path>
-                                    </svg>
-                                    <span class="font-md pl-2 font-md font-wight-600">Me</span>
-                                </div>
-                                <p>What’s your date of birth?
-                                    <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
-                                </p>
-                                <input type="text" placeholder="mm/dd/yyyy" class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+                            <survey-card :survey_type="holder_types_enum.own" :current_stage="'gender'"></survey-card>
 
-                                <div class="qt-survey-gender my-3">
-                                    <p>What’s your gender?
-                                        <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
-                                    </p>
-                                    <div class="btn-group w-100" role="group">
-                                        <label class="btn btn-primary btn-lg active col">
-                                            <input class="d-none" type="radio" name="gender" value="m">Male
-                                        </label>
-                                        <label class="btn btn-outline-primary btn-lg col">
-                                            <input class="d-none" type="radio" name="gender" value="f">Female
-                                        </label>
+                            <template>
+                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" {% comment %}:current_stage=""{% endcomment %}></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_spouse" v-else>
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
+                                            <span class="pl-2">Add a Spouse</span>
+                                        </div>
                                     </div>
                                 </div>
+                            </template>
 
-                                <div class="qt-survey-tobacco my-3">
-                                    <p>Do you use tobacco products?
-                                        <span class="border border-secondary rounded-circle cur-p qt-tooltip">?</span>
-                                    </p>
-                                    <div class="btn-group w-100" role="group">
-                                        <label class="btn btn-outline-primary btn-lg col">
-                                            <input class="d-none" type="radio" name="tobacco" value="y">Yes
-                                        </label>
-                                        <label class="btn btn-primary btn-lg active col">
-                                            <input class="d-none" type="radio" name="tobacco" value="n">No
-                                        </label>
+                            <template>
+                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                             :key="index" :index="index" :survey_type="holder_types_enum.child" {% comment %}:current_stage=""{% endcomment %}></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent" v-if="dependents.length <= max_dependents">
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
+                                            <span class="pl-2">Add a Dependent</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card py-3 my-3 px-4 cur-p qt-survey">
-                                <div class="d-flex align-items-center qt-survey-who">
-                                    <div class="font-md pl-2 font-sm font-wight-600 text-primary" @click="add_spouse">
-                                        <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
-                                        <span class="pl-2">Add a Spouse</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card py-3 my-3 px-4 cur-p qt-survey">
-                                <div class="d-flex align-items-center qt-survey-who">
-                                    <div class="font-md pl-2 font-sm font-wight-600 text-primary">
-                                        <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
-                                        <span class="pl-2">Add a Dependent</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="https://www.nationshealthinsurance.com/health-insurance-quote/" class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600">next</a>
+                            </template>
+
+                            <a href="https://www.nationshealthinsurance.com/health-insurance-quote/" class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600">Check Quote</a>
                         </div>
                     </div>
                 </div>
