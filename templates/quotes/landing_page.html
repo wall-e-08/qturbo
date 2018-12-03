@@ -76,32 +76,32 @@
             <p>What’s [[ txt_whos() ]] date of birth?
                 <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
             </p>
-            <input type="text" placeholder="mm/dd/yyyy" class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+            <input type="text" placeholder="mm/dd/yyyy" v-model="dob" @input="validate_dob($event)" class="font-mm border border-secondary mb-3 rounded qt-survey-input">
 
-            <div class="qt-survey-gender my-3">
+            <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1"><!--show only if current stage is gender or tobacco-->
                 <p>What’s [[ txt_whos() ]] gender?
                     <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
                 </p>
                 <div class="btn-group w-100" role="group">
-                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m" :id="'gender_m-'+survey_type+index">
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m" :id="'gender_m-'+survey_type+index" v-model="gender">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
 
-                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f" :id="'gender_f-'+survey_type+index">
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f" :id="'gender_f-'+survey_type+index" v-model="gender">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female</label>
                 </div>
             </div>
 
-            <div class="qt-survey-tobacco my-3">
+            <div class="qt-survey-tobacco my-3" v-if="current_stage === 'tobacco'">
                 <p>
                     <span v-if="survey_type == 'me'">Do you</span>
                     <span v-else>Does your [[ survey_type ]]</span> use tobacco products?
                     <span class="border border-secondary rounded-circle cur-p qt-tooltip" v-if="survey_type == 'me'">?</span>
                 </p>
                 <div class="btn-group w-100" role="group">
-                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="y" :id="'tobacco_y-'+survey_type+index">
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="true" :id="'tobacco_y-'+survey_type+index" v-model="tobacco">
                     <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_y-'+survey_type+index">Yes</label>
 
-                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="n" :id="'tobacco_n-'+survey_type+index">
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index" value="false" :id="'tobacco_n-'+survey_type+index" v-model="tobacco">
                     <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_n-'+survey_type+index">No</label>
                 </div>
             </div>
@@ -129,11 +129,11 @@
                     <br>
                     <div class="row text-left">
                         <div class="col-6 offset-3">
-                            <survey-card :survey_type="holder_types_enum.own"></survey-card>
+                            <survey-card :survey_type="holder_types_enum.own" :current_stage="'gender'"></survey-card>
 
                             <template>
-                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse"></survey-card>
-                                <div class="card py-3 my-3 px-4 cur-p qt-survey" @click="add_spouse" v-else>
+                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" {% comment %}:current_stage=""{% endcomment %}></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_spouse" v-else>
                                     <div class="d-flex align-items-center qt-survey-who">
                                         <div class="font-md pl-2 font-sm font-wight-600 text-primary">
                                             <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>
@@ -144,8 +144,9 @@
                             </template>
 
                             <template>
-                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents" :key="index" :index="index" :survey_type="holder_types_enum.child"></survey-card>
-                                <div class="card py-3 my-3 px-4 cur-p qt-survey" @click="add_dependent" v-if="dependents.length <= max_dependents">
+                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                             :key="index" :index="index" :survey_type="holder_types_enum.child" {% comment %}:current_stage=""{% endcomment %}></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent" v-if="dependents.length <= max_dependents">
                                     <div class="d-flex align-items-center qt-survey-who">
                                         <div class="font-md pl-2 font-sm font-wight-600 text-primary">
                                             <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">+</div>

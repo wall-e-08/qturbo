@@ -31,7 +31,7 @@ const holder_types_enum = {
     child: "dependent"
 };
 
-const survey_card_stages = ["dob", "gender", "tobacco"]
+const survey_card_stages = ["dob", "gender", "tobacco"];
 
 const v_survey_card = {
     delimiters: ['[[', ']]'],
@@ -51,21 +51,70 @@ const v_survey_card = {
                 return false;
             }
         },
-        current_stage: {
+        prop_current_stage: {
             validator: function (val) {
                 // The value must match one of these strings
                 return survey_card_stages.indexOf(val) !== -1
             }
         },
+        prop_dob: {
+            type: String,
+            required: false,
+            default: '',
+        }
     },
     data: function () {
-        return {}
+        return {
+            current_stage: this.prop_current_stage,
+            dob: "",
+            gender: '',
+            tobacco: '',
+        }
+    },
+    watch: {
+        /*dob: function () {
+            if(this.dob){
+                // console.log()
+            }
+        },*/
+        gender: function () {
+            if (this.gender) this.current_stage = survey_card_stages[2];
+        },
+        tobacco: function () {
+            // console.log("Tobacco: " + this.tobacco)
+        }
     },
     methods: {
         txt_whos: function () {
             // return "your" or "his/her" depending on who is the insurance holder
             return this.survey_type === holder_types_enum.own ? "your" : "his/her";
-        }
+        },
+        validate_dob: function (e) {
+            if (e.inputType === "deleteContentBackward") return true;   // if backspace, do nothing
+            else if (e.inputType === "insertText") {
+                if (isNaN(e.data) || this.dob.length > 10) {
+                    this.dob = this.dob.substring(0, this.dob.length - 1);
+                    e.preventDefault();
+                } else {
+                    if (this.dob.length === 2 || this.dob.length === 5) {
+                        if (this.dob[this.dob.length - 1] !== '/') {
+                            this.dob += '/';
+                        }
+                    }
+                }
+            }
+            /*if (e.keyCode < 48 || e.keyCode > 57) {
+                // prevent user from inserting non number
+                e.preventDefault();
+            } else {   // this is a number input
+                if (this.dob.length === 2 || this.dob.length === 5) {
+                    if (this.dob[this.dob.length - 1] !== '/') {
+                        console.log("changing dob");
+                        this.dob += '/';
+                    }
+                }
+            }*/
+        },
     },
     template: v_templates.survey_card
 };
@@ -125,6 +174,8 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
+                        my_dob: '',
+                        spouse_dob: '',
                         spouse: false,
                         dependents: [],
                         max_dependents: 5,
