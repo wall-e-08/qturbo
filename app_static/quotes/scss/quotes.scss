@@ -127,6 +127,12 @@ input.controlled-by-label:checked + label {
     border-color: #0599db;
 }
 
+.remove-card-X {
+    top: 11px;
+    right: 18px;
+    line-height: 1;
+}
+
 @media (max-width: map_get($grid-breakpoints, lg)) {
     body {
         padding-top: $fixed-header-body-spacing;
