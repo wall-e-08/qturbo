@@ -15,6 +15,8 @@
 
     {% block vue_router %}{% endblock %}
 
+    <link rel="stylesheet" href="{% static 'quotes/css/qt-default.css' %}">
+
     {% block head_css %}{% endblock %}
     {% block head_js %}{% endblock %}
 </head>
@@ -40,6 +42,7 @@
                             <b-nav-item href="#">Medicare</b-nav-item>
                             <b-nav-item href="#">Learn</b-nav-item>
                             <b-nav-item href="#">Blog</b-nav-item>
+                            {% if request.user.is_authenticated %}<b-nav-item href="{% url 'logout' %}">Logout</b-nav-item>{% endif %}
                         </b-navbar-nav>
                     </b-collapse>
                 </div>
