@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+DOKKU_CMD=$HOME/.dokku/contrib/dokku_client.sh
+
+export DOKKU_HOST=dev.concitus.com
+
+APPNAME=qturbo
+DBNAME=qturbodb
+
+$DOKKU_CMD ps:stop $APPNAME
+$DOKKU_CMD postgres:unlink $DBNAME $APPNAME
+$DOKKU_CMD postgres:destroy $DBNAME -f
+$DOKKU_CMD postgres:create $DBNAME
+$DOKKU_CMD postgres:link $DBNAME $APPNAME
+#$DOKKU_CMD postgres:connect $DBNAME < $DIR/stored_procedure.sql

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+DBNAME="qturbo"
+DBUSER="qturbo"
+DBPASS="qturbo"
+
+
+OS="$(uname -s)"
+
+if [ $OS == "Darwin" ]; then
+    createdb -O $DBUSER $DBNAME
+else
+sudo -u postgres bash << EOF
+    createdb -O $DBUSER $DBNAME
+EOF
+fi
+
+#psql --dbname=$DBNAME --username=$DBUSER << EOF
+#\i $DIR/stored_procedure.sql
+#EOF
