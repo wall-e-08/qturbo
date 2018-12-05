@@ -1,17 +1,6 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block head_js %}
-    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-
-    <script>
-        tinymce.init({
-            selector: '#{{ form.content.name }}'
-        })
-    </script>
-
-{% endblock %}
-
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
