@@ -1,0 +1,16 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-md-7">
+                <h1>{{ page.title }}</h1>
+                <hr>
+                <div>
+                    {{ page.content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

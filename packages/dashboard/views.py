@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from .forms import PageForm
 from .models import Page
 
@@ -30,3 +31,13 @@ def create_page(request):
     return render(request, 'dashboard/page_manage.html', {
         "form": form,
     })
+
+
+def view_page(request, page_id=None):
+    if page_id:
+        try:
+            page = Page.objects.get(id=page_id)
+            return render(request, 'dashboard/page_view.html', {"page": page})
+        except Page.DoesNotExist as err:
+            print("Page obj not found: {}".format(err))
+    return Http404()
