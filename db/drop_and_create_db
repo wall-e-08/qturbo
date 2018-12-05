@@ -1,0 +1,18 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+DBNAME="qturbo"
+DBUSER="qturbo"
+DBPASS="qturbo"
+
+
+OS="$(uname -s)"
+
+
+if [ $OS == "Darwin" ]; then
+    dropdb $DBNAME && createdb -O $DBUSER $DBNAME
+else
+sudo -u postgres bash << EOF
+    psql -c "drop database $DBNAME" && createdb -O $DBUSER $DBNAME 
+EOF
+fi
