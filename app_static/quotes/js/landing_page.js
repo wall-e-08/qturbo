@@ -57,11 +57,16 @@ const v_survey_card = {
                 return survey_card_stages.indexOf(val) !== -1
             }
         },
-        prop_dob: {
-            type: String,
-            required: false,
-            default: '',
-        }
+        prop_max_age: {
+            type: Number,
+            required: true,
+            default: 99,
+        },
+        prop_min_age: {
+            type: Number,
+            required: true,
+            default: 21,
+        },
     },
     data: function () {
         return {
@@ -72,48 +77,48 @@ const v_survey_card = {
         }
     },
     watch: {
-        /*dob: function () {
-            if(this.dob){
-                // console.log()
-            }
-        },*/
         gender: function () {
             if (this.gender) this.current_stage = survey_card_stages[2];
         },
-        tobacco: function () {
-            // console.log("Tobacco: " + this.tobacco)
-        }
     },
     methods: {
         txt_whos: function () {
             // return "your" or "his/her" depending on who is the insurance holder
             return this.survey_type === holder_types_enum.own ? "your" : "his/her";
         },
-        validate_dob: function (e) {
-            if (e.inputType === "deleteContentBackward") return true;   // if backspace, do nothing
-            else if (e.inputType === "insertText") {
-                if (isNaN(e.data) || this.dob.length > 10) {
-                    this.dob = this.dob.substring(0, this.dob.length - 1);
-                    e.preventDefault();
-                } else {
-                    if (this.dob.length === 2 || this.dob.length === 5) {
-                        if (this.dob[this.dob.length - 1] !== '/') {
-                            this.dob += '/';
-                        }
-                    }
-                }
-            }
-            /*if (e.keyCode < 48 || e.keyCode > 57) {
-                // prevent user from inserting non number
+        prevent_NaN_input: function (e) {
+            if (this.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
+                // prevent user from inserting non number and no more than 10 character
                 e.preventDefault();
-            } else {   // this is a number input
-                if (this.dob.length === 2 || this.dob.length === 5) {
-                    if (this.dob[this.dob.length - 1] !== '/') {
-                        console.log("changing dob");
-                        this.dob += '/';
-                    }
+            }
+        },
+        auto_slash_insert: function () {
+            this.current_stage = survey_card_stages[0];
+            if (this.dob.length === 2 || this.dob.length === 5) {
+                if (this.dob[this.dob.length - 1] !== '/') {
+                    this.dob += '/';
                 }
-            }*/
+            } else if (this.dob.length >= 10) {
+                this.check_age();
+            }
+        },
+        check_age: function () {
+            //Your age must be under 99 years old
+            // Your age must be at least 21
+            var dob = new Date(this.dob);
+            if (dob == 'Invalid Date') {
+                console.warn("invalid date");
+                return false;
+            }
+            var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
+            if (age > this.prop_max_age) {
+                console.warn("your age must be under 99 years old !!")
+            } else if (age < this.prop_min_age) {
+                console.warn("your age must be at least 21");
+            } else {
+                this.current_stage = survey_card_stages[1];
+                if (this.gender) this.current_stage = survey_card_stages[2];
+            }
         },
     },
     template: v_templates.survey_card
@@ -188,6 +193,15 @@ const router = new VueRouter({
                     add_dependent: function () {
                         this.dependents.push('baccha');
                     },
+                    remove_survey_card: function (holder_type, key=0) {
+                        console.log(holder_type);
+                        console.warn(key);
+                        if (holder_type === this.holder_types_enum.spouse) {
+                            this.spouse = false;
+                        } else if(holder_type === this.holder_types_enum.child){
+                            this.dependents.splice(key, 1)
+                        }
+                    }
                 },
                 created() {
                     //check zip code

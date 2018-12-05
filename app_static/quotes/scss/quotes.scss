@@ -3,55 +3,8 @@
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
 @import "../../../global_static_libs/bootstrap/scss/mixins/breakpoints";
 @import "../../../global_static_libs/bootstrap/scss/mixins/box-shadow";
-
-$fixed-header-body-spacing: 57.55px;
-$navbar-items-spacing: 15px;
-$svg-dimension: 15px;
-
-$fonts: (font-xl: 48px, font-lg: 36px,
-        font-md: 24px, font-mm: 20px,
-        font-sm: 16px, font-xs: 12px,);
-$font-weight: 400 600 700;
-
-@each $cls, $size in $fonts {
-    .#{$cls} {
-        font-size: $size !important;
-    }
-}
-
-@each $fw in $font-weight {
-    .font-wight-#{$fw} {
-        font-weight: $fw !important;
-    }
-}
-
-a:hover {
-    text-decoration: none;
-}
-
-.outline-0 {
-    outline: 0 !important;
-}
-
-.cur-p {
-    cursor: pointer !important;
-}
-
-input[type="date"] {
-    &::-webkit-input-placeholder {
-        visibility: hidden !important;
-    }
-    &::-webkit-inner-spin-button,
-    &::-webkit-calendar-picker-indicator {
-        display: none;
-        -webkit-appearance: none;
-    }
-}
-
-#QUOTE_TURBO {
-    //full vertical height - header height - header margin - footer height - footer margin
-    min-height: calc(100vh - 60px - 0px - 72px - 3rem);
-}
+@import "qt-variables";
+@import "qt-mixins";
 
 .qt-single-icon {
     width: 16px;
@@ -59,51 +12,12 @@ input[type="date"] {
     border-radius: 3px;
 }
 
-.vertical-center {
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-
 #separator {
     background-color: $gray-400;
     width: 3px;
     height: 70%;
     left: 0;
-    @extend .vertical-center;
-}
-
-svg {
-    width: $svg-dimension;
-    height: $svg-dimension;
-}
-
-@each $col in map-keys($theme-colors) {
-    svg.#{$col} {
-        path {
-            fill: map_get($theme-colors, $col);
-        }
-    }
-}
-
-.heading-slogan {
-    line-height: 1.4;
-}
-
-.navbar-light {
-    .navbar-nav {
-        .nav-link {
-            border-bottom: 4px solid transparent;
-            @include transition($btn-transition);
-            &:hover, &:focus {
-                color: $primary;
-                border-color: $primary;
-            }
-        }
-    }
+    @include vertical-center;
 }
 
 .qt-tooltip {
@@ -127,69 +41,17 @@ input.controlled-by-label:checked + label {
     border-color: #0599db;
 }
 
-@media (max-width: map_get($grid-breakpoints, lg)) {
-    body {
-        padding-top: $fixed-header-body-spacing;
-    }
-    header {
-        position: fixed;
-        width: 100%;
-        top: 0;
-        z-index: 2;
-        @include box-shadow(0 2px 4px 0 #d8d8d8);
-        #navbar_items {
-            background: $tertiary;
-            margin: 0 -#{$navbar-items-spacing};
-            padding: 0 $navbar-items-spacing * 2;
-            .nav-item {
-                .nav-link {
-                    color: $white !important;
-                    text-align: center;
-                    &:hover, &:focus {
-                        border-color: $white !important;
-                    }
-                }
-            }
-        }
-    }
-    .responsive-font-xl {
-        font-size: 33px !important;
-        font-weight: 700 !important;
-    }
+.remove-card-X {
+    top: 11px;
+    right: 18px;
+    line-height: 1;
+}
 
+@media (max-width: map_get($grid-breakpoints, lg)) {
     .swap-div-mobile {
         -webkit-box-direction: reverse;
         -webkit-box-orient: vertical;
         -ms-flex-direction: column-reverse;
         flex-direction: column-reverse;
-    }
-}
-
-@each $breakpoint in map-keys(map-remove($grid-breakpoints, xs, xl)) {
-    @include media-breakpoint-up($breakpoint) {
-        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
-        .border#{$infix} {
-            border-width: $border-width !important;
-            border-style: solid !important;
-        }
-        .border#{$infix}-0 {
-            border: 0 !important;
-        }
-        .border#{$infix}-top {
-            border-top-width: $border-width !important;
-            border-style: solid !important;
-        }
-        .border#{$infix}-right {
-            border-right-width: $border-width !important;
-            border-style: solid !important;
-        }
-        .border#{$infix}-bottom {
-            border-bottom-width: $border-width !important;
-            border-style: solid !important;
-        }
-        .border#{$infix}-left {
-            border-left-width: $border-width !important;
-            border-style: solid !important;
-        }
     }
 }

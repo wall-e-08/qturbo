@@ -1,0 +1,11 @@
+{% extends 'root_base.html' %}
+
+{% block title %}
+    {{ block.super }} | Dashboard
+{% endblock title %}
+
+{% block main_content %}
+    <div id="q-dashboard">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+{% endblock %}

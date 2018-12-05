@@ -1,0 +1,57 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block head_js %}
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#{{ form.content.name }}'
+        })
+    </script>
+
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-md-7">
+                <h1>Add a New page</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="form-group">
+                        <label for="{{ form.title.name }}">Page Title</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                                name="{{ form.title.name }}"
+                                id="{{ form.title.name }}"
+                                value="{{ form.title.value|default:'' }}"
+                                placeholder="Title">
+
+                        {% if form.title.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="{{ form.content.name }}">Page Content</label>
+                        <textare
+                                class="form-control {% if form.content.errors %}border-danger{% endif %}"
+                                name="{{ form.content.name }}"
+                                id="{{ form.content.name }}"
+                                value="{{ form.content.value|default:'' }}"></textare>
+
+                        {% if form.content.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import serve
+from django.contrib.auth import views as auth_views
 
 
 def static(prefix, view=serve, **kwargs):
@@ -31,5 +32,9 @@ def static(prefix, view=serve, **kwargs):
 
 urlpatterns = [
     path('', include('quotes.urls')),
+    path('login/', auth_views.LoginView.as_view(template_name='dashboard/login.html', redirect_authenticated_user=True), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
+    path('dashboard/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
+    path('dj-rich-text-field/', include('djrichtextfield.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

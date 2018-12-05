@@ -1,0 +1,42 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-md-7">
+                <form method="POST" action="" class="p-3">
+                    <h2 class="mb-4 heading-slogan font-wight-600" style="text-decoration: underline">Login</h2>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">Username or Email</label>
+                        <input
+                                type="text" id="{{ form.username.id_for_label }}"
+                                placeholder="Enter username or e-mail"
+                                class="form-control {% if form.username.errors %}invalid{% endif %} ms-form-control ms-round"
+                                name="{{ form.username.html_name }}"
+                                value="{{ form.username.value|default:'' }}">
+                        {% if  form.username.errors %}
+                            <div class="form_field_error form-input-error">{{ form.username.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        <input
+                                type="password"
+                                id="{{ form.password.id_for_label }}"
+                                placeholder="Enter Password"
+                                class="form-control {% if form.password.errors %}invalid{% endif %} ms-form-control ms-round"
+                                name="{{ form.password.html_name }}">
+
+                        {% if form.password.errors %}
+                            <div class="form_field_error form-input-error">{{ form.password.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-success" value="login">Login</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
