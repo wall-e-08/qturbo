@@ -36,4 +36,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     path('dashboard/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
+    path('dj-rich-text-field/', include('djrichtextfield.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
