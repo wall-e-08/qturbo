@@ -1,0 +1,10 @@
+{% extends 'root_base.html' %}
+{% load static %}
+
+{% block head_css %}
+    <link rel="stylesheet" href="{% static 'post/css/post.css' %}">
+{% endblock %}
+
+{% block title %}
+    Blog | {{ block.super }}
+{% endblock title %}
