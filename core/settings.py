@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'quotes',
+    'writing',
     'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -160,3 +161,7 @@ DJRICHTEXTFIELD_CONFIG = {
     }
 }
 
+try:
+    from .local_settings import *
+except ImportError:
+    pass

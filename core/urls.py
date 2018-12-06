@@ -35,6 +35,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='dashboard/login.html', redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     path('dashboard/', include('dashboard.urls')),
+    path('blog/', include('writing.urls.blog')),
+    path('info/', include('writing.urls.article')),
     path('admin/', admin.site.urls),
     path('dj-rich-text-field/', include('djrichtextfield.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
