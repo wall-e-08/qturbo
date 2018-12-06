@@ -39,4 +39,4 @@ urlpatterns = [
     path('info/', include('writing.urls.article')),
     path('admin/', admin.site.urls),
     path('dj-rich-text-field/', include('djrichtextfield.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

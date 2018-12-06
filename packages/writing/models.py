@@ -18,7 +18,8 @@ class Post(models.Model):
 
     slug = models.SlugField(
         allow_unicode=True,
-        editable=False
+        editable=False,
+        unique=True,
     )
 
     status = models.CharField(
