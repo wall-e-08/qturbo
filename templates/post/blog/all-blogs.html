@@ -1,29 +1,105 @@
 {% extends 'post/base.html' %}
+{% load qturbo_post_tags %}
 
 {% block main_content %}
     <div class="container">
         <div class="row">
-            {% with first_blog=blogs.first %}
-                <div class="col-12">
-                    <div class="qt-post border transition">
-                        <div class="row">
+            <div class="col-12 mb-5">
+                <div class="qt-post border transition">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:0 %}
                             <div class="col-sm-5">
                                 <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
-                                    <img src="{{ first_blog.feature_img.url }}" alt="{{ first_blog.title }}" class="w-100"/>
+                                    <a href="#">
+                                        <img src="{{ indexed_blog.feature_img.url }}" alt="{{ indexed_blog.title }}" class="w-100"/>
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="py-4 pr-4 h-100 d-flex flex-column">
-                                    <h1 class="text-capitalize font-wight-600 mb-4"><a href="#" class="text-dark">{{ first_blog.title }}</a></h1>
-                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ first_blog.created_time|date:"m/d/Y" }}</p>
-                                    <div class="mb-auto">{{ first_blog.content|striptags|safe|truncatechars_html:100 }}</div>
-                                    <a href="#" class="">Read More</a>
+                                <div class="py-4 pr-4 h-100 d-flex flex-column qt-height-limit">
+                                    <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="#" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
                                 </div>
                             </div>
-                        </div>
+                        {% endwith %}
                     </div>
                 </div>
-            {% endwith %}
+            </div>
+
+            <div class="col-md-4">
+                <div class="qt-post border transition">
+                    {% with indexed_blogs=blogs|indexed_query:1 %}
+                        <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
+                            <a href="#">
+                                <img src="{{ indexed_blogs.feature_img.url }}" alt="{{ indexed_blogs.title }}" class="w-100"/>
+                            </a>
+                        </div>
+                        <div class="p-4 h-100">
+                            <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blogs.title }}</a></h1>
+                            <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blogs.created_time|date:"m/d/Y" }}</p>
+                            <div class="mb-auto">{{ indexed_blogs.content|striptags|safe|truncatechars_html:100 }}</div>
+                            <a href="#" class="">Read More
+                                <span class="font-lg"> → </span>
+                            </a>
+                        </div>
+                    {% endwith %}
+                </div>
+            </div>
+        
+            <div class="col-md-8 d-flex flex-column">
+                <div class="qt-post border transition mb-auto">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:2 %}
+                            <div class="col-sm-5">
+                                <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
+                                    <a href="#">
+                                        <img src="{{ indexed_blog.feature_img.url }}" alt="{{ indexed_blog.title }}" class="w-100"/>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="py-4 pr-4 h-100 d-flex flex-column qt-height-limit">
+                                    <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="#" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            
+                <div class="qt-post border transition">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:3 %}
+                            <div class="col-sm-5">
+                                <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
+                                    <a href="#">
+                                        <img src="{{ indexed_blog.feature_img.url }}" alt="{{ indexed_blog.title }}" class="w-100"/>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="py-4 pr-4 h-100 d-flex flex-column qt-height-limit">
+                                    <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="#" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
     </div>
 {% endblock %}

@@ -26,11 +26,15 @@ a:hover {
     text-decoration: none;
 }
 
+.line-height-1 {
+    line-height: 1;
+}
+
 .overflow-hidden {
     overflow: hidden;
 }
 
-.transition{
+.transition {
     @include transition($transition-base);
 }
 
