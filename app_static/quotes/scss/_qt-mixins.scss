@@ -1,8 +1,14 @@
+@mixin css-prefix($css...) {
+    @each $prop, $val in $css {
+        -webkit-#{$prop}: $val;
+        -moz-#{$prop}: $val;
+        -ms-#{$prop}: $val;
+        -o-#{$prop}: $val;
+        $prop: $val;
+    }
+}
+
 @mixin vertical-center {
     top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
+    @include css-prefix((transform, translateY(-50%)));
 }

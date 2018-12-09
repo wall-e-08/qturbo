@@ -5,6 +5,7 @@ from .forms import PageForm
 from .models import Page
 
 
+@login_required
 def index(request):
     all_page = Page.objects.all()
     return render(request, 'dashboard/index.html', {

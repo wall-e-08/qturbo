@@ -18,8 +18,20 @@
     }
 }
 
+img {
+    max-width: 100%;
+}
+
 a:hover {
     text-decoration: none;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.transition{
+    @include transition($transition-base);
 }
 
 .outline-0 {

@@ -1,0 +1,29 @@
+{% extends 'post/base.html' %}
+
+{% block main_content %}
+    <div class="container">
+        <div class="row">
+            {% with first_blog=blogs.first %}
+                <div class="col-12">
+                    <div class="qt-post border transition">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
+                                    <img src="{{ first_blog.feature_img.url }}" alt="{{ first_blog.title }}" class="w-100"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="py-4 pr-4 h-100 d-flex flex-column">
+                                    <h1 class="text-capitalize font-wight-600 mb-4"><a href="#" class="text-dark">{{ first_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ first_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ first_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="#" class="">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}
