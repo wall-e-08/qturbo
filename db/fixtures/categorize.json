@@ -1,0 +1,66 @@
+[
+  {
+    "model": "writing.categorize",
+    "pk": 1,
+    "fields": {
+      "blog": 8,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 2,
+    "fields": {
+      "blog": 9,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 3,
+    "fields": {
+      "blog": 10,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 4,
+    "fields": {
+      "blog": 11,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 5,
+    "fields": {
+      "blog": 12,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 6,
+    "fields": {
+      "blog": 13,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 7,
+    "fields": {
+      "blog": 15,
+      "category": 1
+    }
+  },
+  {
+    "model": "writing.categorize",
+    "pk": 8,
+    "fields": {
+      "blog": 14,
+      "category": 1
+    }
+  }
+]
