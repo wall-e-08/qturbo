@@ -1,0 +1,1 @@
+[{"model": "writing.profile", "pk": 1, "fields": {"user": 1, "bio": null, "created": "2018-12-10T06:19:45.564Z"}}, {"model": "writing.profile", "pk": 2, "fields": {"user": 2, "bio": null, "created": "2018-12-10T06:19:51.247Z"}}, {"model": "writing.profile", "pk": 3, "fields": {"user": 3, "bio": null, "created": "2018-12-10T06:19:58.036Z"}}]

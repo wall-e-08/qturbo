@@ -1,0 +1,18 @@
+[
+  {
+    "model": "writing.category",
+    "pk": 1,
+    "fields": {
+      "name": "Medicare",
+      "slug": "medicare"
+    }
+  },
+  {
+    "model": "writing.category",
+    "pk": 2,
+    "fields": {
+      "name": "Health Insurance",
+      "slug": "health-insurance"
+    }
+  }
+]
