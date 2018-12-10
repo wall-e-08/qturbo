@@ -7,9 +7,22 @@
     &:hover {
         @include css-prefix((transform, translateY(-10px)), $post-hover-box-shadow);
     }
+    .post-img-bg {
+        min-height: $post-height;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-color: $primary;
+    }
+    &:not(.qt-vertical-post) {
+        .post-img-bg {
+            height: 100%;
+        }
+    }
 }
 
 .qt-vertical-post {
+    height: 100%;
     min-height: 2*$post-height + 50px;
 }
 
@@ -20,20 +33,12 @@
     background-image: linear-gradient(to left, transparent 50%, $divided-bg-darker 50%, $divided-bg-darker 100%);
 }
 
-.post-img-bg {
-    height: $post-height;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    background-color: $primary;
-}
-
 @media (min-width: map_get($grid-breakpoints, sm)) {
     .qt-height-limit {
         max-height: $post-height;
     }
 
-    .each-senior-blog {
+    .each-categorized-blog {
         border-color: transparent !important;
         &:hover, &:active, &:focus {
             border-color: rgba(0, 0, 0, 0.1) !important;

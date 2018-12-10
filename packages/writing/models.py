@@ -7,16 +7,12 @@ from djrichtextfield.models import RichTextField
 
 
 class Post(models.Model):
-    post_type = models.CharField(
-        max_length=1,
-        choices=POST_TYPES
-    )
-
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
 
     content = RichTextField()
 
     slug = models.SlugField(
+        max_length=1000,
         allow_unicode=True,
         editable=False,
         unique=True,
@@ -52,21 +48,28 @@ class Post(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{} - {}".format(self.post_type, self.title)
+        return self.title
 
     # override models save method for slug saving:
     def save(self, user=None, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.title.lower())
-
-            backup_img = self.feature_img
-            self.feature_img = None
-            super(Post, self).save()  # saving post without img field
-            self.feature_img = backup_img
+            slug = custom_slugify(value=self.title.lower())
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                try:
+                    slug_exits = Post.objects.get(slug=slug)
+                    if slug_exits:
+                        slug = self.slug + '-' + str(counter)
+                        counter += 1
+                except Post.DoesNotExist:
+                    self.slug = slug
+                    break
 
         if user:
             self.user = user
-        super(Post, self).save()  # saving the post finally
+        super(Post, self).save()  # saving the slug
 
     def is_img_exists(self):
         return os.path.isfile(self.feature_img.path)
@@ -87,20 +90,38 @@ class Post(models.Model):
     #     )
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=25)
-
-    slug = models.SlugField(
-        allow_unicode=True,
+class Article(Post):
+    post_type = models.CharField(
+        max_length=1,
+        default='a',
         editable=False
     )
 
-    post = models.ManyToManyField(
-        'writing.Post',
+
+class Blog(Post):
+    post_type = models.CharField(
+        max_length=1,
+        default='b',
+        editable=False
+    )
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    slug = models.SlugField(
+        max_length=200,
+        allow_unicode=True,
+        editable=False,
+        unique=True,
+    )
+
+    blog = models.ManyToManyField(
+        'writing.Blog',
         through='Categorize',
         through_fields=(
             'category',
-            'post',
+            'blog',
         ),
     )
 
@@ -113,8 +134,20 @@ class Category(models.Model):
     # override models save method for slug saving:
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.name.lower())
-        super(Category, self).save()  # saving the slug automatically
+            slug = custom_slugify(value=self.name.lower())
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                try:
+                    slug_exits = Category.objects.get(slug=slug)
+                    if slug_exits:
+                        slug = self.slug + '-' + str(counter)
+                        counter += 1
+                except Category.DoesNotExist:
+                    self.slug = slug
+                    break
+        super(Category, self).save(*args, **kwargs)  # saving the slug
 
     # def get_absolute_url(self):
     #     return reverse(
@@ -126,8 +159,8 @@ class Category(models.Model):
 
 
 class Categorize(models.Model):
-    post = models.ForeignKey(
-        Post,
+    blog = models.ForeignKey(
+        Blog,
         on_delete=models.CASCADE
     )
 
@@ -137,33 +170,30 @@ class Categorize(models.Model):
     )
 
     def __str__(self):
-        data = {'category': self.category, 'post': self.post}
+        data = {'category': self.category, 'post': self.blog}
         return "{category} : {post}".format(**data)
 
     class Meta:
-        verbose_name = "Post Category Relation"
+        verbose_name = "Blog Category Relation"
 
 
 class Section(models.Model):
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=100)
 
-    # description = models.CharField(max_length=1000)
+    description = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
 
     icon = models.TextField()  # will save svg code
 
     slug = models.SlugField(
+        max_length=200,
         allow_unicode=True,
-        editable=False
+        editable=False,
+        unique=True
     )
-
-    # post = models.ManyToManyField(
-    #     'writing.Post',
-    #     through='Sectionize',
-    #     through_fields=(
-    #         'section',
-    #         'post',
-    #     ),
-    # )
 
     def __str__(self):
         return self.name
@@ -171,8 +201,20 @@ class Section(models.Model):
     # override models save method for slug saving:
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.name.lower())
-        super(Section, self).save()  # saving the slug automatically
+            slug = custom_slugify(value=self.name.lower())
+            slug_exists = True
+            counter = 1
+            self.slug = slug
+            while slug_exists:
+                try:
+                    slug_exits = Section.objects.get(slug=slug)
+                    if slug_exits:
+                        slug = self.slug + '-' + str(counter)
+                        counter += 1
+                except Section.DoesNotExist:
+                    self.slug = slug
+                    break
+        super(Section, self).save(*args, **kwargs)  # saving the slug
 
     # def get_absolute_url(self):
     #     return reverse(

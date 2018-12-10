@@ -72,7 +72,7 @@ svg {
 }
 
 @each $col in map-keys($theme-colors) {
-    svg.#{$col} {
+    .#{$col} {
         path {
             fill: map_get($theme-colors, $col);
         }

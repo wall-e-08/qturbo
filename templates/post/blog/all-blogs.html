@@ -12,7 +12,7 @@
                                 <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column qt-height-limit">
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
                                     <h1 class="text-capitalize font-wight-600 mb-md-3 mb-2"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
                                     <p class="small font-wight-600 text-secondary mb-md-3 mb-1">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
                                     <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
@@ -50,7 +50,7 @@
                                 <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column qt-height-limit">
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
                                     <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
                                     <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
                                     <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
@@ -63,14 +63,14 @@
                     </div>
                 </div>
 
-                <div class="qt-post border transition">
+                <div class="qt-post border transition mt-3">
                     <div class="row">
                         {% with indexed_blog=blogs|indexed_query:3 %}
                             <div class="col-sm-5">
                                 <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column qt-height-limit">
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
                                     <h1 class="text-capitalize font-wight-600 mb-3"><a href="#" class="text-dark">{{ indexed_blog.title }}</a></h1>
                                     <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
                                     <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
@@ -93,10 +93,14 @@
                     <h2 class="font-wight-600 font-lg py-4 px-3 text-sm-right">For Seniors</h2>
                     {% if blogs_senior %}
                         {% for blog in blogs_senior %}
-                            <div class="each-senior-blog d-inline-block transition p-3 my-2 border">
+                            <div class="each-categorized-blog qt-post d-inline-block transition p-3 my-2 border">
                                 <div class="row">
                                     <div class="col-sm-7">
                                         <div class="pr-sm-0 py-sm-0 p-4 border-sm-0 border border-dark border-bottom-0 text-sm-right">
+                                            <a href="#" class="mb-3 d-inline-block">
+                                                <span class="text-secondary font-wight-600 pr-1">{{ blog.section.name }}</span>
+                                                <span class="primary">{{ blog.section.icon|safe }}</span>
+                                            </a>
                                             <h3 class="text-capitalize font-md font-wight-600 mb-3"><a href="#" class="text-dark">{{ blog.title }}</a></h3>
                                             <p class="small font-wight-600 text-secondary">Last Updated: {{ blog.created_time|date:"m/d/Y" }}</p>
                                             <div class="mb-auto">{{ blog.content|striptags|safe|truncatechars_html:100 }}</div>
@@ -122,13 +126,17 @@
                     <h2 class="font-wight-600 font-lg py-4 px-3">For All Ages</h2>
                     {% if blogs_senior %}
                         {% for blog in blogs_for_all %}
-                            <div class="each-senior-blog d-inline-block transition p-3 my-2 border w-100">
+                            <div class="each-categorized-blog qt-post d-inline-block transition p-3 my-2 border w-100">
                                 <div class="row">
                                     <div class="col-sm-5">
                                         <div class="post-img-bg" style="background-image: url('{{ blog.feature_img.url }}')"></div>
                                     </div>
                                     <div class="col-sm-7">
                                         <div class="pl-sm-0 py-sm-0 p-4 border-sm-0 border border-dark border-top-0">
+                                            <a href="#" class="mb-3 d-inline-block">
+                                                <span class="primary pr-1">{{ blog.section.icon|safe }}</span>
+                                                <span class="text-secondary font-wight-600">{{ blog.section.name }}</span>
+                                            </a>
                                             <h3 class="text-capitalize font-md font-wight-600 mb-3"><a href="#" class="text-dark">{{ blog.title }}</a></h3>
                                             <p class="small font-wight-600 text-secondary">Last Updated: {{ blog.created_time|date:"m/d/Y" }}</p>
                                             <div class="mb-auto">{{ blog.content|striptags|safe|truncatechars_html:100 }}</div>
