@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, reverse
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from writing.models import Blog, Category
 from django.conf import settings
 
@@ -57,3 +57,8 @@ def categorized_blog(request, slug):
         "blogs": blogs,
     }
     return render(request, 'post/blog/categorized-blogs.html', ctx)
+
+
+# TODO: if some blog is update just when user in that page, load more will send wrong results
+def ajax_load_more_blog(request):
+    return JsonResponse({})
