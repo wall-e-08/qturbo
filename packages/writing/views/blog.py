@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, reverse
+from django.http import Http404
 from writing.models import Blog, Category
 from django.conf import settings
 
@@ -26,5 +26,34 @@ def all_blogs(request):
         "blogs": blogs,
         "blogs_senior": blogs_senior,
         "blogs_for_all": blogs_for_all,
+        "url__blogs_senior": reverse(
+            'blog:categorized_blog',
+            args=[str(settings.BLOG_SENIOR_CATEGORY_SLUG),]
+        ),
+        "url__blogs_for_all": reverse(
+            'blog:categorized_blog',
+            args=[str(settings.BLOG_FOR_ALL_CATEGORY_SLUG),]
+        ),
     }
     return render(request, 'post/blog/all-blogs.html', ctx)
+
+
+def each_blog(request, slug):
+    blog = get_object_or_404(Blog, slug=slug)
+    ctx = {
+        "blog": blog,
+    }
+    return render(request, 'post/blog/each-blog.html', ctx)
+
+
+def categorized_blog(request, slug):
+    post_limit = 9
+    try:
+        cat_f_all = Category.objects.get(slug=slug)
+        blogs = Blog.objects.filter(categorize__category=cat_f_all).order_by('-created_time')[:post_limit]
+    except Category.DoesNotExist:
+        raise Http404('No Blogs found!!')
+    ctx = {
+        "blogs": blogs,
+    }
+    return render(request, 'post/blog/categorized-blogs.html', ctx)

@@ -71,23 +71,19 @@ class Post(models.Model):
             self.user = user
         super(Post, self).save()  # saving the slug
 
-    def is_img_exists(self):
-        return os.path.isfile(self.feature_img.path)
+    # def is_img_exists(self):
+    #     return os.path.isfile(self.feature_img.path)
+    # 
+    # # making that function object's boolean value is true, so the admin panel's can show this as a boolean
+    # is_img_exists.boolean = True
 
-    # making that function object's boolean value is true, so the admin panel's can show this as a boolean
-    is_img_exists.boolean = True
-
-    def get_categories(self):
-        return self.categorize_set.all()  # <model_name lowercase><underscore>set: somemodelname_set
-
-    # def get_absolute_url(self):
-    #     return reverse(
-    #         'main_app:each_post',
-    #         args=[
-    #             str(self.id),
-    #             str(self.slug)
-    #         ]
-    #     )
+    def get_absolute_url(self):
+        return reverse(
+            'blog:each_blog',
+            args=[
+                str(self.slug)
+            ]
+        )
 
 
 class Article(Post):
@@ -104,6 +100,9 @@ class Blog(Post):
         default='b',
         editable=False
     )
+
+    def get_categories(self):
+        return self.categorize_set.all()  # <model_name lowercase><underscore>set: somemodelname_set
 
 
 class Category(models.Model):
