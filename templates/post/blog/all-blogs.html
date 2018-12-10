@@ -1,29 +1,161 @@
 {% extends 'post/base.html' %}
+{% load qturbo_post_tags %}
 
 {% block main_content %}
-    <div class="container">
+    <div class="container mb-5 pb-5">
         <div class="row">
-            {% with first_blog=blogs.first %}
-                <div class="col-12">
-                    <div class="qt-post border transition">
-                        <div class="row">
+            <div class="col-12 mb-5">
+                <div class="qt-post border transition">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:0 %}
                             <div class="col-sm-5">
-                                <div class="overflow-hidden w-100 d-flex align-items-center qt-height-limit">
-                                    <img src="{{ first_blog.feature_img.url }}" alt="{{ first_blog.title }}" class="w-100"/>
-                                </div>
+                                <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
                             </div>
                             <div class="col-sm-7">
-                                <div class="py-4 pr-4 h-100 d-flex flex-column">
-                                    <h1 class="text-capitalize font-wight-600 mb-4"><a href="#" class="text-dark">{{ first_blog.title }}</a></h1>
-                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ first_blog.created_time|date:"m/d/Y" }}</p>
-                                    <div class="mb-auto">{{ first_blog.content|striptags|safe|truncatechars_html:100 }}</div>
-                                    <a href="#" class="">Read More</a>
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
+                                    <h1 class="text-capitalize font-wight-600 mb-md-3 mb-2"><a href="{{ indexed_blog.get_absolute_url }}" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary mb-md-3 mb-1">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="{{ indexed_blog.get_absolute_url }}" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
                                 </div>
                             </div>
-                        </div>
+                        {% endwith %}
                     </div>
                 </div>
-            {% endwith %}
+            </div>
+
+            <div class="col-md-4 mt-5">
+                <div class="qt-post border transition qt-vertical-post">
+                    {% with indexed_blog=blogs|indexed_query:1 %}
+                        <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
+                        <div class="p-4 h-100">
+                            <h1 class="text-capitalize font-wight-600 mb-3"><a href="{{ indexed_blog.get_absolute_url }}" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                            <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                            <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                            <a href="{{ indexed_blog.get_absolute_url }}" class="">Read More
+                                <span class="font-lg"> → </span>
+                            </a>
+                        </div>
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="col-md-8 mt-5 d-md-flex flex-md-column">
+                <div class="qt-post border transition mb-md-auto mb-5">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:2 %}
+                            <div class="col-sm-5">
+                                <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
+                                    <h1 class="text-capitalize font-wight-600 mb-3"><a href="{{ indexed_blog.get_absolute_url }}" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="{{ indexed_blog.get_absolute_url }}" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+
+                <div class="qt-post border transition mt-3">
+                    <div class="row">
+                        {% with indexed_blog=blogs|indexed_query:3 %}
+                            <div class="col-sm-5">
+                                <div class="post-img-bg" style="background-image: url('{{ indexed_blog.feature_img.url }}')"></div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
+                                    <h1 class="text-capitalize font-wight-600 mb-3"><a href="{{ indexed_blog.get_absolute_url }}" class="text-dark">{{ indexed_blog.title }}</a></h1>
+                                    <p class="small font-wight-600 text-secondary">Last Updated: {{ indexed_blog.created_time|date:"m/d/Y" }}</p>
+                                    <div class="mb-auto">{{ indexed_blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                    <a href="{{ indexed_blog.get_absolute_url }}" class="">Read More
+                                        <span class="font-lg line-height-1"> → </span>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <section id="categorized-blogs" class="divided-bg py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2 class="font-wight-600 font-lg py-4 px-3 text-sm-right">For Seniors</h2>
+                    {% if blogs_senior %}
+                        {% for blog in blogs_senior %}
+                            <div class="each-categorized-blog qt-post d-inline-block transition p-3 my-2 border">
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="pr-sm-0 py-sm-0 p-4 border-sm-0 border border-dark border-bottom-0 text-sm-right">
+                                            <a href="#" class="mb-3 d-inline-block">
+                                                <span class="text-secondary font-wight-600 pr-1">{{ blog.section.name }}</span>
+                                                <span class="primary">{{ blog.section.icon|safe }}</span>
+                                            </a>
+                                            <h3 class="text-capitalize font-md font-wight-600 mb-3"><a href="{{ blog.get_absolute_url }}" class="text-dark">{{ blog.title }}</a></h3>
+                                            <p class="small font-wight-600 text-secondary">Last Updated: {{ blog.created_time|date:"m/d/Y" }}</p>
+                                            <div class="mb-auto">{{ blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                            <a href="{{ blog.get_absolute_url }}" class="">Read More
+                                                <span class="font-lg line-height-1"> → </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="post-img-bg" style="background-image: url('{{ blog.feature_img.url }}')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="text-center w-100 mt-5">
+                            <a class="btn btn-lg btn-outline-primary qt-border" href="{{ url__blogs_senior }}">More articles for seniors</a>
+                        </div>
+                    {% else %}
+                        <p>No blogs found for Seniors Right Now</p>
+                    {% endif %}
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="font-wight-600 font-lg py-4 px-3">For All Ages</h2>
+                    {% if blogs_senior %}
+                        {% for blog in blogs_for_all %}
+                            <div class="each-categorized-blog qt-post d-inline-block transition p-3 my-2 border w-100">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <div class="post-img-bg" style="background-image: url('{{ blog.feature_img.url }}')"></div>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <div class="pl-sm-0 py-sm-0 p-4 border-sm-0 border border-dark border-top-0">
+                                            <a href="#" class="mb-3 d-inline-block">
+                                                <span class="primary pr-1">{{ blog.section.icon|safe }}</span>
+                                                <span class="text-secondary font-wight-600">{{ blog.section.name }}</span>
+                                            </a>
+                                            <h3 class="text-capitalize font-md font-wight-600 mb-3"><a href="{{ blog.get_absolute_url }}" class="text-dark">{{ blog.title }}</a></h3>
+                                            <p class="small font-wight-600 text-secondary">Last Updated: {{ blog.created_time|date:"m/d/Y" }}</p>
+                                            <div class="mb-auto">{{ blog.content|striptags|safe|truncatechars_html:100 }}</div>
+                                            <a href="{{ blog.get_absolute_url }}" class="">Read More
+                                                <span class="font-lg line-height-1"> → </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="text-center w-100 mt-5">
+                            <a class="btn btn-lg btn-outline-primary qt-border" href="{{ url__blogs_for_all }}">More articles for all ages</a>
+                        </div>
+                    {% else %}
+                        <p>No blogs found for Seniors Right Now</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'post/base.html' %}
+{% load qturbo_post_tags %}
+
+{% block main_content %}
+    <div class="container mb-5 pb-5">
+        <div class="row">
+            <div class="col-12 mb-5">
+                <categorized-blog></categorized-blog>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block vue_templates %}
+    <script type="text/x-template" id="cat-blog-template">
+        <div>
+            <template v-for="blog in blogs.slice(0, 3)">
+                <div class="qt-post border my-5 transition">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="post-img-bg" :style="blog.img"></div>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="pl-sm-0 p-4 h-100 d-flex flex-column">
+                                <h1 class="text-capitalize font-wight-600 mb-md-3 mb-2"><a :href="blog.url" class="text-dark">[[ blog.title ]]</a></h1>
+                                <p class="small font-wight-600 text-secondary mb-md-3 mb-1">Last Updated: [[ blog.time ]]</p>
+                                <div class="mb-auto">[[ blog.content ]]</div>
+                                <a :href="blog.url" class="">Read More
+                                    <span class="font-lg line-height-1"> → </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="row mt-5">
+                <template v-for="blog in blogs.slice(3, 6)">
+                    <div class="col-md-4 mt-5">
+                        <div class="qt-post border transition qt-vertical-post">
+                            <div class="post-img-bg" :style="blog.img"></div>
+                            <div class="p-4">
+                                <h1 class="text-capitalize font-wight-600 mb-3"><a :href="blog.url" class="text-dark">[[ blog.title ]]</a></h1>
+                                <p class="small font-wight-600 text-secondary">Last Updated: [[ blog.time ]]</p>
+                                <div class="mb-auto">[[ blog.content ]]</div>
+                                <a :href="blog.url" class="">Read More
+                                    <span class="font-lg"> → </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div class="mt-5 text-center w-100">
+                    <a href="#" class="btn btn-warning btn-lg rounded">Load More Blogs</a>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        var cat_blog = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    blogs: [
+                        {% for blog in blogs %}{
+                            url: "{{ blog.get_absolute_url }}",
+                            img: "{% if blog.feature_img %}background-image:url('{{ blog.feature_img.url }}'){% endif %}",
+                            title: "{{ blog.title }}",
+                            time: "{{ blog.created_time|date:"m/d/Y"  }}",
+                            content: `{{ blog.content|striptags|safe|truncatechars_html:100 }}`,
+                            },{% endfor %}
+                    ],
+                }
+            },
+            template: '#cat-blog-template'
+        };
+    </script>
+{% endblock %}
+
+{% block bootstrap_vue_init %}
+    <script>
+        new Vue({
+            delimiters: ['[[', ']]'],
+            components: {
+                'categorized-blog': cat_blog,
+            }
+        }).$mount('#bootstrap-vue');
+    </script>
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends 'post/base.html' %}
+{% load qturbo_post_tags %}
+
+{% block main_content %}
+    <div class="container mb-5 pb-5">
+        <div class="row">
+            <div class="col">
+                
+                {# THIS IS TEST TEMPLATE #}
+                <h1 class="font-wight-700 font-xl">{{ blog.title }}</h1>
+                <br>
+                <img src="{{ blog.feature_img.url }}" alt="">
+                <br>
+                {{ blog.content|safe }}
+                
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

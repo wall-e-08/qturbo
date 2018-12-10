@@ -26,11 +26,15 @@ a:hover {
     text-decoration: none;
 }
 
+.line-height-1 {
+    line-height: 1;
+}
+
 .overflow-hidden {
     overflow: hidden;
 }
 
-.transition{
+.transition {
     @include transition($transition-base);
 }
 
@@ -53,6 +57,10 @@ input[type="date"] {
     }
 }
 
+.qt-border {
+    border-color: $qt-border !important;
+}
+
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
     min-height: calc(100vh - 60px - 0px - 72px - 3rem);
@@ -64,7 +72,7 @@ svg {
 }
 
 @each $col in map-keys($theme-colors) {
-    svg.#{$col} {
+    .#{$col} {
         path {
             fill: map_get($theme-colors, $col);
         }

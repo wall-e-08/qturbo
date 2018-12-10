@@ -22,12 +22,17 @@ def save_profile(sender, **kwargs):
 @receiver(post_delete, sender=Post)
 def delete_img(sender, **kwargs):
     post = kwargs['instance']
-    img_path = post.feature_img.path
-    if os.path.exists(img_path):
-        os.remove(img_path)
-        parent_dir = os.path.abspath(os.path.join(img_path, os.pardir))
-        if len(os.listdir(parent_dir)) == 0:
-            # removing directory if empty
-            os.rmdir(parent_dir)
-    else:
-        print("The file ({}) does not exist".format(img_path))
+    try:
+        img_path = post.feature_img.path
+        print("IMG: {}".format(img_path))
+        if os.path.exists(img_path):
+            os.remove(img_path)
+            parent_dir = os.path.abspath(os.path.join(img_path, os.pardir))
+            if len(os.listdir(parent_dir)) == 0:
+                # removing directory if empty
+                os.rmdir(parent_dir)
+        else:
+            print("The file ({}) does not exist".format(img_path))
+    except ValueError:
+        # if no feat img attached, ignore it
+        return None

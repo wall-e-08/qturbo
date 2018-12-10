@@ -165,6 +165,10 @@ DJRICHTEXTFIELD_CONFIG = {
     }
 }
 
+# post (blog & article) configs
+BLOG_SENIOR_CATEGORY_SLUG = 'medicare'
+BLOG_FOR_ALL_CATEGORY_SLUG = 'health-insurance'
+
 try:
     from .local_settings import *
 except ImportError:
