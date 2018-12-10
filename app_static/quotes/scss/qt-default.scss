@@ -57,6 +57,10 @@ input[type="date"] {
     }
 }
 
+.qt-border {
+    border-color: $qt-border !important;
+}
+
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
     min-height: calc(100vh - 60px - 0px - 72px - 3rem);

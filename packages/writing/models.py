@@ -42,15 +42,22 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    section = models.ForeignKey(
+        'writing.Section',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{} - {}".format(self.id, self.title)
+        return "{} - {}".format(self.post_type, self.title)
 
     # override models save method for slug saving:
     def save(self, user=None, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.title)
+            self.slug = custom_slugify(value=self.title.lower())
 
             backup_img = self.feature_img
             self.feature_img = None
@@ -106,7 +113,7 @@ class Category(models.Model):
     # override models save method for slug saving:
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.name)
+            self.slug = custom_slugify(value=self.name.lower())
         super(Category, self).save()  # saving the slug automatically
 
     # def get_absolute_url(self):
@@ -140,7 +147,7 @@ class Categorize(models.Model):
 class Section(models.Model):
     name = models.CharField(max_length=25)
 
-    description = models.CharField(max_length=1000)
+    # description = models.CharField(max_length=1000)
 
     icon = models.TextField()  # will save svg code
 
@@ -149,14 +156,14 @@ class Section(models.Model):
         editable=False
     )
 
-    post = models.ManyToManyField(
-        'writing.Post',
-        through='Sectionize',
-        through_fields=(
-            'section',
-            'post',
-        ),
-    )
+    # post = models.ManyToManyField(
+    #     'writing.Post',
+    #     through='Sectionize',
+    #     through_fields=(
+    #         'section',
+    #         'post',
+    #     ),
+    # )
 
     def __str__(self):
         return self.name
@@ -164,7 +171,7 @@ class Section(models.Model):
     # override models save method for slug saving:
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = custom_slugify(value=self.name)
+            self.slug = custom_slugify(value=self.name.lower())
         super(Section, self).save()  # saving the slug automatically
 
     # def get_absolute_url(self):
@@ -174,25 +181,6 @@ class Section(models.Model):
     #             str(self.slug)
     #         ]
     #     )
-
-
-class Sectionize(models.Model):
-    post = models.ForeignKey(
-        Post,
-        on_delete=models.CASCADE
-    )
-
-    section = models.ForeignKey(
-        Section,
-        on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        data = {'section': self.section, 'post': self.post}
-        return "{section} : {post}".format(**data)
-
-    class Meta:
-        verbose_name = "Section Category Relation"
 
 
 class Profile(models.Model):
