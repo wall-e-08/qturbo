@@ -3,12 +3,94 @@
 
 {% block dashboard_content %}
     <div class="container">
-        <div class="row">
-            
-        </div>
-    
-        <div class="my-5">
-            <a href="{% url 'dashboard:create_blog' %}" class="btn btn-primary btn-lg">Create Blog</a>
-        </div>
+        <dsb-card-items></dsb-card-items>
     </div>
+{% endblock %}
+
+{% block vue_templates %}
+    <script type="text/x-template" id="dsb-card-template">
+        <div class="row">
+            <div class="col-md-6" v-for="dsb_item in dsb_items">
+                <div class="card w-100 h-100">
+                    <div class="card-header bg-secondary">
+                        <div class="d-flex justify-content-between">
+                            <h4 class="d-inline-block font-wight-700">[[ dsb_item.item.name ]]</h4>
+                            <a :href="dsb_item.item.new_url" class="btn btn-success">Add New [[ dsb_item.item.name ]]</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title font-wight-600">
+                                    Total [[ dsb_item.item.name ]]s
+                                    <span class="badge badge-dark">[[ dsb_item.item.count ]]</span>
+                                </h5>
+                                <a :href="dsb_item.item.url" class="btn btn-outline-primary">All [[ dsb_item.item.name ]]s</a>
+                            </div>
+                            <template v-if="dsb_item.category">
+                                <hr class="w-100">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="card-title font-wight-600">
+                                        Categories
+                                        <span class="badge badge-warning">[[ dsb_item.category.count ]]</span>
+                                    </h5>
+                                    <a :href="[[ dsb_item.category.url ]]" class="btn btn-outline-primary">All Categories</a>
+                                </div>
+                            </template>
+                            <template v-if="dsb_item.section">
+                                <hr class="w-100">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="card-title font-wight-600">
+                                        Sections
+                                        <span class="badge badge-danger">[[ dsb_item.section.count ]]</span>
+                                    </h5>
+                                    <a :href="[[ dsb_item.section.url ]]" class="btn btn-outline-primary">All Sections</a>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['dsb-card-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    dsb_items: [{
+                        item: {
+                            name: "Article",
+                            count: "{{ data.article.count }}",
+                            url: "#",
+                            new_url: "#",
+                        },
+                        section: {
+                            count: "{{ data.article.section_count }}",
+                            url: "#"
+                        },
+                    }, {
+                        item: {
+                            name: "Blog",
+                            count: "{{ data.blog.count }}",
+                            url: "{% url 'dashboard:all_blogs' %}",
+                            new_url: "{% url 'dashboard:create_blog' %}",
+                        },
+                        category: {
+                            count: "{{ data.blog.category_count }}",
+                            url: "#"
+                        },
+                        section: {
+                            count: "{{ data.blog.section_count }}",
+                            url: "#"
+                        },
+                    },],
+                }
+            },
+            template: '#dsb-card-template'
+        };
+    </script>
 {% endblock %}
