@@ -4,32 +4,11 @@
 {% block dashboard_content %}
     <div class="container">
         <div class="row">
-            {% for page in pages %}
-                <div class="col-md-4">
-                    <div class="card w-100 h-100">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">{{ page.title }}&nbsp;&nbsp;</h4>
-                                <span>id-{{ page.id }}, slug: < later ></span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text">{{ page.content|striptags|truncatechars:50 }}</p>
-                            <p class="small">{{ page.create_time }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{% url 'dashboard:view-page' page.id %}" class="btn btn-success">view</a>
-                            <a href="#" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            
         </div>
     
         <div class="my-5">
-            <a href="{% url 'dashboard:create-new-page' %}" class="btn btn-primary btn-lg">Create Page</a>
+            <a href="{% url 'dashboard:create_blog' %}" class="btn btn-primary btn-lg">Create Blog</a>
         </div>
     </div>
 {% endblock %}

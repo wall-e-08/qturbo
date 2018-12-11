@@ -35,7 +35,7 @@
             </template>
 
             <div class="row mt-5">
-                <template v-for="blog in blogs.slice(3, 6)">
+                <template v-for="blog in blogs.slice(3, 9)">
                     <div class="col-md-4 mt-5">
                         <div class="qt-post border transition qt-vertical-post">
                             <div class="post-img-bg" :style="blog.img"></div>
@@ -50,8 +50,9 @@
                         </div>
                     </div>
                 </template>
-                <div class="mt-5 text-center w-100">
-                    <a href="#" class="btn btn-warning btn-lg rounded">Load More Blogs</a>
+                <div class="mt-5 text-center w-100" v-if="blogs.length > 9">
+                    {# TODO: it will be an ajax #}
+                    <a href="{% url 'blog:ajax_load_more_blog' %}" class="btn btn-warning btn-lg rounded">Load More Blogs</a>
                 </div>
             </div>
         </div>
