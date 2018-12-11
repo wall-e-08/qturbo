@@ -55,7 +55,7 @@ def create_blog(request):
             blog = form.save()
             return redirect(blog.get_absolute_url())
         else:
-            print("create_blog  Form is not valid")
+            print("create_blog  Form not valid. errors: {}".format(form.errors))
     else:
         print("create_blog  not post req.. {}".format(request.method))
 
