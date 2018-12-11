@@ -1,0 +1,11 @@
+$svg-footer-height: 25px;
+$svg-footer-width: 25px;
+$font-sm: 13px;
+
+svg{
+  height: $svg-footer-height !important;
+  width: $svg-footer-width  !important;
+}
+.footer-font-size{
+  font-size: $font-sm;
+}
