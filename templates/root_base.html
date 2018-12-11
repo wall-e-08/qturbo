@@ -45,7 +45,9 @@
                             <b-nav-item href="{% url 'article:all_articles' %}">Learn</b-nav-item>
                             <b-nav-item href="{% url 'blog:all_blogs' %}">Blog</b-nav-item>
                             {% if request.user.is_authenticated %}
-                                <b-nav-item href="{% url 'logout' %}">Logout</b-nav-item>{% endif %}
+                                <b-nav-item href="{% url 'dashboard:index' %}"><span class="text-success">Dashboard</span></b-nav-item>
+                                <b-nav-item href="{% url 'logout' %}"><span class="text-danger">Logout</span></b-nav-item>
+                            {% endif %}
                         </b-navbar-nav>
                     </b-collapse>
                 </div>
@@ -150,7 +152,7 @@
                         </div>
                         <div class=" col-sm-12 col-md-4 col-lg-4 ">
                             <h6 class="text-light font-weight-bold text-center text-md-left">Heading</h6>
-                            <p class="text-light footer-font-size text-center text-md-left"> HealthCare.com is an independent, advertising-supported website
+                            <p class="text-light footer-font-size text-center text-md-left"> quoteturbo.com is an independent, advertising-supported website
                                 publisher and provides a consumer comparison service.
                                 HealthCare.com may earn revenue for leads, clicks, calls and application generated, and
                                 may be compensated by its advertisers
@@ -193,6 +195,10 @@
     {% endblock %}
 </div>
 
+<script type="text/javascript">
+    var all_components = {};
+</script>
+
 {% block vue_templates %}{% endblock %}
 {% block bottom_js %}{% endblock %}
 
@@ -204,6 +210,7 @@
         // this should be initialized at last.
         new Vue({
             delimiters: ['[[', ']]'],
+            components: all_components,
         }).$mount('#bootstrap-vue');
     </script>
 {% endblock %}

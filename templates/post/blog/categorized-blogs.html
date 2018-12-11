@@ -61,7 +61,7 @@
 
 {% block bottom_js %}
     <script>
-        var cat_blog = {
+        all_components['categorized-blog'] = {
             delimiters: ['[[', ']]'],
             data: function () {
                 return {
@@ -78,17 +78,6 @@
             },
             template: '#cat-blog-template'
         };
-    </script>
-{% endblock %}
-
-{% block bootstrap_vue_init %}
-    <script>
-        new Vue({
-            delimiters: ['[[', ']]'],
-            components: {
-                'categorized-blog': cat_blog,
-            }
-        }).$mount('#bootstrap-vue');
     </script>
 {% endblock %}
 

@@ -1,8 +1,11 @@
 {% extends 'root_base.html' %}
+{% load static %}
 
-{% block title %}
-    {{ block.super }} | Dashboard
-{% endblock title %}
+{% block title %}Dashboard{% endblock title %}
+
+{% block head_css %}
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+{% endblock %}
 
 {% block main_content %}
     <div id="q-dashboard">
