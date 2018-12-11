@@ -7,6 +7,7 @@
 [dev url](qturbo.dev.concitus.com)
 
 Project Run Steps:
+
 - Step 0: go to the project root folder
 - Step 1: create virtual env: `virtualenv -p python3 env`
 - Step 2: activate virtual env: `source env/bin/activate`
