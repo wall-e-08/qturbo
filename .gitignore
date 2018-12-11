@@ -1,4 +1,5 @@
 env/
+qenv/
 env3.6/
 .*\.pyc
 .*\.swp
