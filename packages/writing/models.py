@@ -130,6 +130,15 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse(
+            'blog:categorized_blog',
+            args=[str(self.slug),]
+        )
+
+    def blogs_count_under_this(self):
+        return len(Blog.objects.filter(categorize__category=self))
+
     # override models save method for slug saving:
     def save(self, *args, **kwargs):
         if not self.id:

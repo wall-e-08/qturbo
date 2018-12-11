@@ -14,5 +14,6 @@ urlpatterns = [
 
     # blogs
     path('blog/', login_required(views.all_blogs), name='all_blogs'),
-    path('blog/create', login_required(views.create_blog), name='create_blog'),
+    path('blog/create/', login_required(views.create_blog), name='create_blog'),
+    path('blog/category/', login_required(views.blog_category), name='blog_category'),
 ]

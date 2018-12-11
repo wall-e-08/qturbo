@@ -83,3 +83,9 @@ def create_blog(request):
     return render(request, 'dashboard/create_blog.html', {
         "form": form,
     })
+
+
+def blog_category(request):
+    all_cats = Category.objects.all()
+    return render(request, 'dashboard/blog_category.html', {"all_cats": all_cats})
+

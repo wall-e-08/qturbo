@@ -1,0 +1,63 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <h1>Categories:</h1>
+                    <div><a href="#" class="btn btn-success">+ Add new category</a></div>
+                </div>
+                <dsb-blog-category></dsb-blog-category>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="dsb-blog-category-template">
+        <table class="table table-light table-bordered mt-5 text-center">
+            <thead class="table-secondary">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Blogs</th>
+                    <th scope="col">View Blogs</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(cat, i) in categories">
+                    <th scope="row">[[ i+1 ]]</th>
+                    <td>[[ cat.name ]]</td>
+                    <td>[[ cat.blog_count ]]</td>
+                    <td><a :href="cat.url">view</a></td>
+                    <td><a href="#">delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['dsb-blog-category'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    categories: [
+                        {% for cat in all_cats %}
+                            {
+                                name: "{{ cat }}",
+                                url: "{{ cat.get_absolute_url }}",
+                                blog_count: "{{ cat.blogs_count_under_this }}",
+                            },{% endfor %}
+                    ],
+                }
+            },
+            template: '#dsb-blog-category-template'
+        };
+    </script>
+{% endblock %}
