@@ -15,6 +15,16 @@ svg{
 #product_logo{
   background-color: #f8f8f8;
 }
+#product_logo_sm{
+  background-color: #f8f8f8;
+}
+a:hover{
+  color: #19b4fa;
+
+}
+.hover_color:hover{
+  color: #19b4fa;
+}
 .product_item{
   color: #9b9b9b;
 }
@@ -33,4 +43,13 @@ svg{
     -ms-flex-align: start;
     align-items: flex-start;
     text-align: left;
+}
+//.feature-img{
+//  width: 1093px;
+//  height: 642px;
+//}
+#statistics{
+    background: url("/static/quotes/img/background.png");
+    background-size: cover;
+    color: #fdfdfd;
 }
