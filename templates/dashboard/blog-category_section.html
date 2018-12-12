@@ -1,6 +1,12 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_blogs' %}">Blog</a></li>
+    <li class="breadcrumb-item active">{{ type }}</li>
+{% endblock %}
+
 {% block dashboard_content %}
     <div class="container">
         <div class="row">
