@@ -1,0 +1,63 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row">
+            <dsb-category-section></dsb-category-section>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="dsb-category-section-template">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <h1>{{ type }}s:</h1>
+                <div><a href="{{ add_new_url }}" class="btn btn-success">+ Add new {{ type }}</a></div>
+            </div>
+            <table class="table table-light table-bordered mt-5 text-center">
+                <thead class="table-secondary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Blogs</th>
+                        <th scope="col">View Blogs</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, i) in items">
+                        <th scope="row">[[ i+1 ]]</th>
+                        <td>[[ item.name ]]</td>
+                        <td>[[ item.blog_count ]]</td>
+                        <td><a :href="item.url">view</a></td>
+                        <td><a href="#">delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['dsb-category-section'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    items: [
+                        {% for item in all_items %}
+                            {
+                                name: "{{ item }}",
+                                url: "{{ item.get_absolute_url }}",
+                                blog_count: "{{ item.blogs_count_under_this }}",
+                            },{% endfor %}
+                    ],
+                }
+            },
+            template: '#dsb-category-section-template'
+        };
+    </script>
+{% endblock %}

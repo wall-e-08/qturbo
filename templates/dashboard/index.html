@@ -81,7 +81,7 @@
                         },
                         category: {
                             count: "{{ data.blog.category_count }}",
-                            url: "#"
+                            url: "{% url 'dashboard:blog_category' %}"
                         },
                         section: {
                             count: "{{ data.blog.section_count }}",
