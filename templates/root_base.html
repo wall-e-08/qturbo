@@ -45,8 +45,12 @@
                             <b-nav-item href="{% url 'article:all_articles' %}">Learn</b-nav-item>
                             <b-nav-item href="{% url 'blog:all_blogs' %}">Blog</b-nav-item>
                             {% if request.user.is_authenticated %}
-                                <b-nav-item href="{% url 'dashboard:index' %}"><span class="text-success">Dashboard</span></b-nav-item>
-                                <b-nav-item href="{% url 'logout' %}"><span class="text-danger">Logout</span></b-nav-item>
+                                <b-nav-item href="{% url 'dashboard:index' %}">
+                                    <span class="text-success">Dashboard</span>
+                                </b-nav-item>
+                                <b-nav-item href="{% url 'logout' %}">
+                                    <span class="text-danger">Logout</span>
+                                </b-nav-item>
                             {% endif %}
                         </b-navbar-nav>
                     </b-collapse>
@@ -56,7 +60,11 @@
     {% endblock %}
 
     <div id="QUOTE_TURBO" class="pt-5">
-        {% block main_content %}{% endblock %}
+
+        {% block main_content %}
+
+        {% endblock %}
+
     </div>
 
     {% block footer %}
@@ -65,7 +73,8 @@
                 <div id="footer-two" class="">
                     <div class="row ">
                         <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left"> Products </h4>
+                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
+                                Products </h4>
                             <ul class="nav flex-column text-center text-md-left">
                                 <li class="nav-item ">
                                     <a class="nav-link active text-light px-0" href="#">Healthcare</a>
@@ -80,7 +89,8 @@
                             </ul>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left"> Shop </h4>
+                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
+                                Shop </h4>
                             <ul class="nav flex-column text-center text-md-left">
                                 <li class="nav-item ">
                                     <a class="nav-link active text-light px-0" href="#">By Plan type</a>
@@ -95,7 +105,8 @@
                             </ul>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left"> learn </h4>
+                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
+                                learn </h4>
                             <ul class="nav flex-column text-center text-md-left">
                                 <li class="nav-item ">
                                     <a class="nav-link active text-light px-0" href="#">Health Insurance</a>
@@ -110,7 +121,8 @@
                             </ul>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left"> Company </h4>
+                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
+                                Company </h4>
                             <ul class="nav flex-column text-center text-md-left">
                                 <li class="nav-item ">
                                     <a class="nav-link active text-light px-0" href="#">Team</a>
@@ -141,7 +153,8 @@
                     <div class="row mt-4">
                         <div class=" col-sm-12 col-md-5 col-lg-5 ">
                             <h6 class="text-light font-weight-bold text-center text-md-left">How we make money</h6>
-                            <p class="text-light footer-font-size text-center text-md-left"> HealthCare.com is an independent, advertising-supported website
+                            <p class="text-light footer-font-size text-center text-md-left"> HealthCare.com is an
+                                independent, advertising-supported website
                                 publisher and provides a consumer comparison service.
                                 HealthCare.com may earn revenue for leads, clicks, calls and application generated, and
                                 may be compensated by its advertisers
@@ -152,7 +165,8 @@
                         </div>
                         <div class=" col-sm-12 col-md-4 col-lg-4 ">
                             <h6 class="text-light font-weight-bold text-center text-md-left">Heading</h6>
-                            <p class="text-light footer-font-size text-center text-md-left"> quoteturbo.com is an independent, advertising-supported website
+                            <p class="text-light footer-font-size text-center text-md-left"> quoteturbo.com is an
+                                independent, advertising-supported website
                                 publisher and provides a consumer comparison service.
                                 HealthCare.com may earn revenue for leads, clicks, calls and application generated, and
                                 may be compensated by its advertisers

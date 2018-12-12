@@ -1,11 +1,36 @@
 $svg-footer-height: 25px;
 $svg-footer-width: 25px;
-$font-sm: 13px;
+$font-13: 13px;
+$font-18:18px;
+$font-22:22px;
+$font-24:24px;
 
 svg{
   height: $svg-footer-height !important;
   width: $svg-footer-width  !important;
 }
 .footer-font-size{
-  font-size: $font-sm;
+  font-size: $font-13;
+}
+#product_logo{
+  background-color: #f8f8f8;
+}
+.product_item{
+  color: #9b9b9b;
+}
+.product_item h5{
+  font-size: $font-18;
+}
+
+.hi-title{
+  color: #19b4fa;
+  font-size: $font-22;
+}
+.hi-feature{
+    display: flex;
+    -webkit-box-align: start;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    text-align: left;
 }
