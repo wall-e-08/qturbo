@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
 from .forms import PageForm, BlogForm
 from .models import Page
-from writing.models import Article, Blog, Category
+from writing.models import Article, Blog, Category, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -86,6 +86,22 @@ def create_blog(request):
 
 
 def blog_category(request):
-    all_cats = Category.objects.all()
-    return render(request, 'dashboard/blog_category.html', {"all_cats": all_cats})
+    items = Category.objects.all()
+    ctx = {
+        "all_items": items,
+        "type": "Category",
+        "add_new_url": "#",
+    }
+    return render(request, 'dashboard/blog-category_section.html', ctx)
+
+
+def blog_section(request):
+    sections = set(Blog.objects.exclude(section=None).values_list('section__name', flat=True))    # need a small fix here
+    items = [Section.objects.get(name=sec) for sec in sections]
+    ctx = {
+        "all_items": items,
+        "type": "Section",
+        "add_new_url": "#",
+    }
+    return render(request, 'dashboard/blog-category_section.html', ctx)
 

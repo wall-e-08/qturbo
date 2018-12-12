@@ -232,6 +232,15 @@ class Section(models.Model):
     #         ]
     #     )
 
+    def get_absolute_url(self):
+        return reverse(
+            'blog:sectionized_blog',
+            args=[str(self.slug),]
+        )
+
+    def blogs_count_under_this(self):
+        return len(Blog.objects.filter(section=self))
+
 
 class Profile(models.Model):
     user = models.OneToOneField(
