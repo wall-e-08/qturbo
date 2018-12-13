@@ -68,8 +68,7 @@ def create_article(request):
 
 
 def article_section(request):
-    sections = set(Article.objects.exclude(section=None).values_list('section__name', flat=True))  # need a small fix here
-    items = [Section.objects.get(name=sec) for sec in sections]
+    items = Section.objects.filter(post_type='a')
     ctx = {
         "all_items": items,
         "type": "Section",
@@ -143,8 +142,7 @@ def blog_category(request):
 
 
 def blog_section(request):
-    sections = set(Blog.objects.exclude(section=None).values_list('section__name', flat=True))    # need a small fix here
-    items = [Section.objects.get(name=sec) for sec in sections]
+    items = Section.objects.filter(post_type='b')
     ctx = {
         "all_items": items,
         "type": "Section",
