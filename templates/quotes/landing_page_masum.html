@@ -642,7 +642,7 @@
             <a href="#" target="_blank"><h4 class="font-weight-bold">See All Health Insurance resources</h4></a>
         </div>
     </section>
-    <section id="testimonial" class="my-5">
+    <section id="testimonial" class="mt-5">
         <div class="container text-center text-light"><h2>We’ve helped millions shop for health insurance.</h2></div>
         <div class="testimonial_content container mx-auto mt-5 text-light">
             <div class="row">
@@ -683,7 +683,7 @@
 
         </div>
     </section>
-    <section id="question">
+    <section id="question" class="py-5">
         <div class="container text-center">
             <img src="{% static 'quotes/img/q.png' %}" alt="" class="question-img">
         </div>
@@ -745,11 +745,44 @@
         </div>
         <div class="container text-center mb-5">
             <h6>
-                <a href="">Learn more About Us <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                <a href="#" target="_blank" class="font-weight-bold">Learn more About Us <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
                                         <path fill="currentColor"
                                               d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
                                     </svg></a></h6>
         </div>
+    </section>
+    <section id="blog" class="bg-white py-5">
+    <div class="text-center container"> <h2 class="font-weight-bold"> Recently Written By Our Insurance Experts</h2></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mt-5">
+                <a href="">
+                    <div class="position-relative">
+                    <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
+                        <div class="position-absolute text-center blog-article">
+                            <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
+                            <h2 class="text-light text-center">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
+                        </div>
+                        </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-right">
+                    <a href="">
+                    <img src="{% static 'quotes/img/blog3.jpg' %}" alt="">
+                    <h4 class=" blog-question">Q: Will the Medicare Part B Premium Cost Increase in 2018?</h4>
+                        </a>
+                </div>
+                <div class="blog-right text-secondary">
+                    <a href="">
+                    <img src="{% static 'quotes/img/blog2.jpg' %}" alt="">
+                    <h4 class=" mt-4 blog-question">4 States Are Restoring the Individual Mandate to Buy Health Insurance</h4>
+                        </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
     </section>
 {% endblock %}
 

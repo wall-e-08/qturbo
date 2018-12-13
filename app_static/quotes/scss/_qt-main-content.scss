@@ -88,6 +88,16 @@ a:hover{
   margin-top: 140px;
   font-size: 18px;
 }
+#question{
+  background-color: #f8f8f8;
+}
 .question-img{
   width: 9.5rem;
+}
+.blog-article{
+  top: 60%;
+  transform: translateY(-40%);
+}
+.blog-question:hover{
+  color: #19b4fa;
 }
