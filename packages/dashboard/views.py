@@ -22,10 +22,14 @@ def index(request):
     return render(request, 'dashboard/index.html', {"data": data})
 
 
-def all_pages(request):
-    all_page = Page.objects.all()
-    return render(request, 'dashboard/all_pages.html', {
-        "pages": all_page,
+# All START ##
+def all_articles(request):
+    articles = Article.objects.all()
+    return render(request, 'dashboard/all_posts.html', {
+        "posts": articles,
+        "type": "Info",
+        "create_new_url": reverse('dashboard:create_article'),
+        "edit_url": "#",
     })
 
 
@@ -39,16 +43,14 @@ def all_blogs(request):
     })
 
 
-def all_articles(request):
-    articles = Article.objects.all()
-    return render(request, 'dashboard/all_posts.html', {
-        "posts": articles,
-        "type": "Info",
-        "create_new_url": reverse('dashboard:create_article'),
-        "edit_url": "#",
+def all_pages(request):
+    all_page = Page.objects.all()
+    return render(request, 'dashboard/all_pages.html', {
+        "pages": all_page,
     })
 
 
+# create START ##
 def create_article(request):
     """if request.method == 'POST':
         form = BlogForm(request.POST)
@@ -65,48 +67,6 @@ def create_article(request):
         "form": form,
     })"""
     return HttpResponse("Page will be updated later")
-
-
-def article_section(request):
-    items = Section.objects.filter(post_type='a')
-    ctx = {
-        "all_items": items,
-        "type": "Section",
-        "post_type": "Info",
-        "all_post_url": reverse('dashboard:all_articles'),
-        "add_new_url": "#",
-    }
-    return render(request, 'dashboard/category_section.html', ctx)
-
-
-def create_page(request):
-    print("dashboard ")
-    if request.method == 'POST':
-        print("post req")
-        form = PageForm(request.POST)
-        if form.is_valid():
-            print("form valid")
-            form.save()
-            return redirect('/')
-        else:
-            print("Form is not valid")
-    else:
-        print("not post req.. {}".format(request.method))
-
-    form = PageForm()
-    return render(request, 'dashboard/page_manage.html', {
-        "form": form,
-    })
-
-
-def view_page(request, page_id=None):
-    if page_id:
-        try:
-            page = Page.objects.get(id=page_id)
-            return render(request, 'dashboard/page_view.html', {"page": page})
-        except Page.DoesNotExist as err:
-            print("Page obj not found: {}".format(err))
-    return Http404()
 
 
 def create_blog(request):
@@ -129,13 +89,34 @@ def create_blog(request):
     })
 
 
-def blog_category(request):
-    items = Category.objects.all()
+def create_page(request):
+    print("dashboard ")
+    if request.method == 'POST':
+        print("post req")
+        form = PageForm(request.POST)
+        if form.is_valid():
+            print("form valid")
+            form.save()
+            return redirect('/')
+        else:
+            print("Form is not valid")
+    else:
+        print("not post req.. {}".format(request.method))
+
+    form = PageForm()
+    return render(request, 'dashboard/page_manage.html', {
+        "form": form,
+    })
+
+
+# section and category START ##
+def article_section(request):
+    items = Section.objects.filter(post_type='a')
     ctx = {
         "all_items": items,
-        "type": "Category",
-        "post_type": "Blog",
-        "all_post_url": reverse('dashboard:all_blogs'),
+        "type": "Section",
+        "post_type": "Info",
+        "all_post_url": reverse('dashboard:all_articles'),
         "add_new_url": "#",
     }
     return render(request, 'dashboard/category_section.html', ctx)
@@ -152,3 +133,24 @@ def blog_section(request):
     }
     return render(request, 'dashboard/category_section.html', ctx)
 
+
+def blog_category(request):
+    items = Category.objects.all()
+    ctx = {
+        "all_items": items,
+        "type": "Category",
+        "post_type": "Blog",
+        "all_post_url": reverse('dashboard:all_blogs'),
+        "add_new_url": "#",
+    }
+    return render(request, 'dashboard/category_section.html', ctx)
+
+
+def view_page(request, page_id=None):
+    if page_id:
+        try:
+            page = Page.objects.get(id=page_id)
+            return render(request, 'dashboard/page_view.html', {"page": page})
+        except Page.DoesNotExist as err:
+            print("Page obj not found: {}".format(err))
+    return Http404()
