@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,aAAa,CACT,WAAW,CCHG,GAAG,CDIjB,aAAa,CCHC,GAAG",
+"sources": ["../scss/dashboard.scss","../scss/_dsb-variable.scss"],
+"names": [],
+"file": "dashboard.css"
+}

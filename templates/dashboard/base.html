@@ -1,10 +1,25 @@
 {% extends 'root_base.html' %}
+{% load static %}
 
-{% block title %}
-    {{ block.super }} | Dashboard
-{% endblock title %}
+{% block title %}Dashboard{% endblock title %}
+
+{% block head_css %}
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+{% endblock %}
 
 {% block main_content %}
+    <div id="dsb-breadcrumb" style="margin-top: -3rem">
+        <nav style="background-color:#e9ecef">
+            <div class="container">
+                <ol class="breadcrumb">
+                    {% block breadcrumb %}
+                        <li class="breadcrumb-item active">Dashboard</li>
+                    {% endblock %}
+                </ol>
+            </div>
+        </nav>
+    </div>
+
     <div id="q-dashboard">
         {% block dashboard_content %}{% endblock %}
     </div>
