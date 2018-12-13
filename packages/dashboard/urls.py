@@ -12,6 +12,11 @@ urlpatterns = [
     path('page/create/', login_required(views.create_page), name='create-new-page'),
     path('<page_id>/view/', views.view_page, name='view-page'),
 
+    # article
+    path('info/', login_required(views.all_articles), name='all_articles'),
+    path('info/create/', login_required(views.create_article), name='create_article'),
+    path('info/section/', login_required(views.article_section), name='article_section'),  ######
+
     # blogs
     path('blog/', login_required(views.all_blogs), name='all_blogs'),
     path('blog/create/', login_required(views.create_blog), name='create_blog'),

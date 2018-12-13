@@ -3,7 +3,7 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_blogs' %}">Blog</a></li>
+    <li class="breadcrumb-item"><a href="{{ all_post_url }}">{{ post_type }}</a></li>
     <li class="breadcrumb-item active">{{ type }}</li>
 {% endblock %}
 
@@ -28,8 +28,8 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Blogs</th>
-                        <th scope="col">View Blogs</th>
+                        <th scope="col">{{ post_type }}s</th>
+                        <th scope="col">View</th>
                         <th scope="col">Delete</th>
                     </tr>
                 </thead>
@@ -37,7 +37,7 @@
                     <tr v-for="(item, i) in items">
                         <th scope="row">[[ i+1 ]]</th>
                         <td>[[ item.name ]]</td>
-                        <td>[[ item.blog_count ]]</td>
+                        <td>[[ item.post_count ]]</td>
                         <td><a :href="item.url">view</a></td>
                         <td><a href="#">delete</a></td>
                     </tr>
@@ -57,8 +57,14 @@
                         {% for item in all_items %}
                             {
                                 name: "{{ item }}",
-                                url: "{{ item.get_absolute_url }}",
-                                blog_count: "{{ item.blogs_count_under_this }}",
+                                {% if type == 'Category' %}
+                                    url: "{{ item.get_absolute_url }}",
+                                {% elif post_type == 'Article' and type == 'Section' %}
+                                    url: "{{ item.get_absolute_url_article }}",
+                                {% elif post_type == 'Blog' and type == 'Section' %}
+                                    url: "{{ item.get_absolute_url_blog }}",
+                                {% endif %}
+                                post_count: "{% if post_type == 'Blog' %}{{ item.blogs_count_under_this }}{% else %}{{ item.articles_count_under_this }}{% endif %}",
                             },{% endfor %}
                     ],
                 }

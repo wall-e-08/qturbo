@@ -65,12 +65,12 @@
                         item: {
                             name: "Article",
                             count: "{{ data.article.count }}",
-                            url: "#",
-                            new_url: "#",
+                            url: "{% url 'dashboard:all_articles' %}",
+                            new_url: "{% url 'dashboard:create_article' %}",
                         },
                         section: {
                             count: "{{ data.article.section_count }}",
-                            url: "#"
+                            url: "{% url 'dashboard:article_section' %}",
                         },
                     }, {
                         item: {

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.http import Http404, HttpResponse
 from .forms import PageForm, BlogForm
 from .models import Page
@@ -30,9 +30,53 @@ def all_pages(request):
 
 def all_blogs(request):
     blogs = Blog.objects.all()
-    return render(request, 'dashboard/all_blogs.html', {
-        "blogs": blogs,
+    return render(request, 'dashboard/all_posts.html', {
+        "posts": blogs,
+        "type": "Blog",
+        "create_new_url": reverse('dashboard:create_blog'),
+        "edit_url": "#",
     })
+
+
+def all_articles(request):
+    articles = Article.objects.all()
+    return render(request, 'dashboard/all_posts.html', {
+        "posts": articles,
+        "type": "Article",
+        "create_new_url": reverse('dashboard:create_article'),
+        "edit_url": "#",
+    })
+
+
+def create_article(request):
+    """if request.method == 'POST':
+        form = BlogForm(request.POST)
+        if form.is_valid():
+            blog = form.save()
+            return redirect(blog.get_absolute_url())
+        else:
+            print("create_blog  Form not valid. errors: {}".format(form.errors))
+    else:
+        print("create_blog  not post req.. {}".format(request.method))
+
+    form = PageForm()
+    return render(request, 'dashboard/create_blog.html', {
+        "form": form,
+    })"""
+    return HttpResponse("Page will be updated later")
+
+
+def article_section(request):
+    sections = set(Article.objects.exclude(section=None).values_list('section__name', flat=True))  # need a small fix here
+    items = [Section.objects.get(name=sec) for sec in sections]
+    ctx = {
+        "all_items": items,
+        "type": "Section",
+        "post_type": "Article",
+        "all_post_url": reverse('dashboard:all_articles'),
+        "add_new_url": "#",
+    }
+    return render(request, 'dashboard/category_section.html', ctx)
 
 
 def create_page(request):
@@ -90,9 +134,11 @@ def blog_category(request):
     ctx = {
         "all_items": items,
         "type": "Category",
+        "post_type": "Blog",
+        "all_post_url": reverse('dashboard:all_blogs'),
         "add_new_url": "#",
     }
-    return render(request, 'dashboard/blog-category_section.html', ctx)
+    return render(request, 'dashboard/category_section.html', ctx)
 
 
 def blog_section(request):
@@ -101,7 +147,9 @@ def blog_section(request):
     ctx = {
         "all_items": items,
         "type": "Section",
+        "post_type": "Blog",
+        "all_post_url": reverse('dashboard:all_blogs'),
         "add_new_url": "#",
     }
-    return render(request, 'dashboard/blog-category_section.html', ctx)
+    return render(request, 'dashboard/category_section.html', ctx)
 

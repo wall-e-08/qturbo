@@ -157,14 +157,6 @@ class Category(models.Model):
                     break
         super(Category, self).save(*args, **kwargs)  # saving the slug
 
-    # def get_absolute_url(self):
-    #     return reverse(
-    #         'main_app:each_category',
-    #         args=[
-    #             str(self.slug)
-    #         ]
-    #     )
-
 
 class Categorize(models.Model):
     blog = models.ForeignKey(
@@ -224,15 +216,13 @@ class Section(models.Model):
                     break
         super(Section, self).save(*args, **kwargs)  # saving the slug
 
-    # def get_absolute_url(self):
-    #     return reverse(
-    #         'main_app:each_category',
-    #         args=[
-    #             str(self.slug)
-    #         ]
-    #     )
+    def get_absolute_url_article(self):
+        return reverse(
+            'article:sectionized_article',
+            args=[str(self.slug),]
+        )
 
-    def get_absolute_url(self):
+    def get_absolute_url_blog(self):
         return reverse(
             'blog:sectionized_blog',
             args=[str(self.slug),]
@@ -240,6 +230,9 @@ class Section(models.Model):
 
     def blogs_count_under_this(self):
         return len(Blog.objects.filter(section=self))
+
+    def articles_count_under_this(self):
+        return len(Article.objects.filter(section=self))
 
 
 class Profile(models.Model):

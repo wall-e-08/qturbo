@@ -46,7 +46,7 @@ def each_blog(request, slug):
     return render(request, 'post/blog/each-blog.html', ctx)
 
 
-def categorized_blog(request, slug):
+def sectionized_or_categorized_blog(request, slug):
     post_limit = 9
     try:
         cat_f_all = Category.objects.get(slug=slug)
