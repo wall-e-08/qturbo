@@ -206,6 +206,7 @@ const router = new VueRouter({
                     },
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         console.log("Welcome to the jungle!");
+                        console.log("Redirect URL is: "+ redirect_url)
                         axios({
                             method: 'post',
                             url: [[redirect_url]],
@@ -214,12 +215,19 @@ const router = new VueRouter({
                                 'Content-Type': 'application/json',
                             },
                             data: {
-                                'test': redirect_url
-
+                                'zip_code': this.zip_code,
+                                'dob': this.dob,
+                                'gender': this.gender,
+                                'tobacco': this.tobacco
                             },
                         })
                         .then(function(response){
-                            console.log("Response: "+ response.toString()); // TODO DEBUG
+                            console.log("Response: "+ response.status); // TODO DEBUG
+                            if (response.status === 200) {
+                                console.log("Redirecting");
+                                window.location = redirect_url;
+                            }
+
                         })
                     }
                 },

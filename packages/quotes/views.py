@@ -111,31 +111,62 @@ def plan_quote(request, ins_type):
     :param ins_type: stm/lim/anc
     :return: Django HttpResponse Object
     """
-    quote_request_form_data = {}
+    '''Testing'''
+    post_data_zip_code = request.POST.get("zip_code", "")
+    print("post_data_zip_code: ", post_data_zip_code)
+
+    """
+    We see that post data is not working. We are writing some 
+    dummy variables to test the view functions. Then we shall
+    write vue getter methods to pass data.
+    """
+    # 'quote_request_form_data': {'Payment_Option': '1', 'applicant_is_child': False, 'Tobacco': 'N',
+    #                             'Dependents': [], 'Ins_Type': 'stm', 'Coverage_Days': None, 'First_Name': '',
+    #                             'Children_Count': 0, 'Applicant_Age': 40, 'Address1': '',
+    #                             'Applicant_DOB': '10-18-1978', 'Spouse_Age': None, 'Include_Spouse': 'No',
+    #                             'quote_request_timestamp': 1541930336, 'Email': '', 'Effective_Date': '11-12-2018',
+    #                             'Phone': '', 'quote_store_key': '24867-10-18-1978-Male-1-11-12-2018-N-stm',
+    #                             'Zip_Code': '24867', 'Spouse_DOB': None, 'State': 'WV', 'Spouse_Gender': '',
+    #                             'Applicant_Gender': 'Male', 'Last_Name': ''}
+    #
+
+    quote_request_form_data = {
+        'Zip_Code' : '44102',
+        'Applicant_DOB' : '10-18-1992',
+        'Applicant_Gender' : 'Male',
+        'Tobacco' : 'N'
+    }
+
+
+
+
+    # quote_request_form_data = {} # TODO
     print("Insurance type is {0}".format(ins_type))
     # quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
-    if quote_request_form_data.get('applicant_is_child', True):
-        request.session['quote_request_formset_data'] = []
+    # if quote_request_form_data.get('applicant_is_child', True): # TODO
+    #     request.session['quote_request_formset_data'] = []
 
-    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-        quote_request_form_data = {}
-        request.session['quote_request_form_data'] = {}
-        request.session['quote_request_formset_data'] = []
-        request.session['quote_request_response_data'] = {}
+    # TODO
+    # if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+    #     quote_request_form_data = {}
+    #     request.session['quote_request_form_data'] = {}
+    #     request.session['quote_request_formset_data'] = []
+    #     request.session['quote_request_response_data'] = {}
 
     # if not quote_request_form_data:
     # WE HAVE TO DO SOMETHING
     #     return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    quote_request_form_data['Ins_Type'] = ins_type
-    logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
+    # TODO
+    # quote_request_form_data['Ins_Type'] = ins_type
+    # logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
     d = {'monthly_plans': [], 'addon_plans': []}
     request.session['quote_request_response_data'] = d
     request.session.modified = True
-    logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
+    # logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
     """ Changing quote store key regarding insurance type  """
     # if ins_type == "stm":
