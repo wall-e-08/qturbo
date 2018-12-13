@@ -100,6 +100,25 @@ else:
     }
 
 
+###################
+# CELERY SETTINGS #
+###################
+
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_TASK_ROUTES = {
+    'quotes.tasks.StmPlanTask': {'queue': 'stm'},
+    'quotes.tasks.LimPlanTask': {'queue': 'lim'},
+    'quotes.tasks.AncPlanTask': {'queue': 'anc'},
+    'quotes.tasks.EsignCheckBeat': {'queue': 'esign_check'},
+    'quotes.tasks.EsignCheckWorker': {'queue': 'esign_check'},
+
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -170,6 +189,85 @@ DJRICHTEXTFIELD_CONFIG = {
 # post (blog & article) configs
 BLOG_SENIOR_CATEGORY_SLUG = 'medicare'
 BLOG_FOR_ALL_CATEGORY_SLUG = 'health-insurance'
+
+
+LOGGING = {
+    'version': 1,
+
+    'disable_existing_loggers': False,
+
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+
+    'formatters': {
+        'simple': {
+            'format': ('%(asctime)s - %(name)s - '
+                       '%(levelname)s - %(message)s'),
+        },
+        'file': {
+            'format': '%(name)s::%(asctime)s - %(levelname)s: %(message)s',
+        },
+        'sysfmt': {
+            'format': '%(hostname)s %(name)s - %(levelname)s: %(message)s',
+        },
+    },
+
+
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'file': {
+            'level': ('DEBUG' if DEBUG else 'WARNING'),
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/quote_turbo.log',
+            'formatter': 'file',
+        },
+        'syslog': {
+          'level': 'DEBUG',
+          'class': 'logging.handlers.SysLogHandler',
+          'formatter': 'sysfmt',
+          'address': ('localhost', 514)
+        }
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+        },
+        'main': {
+            'handlers': ['file'],
+            'level': ('INFO' if DEBUG else 'WARNING'),
+            'propagate': True,
+        },
+        'quote_turbo': {
+            'handlers': ['syslog', 'console'],
+            'level': ('INFO' if DEBUG else 'WARNING'),
+            'propagate': True,
+        },
+    }
+
+
+}
+
 
 try:
     from .local_settings import *

@@ -119,29 +119,33 @@ def plan_quote(request, ins_type):
     We see that post data is not working. We are writing some 
     dummy variables to test the view functions. Then we shall
     write vue getter methods to pass data.
+    
+    TODO: We have to create a quote_store_key
     """
-    # 'quote_request_form_data': {'Payment_Option': '1', 'applicant_is_child': False, 'Tobacco': 'N',
-    #                             'Dependents': [], 'Ins_Type': 'stm', 'Coverage_Days': None, 'First_Name': '',
-    #                             'Children_Count': 0, 'Applicant_Age': 40, 'Address1': '',
-    #                             'Applicant_DOB': '10-18-1978', 'Spouse_Age': None, 'Include_Spouse': 'No',
-    #                             'quote_request_timestamp': 1541930336, 'Email': '', 'Effective_Date': '11-12-2018',
-    #                             'Phone': '', 'quote_store_key': '24867-10-18-1978-Male-1-11-12-2018-N-stm',
-    #                             'Zip_Code': '24867', 'Spouse_DOB': None, 'State': 'WV', 'Spouse_Gender': '',
-    #                             'Applicant_Gender': 'Male', 'Last_Name': ''}
-    #
+    quote_request_form_data = {'Payment_Option': '1', 'applicant_is_child': False, 'Tobacco': 'N',
+                               'Dependents': [], 'Ins_Type': 'stm', 'Coverage_Days': None, 'First_Name': '',
+                               'Children_Count': 0, 'Applicant_Age': 40, 'Address1': '',
+                               'Applicant_DOB': '10-18-1978', 'Spouse_Age': None, 'Include_Spouse': 'No',
+                               'quote_request_timestamp': 1541930336, 'Email': '', 'Effective_Date': '12-15-2018',
+                               'Phone': '', 'quote_store_key': '24867-10-18-1978-Male-1-11-12-2018-N-stm',
+                               'Zip_Code': '24867', 'Spouse_DOB': None, 'State': 'WV', 'Spouse_Gender': '',
+                               'Applicant_Gender': 'Male', 'Last_Name': ''}
 
-    quote_request_form_data = {
-        'Zip_Code' : '44102',
-        'Applicant_DOB' : '10-18-1992',
-        'Applicant_Gender' : 'Male',
-        'Tobacco' : 'N'
-    }
+
+    # import random
+    # year = random.choice(range(1950, 2001))
+    # quote_request_form_data = {
+    #     'Zip_Code' : '44102',
+    #     'Applicant_DOB' : '10-18-'+(str(year)),
+    #     'Applicant_Gender' : 'Male',
+    #     'Tobacco' : 'N',
+    #     'quote_store_key': '44102-10-18-'+(str(year))+('-1992-Male-1-11-12-2018-N-stm')
+    # }
 
 
 
 
     # quote_request_form_data = {} # TODO
-    print("Insurance type is {0}".format(ins_type))
     # quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -160,8 +164,8 @@ def plan_quote(request, ins_type):
     #     return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
     # TODO
-    # quote_request_form_data['Ins_Type'] = ins_type
-    # logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
+    quote_request_form_data['Ins_Type'] = ins_type
+    logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
     d = {'monthly_plans': [], 'addon_plans': []}
     request.session['quote_request_response_data'] = d
@@ -169,25 +173,27 @@ def plan_quote(request, ins_type):
     # logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
     """ Changing quote store key regarding insurance type  """
-    # if ins_type == "stm":
-    #     quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
+    if ins_type == "stm":
+        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
     # elif ins_type == "lim":
     #     quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
     # elif ins_type == "anc":
     #     quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
 
     """ Calling celery for populating quote list """
-    # redis_key = "{0}:{1}".format(request.session._get_session_key(),
-    #                              quote_request_form_data['quote_store_key'])
-    logger.info("465: Calling celery task for ins_type: {0}".format(ins_type))
-    # logger.info("redis_key: {0}".format(redis_key))
-    #
-    # logger.info('\n\nquote_request_form_data: {0}'.format(quote_request_form_data))
-    # if not redis_conn.exists(redis_key):
-    #     redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
-    #
-    #     if ins_type == 'stm':
-    #         StmPlanTask.delay(request.session.session_key, quote_request_form_data)
+    redis_key = "{0}:{1}".format(request.session._get_session_key(),
+                                 quote_request_form_data['quote_store_key'])
+    print("465: Calling celery task for ins_type: {0}".format(ins_type))
+    print("redis_key: {0}".format(redis_key))
+
+    print('quote_request_form_data: \n------------------------\n{0}'.format(quote_request_form_data))
+    if not redis_conn.exists(redis_key):
+        print("Redis connection does not exist for redis key")
+        redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+
+        if ins_type == 'stm':
+            print("Insurance type is {0}".format(ins_type))
+            StmPlanTask.delay(request.session.session_key, quote_request_form_data)
         # elif ins_type == 'lim':
         #     LimPlanTask.delay(request.session.session_key, quote_request_form_data)
         # elif ins_type == 'anc':
