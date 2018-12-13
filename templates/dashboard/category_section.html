@@ -20,7 +20,7 @@
     <script type="text/x-template" id="dsb-category-section-template">
         <div class="col-12">
             <div class="d-flex justify-content-between">
-                <h1>{{ type }}s:</h1>
+                <h1>{{ post_type }}::{{ type }}s:</h1>
                 <div><a href="{{ add_new_url }}" class="btn btn-success">+ Add new {{ type }}</a></div>
             </div>
             <table class="table table-light table-bordered mt-5 text-center">
@@ -59,7 +59,7 @@
                                 name: "{{ item }}",
                                 {% if type == 'Category' %}
                                     url: "{{ item.get_absolute_url }}",
-                                {% elif post_type == 'Article' and type == 'Section' %}
+                                {% elif post_type == 'Info' and type == 'Section' %}
                                     url: "{{ item.get_absolute_url_article }}",
                                 {% elif post_type == 'Blog' and type == 'Section' %}
                                     url: "{{ item.get_absolute_url_blog }}",

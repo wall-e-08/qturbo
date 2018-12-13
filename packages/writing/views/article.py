@@ -9,3 +9,8 @@ def all_articles(request):
 def sectionized_article(request, slug):
     print(slug)
     return HttpResponse("sectionized_article page")
+
+
+def each_article(request, slug):
+    print(slug)
+    return HttpResponse("each_article page")

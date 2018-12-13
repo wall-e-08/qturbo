@@ -21,6 +21,7 @@ def index(request):
     }
     return render(request, 'dashboard/index.html', {"data": data})
 
+
 def all_pages(request):
     all_page = Page.objects.all()
     return render(request, 'dashboard/all_pages.html', {
@@ -42,7 +43,7 @@ def all_articles(request):
     articles = Article.objects.all()
     return render(request, 'dashboard/all_posts.html', {
         "posts": articles,
-        "type": "Article",
+        "type": "Info",
         "create_new_url": reverse('dashboard:create_article'),
         "edit_url": "#",
     })
@@ -72,7 +73,7 @@ def article_section(request):
     ctx = {
         "all_items": items,
         "type": "Section",
-        "post_type": "Article",
+        "post_type": "Info",
         "all_post_url": reverse('dashboard:all_articles'),
         "add_new_url": "#",
     }

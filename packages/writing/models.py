@@ -38,13 +38,6 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
     )
 
-    section = models.ForeignKey(
-        'writing.Section',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-    )
-
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -77,14 +70,6 @@ class Post(models.Model):
     # # making that function object's boolean value is true, so the admin panel's can show this as a boolean
     # is_img_exists.boolean = True
 
-    def get_absolute_url(self):
-        return reverse(
-            'blog:each_blog',
-            args=[
-                str(self.slug)
-            ]
-        )
-
 
 class Article(Post):
     post_type = models.CharField(
@@ -93,6 +78,20 @@ class Article(Post):
         editable=False
     )
 
+    section = models.ForeignKey(
+        'writing.Section',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'post_type': 'a'}
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+            'article:each_article',
+            args=[str(self.slug),]
+        )
+
 
 class Blog(Post):
     post_type = models.CharField(
@@ -100,6 +99,20 @@ class Blog(Post):
         default='b',
         editable=False
     )
+
+    section = models.ForeignKey(
+        'writing.Section',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'post_type': 'b'}
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+            'blog:each_blog',
+            args=[str(self.slug),]
+        )
 
     def get_categories(self):
         return self.categorize_set.all()  # <model_name lowercase><underscore>set: somemodelname_set
