@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, reverse
 from django.http import Http404, JsonResponse
-from writing.models import Blog, Category
+from writing.models import Blog, Category, Section
 from django.conf import settings
 
 
@@ -52,6 +52,19 @@ def categorized_blog(request, slug):
         cat_f_all = Category.objects.get(slug=slug)
         blogs = Blog.objects.filter(categorize__category=cat_f_all).order_by('-created_time')[:post_limit]
     except Category.DoesNotExist:
+        raise Http404('No Blogs found!!')
+    ctx = {
+        "blogs": blogs,
+    }
+    return render(request, 'post/blog/categorized-blogs.html', ctx)
+
+
+def sectionized_blog(request, slug):
+    post_limit = 9
+    try:
+        section = Section.objects.get(slug=slug)
+        blogs = Blog.objects.filter(section=section).order_by('-created_time')[:post_limit]
+    except Section.DoesNotExist:
         raise Http404('No Blogs found!!')
     ctx = {
         "blogs": blogs,

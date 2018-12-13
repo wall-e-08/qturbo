@@ -41,6 +41,12 @@
 
 {% endblock %}
 
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_blogs' %}">Blog</a></li>
+    <li class="breadcrumb-item active">Create or Edit Blog</li>
+{% endblock %}
+
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
