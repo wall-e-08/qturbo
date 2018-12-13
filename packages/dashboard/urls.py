@@ -22,4 +22,7 @@ urlpatterns = [
     path('blog/create/', login_required(views.create_blog), name='create_blog'),
     path('blog/category/', login_required(views.blog_category), name='blog_category'),
     path('blog/section/', login_required(views.blog_section), name='blog_section'),
+
+    # ajax
+    path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec')
 ]
