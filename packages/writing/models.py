@@ -1,4 +1,4 @@
-from .utils import *
+from .utils import (POST_TYPES, STATUS_CHOICES, get_image_path, custom_slugify)
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
@@ -179,6 +179,11 @@ class Categorize(models.Model):
 
 class Section(models.Model):
     name = models.CharField(max_length=100)
+
+    post_type = models.CharField(
+        max_length=1,
+        choices=POST_TYPES,
+    )
 
     description = models.CharField(
         max_length=1000,
