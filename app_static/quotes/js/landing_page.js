@@ -1,5 +1,7 @@
 'use strict';
-
+var csrftoken = Cookies.get('csrftoken');
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 const v_templates = {
     children: '<router-view></router-view>', // for children templates
     zip_code: '#zipcode-template',
@@ -201,6 +203,24 @@ const router = new VueRouter({
                         } else if(holder_type === this.holder_types_enum.child){
                             this.dependents.splice(key, 1)
                         }
+                    },
+                    redirect_to_plans: function(redirect_url, csrf_token) {
+                        console.log("Welcome to the jungle!");
+                        axios({
+                            method: 'post',
+                            url: [[redirect_url]],
+                            headers: {
+                                'X-CSRFToken': csrf_token,
+                                'Content-Type': 'application/json',
+                            },
+                            data: {
+                                'test': redirect_url
+
+                            },
+                        })
+                        .then(function(response){
+                            console.log("Response: "+ response.toString()); // TODO DEBUG
+                        })
                     }
                 },
                 created() {

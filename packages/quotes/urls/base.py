@@ -6,4 +6,5 @@ app_name = 'quotes'
 urlpatterns = [
     path('', views.home, name='home'),
     path('health-insurance/', include('quotes.urls.survey')),
+    path('health-insurance-quote/', include('quotes.urls.plans'))
 ]
