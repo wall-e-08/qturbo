@@ -1,0 +1,975 @@
+{% extends 'quotes/base.html' %}
+{% load static %}
+
+{% block main_content %}
+    <section>
+        <div class="container">
+            {#<router-link :to="{ name: 'survey-member'}" class="btn btn-danger">survey-member</router-link>#}
+            <div class="row swap-div-mobile">
+                <div class="col-lg-8">
+                    <router-view></router-view>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="">
+                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
+                            <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>
+                        </div>
+                    </div>
+                    <hr class="mb-5 d-block d-lg-none">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container mb-4">
+        <h5 class="text-secondary">We help you compare quotes from health insurance companies listed on
+            <a href="#" class="text-secondary">
+                <u> HealthCare.gov</u>
+            </a>
+            , plus many more.
+        </h5>
+    </div>
+    <section id="product_logo" class="d-none d-lg-block">
+        <div class="container">
+            <div class="row">
+                <div class=" col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h6>Medicare Plans</h6>
+
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h5>Obama Care</h5>
+
+                        </a>
+                    </div>
+                </div>
+                <div class=" col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h5>Small Business Insurance</h5>
+
+                        </a>
+                    </div>
+                </div>
+                <div class=" col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h5>Short Term Insurance</h5>
+
+                        </a>
+                    </div>
+                </div>
+                <div class=" col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h5>Health Insurance</h5>
+
+                        </a>
+                    </div>
+                </div>
+                <div class=" col-sm-6 col-md-4 col-lg-2 ">
+                    <div class="text-center py-5">
+                        <a href="#" class="product_item">
+
+                            <svg class="mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                            </svg>
+
+                            <h5>Medical Supplement</h5>
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <section id="product_logo_sm" class="py-5 mt-1 d-block d-lg-none">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 ">
+                    <div class="">
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary py-2 hover_color">
+
+                                <div class="p-2 hover_color" style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2 font-weight-bold text-dark hover_color">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark hover_color">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary border-top-0 py-2">
+
+                                <div class="p-2 " style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2  font-weight-bold text-dark">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary border-top-0 py-2">
+
+                                <div class="p-2 " style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2 font-weight-bold text-dark">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary border-top-0 py-2">
+
+                                <div class="p-2 " style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2  font-weight-bold text-dark">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary border-top-0 py-2 ">
+
+                                <div class="p-2 " style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2  font-weight-bold text-dark">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+                        <a href="#" target="_blank">
+                            <div class="d-flex  border border-secondary border-top-0 py-2">
+
+                                <div class="p-2 " style="color: #19b4fa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                        <path fill="currentColor"
+                                              d="M544 96H416V32c0-17.7-14.3-32-32-32H192c-17.7 0-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32v368c0 8.8 7.2 16 16 16h544c8.8 0 16-7.2 16-16V128c0-17.7-14.3-32-32-32zM160 436c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm160 128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm16-170c0 3.3-2.7 6-6 6h-26v26c0 3.3-2.7 6-6 6h-20c-3.3 0-6-2.7-6-6v-26h-26c-3.3 0-6-2.7-6-6v-20c0-3.3 2.7-6 6-6h26V86c0-3.3 2.7-6 6-6h20c3.3 0 6 2.7 6 6v26h26c3.3 0 6 2.7 6 6v20zm144 298c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40zm0-128c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40z"></path>
+                                    </svg>
+                                </div>
+                                <div class="p-2  font-weight-bold text-dark">Medicare Plans</div>
+                                <div class="ml-auto p-2  text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg>
+                                </div>
+
+                            </div>
+                        </a>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <section id="about-hi" class="container-fluid py-5">
+        <div class="py-3">
+            <h2 class=" text-center font-weight-bold"> It’s everything about health insurance in one place </h2>
+            <h4 class="hi-subtitle text-center">Think of
+                <span class="font-weight-bold"> HealthCare.com </span>
+                like the Kayak.com of healthcare.
+            </h4>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-4 offset-md-2">
+                <div class="hi-feature ">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 align-items-sm-center">
+                    <div class=" ">
+                        <h3 class="hi-title"> Guided Online Experience</h3>
+                        <p class="">We know not many people are healthcare experts, so we provide explanations, product
+                            guides,
+                            and advice along the way.</p>
+                    </div>
+                </div>
+                <div class="hi-feature pt-3">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2">
+                    <div class="">
+                        <h3 class="hi-title">Compare 13,000+ Insurance Plans and Save</h3>
+                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
+                            and advice along the way.</p>
+                    </div>
+                </div>
+                <div class="hi-feature pt-3">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2">
+                    <div class="">
+                        <h3 class="hi-title">Personalized Recommendations</h3>
+                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
+                            and advice along the way.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <img src="{% static 'quotes/img/b1.png' %}" alt="" class="rounded feature-img">
+            </div>
+
+        </div>
+    </section>
+    <section id="statistics">
+        <div class="container">
+            <div class="row">
+                <div class=" col-sm-6 col-md-4 py-4 text-center">
+                    <h2>3 million+</h2>
+                    <h5>People we’ve helped shop for insurance</h5>
+                </div>
+                <div class="col-sm-6 col-md-4 py-4 text-center">
+                    <h2>4,624</h2>
+                    <h5>Insurance Plans Available</h5>
+                </div>
+                <div class="col-md-4 py-4 text-center d-none d-md-block d-lg-block">
+                    <h2>3 minutes</h2>
+                    <h5>To get a quote</h5>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="info" class="container my-5">
+        <h2 class="mt-5  text-center font-weight-bold">All The Health Insurance Resources You’ll Ever Need</h2>
+        <h4 class="mt-5  text-center  text-secondary d-block d-md-none d-lg-none">Health insurance doesn't have to be
+            complicated</h4>
+        <div id="vue-tab" class="d-flex justify-content-between my-5">
+            <b-tabs>
+                <div class="">
+                    <b-tab title="Obamacare" active class="title-center">
+                        <div class="row ">
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Health Insurance" class="text-warning">
+                        <div class="row ">
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Medicare">
+                        <div class="row ">
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Medicare Supplement">
+                        <div class="row ">
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Small Business">
+                        <div class="row ">
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="font-weight-bold">
+                                    <div class="card mt-4">
+                                        <img class="card-img-top d-none d-md-block"
+                                             src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-dark font-weight-bold">Open Enrollment 2019: How
+                                                to Navigate Health Insurance for Next Year</h5>
+                                            <p class="card-text text-muted font-weight-normal">You can join a health
+                                                insurance plan each year between November 1 and December 15.</p>
+                                            Read More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </b-tab>
+                </div>
+            </b-tabs>
+        </div>
+        <div class="text-center font">
+            <a href="#" target="_blank"><h4 class="font-weight-bold">See All Health Insurance resources</h4></a>
+        </div>
+    </section>
+    <section id="testimonial" class="mt-5">
+        <div class="container text-center text-light"><h2>We’ve helped millions shop for health insurance.</h2></div>
+        <div class="testimonial_content container mx-auto mt-5 text-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="testimonial-1 p-5 mt-5">
+                        <h2 class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                      d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
+                            </svg>
+                        </h2>
+                        <div class="testimonial-text text-md-left my-3 text-sm-center">...very helpful fully explaining
+                            the different plans. She was very detailed in her explanations and went the extra mile in
+                            researching the health plan that fit our medical and prescription needs.
+                        </div>
+                        <div class="testimonial-sign text-left"><h4>Anibal</h4></div>
+                        <div class="testimonial-location text-left d-none d-md-block">Florida</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="testimonial-2 p-5 d-none d-md-block">
+                        <h2 class="text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor"
+                                      d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
+                            </svg>
+                        </h2>
+                        <div class="testimonial-text my-3">Barry, Marc &amp; Wayne made this experience a great one.
+                            This is something I really needed but didn't know which way to turn. These guys are awesome.
+                            Thank you HealthCare.com.
+                        </div>
+                        <div class="testimonial-sign"><h4>Sean</h4></div>
+                        <div class="testimonial-location">Kentucky</div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+    <section id="question" class="py-5">
+        <div class="container text-center">
+            <img src="{% static 'quotes/img/q.png' %}" alt="" class="question-img">
+        </div>
+        <h2 class="text-center">Top FAQs about HealthCare.com</h2>
+        <div class="container text-center my-5">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div class="card-header text-left" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link " type="button" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne"> <span> + -</span>
+                                Are the price on your site correct?
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                         data-parent="#accordionExample">
+                        <div class="card-body">
+                            We have worked hard to establish relationships with the best data sources around. Rates and plans come from the insurance companies themselves,
+                            who have approved the plan inventory we display before we publish them. That said, you’ll need to confirm the final pricing with whichever
+                            provider you choose to buy from. Keep in mind that the rates are dependent on the accuracy of the quote information you provide them.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header text-left" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                                    data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><span> + -</span>
+                                Why should i buy from Quote Turbo?
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header text-left" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                                    data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span> + -</span>
+                                Collapsible Group Item #3
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
+                         data-parent="#accordionExample">
+                        <div class="card-body">
+                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container text-center mb-5">
+            <h6>
+                <a href="#" target="_blank" class="font-weight-bold">Learn more About Us <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                        <path fill="currentColor"
+                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                    </svg></a></h6>
+        </div>
+    </section>
+    <section id="blog" class="bg-white py-5">
+    <div class="text-center container"> <h2 class="font-weight-bold"> Recently Written By Our Insurance Experts</h2></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mt-5">
+                <a href="">
+                    <div class="position-relative">
+                    <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
+                        <div class="position-absolute text-center blog-article">
+                            <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
+                            <h2 class="text-light text-center">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
+                        </div>
+                        </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-right">
+                    <a href="">
+                    <img src="{% static 'quotes/img/blog3.jpg' %}" alt="">
+                    <h4 class=" blog-question">Q: Will the Medicare Part B Premium Cost Increase in 2018?</h4>
+                        </a>
+                </div>
+                <div class="blog-right text-secondary">
+                    <a href="">
+                    <img src="{% static 'quotes/img/blog2.jpg' %}" alt="">
+                    <h4 class=" mt-4 blog-question">4 States Are Restoring the Individual Mandate to Buy Health Insurance</h4>
+                        </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    </section>
+{% endblock %}
+
+
+{% block vue_templates %}
+    {# REMEMBER:: no multiple tags for vue component!! #}
+    <script type="text/x-template" id="root-template">
+        <div>
+            <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>
+                That’s Right for You
+            </h1>
+            <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000
+                <br>
+                Insurance Plans
+            </h2>
+            <div id="find-plans" class="mb-5">
+                <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
+                      style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
+                    <div class="row">
+                        <div class="col-md-4 border-md-right border-0 border-tertiary">
+                            <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking
+                                    For:
+                                </div>
+                                <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                <label for="home-zip-code"
+                                       class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip
+                                    Code
+                                </label>
+                                <div class="position-relative">
+                                    <input type="text" id="home-zip-code"
+                                           class="font-md border-0 outline-0 w-100"
+                                           :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
+                                           v-on:keypress="validate_zip($event)">
+                                    <div class="position-absolute vertical-center" style="left:99%"
+                                         v-html="current_marker"></div>
+                                </div>
+                                <div class="home-zc-err"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="h-100 rounded" style="min-height: 50px;">
+                                <button type="submit"
+                                        class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">
+                                    Find plans
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="survey-card-template">
+        <div class="card py-3 my-3 px-4 qt-survey">
+            <div class="d-flex align-items-center qt-survey-who">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="15" height="15" viewBox="0 0 24 24">
+                    <path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"></path>
+                </svg>
+                <span class="font-md pl-2 font-md font-wight-600 text-capitalize">[[ survey_type ]]</span>
+            </div>
+            <p>What’s [[ txt_whos() ]] date of birth?
+                <span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                      v-if="survey_type == 'me'">?</span>
+            </p>
+            <input type="text" placeholder="mm/dd/yyyy" v-model="dob" :name="'dob-'+survey_type+index"
+                   @keypress="prevent_NaN_input($event)" @keyup="auto_slash_insert"
+                   class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+
+            <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
+                <!--show only if current stage is gender or tobacco-->
+                <p>What’s [[ txt_whos() ]] gender?
+                    <span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                          v-if="survey_type == 'me'">?</span>
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m"
+                           :id="'gender_m-'+survey_type+index" v-model="gender">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
+
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f"
+                           :id="'gender_f-'+survey_type+index" v-model="gender">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female
+                    </label>
+                </div>
+            </div>
+
+            <div class="qt-survey-tobacco my-3" v-if="current_stage === 'tobacco'">
+                <p>
+                    <span v-if="survey_type == 'me'">Do you</span>
+                    <span v-else>Does your [[ survey_type ]]</span>
+                    use tobacco products?
+                    <span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                          v-if="survey_type == 'me'">?</span>
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
+                           value="true" :id="'tobacco_y-'+survey_type+index" v-model="tobacco">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_y-'+survey_type+index">Yes</label>
+
+                    <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
+                           value="false" :id="'tobacco_n-'+survey_type+index" v-model="tobacco">
+                    <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_n-'+survey_type+index">No</label>
+                </div>
+            </div>
+            <div v-if="survey_type !== 'me'"
+                 class="position-absolute cur-p font-md font-wight-600 remove-card-X" {% comment %}@click="remove_survey_card(holder_types_enum.child, index)"{% endcomment %}>
+                X
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="survey-template">
+        <div>
+            <router-link :to="{ name: 'root'}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                </svg>
+                Back
+            </router-link>
+            <div class="card text-center mt-2">
+                <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
+                <div class="card-body">
+                    <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
+                    <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
+                        this new coverage.</p>
+                    <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
+                             viewBox="0 0 24 24">
+                            <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+                        </svg>
+                    </a>
+                    <br>
+                    <div class="row text-left">
+                        <div class="col-6 offset-3">
+                            <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
+                                         :prop_min_age="21"></survey-card>
+
+                            <template>
+                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
+                                             :prop_min_age="21"></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_spouse"
+                                     v-else>
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                +
+                                            </div>
+                                            <span class="pl-2">Add a Spouse</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template>
+                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                             :key="index" :index="index" :survey_type="holder_types_enum.child"
+                                             :prop_max_age="99" :prop_min_age="21"></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
+                                     v-if="dependents.length <= max_dependents">
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                +
+                                            </div>
+                                            <span class="pl-2">Add a Dependent</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <a href="https://www.nationshealthinsurance.com/health-insurance-quote/"
+                               class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600">Check Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script src="{% static 'quotes/js/landing_page.js' %}"></script>
+{% endblock %}
