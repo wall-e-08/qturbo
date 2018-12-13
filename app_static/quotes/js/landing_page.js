@@ -1,5 +1,4 @@
 'use strict';
-var csrftoken = Cookies.get('csrftoken');
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 const v_templates = {

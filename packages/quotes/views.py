@@ -1,6 +1,6 @@
 import json
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpRequest
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -122,25 +122,42 @@ def plan_quote(request, ins_type):
     
     TODO: We have to create a quote_store_key
     """
-    quote_request_form_data = {'Payment_Option': '1', 'applicant_is_child': False, 'Tobacco': 'N',
-                               'Dependents': [], 'Ins_Type': 'stm', 'Coverage_Days': None, 'First_Name': '',
-                               'Children_Count': 0, 'Applicant_Age': 40, 'Address1': '',
-                               'Applicant_DOB': '10-18-1978', 'Spouse_Age': None, 'Include_Spouse': 'No',
-                               'quote_request_timestamp': 1541930336, 'Email': '', 'Effective_Date': '12-15-2018',
-                               'Phone': '', 'quote_store_key': '24867-10-18-1978-Male-1-11-12-2018-N-stm',
-                               'Zip_Code': '24867', 'Spouse_DOB': None, 'State': 'WV', 'Spouse_Gender': '',
-                               'Applicant_Gender': 'Male', 'Last_Name': ''}
+
+    import random
+    year = random.choice(range(1950, 2001))
+
+    quote_request_form_data = {'Payment_Option': '1',
+                               'applicant_is_child': False,
+                               'Tobacco': 'N',
+                               'Dependents': [],
+                               'Ins_Type': 'stm',
+                               'Coverage_Days': None,
+                               'First_Name': '',
+                               'Children_Count': 0,
+                               'Applicant_Age': 40,
+                               'Address1': '',
+                               'Applicant_DOB' : '10-18-'+(str(year)),
+                               'Spouse_Age': None,
+                               'Include_Spouse': 'No',
+                               'quote_request_timestamp': 1541930336,
+                               'Email': '',
+                               'Effective_Date': '12-15-2018',
+                               'Phone': '',
+                               'quote_store_key': '44102-10-18-'+(str(year))+'-1992-Male-1-11-12-2018-N-stm',
+                               'Zip_Code': '24867',
+                               'Spouse_DOB': None,
+                               'State': 'WV',
+                               'Spouse_Gender': '',
+                               'Applicant_Gender': 'Male',
+                               'Last_Name': ''
+                               }
+
+    # Setting a dummy quote request form data in session
+    request.session['quote_request_form_data'] = quote_request_form_data
 
 
-    # import random
-    # year = random.choice(range(1950, 2001))
-    # quote_request_form_data = {
-    #     'Zip_Code' : '44102',
-    #     'Applicant_DOB' : '10-18-'+(str(year)),
-    #     'Applicant_Gender' : 'Male',
-    #     'Tobacco' : 'N',
-    #     'quote_store_key': '44102-10-18-'+(str(year))+('-1992-Male-1-11-12-2018-N-stm')
-    # }
+
+
 
 
 
@@ -202,4 +219,44 @@ def plan_quote(request, ins_type):
 
     return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
+    })
+
+
+def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
+    """This page is called from the plan_list_lim.html the first time the page
+    is loaded. This function returns the plans.
+
+    :param request: Django HttpRequest
+    :return: JsonResponse
+    """
+    print("calling ajax")
+    sp = []
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    print(quote_request_form_data)
+    # if quote_request_form_data["Include_Spouse"] == 'Yes':
+    #     print("wife/husband\n")
+
+
+    end_reached = False
+    # request.session['applicant_enrolled'] = False
+    request.session.modified = True
+    if quote_request_form_data:
+        print("quote_request_form_data['quote_store_key']", quote_request_form_data['quote_store_key'])
+        redis_key = "{0}:{1}".format(request.session._get_session_key(),
+                                     quote_request_form_data['quote_store_key'])
+        for plan in redis_conn.lrange(redis_key, 0, -1):
+            decoded_plan = json_decoder.decode(plan.decode())
+            if decoded_plan in ['START', "END"]:
+                print(type(decoded_plan), decoded_plan)
+
+            elif isinstance(decoded_plan, str) and decoded_plan == 'END':
+                end_reached = True
+
+            sp.append(decoded_plan)
+
+        if end_reached:
+            pass
+    logger.info("get_plan_quote_data_ajax: {0}".format(len(sp)))
+    return JsonResponse({
+        'monthly_plans': sp,
     })
