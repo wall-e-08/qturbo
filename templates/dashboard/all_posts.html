@@ -2,19 +2,24 @@
 {% load static %}
 
 {% block title %}
-    Blog | {{ block.super }}
+    {{ type }} | {{ block.super }}
 {% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">{{ type }}</li>
+{% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row">
             <div class="col-12">
-                {% if blogs %}
+                {% if posts %}
                     <div>
                         <div class="d-flex justify-content-between">
-                            <h1 class="font-wight-600 mb-4">All Blogs</h1>
+                            <h1 class="font-wight-600 mb-4">All {{ type }}s</h1>
                             <div class="">
-                                <a href="{% url 'dashboard:create_blog' %}" class="btn btn-success btn-lg">+ Add new Blog</a>
+                                <a href="{{ create_new_url }}" class="btn btn-success btn-lg">+ Add new {{ type }}</a>
                             </div>
                         </div>
                         <table class="table text-center bg-light d-lg-table table-bordered table-responsive">
@@ -26,8 +31,9 @@
                                     {% if user.is_superuser %}
                                         <th class="align-middle" scope="col">User</th>
                                     {% endif %}
-                                    <th class="align-middle" scope="col">Blog Status</th>
-                                    <th class="align-middle" scope="col">Categories</th>
+                                    <th class="align-middle" scope="col">{{ type }} Status</th>
+                                    {% if type == 'Blog' %}
+                                        <th class="align-middle" scope="col">Categories</th>{% endif %}
                                     <th class="align-middle" scope="col">Section</th>
                                     <th class="align-middle" scope="col">Date</th>
                                     <th class="align-middle" scope="col">Edit</th>
@@ -35,36 +41,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for blog in blogs %}
+                                {% for post in posts %}
                                     <tr>
                                         <th class="align-middle" scope="row">{{ forloop.counter }}</th>
                                         <td class="align-middle">
-                                            {% if blog.feature_img %}
-                                                <img width="50px" src="{{ blog.feature_img.url }}" alt="{{ blog.title|truncatechars:"20" }}">
+                                            {% if post.feature_img %}
+                                                <img width="50px" src="{{ post.feature_img.url }}" alt="{{ post.title|truncatechars:"20" }}">
                                             {% else %}-{% endif %}
                                         </td>
-                                        <td class="align-middle"><a href="{{ blog.get_absolute_url }}">{{ blog.title|truncatechars:"20" }}</a></td>
+                                        <td class="align-middle"><a href="{{ post.get_absolute_url }}">{{ post.title|truncatechars:"20" }}</a></td>
                                         {% if user.is_superuser %}
-                                            <td class="align-middle">{{ blog.user|default:"-" }}</td>
+                                            <td class="align-middle">{{ post.user|default:"-" }}</td>
                                         {% endif %}
                                         <td class="align-middle font-wight-600">
-                                            {% if blog.status == 'u' %}
+                                            {% if post.status == 'u' %}
                                                 <span class="text-warning">Pending</span>
-                                            {% elif blog.status == 'p' %}
+                                            {% elif post.status == 'p' %}
                                                 <span class="text-success">Published</span>
                                             {% else %}
                                                 <span class="text-danger">Archived</span>
                                             {% endif %}
                                         </td>
+                                        {% if type == 'Blog' %}
+                                            <td class="align-middle">
+                                                {% for cat in post.get_categories %}
+                                                    <a href="{% comment %}{{ cat.category.get_absolute_url }}{% endcomment %}">{{ cat.category }}</a>{% if not forloop.last %},{% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        {% endif %}
+                                        <td class="align-middle">{{ post.section|default:"-" }}</td>
+                                        <td class="align-middle"><span class="font-sm">{{ post.created_time }}</span></td>
                                         <td class="align-middle">
-                                            {% for cat in blog.get_categories %}
-                                                <a href="{% comment %}{{ cat.category.get_absolute_url }}{% endcomment %}">{{ cat.category }}</a>{% if not forloop.last %},{% endif %}
-                                            {% endfor %}
-                                        </td>
-                                        <td class="align-middle">{{ blog.section }}</td>
-                                        <td class="align-middle"><span class="font-sm">{{ blog.created_time }}</span></td>
-                                        <td class="align-middle">
-                                            <a href="{% comment %}{% url 'dashboard:edit_post' blog.id %}{% endcomment %}" class="btn btn-info dsb-edit-btn">
+                                            <a href="#{% comment %}{% url 'dashboard:edit_post' post.id %}{% endcomment %}" class="btn btn-info dsb-edit-btn">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="white">
                                                     <path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"></path>
                                                 </svg>
@@ -72,7 +80,7 @@
                                         </td>
                                         <td class="align-middle">
                                             <a href="#" class="btn btn-danger"
-                                                    {% comment %}data-href="{% url 'dashboard:delete_post' blog.id %}"{% endcomment %}
+                                                    {% comment %}data-href="{% url 'dashboard:delete_post' post.id %}"{% endcomment %}
                                                     {% comment %}data-toggle="modal"
                                                data-target="#delete_confirmation"{% endcomment %}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="white">
@@ -88,7 +96,7 @@
                         {% comment %}{% include 'main_app/snippets/pagination.html' %}{% endcomment %}
                     </div>
                 {% else %}
-                    <p class="my-5">No Blog found!</p>
+                    <p class="my-5">No {{ type }} found!</p>
                 {% endif %}
             </div>
         </div>

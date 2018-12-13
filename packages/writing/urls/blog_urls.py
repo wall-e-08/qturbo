@@ -9,5 +9,5 @@ urlpatterns = [
     path('ajax_load_more_blog/', views.ajax_load_more_blog, name='ajax_load_more_blog'),
 
     path('category/<slug>/', views.categorized_blog, name='categorized_blog'),
-    path('section/<slug>/', views.categorized_blog, name='sectionized_blog'),
+    path('section/<slug>/', views.sectionized_blog, name='sectionized_blog'),
 ]

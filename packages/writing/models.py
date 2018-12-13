@@ -1,4 +1,4 @@
-from .utils import *
+from .utils import (POST_TYPES, STATUS_CHOICES, get_image_path, custom_slugify)
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
@@ -38,13 +38,6 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
     )
 
-    section = models.ForeignKey(
-        'writing.Section',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-    )
-
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -77,14 +70,6 @@ class Post(models.Model):
     # # making that function object's boolean value is true, so the admin panel's can show this as a boolean
     # is_img_exists.boolean = True
 
-    def get_absolute_url(self):
-        return reverse(
-            'blog:each_blog',
-            args=[
-                str(self.slug)
-            ]
-        )
-
 
 class Article(Post):
     post_type = models.CharField(
@@ -93,6 +78,20 @@ class Article(Post):
         editable=False
     )
 
+    section = models.ForeignKey(
+        'writing.Section',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'post_type': 'a'}
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+            'article:each_article',
+            args=[str(self.slug),]
+        )
+
 
 class Blog(Post):
     post_type = models.CharField(
@@ -100,6 +99,20 @@ class Blog(Post):
         default='b',
         editable=False
     )
+
+    section = models.ForeignKey(
+        'writing.Section',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'post_type': 'b'}
+    )
+
+    def get_absolute_url(self):
+        return reverse(
+            'blog:each_blog',
+            args=[str(self.slug),]
+        )
 
     def get_categories(self):
         return self.categorize_set.all()  # <model_name lowercase><underscore>set: somemodelname_set
@@ -157,14 +170,6 @@ class Category(models.Model):
                     break
         super(Category, self).save(*args, **kwargs)  # saving the slug
 
-    # def get_absolute_url(self):
-    #     return reverse(
-    #         'main_app:each_category',
-    #         args=[
-    #             str(self.slug)
-    #         ]
-    #     )
-
 
 class Categorize(models.Model):
     blog = models.ForeignKey(
@@ -187,6 +192,11 @@ class Categorize(models.Model):
 
 class Section(models.Model):
     name = models.CharField(max_length=100)
+
+    post_type = models.CharField(
+        max_length=1,
+        choices=POST_TYPES,
+    )
 
     description = models.CharField(
         max_length=1000,
@@ -224,15 +234,13 @@ class Section(models.Model):
                     break
         super(Section, self).save(*args, **kwargs)  # saving the slug
 
-    # def get_absolute_url(self):
-    #     return reverse(
-    #         'main_app:each_category',
-    #         args=[
-    #             str(self.slug)
-    #         ]
-    #     )
+    def get_absolute_url_article(self):
+        return reverse(
+            'article:sectionized_article',
+            args=[str(self.slug),]
+        )
 
-    def get_absolute_url(self):
+    def get_absolute_url_blog(self):
         return reverse(
             'blog:sectionized_blog',
             args=[str(self.slug),]
@@ -240,6 +248,9 @@ class Section(models.Model):
 
     def blogs_count_under_this(self):
         return len(Blog.objects.filter(section=self))
+
+    def articles_count_under_this(self):
+        return len(Article.objects.filter(section=self))
 
 
 class Profile(models.Model):

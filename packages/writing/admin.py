@@ -4,6 +4,7 @@ from django.utils.html import format_html
 
 admin.site.register(Categorize)
 admin.site.register(Profile)
+admin.site.register(Article)
 
 
 @admin.register(Section)
