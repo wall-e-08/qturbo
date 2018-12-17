@@ -9,8 +9,7 @@ urlpatterns = [
 
     # pages | currently not active in website
     path('page/', login_required(views.all_pages), name='all_pages'),
-    path('page/create/', login_required(views.create_page), name='create-new-page'),
-    path('<page_id>/view/', views.view_page, name='view-page'),
+    path('page/create/', login_required(views.create_page), name='create_page'),
 
     # article
     path('info/', login_required(views.all_articles), name='all_articles'),

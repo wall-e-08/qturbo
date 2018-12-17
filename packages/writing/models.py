@@ -88,7 +88,7 @@ class Article(Post):
 
     def get_absolute_url(self):
         return reverse(
-            'each_article',
+            'slugified_page',
             args=[str(self.slug),]
         )
 
@@ -110,7 +110,7 @@ class Blog(Post):
 
     def get_absolute_url(self):
         return reverse(
-            'each_blog',
+            'slugified_page',
             args=[str(self.slug),]
         )
 

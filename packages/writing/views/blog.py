@@ -38,8 +38,8 @@ def all_blogs(request):
     return render(request, 'post/blog/all-blogs.html', ctx)
 
 
-def each_blog(request, slug):
-    blog = get_object_or_404(Blog, slug=slug)
+def each_blog(request, model_obj):
+    blog = model_obj
     ctx = {
         "blog": blog,
     }
