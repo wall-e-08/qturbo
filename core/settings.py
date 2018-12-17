@@ -285,6 +285,23 @@ LOGGING = {
 
 
 }
+# ------------------------+
+# Server webservice urls |
+# ------------------------+
+
+# Live Server
+QUOTE_ENROLL_URL = 'https://www.hiiquote.com/webservice/process.php'
+QUOTE_REQUEST_URL = 'https://www.hiiquote.com/webservice/quote_service.php'
+ESIGNATURE_VERIFICATION_URL = 'https://www.hiiquote.com/webservice/esign_payment.php'
+QUOTE_REQUEST_USER_ID = 'A157F6910039407D116147'  # CLH1251100 - $125 - live
+
+
+#  -----------------+
+#  Celery Settings |
+# -----------------+
+CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
+CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
+CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
 
 try:
     from .local_settings import *
