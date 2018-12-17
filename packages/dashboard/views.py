@@ -110,7 +110,7 @@ def create_blog(request):
     else:
         print("create_blog  not post req.. {}".format(request.method))
 
-    form = PageForm()
+    form = BlogForm()
     return render(request, 'dashboard/form_blog.html', {
         "form": form,
         "all_categories": get_category_list_by_blog(),
