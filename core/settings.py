@@ -190,7 +190,6 @@ DJRICHTEXTFIELD_CONFIG = {
 BLOG_SENIOR_CATEGORY_SLUG = 'medicare'
 BLOG_FOR_ALL_CATEGORY_SLUG = 'health-insurance'
 
-
 LOGGING = {
     'version': 1,
 
@@ -290,7 +289,6 @@ QUOTE_REQUEST_USER_ID = 'A157F6910039407D116147'  # CLH1251100 - $125 - live
 CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
 CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
 CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
-
 
 try:
     from .local_settings import *
