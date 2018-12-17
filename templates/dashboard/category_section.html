@@ -1,0 +1,124 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ post_type }} {{ type }} | {{ block.super }}
+{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ all_post_url }}">{{ post_type }}</a></li>
+    <li class="breadcrumb-item active">{{ type }}</li>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row">
+            <dsb-category-section></dsb-category-section>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="dsb-category-section-template">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <h1>{{ post_type }}::{{ type }}s:</h1>
+                <div>
+                    <!--{{ add_new_url }}-->
+                    <b-btn v-b-modal.add_new_form_modal class="btn btn-success">+ Add new {{ type }}</b-btn>
+
+                    <b-modal id="add_new_form_modal" ref="add_new_form_modal"
+                             title="Add new {{ type }}"
+                             @ok="handle_ok" {# when pressing ok button, prevent empty input #}
+                             @shown="new_item = ''"> {# when showing modal, clear the form #}
+                        <form @submit.stop.prevent="on_submit">
+                            <div class="form-group">
+                                <b-form-input type="text"
+                                          placeholder="Enter new {{ type }}"
+                                          v-model="new_item"></b-form-input>
+                            </div>
+                        </form>
+                    </b-modal>
+                </div>
+            </div>
+            <table class="table table-light table-bordered mt-5 text-center">
+                <thead class="table-secondary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">{{ post_type }}s</th>
+                        <th scope="col">View</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, i) in items">
+                        <th scope="row">[[ i+1 ]]</th>
+                        <td>[[ item.name ]]</td>
+                        <td>[[ item.post_count ]]</td>
+                        <td><a :href="item.url">view</a></td>
+                        <td><a href="#">delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['dsb-category-section'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    new_item: '',
+                    items: [
+                        {% for item in all_items %}
+                            {
+                                name: "{{ item }}",
+                                {% if type == 'Category' %}
+                                    url: "{{ item.get_absolute_url }}",
+                                {% elif post_type == 'Info' and type == 'Section' %}
+                                    url: "{{ item.get_absolute_url_article }}",
+                                {% elif post_type == 'Blog' and type == 'Section' %}
+                                    url: "{{ item.get_absolute_url_blog }}",
+                                {% endif %}
+                                post_count: "{% if post_type == 'Blog' %}{{ item.blogs_count_under_this }}{% else %}{{ item.articles_count_under_this }}{% endif %}",
+                            },{% endfor %}
+                    ],
+                }
+            },
+            methods: {
+                on_submit: function () {
+                    let _t = this;
+                    let ajax_req = new XMLHttpRequest();
+                    ajax_req.onreadystatechange = function () {
+                        if (ajax_req.readyState === 4 && ajax_req.status === 200) {
+                            let data = JSON.parse(ajax_req.responseText);
+                            _t.items.push({
+                                name: data['name'],
+                                url: data['url'],
+                                post_count: data['post_count'],
+                            })
+                        }
+                    };
+                    ajax_req.open("GET", "{% url 'dashboard:ajax_add_new_cat_or_sec' %}?item=" + _t.new_item+"&type={{ type }}&post_type={{ post_type }}", true);
+                    ajax_req.send();
+                    _t.$refs.add_new_form_modal.hide();
+                },
+                handle_ok(evt) {
+                    // Prevent modal from closing
+                    evt.preventDefault();
+                    if (!this.new_item) {
+                        alert('Please enter your name')
+                    } else {
+                        this.on_submit()
+                    }
+                },
+            },
+            template: '#dsb-category-section-template'
+        };
+    </script>
+{% endblock %}

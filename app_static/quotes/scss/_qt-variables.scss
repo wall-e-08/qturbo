@@ -8,3 +8,5 @@ $fonts: (font-xl: 48px, font-lg: 36px,
 $font-weight: 400 600 700;
 
 $qt-border: rgba(136, 136, 136, 0.46);
+
+$theme-colors: map-merge(("white": $white,), $theme-colors);
