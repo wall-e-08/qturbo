@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'quotes',
     'writing',
     'dashboard',
-    'healthplans',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -267,7 +266,6 @@ LOGGING = {
 }
 
 
-}
 SALES_ADMIN = [
     # 'tutul.barua@eagentdirect.com',
     'ahsanhabibme@gmail.com'
