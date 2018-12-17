@@ -2,43 +2,9 @@
 {% load static %}
 
 {% block head_js %}
-    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-
-    <script>
-        tinymce.init({
-            selector: '#{{ form.content.name }}',
-            relative_urls: false,
-            remove_script_host: false,
-            convert_urls: true,
-            height: 200,
-            theme: 'modern',
-            plugins: [
-                'autoresize advlist autolink lists link image charmap preview hr anchor pagebreak',
-                'searchreplace wordcount visualblocks visualchars code fullscreen',
-                'insertdatetime media nonbreaking save table contextmenu directionality',
-                'emoticons template paste textcolor colorpicker textpattern imagetools codesample toc'
-            ],
-            toolbar1: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
-            toolbar2: 'print preview media | forecolor backcolor emoticons | codesample',
-            image_advtab: true,
-            templates: [
-                {title: 'Test template 1', content: 'Test 1'},
-                {title: 'Test template 2', content: 'Test 2'}
-            ],
-            content_css: [
-                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-                '//www.tinymce.com/css/codepen.min.css'
-            ],
-            file_browser_callback: function (fieldname, url, type, win) {
-                if (type == 'image') {
-                    $('#editor_file_upload input').click();
-                } else {
-                    $('#editor_file_upload input').click();
-                }
-            }
-        })
-    </script>
-
+    {% with selector=form.content.name %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -70,7 +36,7 @@
                             <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
                         {% endif %}
                     </div>
-                
+
                     <div class="form-group">
                         <label for="{{ form.content.name }}">Page Content</label>
                         <textarea
