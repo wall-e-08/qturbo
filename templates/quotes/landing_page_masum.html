@@ -316,7 +316,7 @@
         <div id="vue-tab" class="d-flex justify-content-between my-5">
             <b-tabs>
                 <div class="">
-                    <b-tab title="Obamacare" active class="title-center">
+                    <b-tab title="Obamacare" active :title-link-class="'text-center'">
                         <div class="row ">
                             <div class="col-md-4">
                                 <a href="#" class="font-weight-bold">
@@ -386,7 +386,7 @@
                     </b-tab>
                 </div>
                 <div>
-                    <b-tab title="Health Insurance" class="text-warning">
+                    <b-tab title="Health Insurance" :title-link-class="'text-center'">
                         <div class="row ">
                             <div class="col-md-4">
                                 <a href="#" class="font-weight-bold">
@@ -456,7 +456,7 @@
                     </b-tab>
                 </div>
                 <div>
-                    <b-tab title="Medicare">
+                    <b-tab title="Medicare" :title-link-class="'text-center'">
                         <div class="row ">
                             <div class="col-md-4">
                                 <a href="#" class="font-weight-bold">
@@ -526,7 +526,7 @@
                     </b-tab>
                 </div>
                 <div>
-                    <b-tab title="Medicare Supplement">
+                    <b-tab title="Medicare Supplement" :title-link-class="'text-center'">
                         <div class="row ">
                             <div class="col-md-4">
                                 <a href="#" class="font-weight-bold">
@@ -596,7 +596,7 @@
                     </b-tab>
                 </div>
                 <div>
-                    <b-tab title="Small Business">
+                    <b-tab title="Small Business" :title-link-class="'text-center'">
                         <div class="row ">
                             <div class="col-md-4">
                                 <a href="#" class="font-weight-bold">
@@ -776,7 +776,7 @@
                 </div>
             </div>
         </div>
-        <div class="container text-center mb-5">
+        <div class="container text-center">
             <h6>
                 <a href="#" target="_blank" class="font-weight-bold">Learn more About Us
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
@@ -795,12 +795,17 @@
                 <div class="col-md-8 mt-5">
                     <a href="">
                         <div class="position-relative">
-                            <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
-                            <div class="position-absolute text-center blog-article">
-                                <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
-                                <h2 class="text-light text-center">Contrary to popular belief, Lorem Ipsum is not simply
-                                    random text. It has roots</h2>
+                            <img src="{% static 'quotes/img/blog1.jpg' %}" alt="" class="w-100">
+                            <div class="overlay">
+                                <div class="position-absolute text-center blog-article">
+                                    <button class=" btn btn-sm btn-warning text-light mb-md-4"><h4>News</h4></button>
+                                    <h3 class="text-light text-center">Contrary to popular belief, Lorem Ipsum is not
+                                        simply
+                                        random text.</h3>
+                                </div>
                             </div>
+
+
                         </div>
                     </a>
                 </div>
@@ -1018,5 +1023,6 @@
 {% endblock %}
 
 {% block bottom_js %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="{% static 'quotes/js/landing_page.js' %}"></script>
 {% endblock %}
