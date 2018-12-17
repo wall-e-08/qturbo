@@ -1,0 +1,550 @@
+{% load humanize %}
+<section class="plan-details-benefits common-section">
+    <div class="container"><h2 class="heading center">Benefits &amp; Coverage</h2>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6"><p class="emphasize">Insurance Type</p>Short Term Medical</div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The company that issues an insurance policy and
+                       assumes the risks associated with the insured.">
+                        Company
+                    </a>
+                </p>
+                Unified Life Insurance Company
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    Plan Type
+                </p>
+                Indemnity
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The amount you pay before your health insurance plan begins to pay for the
+                        services you receive. Not everything you pay (such as your premium and copay) counts toward
+                         your deductible. For example, if your deductible is $1,000, your plan won't pay anything
+                         until you've met your $1,000 deductible for covered healthcare services subject to the
+                          deductible. Estimated Premium is based on a (Per Term Deductible)">
+                        Deductible
+                    </a>
+                </p>
+                Individual: ${{ plan.option|intcomma }}
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, typically after you meet your
+                       deductible and copayment charges. For example, once you meet your deductible, you might
+                        pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you
+                        have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs
+                         for covered services.">
+                        Coinsurance
+                    </a>
+                </p>
+                {{ plan.Coinsurance_Percentage }}% after deductible
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Maximum lifetime coverage">
+                        Coverage Maximum
+                    </a>
+                </p>
+                ${{ plan.coverage_max_value|intcomma }}
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="One time enrollment fee.">
+                        Enrollment Fee
+                    </a>
+                </p>
+                ${{ plan.Enrollment_Fee }}
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, including your deductible. For example,
+                        once you meet your deductible, you pay 20% up to your out of pocket maximum, then 100% of
+                        the costs for covered services are paid thereafter, up to the plan maximum of $100,000.">
+                        Max Out of Pocket
+                    </a>
+                </p>
+                ${{ plan.out_of_pocket_value|intcomma }}
+            </div>
+
+        </div>
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Primary Doctor</p>
+                $25 copay
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Specialist</p>
+                $40 copay. Does not include specialist visits for preventive care.
+            </div>
+        </div>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Out-of-Pocket Limit</p>
+                    Individual: ${{ plan.out_of_pocket_value|intcomma }}
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Does Out-of-Pocket Limit include deductible?</p>
+                    No
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Out-of-Network Coverage</p>
+                    Yes
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Out of Country Coverage</p>
+                    N/A
+                </div>
+            </div>
+        </div>
+
+        <h4 class="details-section-header">Physicians</h4>
+
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Primary Care Physician (PCP) Required</p>
+                No
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Specialist Referrals Required</p>
+                No
+            </div>
+        </div>
+
+        <h4 class="details-section-header">Preventive Care Coverage</h4>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Periodic Health Exam</p>
+                    N/A
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Periodic OB-GYN Exam</p>
+                    Not Covered. State Mandated Benefits May Apply.
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Well Baby Care</p>
+                    Not Covered. State Mandated Benefits May Apply.
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">OB-GYN Exam Conditions</p>
+                    Not Covered. State Mandated Benefits May Apply.
+                </div>
+            </div>
+        </div>
+
+
+        <h4 class="details-section-header">Prescription Drug Coverage</h4>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Generic Prescription Drugs</p>
+                    <span class="pre">
+                        Inpatient: Coinsurance + Deductible<br>
+                        Outpatient: Not Covered, discount card provided
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Brand Prescription Drugs</p>
+                    <span class="pre">
+                        Inpatient: Coinsurance + Deductible<br>
+                        Outpatient: Not Covered, discount card provided
+                    </span>
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Non-Formulary Prescription Drugs Coverage</p>
+                    <span class="pre">
+                        Inpatient: Coinsurance + Deductible<br>
+                        Outpatient: Not Covered, discount card provided
+                    </span>
+                </div>
+            </div>
+        </div>
+        <h4 class="details-section-header">Hospital Services Coverage</h4>
+
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                    <div class="col-md-6">
+                        <p class="emphasize">Emergency Room</p>
+                        $200 Access Fee in addition to 20% Coinsurance after deductible. Access fee is waived if admitted
+                    </div>
+                    <div class="col-md-6">
+                        <p class="emphasize">Outpatient Lab/X-Ray</p>
+                        20% Coinsurance after Deductible
+                    </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Outpatient Surgery:</p>
+                    20% Coinsurance after Deductible
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Hospitalization</p>
+                    20% Coinsurance after Deductible
+                </div>
+            </div>
+        </div>
+
+
+        <h4 class="details-section-header">Maternity Coverage</h4>
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Pre &amp; Postnatal Office Visit</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Labor &amp; Delivery Hospital Stay</p>
+                Only complications of pregnancy are covered as any other sickness. 20% Coinsurance after deductible
+            </div>
+        </div>
+        <h4 class="details-section-header">Additional Coverage</h4>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Chiropractic Coverage</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Mental Health Coverage</p>
+                N/A
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Covered Tariff</h2>
+        <p>Inpatient Benefits</p>
+        <p>
+            Benefits are payable by Us at the Coinsurance Percentage for Eligible Expense in a Coverage Period
+            after the Deductible has been Satisfied. Benefits listed below are Daily Rates, including Nursing
+            Charges. The following benefits are for Insured and each Covered Dependent subject to the plan Deductible,
+            Coinsurance Percentage, Out-of-Pocket Maximum, and Overall Maximum Benefit.
+        </p>
+
+        <div class="row details-expenses-row">
+            <div class="col-md-6">
+                <ul>
+                    <li>Ward: 80% of the Reasonable and Customary Charge up to Average Private Room</li>
+                    <li>Semi-Private: 80% of the Reasonable and Customary Charge up to Average Private Room</li>
+                    <li>Observation Room: 80% of Average Private Room</li>
+                    <li>Private Room: 80% of Average Private Room</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    <li>Intermediate Care, LTAC and Stepdown Unit: 1x Average Private Room</li>
+                    <li>Intensive Care Unit: 1x Average Private Room</li>
+                    <li>Extended Care Facility: Daily Benefit of $100 for up to 10 day(s) during any Coverage Period.
+                        Must be confined immediately following a 3 day minimum Inpatient Hospital Stay.</li>
+                </ul>
+            </div>
+        </div>
+
+        <p>Outpatient Benefits</p>
+        <p>Benefits are payable by at thee Coinsurance percentage for Eligible Expenses in a coverage period after Deductible has been satisfied.</p>
+
+        <div class="row details-expenses-row">
+            <div class="col-md-6">
+                <ul>
+                    <li>Doctor Office Visits: Unlimited visits per insured person per coverage period</li>
+                    <li>Emergency Room Access Fee:* $200.00</li>
+                    <li>Urgent Care Facility Access Fee:* $50.00</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    <li>Orthopedic Manipulation: up to $1,000.00</li>
+                    <li>Implantable Devices: 10%</li>
+                </ul>
+            </div>
+        </div>
+        <p>* This amount is in addition to any deductible and coinsurance amount</p>
+        <p>This is a short term medical group insurance policy that pays benefits based on the schedule
+            in the policy. This insurance does not meet the requirements of the federal Affordable Care Act.</p>
+
+
+    </div>
+</section>
+
+<section class="common-section">
+    <div class="container">
+        <h2 class="heading center">Restrictions &amp; Omissions</h2>
+
+        <p>
+            Unless specific exceptions to the following limitations and exclusions are made, no benefits shall be
+            payable under this Part for any expenses caused by, incurred for, or resulting from:
+        </p>
+
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <ol class="plan-details-li">
+                    <li>Bodily Injury or Sickness which arises out of or in the course of any occupation,
+                        self-employment, sole-proprietorship partnership or employment for wage or profit,
+                        or a Bodily Injury or Sickness for which the Insured has or had a right to compensation
+                        under any Workers’ Compensation insurance or similar insurance, or under any Worker’s
+                        Compensation law, occupational disease law or similar law.</li>
+                    <li>Services or supplies for which no charge is made, or for which the Insured Person is not
+                        required to pay, or which are not documented in the Insured Person’s medical file, or for
+                        expenses arising from the treatment of a Bodily Injury or Sickness for which the Insured
+                        Person is not under the regular care of a Doctor, or for expenses which are not authorized
+                        or prescribed by a Doctor, or for which a third party (or his insurance coverage) is responsible.</li>
+                    <li>Pregnancy, except that Complications of Pregnancy shall be considered a Sickness under the Policy.</li>
+                    <li>War or any act of war.</li>
+                    <li>Participation in a riot; engaging in an illegal occupation; injury sustained while legally
+                        intoxicated and operating a motor vehicle; injury sustained while under the influence of
+                        any controlled substance (unless prescribed by and taken under the direction of a Doctor);
+                        or the commission of, or attempting to commit a felony.</li>
+                    <li>
+                        Cosmetic surgery nor any treatment for ensuing complications. Cosmetic surgery includes but is not limited to:
+                        <ol type="a">
+                            <li>surgery to the upper and lower eyelid;</li>
+                            <li>augmentation mammoplasty;</li>
+                            <li>reduction mammoplasty;</li>
+                            <li>revision of breast surgery for capsular contraction or replacement of prosthesis;</li>
+                            <li>full or partial facial lifts;</li>
+                            <li>dermal or chemo abrasion;</li>
+                            <li>scar revision;</li>
+                            <li>otoplasty;</li>
+                            <li>lift, stretch or reduction of abdomen, buttocks, thighs or upper arm;</li>
+                            <li>silicone injections to any part of the body;</li>
+                            <li>circumcision;</li>
+                            <li>rhinoplasty;</li>
+                            <li>repair of diastasis recti;</li>
+                            <li>abdominoplasty or panniculectomy; or</li>
+                            <li>orthognathic surgery, unless such surgery is required for a condition resulting from
+                                congenital defects or birth abnormalities or from Bodily Injury, and (except for a
+                                newborn child) such Bodily Injury occurred while the Insured Person was insured under this Part.</li>
+                        </ol>
+                    </li>
+                    <li>Elective surgery, treatment, drugs, or devices for sexual dysfunction, birth control or
+                        treatment of infertility, including sterilization, reversal of sterilization, penile implant,
+                        artificial insemination, in vitro fertilization of an ovum and/or development of an embryo
+                        in a laboratory, or use of fertility drugs.</li>
+                    <li>Prevention or correction of teeth irregularities, including removal of soft tissue impacted
+                        teeth and malocclusion of jaws by wire appliances, braces or other mechanical aids, or any
+                        other care, repair, removal, replacement or treatment of or to the teeth or any surrounding
+                        tissues, except:</li>
+                        <ol type="a">
+                            <li>treatment made necessary by Bodily Injury to Sound and Natural Teeth incurred while
+                                the Insured Person was insured under this Part; or</li>
+                            <li>for the excision of partial bony or full bony impacted teeth or of a tumor or cyst,
+                                or an incision and drainage of an abscess or cyst.</li>
+                        </ol>
+                    <li>Treatment or surgery as the result of temporomandibular joint dysfunction, prognathism,
+                        retrognathism, microtrognathism, or any treatment or surgery to reposition the maxilla
+                        (upper jaw), mandible (lower jaw), or both maxilla and mandible.</li>
+                    <li>Cataracts, Keratotomies or other surgical procedures to correct refractive errors, or
+                        examinations for and the cost of eyeglasses, contact lens or hearing aids.</li>
+                    <li>
+                    <li>Repair or replacement of artificial limbs or eyes.</li>
+                    <li>Inpatient and Outpatient prescription drugs.</li>
+                    <li>Expenses incurred for preventive services which are not directly related to treatment of a
+                        Bodily Injury or Sickness including, but not limited to, periodic physical examinations and
+                        tests, child supervisions services, development assessment for children, immunizations,
+                        laboratory tests, X-rays, blood pressure checks, mammography, cervical, colon, prostate
+                        and rectal cancer screening exams, bone density testing and other services for the early
+                        detection of diseases, charges for routine well baby care, including Hospital newborn
+                        nursery charges, or charges for genetic testing and counseling including when related
+                        to a current or planned Pregnancy except as may be otherwise indicated in the Schedule of Benefits.</li>
+                    <li>
+                        Taxes or administrative fees, unless required by applicable law; medical care or treatment to
+                        the extent that benefits are paid by Medicare or any other governmental law or program (except
+                        Medicaid) or by any automobile insurance, or services furnished by a Hospital or institution which:
+                        <ol type="a">
+                            <li>does not meet the definition specified in the Policy; or</li>
+                            <li>is owned or operated by the United States Government or any agency thereof or is
+                                owned or operated by any State, Province or any other political subdivision unless
+                                there is a legal obligation for the Insured Person to pay in the absence of insurance.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-md-6">
+                <ol start="16" class="plan-details-li">
+                    <li>Expenses for treatment, paring or removal of corns, calluses or toenails (other than
+                        partial or complete removal of nail roots) except when prescribed by a Doctor who is
+                        treating the Insured Person for a metabolic disease, such as diabetes mellitus or a
+                        peripheral-vascular disease such as arteriosclerosis; or treatment of the feet, including
+                        strained or flat feet, or instability or imbalance, by posting or strapping, or range of
+                        motion studies, or orthotics, or osteotomies, or hallux valgus repair, or orthopedic or
+                        corrective shoes, or other supportive devices.</li>
+                    <li>Expenses incurred as the result of attempted suicide or intentionally self-inflicted
+                        Bodily Injury or Sickness while sane or insane.</li>
+                    <li>Expenses incurred on a date on which the Insured Person is not insured under this Part.</li>
+                    <li>Services received or supplies purchased outside the United State, its territories or
+                        possessions or Canada; or travel, transportation or living expenses.</li>
+                    <li>Services or supplies which are not Medically Necessary (including Experimental or
+                        investigative treatment) and charges in excess of the Maximum Allowable or which are
+                        for maintenance due to Bodily Injury or Sickness, including but not limited to such items
+                        as surgical stockings, special bras following breast reconstruction, or supplies for Durable
+                        Mechanical Medical Equipment and prosthetics (including but not limited to prosthetic socks
+                        and gel liners); or replacement parts or repairs to Durable Mechanical Medical Equipment and
+                        prosthetics (including replacement or repairs due to recall by the manufacturer or required by
+                        law or regulation).</li>
+                    <li>Custodial or Convalescence Care.</li>
+                    <li>An organ or tissue transplant replacement, or for or related to transplantation or
+                        implantation of animal or artificial organs or tissues (or any service or supply in
+                        connection with the transplantation or implantation, including ventricular assist devices),
+                        or for somatic cell nuclear transfer (SCNT) technologies or stem cell implantation procedures,
+                        except any organ or tissue transplants or replacements specified under “Eligible Expense” or
+                        the Schedule of Benefits.</li>
+                    <li>Any organ which is sold rather than donated to the Insured Person and any service or supply
+                        in connection with identification of a donor from a local, state or national listing.</li>
+                    <li>Any service or supply in connection with autologous bone marrow transplantation for
+                        treatment of any disease other than acute lymphocytic leukemia, acute non-lymphocytic
+                        leukemia, Hodgkin’s disease, non-Hodgkin’s lymphoma, neuroblastomas and breast cancer
+                        when combined with high dose chemotherapy; or any service or supply in connection with
+                        autotransfusion/transplantation of autologous stem cells for the treatment of leukopenia
+                        from any cause.</li>
+                    <li>Any services or supplies in connection with cigarette smoking cessation; or services related
+                        to narcotic maintenance for opiate addiction.</li>
+                    <li>A Pre-Existing Condition</li>
+                    <li>Hypnotherapy, biofeedback, non-medical self-care or self-help programs.</li>
+                    <li>Consultations and/or treatment provided over the Internet.</li>
+                    <li>A hernia, hysterectomy, or treatment or removal of tonsils, adenoids, or gall bladder,
+                        except in an Emergency.</li>
+                    <li>Treatment, medication or hormones to stimulate growth, or treatment of learning disorders,
+                        disabilities, developmental delays or deficiencies, including therapy.</li>
+                    <li>Sclerotherapy for veins of the extremities.</li>
+                    <li>Kidney or end stage renal disease but not including renal or ureteral stones/calculate.</li>
+                    <li>Injuries sustained while participating in any sports that are Intercollegiate Athletic Bodily
+                        Injuries, sky diving, scuba diving, auto racing, bungee jumping, hang or ultra-light gliding,
+                        parasailing, sail planning, flying in an aircraft (other than as a passenger on a commercial
+                        airline), rodeo contests or as a result of participating in any professional, semi-professional
+                        or other non-recreational sports including boating, motorcycling, skiing, riding all-terrain
+                        vehicles or dirt-bikes, snowmobiling or go-carting except as may be otherwise indicated in
+                        the Schedule of Benefits.</li>
+                    <li>Complications of any treatment or surgery for an excluded service or procedure.</li>
+                    <li>Private duty nursing, standby physician charges or medical care, treatment, services or
+                        supplies provided by an Insured Person’s Immediate Family Member.</li>
+                    <li>Joint replacement or other treatment of joints, spine, bones or connective tissue
+                        including tendons, ligaments and cartilage, unless due to Bodily Injury incurred
+                        while the Insured Person was insured under the Policy.</li>
+                    <li>Chronic fatigue or pain disorders; Acquired Immune Deficiency Syndrome (AIDS),
+                        AIDS Related Complex (ARC), or related immunodeficiency disorders.</li>
+                    <li>Treatment or diagnosis of allergies, except for emergency treatment of allergic reactions.</li>
+                    <li>Expenses incurred for examinations of, and diagnostic testing for, headaches when not caused
+                        by another Bodily Injury or Sickness eligible for benefits under the plan.</li>
+                    <li>Acupuncture, orthopedic therapy, Speech Therapy, Occupational Therapy except as payable
+                        under the Home Health Care benefit (Outpatient Benefit f), physiotherapy, physical medicine,
+                        chiropractic care or treatment except as covered under Outpatient Benefit g, or any form of
+                        therapy involving adjustments, manipulation and massage.</li>
+                    <li>Services for Nervous, Emotional or Mental Disorders; and alcoholism and chemical dependency
+                        except as may be otherwise indicated in the Schedule of Benefits.</li>
+                    <li>Equipment, supplies and related services for the treatment of Type I, Type II and gestational diabetes.</li>
+                    <li>Diabetes self-management training including, but not limited to, medical nutrition therapy
+                        relating to diet, caloric intake and diabetes management.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Frequently Asked Questions</h2>
+
+        <div class="row details-faq-row">
+            <div class="col-md-6">
+                <p class="emphasize">Do I have the option to use any doctor or hospital?</p>
+
+                <p>Yes, you have the option to use any doctor or hospital, there is no PPO or HMO Network
+                    requirement to receive full benefits.</p>
+
+                <p class="emphasize">What if I change my mind after I purchase the STM Coverage?</p>
+
+                <p>
+                    If for any reason you are not satisfied with your coverage, and you have not filed a claim,
+                    you may return the Certificate to us within 10 days after you receive it. We will refund any
+                    plan cost you paid and your STM coverage will be null and void. Contact HII at
+                    877-376-5831 or e-mail support@hiiquote.com for assistance.
+                </p>
+
+                <p class="emphasize">When does coverage start?</p>
+                <p>
+                    Effective dates are available any day of the month, and your insurance can be effective as
+                    early as 12:01 a.m. the day following the transmission date of your application. You may
+                    choose a later effective date, but not to exceed 31 days from the date of transmission.
+                    We accept automatic monthly payments by Visa, MasterCard, or Bank Draft.
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">When does the STM coverage terminate?</p>
+
+                <p>
+                    Premier STM will automatically terminate on the earliest of the following dates: The date
+                    the Policy terminates, The date the Coverage Period expires; The first day of the month
+                    coinciding with or following the date other Hospital, major medical, group health or other
+                    medical insurance coverage becomes effective for the Insured Person or the Insured;
+                    The end of the last period for which the last required premium payment is made for the
+                    Insured Person’s or the Insured’s insurance; The date the Insured Person or the
+                    Insured enters the armed forces of any country, state or international organization,
+                    other than for reserve duty of 30 days or less; The premium due date that coincides with or
+                    next follows the date on which the Insured Person or the Insured is no longer eligible; The
+                    date We specify that the Insured Person’s or the Insured’s insurance is terminated because of:
+                </p>
+
+                <ul>
+                    <li>failure to provide any signed release, consent, assignment or other documents requested by Us;</li>
+                    <li>failure to fully cooperate with Us in the administration of the Policy;</li>
+                    <li>material misrepresentation, fraud, or material omission of information on any application form,
+                        or in requesting the receipt of benefits under the Policy; or</li>
+                    <li>misuse of the Insured’s identification card;<br>
+                        The date the Insured has received benefits under the Policy up to the Lifetime or
+                        Coverage Period Maximum Aggregate Benefit Amount. This provision applies only to the
+                        Short-Term Medical Expense Insurance; or With respect to an Insured’s covered
+                        Dependent spouse, the premium due date that coincides with or next follows the date on
+                        which the Insured is divorced or legally separated from his spouse.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-variations common-section">
+    <div class="container">
+        <h2 class="headingplaner">Other Unified Term Insurance products in your area</h2>
+
+        <div class="row">
+        {% for related_plan in related_plans %}
+            <div class="col-md-4"><a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}"><p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+
+                <p>Deductible - ${{ related_plan.option|intcomma }} / Coinsurance - {{ related_plan.Coinsurance_Percentage}}%</p>
+
+                <p class="emphasize">
+                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                </p>
+            </a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>
