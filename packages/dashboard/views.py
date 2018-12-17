@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, HttpResponse, JsonResponse
-from .forms import PageForm, BlogForm
+from .forms import PageForm, ArticleForm, BlogForm
 from .models import Page
 from writing.models import Article, Blog, Category, Section
 
@@ -52,8 +52,8 @@ def all_pages(request):
 
 # create START ##
 def create_article(request):
-    """if request.method == 'POST':
-        form = BlogForm(request.POST)
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
         if form.is_valid():
             blog = form.save()
             return redirect(blog.get_absolute_url())
@@ -62,11 +62,10 @@ def create_article(request):
     else:
         print("create_blog  not post req.. {}".format(request.method))
 
-    form = PageForm()
-    return render(request, 'dashboard/create_blog.html', {
+    form = ArticleForm()
+    return render(request, 'dashboard/form_article.html', {
         "form": form,
-    })"""
-    return HttpResponse("Page will be updated later")
+    })
 
 
 def create_blog(request):
@@ -84,7 +83,7 @@ def create_blog(request):
         print("create_blog  not post req.. {}".format(request.method))
 
     form = PageForm()
-    return render(request, 'dashboard/create_blog.html', {
+    return render(request, 'dashboard/form_blog.html', {
         "form": form,
     })
 

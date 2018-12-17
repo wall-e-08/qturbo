@@ -1,34 +1,36 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block title %}Create Info | {{ block.super }}{% endblock title %}
+
 {% block head_js %}
-    {% with selector=form.content.name %}
+    {% with selector=form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 {% endblock %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_blogs' %}">Blog</a></li>
-    <li class="breadcrumb-item active">Create or Edit Blog</li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_articles' %}">Info</a></li>
+    <li class="breadcrumb-item active">Create Info</li>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
             <div class="col-md-7">
-                <h1>Add a New Blog</h1>
+                <h1>Add New Info</h1>
                 <form method="post">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
 
-                    <div class="form-group">
-                        <label for="{{ form.title.name }}">Page Title</label>
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.title.id_for_label }}">Title</label>
                         <input
                                 type="text"
                                 class="form-control {% if form.title.errors %}border-danger{% endif %}"
                                 name="{{ form.title.name }}"
-                                id="{{ form.title.name }}"
+                                id="{{ form.title.id_for_label }}"
                                 value="{{ form.title.value|default:'' }}"
                                 placeholder="Title">
 
@@ -37,13 +39,26 @@
                         {% endif %}
                     </div>
 
-                    <div class="form-group">
-                        <label for="{{ form.content.name }}">Page Content</label>
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.content.id_for_label }}">Content</label>
                         <textarea
                                 class="form-control {% if form.content.errors %}border-danger{% endif %}"
                                 name="{{ form.content.name }}"
-                                id="{{ form.content.name }}"
+                                id="{{ form.content.id_for_label }}"
                                 value="{{ form.content.value|default:'' }}"></textarea>
+
+                        {% if form.content.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.section.id_for_label }}">Sections</label>
+                        <select class="form-control" id="{{ form.section.id_for_label }}" name="{{ form.section.name }}">
+                            {% for val, opt in form.fields.section.choices %}
+                                <option value="{{ val }}"{% if form.fields.section.value == val %} selected{% endif %}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
 
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>

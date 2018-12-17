@@ -13,6 +13,14 @@ class PageForm(forms.ModelForm):
         fields = '__all__'
 
 
+class ArticleForm(forms.ModelForm):
+    content = forms.CharField(widget=RichTextWidget())
+
+    class Meta:
+        model = Article
+        exclude = ['status',]
+
+
 class BlogForm(forms.ModelForm):
     content = forms.CharField(widget=RichTextWidget())
 
