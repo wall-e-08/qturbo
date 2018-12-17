@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, reverse
 from .forms import PageForm, ArticleForm, BlogForm
 from django.http import Http404, JsonResponse
 from .utils import get_category_list_by_blog
-from .models import Page
+from distinct_pages.models import Page
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -18,6 +18,9 @@ def index(request):
             "count": Blog.objects.all().count(),
             "category_count": Category.objects.all().count(),  # category used only in blog, no need to filter
             "section_count": Section.objects.filter(post_type='b').count(),
+        },
+        "page": {
+            "count": Page.objects.all().count(),
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
@@ -119,21 +122,19 @@ def create_blog(request):
 
 
 def create_page(request):
-    print("dashboard ")
     if request.method == 'POST':
-        print("post req")
         form = PageForm(request.POST)
         if form.is_valid():
-            print("form valid")
-            form.save()
-            return redirect('/')
+            page = form.save()
+            return redirect(page.get_absolute_url())
         else:
             print("Form is not valid")
+            print(form.errors)
     else:
         print("not post req.. {}".format(request.method))
 
     form = PageForm()
-    return render(request, 'dashboard/page_manage.html', {
+    return render(request, 'dashboard/form_page.html', {
         "form": form,
     })
 
@@ -182,7 +183,7 @@ def view_page(request, page_id=None):
             return render(request, 'dashboard/page_view.html', {"page": page})
         except Page.DoesNotExist as err:
             print("Page obj not found: {}".format(err))
-    return Http404()
+    raise Http404()
 
 
 # all ajax requests

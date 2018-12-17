@@ -73,15 +73,24 @@
                 
                     <div class="form-group">
                         <label for="{{ form.content.name }}">Page Content</label>
-                        <textare
+                        <textarea
                                 class="form-control {% if form.content.errors %}border-danger{% endif %}"
                                 name="{{ form.content.name }}"
                                 id="{{ form.content.name }}"
-                                value="{{ form.content.value|default:'' }}"></textare>
+                                value="{{ form.content.value|default:'' }}"></textarea>
 
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
                         {% endif %}
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="{{ form.template_file.id_for_label }}">Template File</label>
+                        <select name="{{ form.template_file.html_name }}" id="{{ form.template_file.id_for_label }}">
+                            {% for val, opt in form.fields.template_file.choices %}
+                                <option value="{{ val }}" {% if form.fields.template_file.value == val %}selected{% endif %}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
 
                     <button type="submit" class="btn btn-success">Save</button>

@@ -1,6 +1,8 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block title %}All Pages | {{ block.super }}{% endblock %}
+
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item active">Page</li>
@@ -24,7 +26,7 @@
                             <p class="small">{{ page.create_time }}</p>
                         </div>
                         <div class="card-footer">
-                            <a href="{% url 'dashboard:view-page' page.id %}" class="btn btn-success">view</a>
+                            <a href="{% url 'slugified_page' page.slug %}" class="btn btn-success">view</a>
                             <a href="#" class="btn btn-dark">Edit</a>
                             <a href="#" class="btn btn-danger">delete</a>
                         </div>
@@ -34,7 +36,7 @@
         </div>
     
         <div class="my-5">
-            <a href="{% url 'dashboard:create-new-page' %}" class="btn btn-primary btn-lg">Create Page</a>
+            <a href="{% url 'dashboard:create_page' %}" class="btn btn-primary btn-lg">Create Page</a>
         </div>
     </div>
 {% endblock %}
