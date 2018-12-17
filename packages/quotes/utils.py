@@ -17,14 +17,14 @@ from .logger import VimmLogger
 
 logger = VimmLogger('quote_turbo')
 
-# QR_DATE_PATTERN = re.compile(r'^(\d{2})-(\d{2})-(\d{4})$')
-#
-#
-# def age(dob):
-#     today = datetime.date.today()
-#     if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
-#         return today.year - dob.year - 1
-#     return today.year - dob.year
+QR_DATE_PATTERN = re.compile(r'^(\d{2})-(\d{2})-(\d{4})$')
+
+
+def age(dob):
+    today = datetime.date.today()
+    if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
+        return today.year - dob.year - 1
+    return today.year - dob.year
 #
 #
 # def date_from_str(date_str, date_format='%d-%M-%Y'):
@@ -41,26 +41,26 @@ def form_data_is_valid(form_data):
     return effective_date > datetime.date.today()
 
 
-# def get_app_stage(stage, stm_stages):
-#     if stage > 1 and stage - 1 not in stm_stages:
-#         return get_app_stage(stage - 1, stm_stages)
-#     return stage
-#
-#
-# def get_initials_for_dependents_formset(initial_form_data):
-#     initial = []
-#     if initial_form_data['Include_Spouse'] == 'Yes':
-#         initial.append(
-#             {"Relation": "Spouse", "Gender": initial_form_data["Spouse_Gender"],
-#              "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', initial_form_data["Spouse_DOB"]),
-#              "Age": initial_form_data["Spouse_Age"]}
-#         )
-#     if initial_form_data["Dependents"]:
-#         for dependent in initial_form_data["Dependents"]:
-#             initial.append({"Relation": "Child", "Gender": dependent["Child_Gender"],
-#                             "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', dependent["Child_DOB"]),
-#                             "Age": dependent["Child_Age"]})
-#     return initial
+def get_app_stage(stage, stm_stages):
+    if stage > 1 and stage - 1 not in stm_stages:
+        return get_app_stage(stage - 1, stm_stages)
+    return stage
+
+
+def get_initials_for_dependents_formset(initial_form_data):
+    initial = []
+    if initial_form_data['Include_Spouse'] == 'Yes':
+        initial.append(
+            {"Relation": "Spouse", "Gender": initial_form_data["Spouse_Gender"],
+             "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', initial_form_data["Spouse_DOB"]),
+             "Age": initial_form_data["Spouse_Age"]}
+        )
+    if initial_form_data["Dependents"]:
+        for dependent in initial_form_data["Dependents"]:
+            initial.append({"Relation": "Child", "Gender": dependent["Child_Gender"],
+                            "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', dependent["Child_DOB"]),
+                            "Age": dependent["Child_Age"]})
+    return initial
 #
 #
 # def get_st_dependent_info_formset(formset_class, initial_form_data):
@@ -70,42 +70,42 @@ def form_data_is_valid(form_data):
 #     return formset_class()
 #
 #
-# def clean_number(number):
-#     _numbers = []
-#     for n in str(number):
-#         try:
-#             _numbers.append(str(int(n)))
-#         except ValueError:
-#             pass
-#     return "".join(_numbers)
-#
-#
-# def get_years_for_card():
-#     current_year = datetime.datetime.now().year
-#     return [(str(year), str(year)) for year in range(current_year, current_year + 20)]
-#
-#
-# try:
-#     random = random.SystemRandom()
-#     using_sysrandom = True
-# except NotImplementedError:
-#     import warnings
-#     warnings.warn('A secure pseudo-random number generator is not available '
-#                   'on your system. Falling back to Mersenne Twister.')
-#     using_sysrandom = False
-#
-#
-# def get_random_string(length=12,
-#                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
-#                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
-#     if not using_sysrandom:
-#         random.seed(
-#             hashlib.sha256(
-#                 ("%s%s%s" % (
-#                     random.getstate(), time.time(),
-#                     settings.SECRET_KEY)).encode('utf-8')
-#             ).digest())
-#     return ''.join(random.choice(allowed_chars) for i in range(length))
+def clean_number(number):
+    _numbers = []
+    for n in str(number):
+        try:
+            _numbers.append(str(int(n)))
+        except ValueError:
+            pass
+    return "".join(_numbers)
+
+
+def get_years_for_card():
+    current_year = datetime.datetime.now().year
+    return [(str(year), str(year)) for year in range(current_year, current_year + 20)]
+
+
+try:
+    random = random.SystemRandom()
+    using_sysrandom = True
+except NotImplementedError:
+    import warnings
+    warnings.warn('A secure pseudo-random number generator is not available '
+                  'on your system. Falling back to Mersenne Twister.')
+    using_sysrandom = False
+
+
+def get_random_string(length=12,
+                      allowed_chars='abcdefghijklmnopqrstuvwxyz'
+                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+    if not using_sysrandom:
+        random.seed(
+            hashlib.sha256(
+                ("%s%s%s" % (
+                    random.getstate(), time.time(),
+                    settings.SECRET_KEY)).encode('utf-8')
+            ).digest())
+    return ''.join(random.choice(allowed_chars) for i in range(length))
 #
 #
 # def update_applicant_info(stm_enroll_obj, request, plan, plan_url):
@@ -317,16 +317,16 @@ def form_data_is_valid(form_data):
 #     return add_ons
 #
 #
-# def get_plan_type_principle_limited(form_data):
-#     if ((form_data['Include_Spouse'] == 'Yes' and len(form_data['Dependents']) == 0) or
-#             (form_data['Include_Spouse'] == 'No' and len(form_data['Dependents']) == 1)):
-#         return 'Member+1'
-#     if ((form_data['Include_Spouse'] == 'Yes' and len(form_data['Dependents']) >= 1) or
-#             (form_data['Include_Spouse'] == 'No' and len(form_data['Dependents']) > 1)):
-#         return 'Family'
-#     return 'Single Member'
-#
-#
+def get_plan_type_principle_limited(form_data):
+    if ((form_data['Include_Spouse'] == 'Yes' and len(form_data['Dependents']) == 0) or
+            (form_data['Include_Spouse'] == 'No' and len(form_data['Dependents']) == 1)):
+        return 'Member+1'
+    if ((form_data['Include_Spouse'] == 'Yes' and len(form_data['Dependents']) >= 1) or
+            (form_data['Include_Spouse'] == 'No' and len(form_data['Dependents']) > 1)):
+        return 'Family'
+    return 'Single Member'
+
+
 # def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
 #     ancillaries_plans = settings.ANCILLARIES_PLANS
 #
@@ -374,17 +374,17 @@ def form_data_is_valid(form_data):
 #         update_addon_plan_at_enroll(stm_enroll_obj, enrolled_applicant_info.get('Add_ons', []))
 #     return stm_enroll_obj
 #
-#
-# def get_askable_questions(sorted_question):
-#     quss = []
-#     for qus in sorted_question:
-#         if qus.get('SubQue', None) is None:
-#             quss.append(qus)
-#         else:
-#             for sub_qus in qus['SubQue']:
-#                 quss.append(sub_qus)
-#     return quss
-#
+
+def get_askable_questions(sorted_question):
+    quss = []
+    for qus in sorted_question:
+        if qus.get('SubQue', None) is None:
+            quss.append(qus)
+        else:
+            for sub_qus in qus['SubQue']:
+                quss.append(sub_qus)
+    return quss
+
 #
 # def get_quote_store_key(form_data):
 #     """
@@ -411,9 +411,9 @@ def form_data_is_valid(form_data):
 #
 # def send_enroll_email(request, form_data, enroll,
 #                       stm_enroll_obj,
-#                       subject_template_name='healthplans/mail/enroll_mail_subject.html',
-#                       email_template_name='healthplans/mail/enrollment_mail.html',
-#                       html_email_template_name='healthplans/mail/enrollment_mail.html',
+#                       subject_template_name='quotes/mail/enroll_mail_subject.html',
+#                       email_template_name='quotes/mail/enrollment_mail.html',
+#                       html_email_template_name='quotes/mail/enrollment_mail.html',
 #                       extra_email_context=None, from_email=None):
 #     context = {
 #         'enroll': enroll,
@@ -433,9 +433,9 @@ def form_data_is_valid(form_data):
 # def send_sales_notification(
 #         request,
 #         stm_enroll_obj,
-#         subject_template_name='healthplans/mail/enroll_notification_email_subject.html',
-#         email_template_name='healthplans/mail/enroll_notification_email.html',
-#         html_email_template_name='healthplans/mail/enroll_notification_email.html',
+#         subject_template_name='quotes/mail/enroll_notification_email_subject.html',
+#         email_template_name='quotes/mail/enroll_notification_email.html',
+#         html_email_template_name='quotes/mail/enroll_notification_email.html',
 #         extra_email_context=None,
 #         from_email=None,
 #         to_email=settings.SALES_ADMIN):
@@ -452,14 +452,14 @@ def form_data_is_valid(form_data):
 #          from_email, to_email, html_email_template_name]
 #     )
 #
-#
-# def validate_name(name, allowed_chars="abcdefghijklmnopqrstuvwxyz"
-#                                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '_-."):
-#     for char in name:
-#         if char not in allowed_chars:
-#             return False
-#     return True
-#
+
+def validate_name(name, allowed_chars="abcdefghijklmnopqrstuvwxyz"
+                                      "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '_-."):
+    for char in name:
+        if char not in allowed_chars:
+            return False
+    return True
+
 # def update_application_stage(stm_enroll_obj, stage):
 #     if (stm_enroll_obj.stage < stage) and (stage <= 5):
 #         stm_enroll_obj.stage = stage
