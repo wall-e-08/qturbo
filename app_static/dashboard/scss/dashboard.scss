@@ -12,3 +12,9 @@
         @include box-shadow(none !important)
     }
 }
+
+.qt-dsb-cat-input-checkbox {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}

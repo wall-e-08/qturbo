@@ -1,8 +1,9 @@
+from writing.models import Article, Blog, Category, Categorize, Section
 from django.shortcuts import render, redirect, reverse
-from django.http import Http404, HttpResponse, JsonResponse
 from .forms import PageForm, ArticleForm, BlogForm
+from django.http import Http404, JsonResponse
+from .utils import get_category_list_by_blog
 from .models import Page
-from writing.models import Article, Blog, Category, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -69,13 +70,40 @@ def create_article(request):
 
 
 def create_blog(request):
-    print("create_blog ")
+    cat_prefix = 'cat-'
     if request.method == 'POST':
         print("create_blog post req")
         form = BlogForm(request.POST)
         if form.is_valid():
             print("form valid")
             blog = form.save()
+
+            # if no category found bound on that post
+            is_cat = False
+            for x in request.POST:
+                if x[:4] == cat_prefix:
+                    is_cat = True
+                    continue
+
+            # manually managed category
+            # If you're confused, see "request.POST" values and the template file
+            if is_cat:
+                for k in request.POST:
+                    if k[:4] == cat_prefix:
+                        try:
+                            cat = Category.objects.get(id=int(k[4:]))
+                            Categorize.objects.update_or_create(
+                                post=blog,
+                                category=cat,
+                            )
+                        except Category.DoesNotExist as err:
+                            print("Very unexpected !! Category not found !! Err: {}".format(err))
+            else:
+                cat, create = Category.objects.get_or_create(name="Uncategorized")
+                Categorize.objects.update_or_create(
+                    post=blog,
+                    category=cat,
+                )
             return redirect(blog.get_absolute_url())
         else:
             print("create_blog  Form not valid. errors: {}".format(form.errors))
@@ -85,6 +113,8 @@ def create_blog(request):
     form = PageForm()
     return render(request, 'dashboard/form_blog.html', {
         "form": form,
+        "all_categories": get_category_list_by_blog(),
+        "category_prefix": cat_prefix
     })
 
 
@@ -158,7 +188,7 @@ def view_page(request, page_id=None):
 # all ajax requests
 # TODO: allow only ajax & allow only GET OR POST
 def ajax_add_new_cat_or_sec(request):
-    json = {"success": False,}
+    json = {"success": False, }
     if request.GET.dict():
         data = request.GET.dict()
         if data.get('type') == 'Category':

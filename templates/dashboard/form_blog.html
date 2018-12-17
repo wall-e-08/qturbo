@@ -26,13 +26,12 @@
 
                     <div class="form-group">
                         <label for="{{ form.title.id_for_label }}">Page Title</label>
-                        <input
-                                type="text"
-                                class="form-control {% if form.title.errors %}border-danger{% endif %}"
-                                name="{{ form.title.name }}"
-                                id="{{ form.title.id_for_label }}"
-                                value="{{ form.title.value|default:'' }}"
-                                placeholder="Title">
+                        <input type="text"
+                               class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                               name="{{ form.title.name }}"
+                               id="{{ form.title.id_for_label }}"
+                               value="{{ form.title.value|default:'' }}"
+                               placeholder="Title">
 
                         {% if form.title.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
@@ -41,20 +40,78 @@
 
                     <div class="form-group">
                         <label for="{{ form.content.id_for_label }}">Page Content</label>
-                        <textarea
-                                class="form-control {% if form.content.errors %}border-danger{% endif %}"
-                                name="{{ form.content.name }}"
-                                id="{{ form.content.id_for_label }}"
-                                value="{{ form.content.value|default:'' }}"></textarea>
-
+                        <textarea class="form-control {% if form.content.errors %}border-danger{% endif %}"
+                                  name="{{ form.content.name }}"
+                                  id="{{ form.content.id_for_label }}"
+                                  value="{{ form.content.value|default:'' }}"></textarea>
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
                         {% endif %}
                     </div>
-
+                    <all-category></all-category>
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
         </div>
     </div>
 {% endblock %}
+
+{% block vue_templates %}
+    <script type="text/x-template" id="category-template">
+        <div class="border border-dark p-2 mb-3">
+            <p>Select Category</p>
+            <span class="d-inline-block mr-2" v-for="(c,i) in categories">
+                <input class="qt-dsb-cat-input-checkbox" type="checkbox"
+                       :id="c.html_name" :name="c.html_name" :value="c.category_id" :checked="c.is_checked">
+                <label :class="'btn btn-sm rounded-0 ' + (c.is_checked ? 'btn-dark' : 'btn-outline-dark')"
+                       :for="c.html_name" @click.prevent="toggle_checked(i)">[[ c.label ]]</label>
+            </span>
+
+            <div class="input-group py-2">
+                <input type="text" class="form-control" v-model="new_category"/>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-sm btn-primary" @click.prevent="add_cat">+ Add category</button>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['all-category'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    categories: [
+                        {# all_categories not included in modelform, handled customly #}
+                            {% for c in all_categories %}{
+                                html_name: "{{ category_prefix }}{{ c.category.id }}",
+                                label: "{{ c.category.name }}",
+                                category_id: "{{ c.category.id }}",
+                                is_checked: {{ c.has_category|yesno:"true,false" }},
+                                },{% endfor %}
+                    ],
+                    new_category: '',
+                }
+            },
+            methods: {
+                toggle_checked: function (index) {
+                    this.$set(this.categories[index], 'is_checked', !this.categories[index].is_checked);
+                },
+                add_cat: function () {
+                    {# TODO: ajax call to add new category in model #}
+                    this.categories.push({
+                        html_name: "",
+                        label: this.new_category,
+                        category_id: "",
+                        is_checked: true,
+                    });
+                    this.new_category = '';
+                }
+            },
+            template: '#category-template'
+        };
+    </script>
+{% endblock %}
+

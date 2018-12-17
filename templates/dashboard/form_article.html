@@ -26,13 +26,12 @@
 
                     <div class="form-group p-md-3 p-2 mb-4 border border-dark">
                         <label for="{{ form.title.id_for_label }}">Title</label>
-                        <input
-                                type="text"
-                                class="form-control {% if form.title.errors %}border-danger{% endif %}"
-                                name="{{ form.title.name }}"
-                                id="{{ form.title.id_for_label }}"
-                                value="{{ form.title.value|default:'' }}"
-                                placeholder="Title">
+                        <input type="text"
+                               class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                               name="{{ form.title.name }}"
+                               id="{{ form.title.id_for_label }}"
+                               value="{{ form.title.value|default:'' }}"
+                               placeholder="Title">
 
                         {% if form.title.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
@@ -41,11 +40,10 @@
 
                     <div class="form-group p-md-3 p-2 mb-4 border border-dark">
                         <label for="{{ form.content.id_for_label }}">Content</label>
-                        <textarea
-                                class="form-control {% if form.content.errors %}border-danger{% endif %}"
-                                name="{{ form.content.name }}"
-                                id="{{ form.content.id_for_label }}"
-                                value="{{ form.content.value|default:'' }}"></textarea>
+                        <textarea class="form-control {% if form.content.errors %}border-danger{% endif %}"
+                                  name="{{ form.content.name }}"
+                                  id="{{ form.content.id_for_label }}"
+                                  value="{{ form.content.value|default:'' }}"></textarea>
 
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
