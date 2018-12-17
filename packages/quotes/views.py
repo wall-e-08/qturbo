@@ -1,3 +1,4 @@
+import decimal
 import json
 
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest
@@ -124,11 +125,15 @@ def plan_quote(request, ins_type):
     """
 
     import random
-    random_year = random.choice(range(1950, 2001))
+    import datetime
+    random_year = random.choice(range(1956, 1996))
+    random_gender = random.choice(['Male', 'Female'])
+    random_tobacco = random.choice(['Y', 'N'])
+    tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
 
     quote_request_form_data = {'Payment_Option': '1',
                                'applicant_is_child': False,
-                               'Tobacco': 'N',
+                               'Tobacco': random_tobacco,
                                'Dependents': [],
                                'Ins_Type': 'stm',
                                'Coverage_Days': None,
@@ -136,19 +141,18 @@ def plan_quote(request, ins_type):
                                'Children_Count': 0,
                                'Applicant_Age': str(2018-random_year),
                                'Address1': '',
-                               'Applicant_DOB' : '10-18-'+(str(random_year)),
-                               'Spouse_Age': None,
+                               'Applicant_DOB': '10-18-' + (str(random_year)),
                                'Include_Spouse': 'No',
                                'quote_request_timestamp': 1541930336,
                                'Email': '',
-                               'Effective_Date': '12-15-2018',
+                               'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
                                'Phone': '',
-                               'quote_store_key': '44102-10-18-'+(str(random_year))+'-Male-1-11-12-2018-N-stm',
+                               'quote_store_key': '24867-10-18-' + (str(random_year)) + '-1992-Male-1-11-12-2018-N-stm',
                                'Zip_Code': '24867',
                                'Spouse_DOB': None,
                                'State': 'WV',
                                'Spouse_Gender': '',
-                               'Applicant_Gender': 'Male',
+                               'Applicant_Gender': random_gender,
                                'Last_Name': ''
                                }
 
