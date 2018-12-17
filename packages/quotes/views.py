@@ -8,7 +8,7 @@ from django.urls import reverse
 from .redisqueue import redis_connect
 from .utils import (form_data_is_valid)
 from .logger import VimmLogger
-from .tasks import StmPlanTask
+from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 
 logger = VimmLogger('quote_turbo')
 
@@ -130,12 +130,18 @@ def plan_quote(request, ins_type):
     random_gender = random.choice(['Male', 'Female'])
     random_tobacco = random.choice(['Y', 'N'])
     tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
+    random_state_zip_combo = random.choice([
+        ('OH', '44102'),
+        ('WV', '24867'),
+        ('FL', '33129')
+    ])
+    random_ins_type = random.choice(['stm', 'lim', 'anc'])
 
     quote_request_form_data = {'Payment_Option': '1',
                                'applicant_is_child': False,
                                'Tobacco': random_tobacco,
                                'Dependents': [],
-                               'Ins_Type': 'stm',
+                               'Ins_Type': random_ins_type,
                                'Coverage_Days': None,
                                'First_Name': '',
                                'Children_Count': 0,
@@ -147,10 +153,10 @@ def plan_quote(request, ins_type):
                                'Email': '',
                                'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
                                'Phone': '',
-                               'quote_store_key': '24867-10-18-' + (str(random_year)) + '-1992-Male-1-11-12-2018-N-stm',
-                               'Zip_Code': '24867',
+                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-1992-Male-1-11-12-2018-N-stm',
+                               'Zip_Code': random_state_zip_combo[1],
                                'Spouse_DOB': None,
-                               'State': 'WV',
+                               'State': random_state_zip_combo[0],
                                'Spouse_Gender': '',
                                'Applicant_Gender': random_gender,
                                'Last_Name': ''
@@ -206,13 +212,13 @@ def plan_quote(request, ins_type):
         print("Redis connection does not exist for redis key")
         redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
 
+        print(f"Insurance type is {ins_type}")
         if ins_type == 'stm':
-            print("Insurance type is {0}".format(ins_type))
             StmPlanTask.delay(request.session.session_key, quote_request_form_data)
-        # elif ins_type == 'lim':
-        #     LimPlanTask.delay(request.session.session_key, quote_request_form_data)
-        # elif ins_type == 'anc':
-        #     AncPlanTask.delay(request.session.session_key, quote_request_form_data)
+        elif ins_type == 'lim':
+            LimPlanTask.delay(request.session.session_key, quote_request_form_data)
+        elif ins_type == 'anc':
+            AncPlanTask.delay(request.session.session_key, quote_request_form_data)
 
 
     return render(request, 'quotes/quote_list.html', {
