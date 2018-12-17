@@ -9,7 +9,8 @@ admin.site.register(Article)
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'svg_icon']
+    list_display = ['name', 'svg_icon', 'post_type']
+    list_filter = ['post_type']
     readonly_fields = ['slug',]
 
     def svg_icon(self, obj):
