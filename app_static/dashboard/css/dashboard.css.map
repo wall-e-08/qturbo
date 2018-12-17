@@ -1,7 +1,7 @@
 {
 "version": 3,
-"mappings": "AAEA,aAAa,CACT,WAAW,CCHG,GAAG,CDIjB,aAAa,CCHC,GAAG",
-"sources": ["../scss/dashboard.scss","../scss/_dsb-variable.scss"],
+"mappings": "AAGA,gBAAgB,CACZ,WAAW,CCAG,GAAG,CDCjB,aAAa,CCAC,GAAG,CDGrB,sBAAuB,CENnB,UAAU,CAAE,4BAAO,CFQnB,uFAA0B,CER1B,UAAU,CAAE,eAAO",
+"sources": ["../scss/dashboard.scss","../scss/_dsb-variable.scss","../../../global_static_libs/bootstrap/scss/mixins/_box-shadow.scss"],
 "names": [],
 "file": "dashboard.css"
 }

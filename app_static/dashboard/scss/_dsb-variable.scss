@@ -1,2 +1,7 @@
+@import "../../../global_static_libs/bootstrap/scss/functions";
+@import "../../../global_static_libs/bootstrap/scss/variables";
+
+$enable-shadows: true;  // overriding bootstrap default value
 $dsb-edit-btn-pt: 3px;
 $dsb-edit-btn-pr: 9px;
+$dsb-btn-box-shadow-color: rgba($black, 0.2)

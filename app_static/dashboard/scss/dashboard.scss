@@ -1,6 +1,14 @@
+@import "../../../global_static_libs/bootstrap/scss/mixins/box-shadow";
 @import "dsb-variable";
 
-.dsb-edit-btn{
+.qt-dsb-edit-btn{
     padding-top: $dsb-edit-btn-pt;
     padding-right: $dsb-edit-btn-pr;
+}
+
+.qt-dsb-btn-box-shadow {
+    @include box-shadow(0 0 10px 2px $dsb-btn-box-shadow-color);
+    &:hover, &:focus, &:active{
+        @include box-shadow(none !important)
+    }
 }
