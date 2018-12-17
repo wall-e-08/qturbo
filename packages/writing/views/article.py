@@ -12,8 +12,8 @@ def sectionized_article(request, slug):
     return HttpResponse("sectionized_article page")
 
 
-def each_article(request, slug):
-    article = get_object_or_404(Article, slug=slug)
+def each_article(request, model_obj):
+    article = model_obj
     ctx = {
         "article": article,
     }

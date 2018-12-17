@@ -1,5 +1,10 @@
 from writing.models import Category, Categorize
 
+DISTINCT_PAGE_TEMPLATE_FILE_LIST = (
+    ('ggg/gggg.ggg', 'ole ole'),
+    ('xaxa/asdasdjqwe/qwekqw', 'easdasdasd'),
+)
+
 
 def get_category_list_by_blog(blog=None):
     cat_list = []
