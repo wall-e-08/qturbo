@@ -247,14 +247,14 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
             if decoded_plan in ['START', "END"]:
                 print(type(decoded_plan), decoded_plan)
 
-            elif isinstance(decoded_plan, str) and decoded_plan == 'END':
-                end_reached = True
+            # elif isinstance(decoded_plan, str) and decoded_plan == 'END':
+            #     end_reached = True
 
             sp.append(decoded_plan)
 
         if end_reached:
             pass
-    logger.info("get_plan_quote_data_ajax: {0}".format(len(sp)))
+    logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({
         'monthly_plans': sp,
     })
