@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'quotes',
     'writing',
     'dashboard',
+    'healthplans',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,6 +138,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+###################
+# CELERY SETTINGS #
+###################
+
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_TASK_ROUTES = {
+    'healthplans.tasks.StmPlanTask': {'queue': 'stm'},
+    'healthplans.tasks.LimPlanTask': {'queue': 'lim'},
+    'healthplans.tasks.AncPlanTask': {'queue': 'anc'},
+    'healthplans.tasks.EsignCheckBeat': {'queue': 'esign_check'},
+    'healthplans.tasks.EsignCheckWorker': {'queue': 'esign_check'},
+
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -189,7 +208,6 @@ DJRICHTEXTFIELD_CONFIG = {
 # post (blog & article) configs
 BLOG_SENIOR_CATEGORY_SLUG = 'medicare'
 BLOG_FOR_ALL_CATEGORY_SLUG = 'health-insurance'
-
 
 LOGGING = {
     'version': 1,
@@ -267,7 +285,6 @@ LOGGING = {
 
 
 }
-
 
 try:
     from .local_settings import *
