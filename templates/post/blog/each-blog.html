@@ -34,27 +34,55 @@
                         <p class="font-14 ml-2">Advice</p>
 
 
-                </a>
-                <h1 class="font-wight-700 font-xl">{{ blog.title }}</h1>
-                <div class="my-4">
-                    <p class="mb-1">by
-                        <a href="#" target="" class="mx-2">Mr. Lorem</a>
-                        <span class="font-14"> Health Insurance Health Insurance Company</span>
-                    </p>
-                    <div class="d-flex flex-row ">
-                        <p>Updated : December, 01, 2018</p>
-                        <p class="font-14 ml-4">Published : September, 01, 2018</p>
+                    </a>
+                    <h1 class="font-wight-700 font-xl">{{ blog.title }}</h1>
+                    <div class="my-4">
+                        <p class="mb-1">by
+                            <a href="#" target="" class="mx-2">Mr. Lorem</a>
+                            <span class="font-14"> Health Insurance Health Insurance Company</span>
+                        </p>
+                        <div class="d-flex flex-row ">
+                            <p>Updated : December, 01, 2018</p>
+                            <p class="font-14 ml-4">Published : September, 01, 2018</p>
+
+                        </div>
+
+                    </div>
+                    <div class="">
+                        {% if blog.feature_img %}
+                            <img src="{{ blog.feature_img.url }}" alt="" class="mb-4">
+                        {% endif %}
+                        {{ blog.content|safe }}
+                        <hr class="my-4">
+                    </div>
+                    <div id="author" class="d-flex flex-row">
+                        <div class="author-img mr-3">
+                            <img src="{% static 'post/img/author.jpg' %}" alt="" class="rounded-circle">
+                        </div>
+                        <div class="about-author">
+                            <p class="font-14 mb-1">About the author</p>
+                            <a href="#"><h4 class="">Mr.Lorem</h4></a>
+                            <p class="">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                                exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                consequat. Duis aute irure dolor in reprehenderit </p>
+                            <p class="font-14 ">Latest article by Mr.Lorem</p>
+                            <div class="latest-article">
+                                {% with ''|center:'4' as range %}
+                                    {% for _ in range %}
+                                        <a href="" class=""><p class="text-dark">Lorem ipsum dolor sit amet, consectetur
+                                            adipiscing elit</p></a>
+                                    {% endfor %}
+                                {% endwith %}
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
-
-                {% if blog.feature_img %}
-                    <img src="{{ blog.feature_img.url }}" alt="" class="mb-4">
-                {% endif %}
-                    {{ blog.content|safe }}
-                </div>
-
+ <hr class="">
             </div>
             <div class="col-md-3">
                 <div class="border rounded border-bottom-0">
@@ -62,8 +90,8 @@
                     <div class="related-post ">
                         {% with ''|center:'8' as range %}
                             {% for _ in range %}
-                                <a href="" class=""><h6 class="text-dark font-weight-bold py-2 border-bottom pl-4">Top 10 Procedures to
-                                    Help You Reach</h6></a>
+                                <a href="" class=""><h6 class="text-dark font-weight-bold py-2 border-bottom px-4">Top
+                                    10 Procedures to Help</h6></a>
                             {% endfor %}
                         {% endwith %}
 
@@ -74,10 +102,11 @@
         </div>
     </div>
     <div class=" linear-gradient">
-    <div class="container text-center py-5 ">
-        <h3 class="text-white">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</h3>
-   </div>
+        <div class="container text-center py-5 ">
+            <h3 class="text-white">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua."</h3>
         </div>
+    </div>
     <div class="container mt-5">
         <h2 class="text-center">More article in health insurance</h2>
 
