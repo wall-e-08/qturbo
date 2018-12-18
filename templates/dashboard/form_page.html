@@ -1,6 +1,8 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block title %}Create Page | {{ block.super }}{% endblock title %}
+
 {% block head_js %}
     {% with selector=form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
@@ -10,14 +12,14 @@
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{% url 'dashboard:all_pages' %}">Page</a></li>
-    <li class="breadcrumb-item active">Create or Edit Page</li>
+    <li class="breadcrumb-item active">Create Page</li>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
             <div class="col-md-7">
-                <h1>Add a New page</h1>
+                <h1>Add New page</h1>
                 <form method="post">
                     {% csrf_token %}
                     {{ form.non_field_errors }}

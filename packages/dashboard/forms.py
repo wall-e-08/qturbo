@@ -2,13 +2,13 @@ from django import forms
 from distinct_pages.models import Page
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
-from .utils import DISTINCT_PAGE_TEMPLATE_FILE_LIST
+from .utils import get_distinct_page_template_file_list
 
 
 class PageForm(forms.ModelForm):
     content = forms.CharField(widget=RichTextWidget())  # RichTextWidget(field_settings='basic')
     template_file = forms.ChoiceField(
-        choices=DISTINCT_PAGE_TEMPLATE_FILE_LIST
+        choices=get_distinct_page_template_file_list
     )
 
     # content.widget.field_settings = {'your': 'custom', 'settings': True}
