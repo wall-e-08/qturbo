@@ -54,7 +54,7 @@
                         <label for="{{ form.section.id_for_label }}">Sections</label>
                         <select class="form-control" id="{{ form.section.id_for_label }}" name="{{ form.section.name }}">
                             {% for val, opt in form.fields.section.choices %}
-                                <option value="{{ val }}"{% if form.fields.section.value == val %} selected{% endif %}>{{ opt }}</option>
+                                <option value="{{ val }}"{% if form.section.value == val %} selected{% endif %}>{{ opt }}</option>
                             {% endfor %}
                         </select>
 

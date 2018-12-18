@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Create Page | {{ block.super }}{% endblock title %}
+{% block title %}{{ action }} Page | {{ block.super }}{% endblock title %}
 
 {% block head_js %}
     {% with selector=form.content.id_for_label %}
@@ -12,14 +12,14 @@
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{% url 'dashboard:all_pages' %}">Page</a></li>
-    <li class="breadcrumb-item active">Create Page</li>
+    <li class="breadcrumb-item active">{{ action }} Page</li>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
             <div class="col-md-7">
-                <h1>Add New page</h1>
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} page</h1>
                 <form method="post">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
@@ -44,8 +44,7 @@
                         <textarea
                                 class="form-control {% if form.content.errors %}border-danger{% endif %}"
                                 name="{{ form.content.name }}"
-                                id="{{ form.content.id_for_label }}"
-                                value="{{ form.content.value|default:'' }}"></textarea>
+                                id="{{ form.content.id_for_label }}">{{ form.content.value|default:'' }}</textarea>
 
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
@@ -55,8 +54,9 @@
                     <div class="form-group">
                         <label for="{{ form.template_file.id_for_label }}">Template File</label>
                         <select name="{{ form.template_file.html_name }}" id="{{ form.template_file.id_for_label }}">
+                            <option selected>---</option>
                             {% for val, opt in form.fields.template_file.choices %}
-                                <option value="{{ val }}" {% if form.fields.template_file.value == val %}selected{% endif %}>{{ opt }}</option>
+                                <option value="{{ val }}" {% if form.template_file.value == val %}selected{% endif %}>{{ opt }}</option>
                             {% endfor %}
                         </select>
                     </div>

@@ -10,33 +10,132 @@
 
 {% block dashboard_content %}
     <div class="container">
-        <div class="row">
-            {% for page in pages %}
-                <div class="col-md-4">
-                    <div class="card w-100 h-100">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">{{ page.title }}&nbsp;&nbsp;</h4>
-                                <span>id-{{ page.id }}, slug: < later ></span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text">{{ page.content|striptags|truncatechars:50 }}</p>
-                            <p class="small">{{ page.create_time }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{% url 'slugified_page' page.slug %}" class="btn btn-success">view</a>
-                            <a href="#" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    
+        <all-pages></all-pages>
+
         <div class="my-5">
             <a href="{% url 'dashboard:create_page' %}" class="btn btn-primary btn-lg">Create Page</a>
         </div>
     </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="page-template">
+        <div>
+            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Published Pages</h2>
+            <div class="row">
+                <div class="col-md-4" v-for="p in published_pages">
+                    <div class="card w-100 h-100 border-success">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                <span>slug: [[ p.slug ]]</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title font-wight-600"></h5>
+                            <p class="card-text" v-html="p.content"></p>
+                            <p class="small">[[ p.created ]]</p>
+                        </div>
+                        <div class="card-footer">
+                            <a :href="p.view_url" target="_blank" class="btn btn-success">view</a>
+                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                            <a href="#" class="btn btn-danger">delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5">
+            
+            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Unpublished Pages</h2>
+            <div class="row">
+                <div class="col-md-4" v-for="p in unpublished_pages">
+                    <div class="card w-100 h-100 border-warning">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                <span>slug: [[ p.slug ]]</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title font-wight-600"></h5>
+                            <p class="card-text" v-html="p.content"></p>
+                            <p class="small">[[ p.created ]]</p>
+                        </div>
+                        <div class="card-footer">
+                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                            <a href="#" class="btn btn-danger">delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5">
+            
+            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Archived Pages</h2>
+            <div class="row">
+                <div class="col-md-4" v-for="p in archived_pages">
+                    <div class="card w-100 h-100 border-danger">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                <span>slug: [[ p.slug ]]</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title font-wight-600"></h5>
+                            <p class="card-text" v-html="p.content"></p>
+                            <p class="small">[[ p.created ]]</p>
+                        </div>
+                        <div class="card-footer">
+                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                            <a href="#" class="btn btn-danger">delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['all-pages'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    pages: [
+                        {# all_categories not included in modelform, handled customly #}
+                        {% for p in pages %}{
+                            page_id: {{ p.id }},
+                            title: "{{ p.title }}",
+                            slug: "{{ p.slug }}",
+                            status: "{{ p.status }}",
+                            content: `{{ p.content|striptags|truncatechars:50 }}`, {# v-html="content" :: use this for raw html #}
+                            created: "{{ p.create_time }}",
+                            view_url: "{% url 'slugified_page' p.slug %}",
+                            edit_url: "{% url 'dashboard:edit_page' p.id %}",
+                        },{% endfor %}
+                    ],
+                }
+            },
+            computed: {
+                published_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'p';
+                    });
+                },
+                unpublished_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'u';
+                    });
+                },
+                archived_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'a';
+                    });
+                },
+            },
+            template: '#page-template'
+        };
+    </script>
 {% endblock %}

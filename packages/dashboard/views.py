@@ -121,21 +121,34 @@ def create_blog(request):
     })
 
 
-def create_page(request):
-    if request.method == 'POST':
-        form = PageForm(request.POST)
-        if form.is_valid():
-            page = form.save()
-            return redirect(page.get_absolute_url())
-        else:
-            print("Form is not valid")
-            print(form.errors)
+def create_or_edit_page(request, page_id=None):
+    if page_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            form = PageForm(request.POST)
+            if form.is_valid():
+                page = form.save()
+                return redirect(page.get_absolute_url())
+            else:
+                print("Form is not valid")
+                print(form.errors)
+        form = PageForm()
     else:
-        print("not post req.. {}".format(request.method))
-
-    form = PageForm()
+        action = "Edit"
+        try:
+            page = Page.objects.get(id=int(page_id))
+            if request.method == 'POST':
+                form = PageForm(request.POST, instance=page)
+                if form.is_valid():
+                    page = form.save()
+                    return redirect(page.get_absolute_url())
+            form = PageForm(instance=page)
+        except Page.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No page found")
     return render(request, 'dashboard/form_page.html', {
         "form": form,
+        "action": action,
     })
 
 
