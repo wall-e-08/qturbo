@@ -74,15 +74,11 @@
                                             adipiscing elit</p></a>
                                     {% endfor %}
                                 {% endwith %}
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
- <hr class="">
+                <hr class="">
             </div>
             <div class="col-md-3">
                 <div class="border rounded border-bottom-0">
@@ -94,8 +90,6 @@
                                     10 Procedures to Help</h6></a>
                             {% endfor %}
                         {% endwith %}
-
-
                     </div>
                 </div>
             </div>
@@ -103,13 +97,43 @@
     </div>
     <div class=" linear-gradient">
         <div class="container text-center py-5 ">
-            <h3 class="text-white">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua."</h3>
+            <h2 class="text-white">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                incididunt"</h2>
         </div>
     </div>
-    <div class="container mt-5">
-        <h2 class="text-center">More article in health insurance</h2>
+    <div class="container my-5">
+        <h2 class="text-center mb-5">More Article in Health Insurance</h2>
+        <div class="row">
+            {% with ''|center:'4' as range %}
+                {% for _ in range %}
+                    <div class="col-md-4">
 
+                        <div class="card hi-article mb-4">
+                            <a href="#">
+                                <img class="card-img-top" src="{% static 'post/img/author.jpg' %}" alt="Card image cap">
+                            </a>
+                            <div class="card-body">
+                                <a href="#" class="d-flex flex-row">
+                                    <img src="{% static 'post/img/advice.svg' %}" alt=""
+                                         style="height: 20px;width: 20px">
+                                    <p class="font-14 ml-2">Advice</p>
+                                </a>
+                                <a href="#"><h5 class="card-title text-dark">Top 10 Procedures to Help</h5></a>
+                                <h6 class="card-subtitle my-4 text-muted">Last Updated: 12/08/2018</h6>
+                                <p class="card-text">Some quick example text to build on the card title and make up the
+                                    bulk of
+                                    the card's content.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+        <div class="text-center">
+            <a href="#">
+                <button class="btn btn-primary p-3 font-weight-bold">More in Health Insurance</button>
+            </a>
+        </div>
     </div>
 
 {% endblock %}
