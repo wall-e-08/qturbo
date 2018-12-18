@@ -1,0 +1,23 @@
+.font-14{
+  font-size: 14px;
+  font-weight: 600;
+  color: #888888;
+}
+.linear-gradient{
+    background: linear-gradient(to right, #19b4fa 0%, #163167 100%);
+}
+.author-img img{
+    width: 90px;
+    height: 90px;
+    max-width: 90px;
+}
+.hi-article{
+  transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.hi-article:hover{
+  transform: translateY(-10px);
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  cursor: pointer;
+}
