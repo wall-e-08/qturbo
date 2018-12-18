@@ -284,12 +284,48 @@ ESIGNATURE_VERIFICATION_URL = 'https://www.hiiquote.com/webservice/esign_payment
 QUOTE_REQUEST_USER_ID = 'A157F6910039407D116147'  # CLH1251100 - $125 - live
 
 
-#  -----------------+
+# -----------------+
 #  Celery Settings |
 # -----------------+
 CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
 CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
 CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
+
+
+# ----------------------+
+# E-Signature Variables |
+# ----------------------+
+
+ESIGN_SIGNATURE_COMPLETED_TXT = "Signature is Completed"
+
+ESIGNATURE_VERIFICATION = 'Y'
+ESIGN_SEND_METHOD = 'Email'  # 'Text'
+
+
+# -----------------+
+#   PLAN LIST      +
+# -----------------+
+
+# MAIN PLAN LIST
+
+MAIN_PLANS = (
+    # ('54', 'Principle Advantage'),
+    # ('90', 'Unified Health One')
+    # ('97', 'Select STM'),
+    # ('104', 'Sage STM'),
+    ('Freedom Spirit Plus', 'Freedom Spirit Plus'),
+    ('Safeguard Critical Illness', 'Safeguard Critical Illness'),
+    ('Foundation Dental', 'Foundation Dental'),
+    ('USA Dental', 'USA Dental'),
+    ('Everest STM', 'Everest STM'),
+    ('LifeShield STM', 'LifeShield STM'),
+    ('Cardinal Choice', 'Cardinal Choice'),
+    ('Health Choice', 'Health Choice'),
+    ('Vitala Care', 'Vitala Care'),
+    ('Legion Limited Medical', 'Legion Limited Medical'),
+)
+
+ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
 
 try:
     from .local_settings import *

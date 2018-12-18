@@ -1,0 +1,1327 @@
+{#{% TODO extends 'base.html' %}#}
+{% load i18n static humanize hp_tags %}
+{% block title %}
+{#    {{ TODO block.super }}#}
+{% endblock title %}
+{% block extra_css %}
+{#<link rel="stylesheet" type="text/css" href="{% static 'quotes/css/jquery-ui.min.css' %}">#}
+<style type="text/css">
+body {font-size: 1.5rem;}
+#info-form-error-message-fix {
+    color: #ff6500;
+    font-weight: bold;
+    text-align: center;
+}
+.form_field_error {color: #ff6500;}
+
+
+.app-page-summary.affix {margin-top: 0rem;}
+.app-page-summary {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-image: none;
+    border-style: solid;
+    margin-top: 1rem;
+}
+.summary-affix.affix {top: 10px; width: 260px;}
+.affix {position: fixed;}
+.app-page-summary .summary-wrapper {padding: 1.5rem;}
+@media (max-width: 700px) {
+    .app-stage-div {text-align: left !important; margin-bottom: 1.5rem;}
+    .progress-bar-step-label {display: inline !important; margin-left: 20px;}
+    .shape-pocket {float: left !important; display: inline-block;}
+    .circleBase {float: left !important; display: inline-block;}
+    #application-body {padding-left: 15px !important;}
+}
+.app-page-heading {
+    color: #166e96;
+    font-weight: bold;
+}
+.section h3 {
+    background-color: #f1f2f4;
+    border-top: 2px solid #3479d4;
+    color: #3479d4;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+}
+.hp-radio {
+    display: inline-block;
+    position: relative;
+}
+.hp-radio input {
+    left: 50%;
+    opacity: 0;
+    position: absolute;
+    z-index: -100;
+}
+.hp-radio input[type="radio"] {
+    line-height: normal;
+    margin: 4px 0 0;
+}
+input[type="checkbox"], input[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+input, button, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+.hp-radio label {
+    background: #fff none repeat scroll 0 0;
+    font-size: inherit;
+    line-height: 1;
+    min-width: 20px;
+    width: 100%;
+    padding: 0.9rem 0.1rem;
+    text-align: center;
+    vertical-align: middle;
+}
+.hp-radio label {
+    margin: 0 -4px 0 0;
+}
+.hp-radio label {
+    border: 1px solid #3479d4;
+    color: #3479d4;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 300;
+}
+.hp-radio input:focus + label {
+    background: #3479d4 none repeat scroll 0 0;
+    border-style: dotted;
+    outline: 0 none;
+}
+.hp-radio label.checked, .hp-radio input:checked + label {
+    background: #3479d4 none repeat scroll 0 0;
+    color: #fff;
+}
+.hp-radio {
+    width: 49%;
+}
+.none {display: none;}
+
+.required::after {
+    color: #ff0000;
+    content: "*";
+}
+</style>
+{% endblock extra_css %}
+{% block top-menu-block %}{% endblock %}
+{% block mobile-header %}{% endblock %}
+{% block container %}
+
+
+<div class="app-page-status-bar">
+    <div class="container">
+        <div class="col-xs-12">
+            <ul class="app-status-list">
+                <li class="first completed" id="underwriting">
+                    <span class="progress-bar-step-label">✓</span>
+                    <a href="{% url 'quotes:stm_enroll' plan_url 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li class="current" id="applicantInfo">
+                    <span class="progress-bar-step-label">2</span>
+                    <span class="progress-bar-label">Applicant Info</span>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li id="payment">
+                    <span class="progress-bar-step-label">3</span>
+                    <span class="progress-bar-label">Payment &amp; Billing</span>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li id="review">
+                    <span class="progress-bar-step-label">4</span>
+                    <span class="progress-bar-label">Review &amp; Submit</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div id="app-page-wrapper">
+    <div id="app-page-container" class="container">
+
+        <div class="row">
+
+            <div id="application-body">
+                <div class="ms-row">
+                    <div id="js-app-page-body-content" class="app-page-body-content col-md-8">
+                        <p class="app-page-heading-required-text">* Required</p>
+                        <h3 class="bold color-base no-padding no-margin">Step 2. Applicant Info</h3>
+                        <p class="reset">Please complete the applicant, contact and beneficiary information of the application. (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>
+
+
+                        <form id="applicant_info_form" method="post">
+                            {% csrf_token %}
+
+                            {# ===================== #}
+                            {# Applicant Information #}
+                            {# ===================== #}
+                            <div class="row section">
+                                <div class="col-sm-12 custom_form-border">
+                                    <h3>{% trans "Applicant Information" %}</h3>
+                                    {# name #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="required" for="{{ st_application_info_form.First_Name.id_for_label }}">
+                                                    {% trans "First Name" %}
+                                                </label>
+                                                <input id="{{ st_application_info_form.First_Name.id_for_label }}"
+                                                       type="text" class="form-control"
+                                                       name="{{ st_application_info_form.First_Name.html_name }}"
+                                                       value="{{ st_application_info_form.First_Name.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ st_application_info_form.First_Name.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label for="{{ st_application_info_form.Middle_Name.id_for_label }}">
+                                                    {% trans "Middle Name" %}
+                                                </label>
+                                                <input id="{{ st_application_info_form.Middle_Name.id_for_label }}"
+                                                       type="text" class="form-control"
+                                                       name="{{ st_application_info_form.Middle_Name.html_name }}"
+                                                       value="{{ st_application_info_form.Middle_Name.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ st_application_info_form.Middle_Name.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="required" for="{{ st_application_info_form.Last_Name.id_for_label }}">
+                                                    {% trans "Last Name" %}
+                                                </label>
+                                                <input id="{{ st_application_info_form.Last_Name.id_for_label }}"
+                                                       type="text" class="form-control"
+                                                       name="{{ st_application_info_form.Last_Name.html_name }}"
+                                                       value="{{ st_application_info_form.Last_Name.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ st_application_info_form.Last_Name.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# Gender & DOB #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        {# Gender #}
+                                        <div class="{% if plan.Name == 'Cardinal Choice' %}col-sm-4{% else %}col-sm-6{% endif %}">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <label class="required">{% trans "Gender" %}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="hp-radio">
+                                                            <input type="radio" id="applicant-gender-male" value="Male"
+                                                                   name="{{ st_application_info_form.Gender.html_name }}"
+                                                                    {% if st_application_info_form.Gender.value == 'Male' %}checked{% endif %}
+                                                                   readonly disabled>
+                                                            <label for="applicant-gender-male">{% trans "Male" %}</label>
+                                                        </div>
+                                                        <div class="hp-radio">
+                                                            <input type="radio" id="applicant-gender-female" value="Female"
+                                                                   name="{{ st_application_info_form.Gender.html_name }}" readonly disabled
+                                                                   {% if st_application_info_form.Gender.value == 'Female' %}checked{% endif %}>
+                                                            <label for="applicant-gender-female">{% trans "Female" %}</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {# DOB #}
+                                        <div class="{% if plan.Name == 'Cardinal Choice' %}col-sm-4{% else %}col-sm-6{% endif %}">
+                                            <div class="form-group">
+                                                <label class="required">{% trans "Date Of Birth" %}</label>
+                                                <input type="text" class="form-control" readonly disabled
+                                                       name="{{ st_application_info_form.DOB.html_name }}"
+                                                       value="{% form_date_field_value_e st_application_info_form.DOB.value %}">
+                                            </div>
+                                        </div>
+
+                                        {% if plan.Name ==  "Cardinal Choice" %}
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="">{% trans "Occupation" %}</label>
+                                                <input id="{{ st_application_info_form.Occupation.id_for_label }}"
+                                                       type="text" class="form-control"
+                                                       name="{{ st_application_info_form.Occupation.html_name }}"
+                                                       value="{{ st_application_info_form.Occupation.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ st_application_info_form.Occupation.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                    </div>
+
+                                    {# height, weight & SSN #}
+                                    {% if plan.Name != 'Principle Advantage' and plan.Name != 'Cardinal Choice' %}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        {# height & weight #}
+                                        <div class="col-sm-7 col-xs-12">
+                                            <div class="form-group">
+                                                <label class="required">{% trans "Height and Wieght" %}</label>
+                                                <div class="row">
+                                                    <div class="col-sm-4 col-xs-4">
+                                                        <select class="form-control" style="width: 75%;float: left;"
+                                                                name="{{ st_application_info_form.Feet.html_name }}">
+                                                            <option value=""></option>
+                                                            {% for choice in st_application_info_form.Feet.field.choices %}
+                                                            <option value="{{ choice.0 }}"
+                                                                    {% if st_application_info_form.Feet.value == choice.0 %}
+                                                                    selected{% endif %}>{{ choice.1 }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">ft.</span>
+                                                        <span class="form_field_error" id="{{ st_application_info_form.Feet.id_for_label }}_error"></span>
+                                                    </div>
+                                                    <div class="col-sm-4 col-xs-4">
+                                                        <select class="form-control" style="width: 75%;float: left;"
+                                                                name="{{ st_application_info_form.Inch.html_name }}">
+                                                            <option value=""></option>
+                                                            {% for choice in st_application_info_form.Inch.field.choices %}
+                                                            <option value="{{ choice.0 }}"
+                                                                    {% if st_application_info_form.Inch.value == choice.0 %}
+                                                                    selected{% endif %}>{{ choice.1 }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">in.</span>
+                                                        <span class="form_field_error" id="{{ st_application_info_form.Inch.id_for_label }}_error"></span>
+                                                    </div>
+                                                    <div class="col-sm-4 col-xs-4">
+                                                        <input type="text" class="form-control" style="width: 75%;float: left;"
+                                                               name="{{ st_application_info_form.Weight.html_name }}"
+                                                               value="{{ st_application_info_form.Weight.value|default:'' }}">
+                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">lbs.</span>
+                                                        <span class="form_field_error" id="{{ st_application_info_form.Weight.id_for_label }}_error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {% if plan.Name == "Select STM" %}
+                                        <div class="col-sm-5">
+                                            <div class="form-group">
+	                                            <label class="required">{% trans "Occupation" %}</label>
+	                                            <input id="{{ st_application_info_form.Occupation.id_for_label }}"
+	                                                   type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Occupation.html_name }}"
+	                                                   value="{{ st_application_info_form.Occupation.value|default:'' }}">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.Occupation.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+
+                                        {# SSN #}
+                                        {% if plan.Name == 'Premier STM' %}
+                                        <div class="col-sm-4 col-sm-offset-1 col-xs-12">
+                                            <div class="form-group">
+	                                            <label class="required">{% trans "Social Security Number" %}</label>
+	                                            <input type="text" class="form-control ssn_input" id="{{ st_application_info_form.SOC.id_for_label }}"
+	                                                   name="{{ st_application_info_form.SOC.html_name }}"
+	                                                   value="{{ st_application_info_form.SOC.value|default:'' }}"
+	                                                   placeholder="###-##-####">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.SOC.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                            {# ===================== #}
+                            {# Parent Information #}
+                            {# ===================== #}
+                            {% if parent_info_form %}
+                                <div class="row section">
+                                    <div class="col-sm-12 custom_form-border">
+                                        <h3>{% trans "Legal Guardian Information" %}</h3>
+                                        {# Parent Name #}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            <div class="col-sm-6">
+	                                            <div class="form-group">
+	                                                <label class="required" for="{{ parent_info_form.Parent_First_Name.id_for_label }}">
+	                                                    {% trans "First Name" %}
+	                                                </label>
+	                                                <input id="{{ parent_info_form.Parent_First_Name.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ parent_info_form.Parent_First_Name.html_name }}"
+	                                                       value="{{ parent_info_form.Parent_First_Name.value|default:'' }}">
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_First_Name.id_for_label }}_error"></span>
+	                                            </div>
+                                            </div>
+                                            <div class="col-sm-6">
+	                                            <div class="form-group">
+	                                                <label class="required" for="{{ parent_info_form.Parent_Last_Name.id_for_label }}">
+	                                                    {% trans "Last Name" %}
+	                                                </label>
+	                                                <input id="{{ parent_info_form.Parent_Last_Name.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ parent_info_form.Parent_Last_Name.html_name }}"
+	                                                       value="{{ parent_info_form.Parent_Last_Name.value|default:'' }}">
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_Last_Name.id_for_label }}_error"></span>
+	                                            </div>
+                                            </div>
+                                        </div>
+
+                                        {# Parent Gender & Parent DOB #}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            {# Parent Gender #}
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+	                                                <div class="row">
+	                                                    <div class="col-sm-12">
+	                                                        <label class="required">{% trans "Gender" %}</label>
+	                                                    </div>
+	                                                </div>
+	                                                <div class="row">
+	                                                    <div class="col-sm-12">
+	                                                        <div class="hp-radio">
+	                                                            <input type="radio" id="parent-gender-male" value="Male"
+	                                                                   name="{{ parent_info_form.Parent_Gender.html_name }}"
+	                                                                    {% if parent_info_form.Parent_Gender.value == 'Male' %}checked{% endif %}>
+	                                                            <label for="parent-gender-male">{% trans "Male" %}</label>
+	                                                        </div>
+	                                                        <div class="hp-radio">
+	                                                            <input type="radio" id="parent-gender-female" value="Female"
+	                                                                   name="{{ parent_info_form.Parent_Gender.html_name }}"
+	                                                                   {% if parent_info_form.Parent_Gender.value == 'Female' %}checked{% endif %}>
+	                                                            <label for="parent-gender-female">{% trans "Female" %}</label>
+	                                                        </div>
+	                                                    </div>
+	                                                </div>
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_Gender.id_for_label }}_error"></span>
+                                                </div>
+                                            </div>
+
+                                            {# Parent DOB #}
+                                            <div class="col-sm-6">
+	                                            <div class="form-group">
+	                                                <span style="display: inline-block;margin-bottom: 5px;font-weight: 700;" class="required">{% trans "Date Of Birth" %}</span>
+	                                                <div>
+	                                                    <div class="input-group">
+	                                                        <input type="text" class="form-control {% comment %}date-picker{% endcomment %}" id="{{ parent_info_form.Parent_DOB.id_for_label }}"
+	                                                               name="{{ parent_info_form.Parent_DOB.html_name }}"
+	                                                               value="{% form_date_field_value_e parent_info_form.Parent_DOB.value %}">
+	
+	                                                        <label for="{{ parent_info_form.Parent_DOB.id_for_label }}" class="input-group-addon btn">
+	                                                            <span class="fa fa-calendar-minus-o"></span>
+	                                                        </label>
+	
+	                                                    </div>
+	                                                </div>
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_DOB.id_for_label }}_error"></span>
+	                                            </div>
+                                            </div>
+                                        </div>
+
+                                        {# parent phone number & email #}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            <div class="col-sm-4">
+	                                            <div class="form-group">
+	                                                <label class="required" for="{{ parent_info_form.Parent_DayPhone.id_for_label }}">
+	                                                    {% trans "Phone Number" %}
+	                                                </label>
+	                                                <input id="{{ parent_info_form.Parent_DayPhone.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ parent_info_form.Parent_DayPhone.html_name }}"
+	                                                       value="{{ parent_info_form.Parent_DayPhone.value|default:'' }}"
+	                                                       placeholder="###-###-####">
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_DayPhone.id_for_label }}_error"></span>
+	                                            </div>
+                                            </div>
+                                            <div class="col-sm-4">
+	                                            <div class="form-group">
+	                                                <label class="required" for="{{ parent_info_form.Parent_CellPhone.id_for_label }}">
+	                                                    {% trans "Alternate Phone Number" %}
+	                                                </label>
+	                                                <input id="{{ parent_info_form.Parent_CellPhone.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ parent_info_form.Parent_CellPhone.html_name }}"
+	                                                       value="{{ parent_info_form.Parent_CellPhone.value|default:'' }}"
+	                                                       placeholder="###-###-####">
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_CellPhone.id_for_label }}_error"></span>
+	                                            </div>
+                                            </div>
+                                            <div class="col-sm-4">
+	                                            <div class="form-group">
+	                                                <label class="required" for="{{ parent_info_form.Parent_Email.id_for_label }}">
+	                                                    {% trans "Email Address " %}
+	                                                </label>
+	                                                <input id="{{ parent_info_form.Parent_Email.id_for_label }}"
+	                                                       type="email" class="form-control"
+	                                                       name="{{ parent_info_form.Parent_Email.html_name }}"
+	                                                       value="{{ parent_info_form.Parent_Email.value|default:'' }}">
+	                                                <span class="form_field_error" id="{{ parent_info_form.Parent_Email.id_for_label }}_error"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {% endif %}
+
+
+                            {# ===================== #}
+                            {# Dependent Information #}
+                            {# ===================== #}
+                            {{ st_dependent_info_formset.management_form }}
+                            {% if form_data.Include_Spouse == 'Yes' or form_data.Dependents %}
+                            <div class="row section">
+                                <div class="col-sm-12 custom_form-border" >
+                                    <h3>{% trans "Dependent Information" %}</h3>
+                                    {% for st_dependent_info_form in st_dependent_info_formset %}
+
+                                        {{ st_dependent_info_form.Relation }}
+                                        {# name #}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+	                                                <label class="required" for="{{ st_dependent_info_form.First_Name.id_for_label }}">
+	                                                    {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                        {{ st_dependent_info_form.Relation.value }}
+	                                                    {% else %}
+	                                                        {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                    {% endif %}
+	                                                    {% trans "First Name" %}
+	                                                </label>
+	                                                <input id="{{ st_dependent_info_form.First_Name.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ st_dependent_info_form.First_Name.html_name }}"
+	                                                       value="{{ st_dependent_info_form.First_Name.value|default:'' }}">
+	                                                <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.First_Name.id_for_label }}_error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+	                                                <label for="{{ st_dependent_info_form.Middle_Name.id_for_label }}">
+	                                                    {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                        {{ st_dependent_info_form.Relation.value }}
+	                                                    {% else %}
+	                                                        {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                    {% endif %}
+	                                                    {% trans "Middle Name" %}
+	                                                </label>
+	                                                <input id="{{ st_dependent_info_form.Middle_Name.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ st_dependent_info_form.Middle_Name.html_name }}"
+	                                                       value="{{ st_dependent_info_form.Middle_Name.value|default:'' }}">
+	                                                <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.Middle_Name.id_for_label }}_error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+	                                                <label class="required" for="{{ st_dependent_info_form.Last_Name.id_for_label }}">
+	                                                    {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                        {{ st_dependent_info_form.Relation.value }}
+	                                                    {% else %}
+	                                                        {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                    {% endif %}
+	                                                    {% trans "Last Name" %}
+	                                                </label>
+	                                                <input id="{{ st_dependent_info_form.Last_Name.id_for_label }}"
+	                                                       type="text" class="form-control"
+	                                                       name="{{ st_dependent_info_form.Last_Name.html_name }}"
+	                                                       value="{{ st_dependent_info_form.Last_Name.value|default:'' }}">
+	                                                <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.Last_Name.id_for_label }}_error"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {# Gender & DOB #}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            {# Gender #}
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+	                                                <div class="row">
+	                                                    <div class="col-sm-12">
+	                                                        <label class="required">
+	                                                            {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                                {{ st_dependent_info_form.Relation.value }}
+	                                                            {% else %}
+	                                                                {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                            {% endif %}
+	                                                            {% trans "Gender" %}
+	                                                        </label>
+	                                                    </div>
+	                                                </div>
+	                                                <div class="row">
+	                                                    <div class="col-sm-12">
+	                                                        <div class="hp-radio">
+	                                                            <input type="radio" id="applicant-gender-male" value="Male"
+	                                                                   name="{{ st_dependent_info_form.Gender.html_name }}"
+	                                                                    {% if st_dependent_info_form.Gender.value == 'Male' %}checked{% endif %}
+	                                                                   readonly disabled>
+	                                                            <label for="applicant-gender-male">{% trans "Male" %}</label>
+	                                                        </div>
+	                                                        <div class="hp-radio">
+	                                                            <input type="radio" id="applicant-gender-female" value="Female"
+	                                                                   name="{{ st_dependent_info_form.Gender.html_name }}"
+	                                                                   readonly disabled
+	                                                                   {% if st_dependent_info_form.Gender.value == 'Female' %}checked{% endif %}>
+	                                                            <label for="applicant-gender-female">{% trans "Female" %}</label>
+	                                                        </div>
+	                                                    </div>
+	                                                </div>
+                                                </div>
+                                            </div>
+
+                                            {# DOB #}
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+	                                                <label class="required">
+	                                                    {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                        {{ st_dependent_info_form.Relation.value }}
+	                                                    {% else %}
+	                                                        {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                    {% endif %}
+	                                                    {% trans "Date Of Birth" %}
+	                                                </label>
+	                                                <input type="text" class="form-control" readonly disabled
+	                                                       name="{{ st_dependent_info_form.DOB.html_name }}"
+	                                                       value="{% form_date_field_value_e st_dependent_info_form.DOB.value %}">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {# height, weight & SSN #}
+                                        {% if plan.Name != 'Principle Advantage' and plan.Name != 'Cardinal Choice' and st_dependent_info_form.Relation.value == 'Spouse' %}
+                                        <div class="row" style="margin-bottom: 1.5rem;">
+                                            {# height & weight #}
+                                            <div class="col-sm-7 col-xs-12">
+                                                <div class="form-group">
+	                                                <label class="required">
+	                                                    {% if st_dependent_info_form.Relation.value == "Spouse" %}
+	                                                        {{ st_dependent_info_form.Relation.value }}
+	                                                    {% else %}
+	                                                        {{ st_dependent_info_form.Relation.value }}-{% if form_data.Include_Spouse == 'Yes' %}{{ forloop.counter0 }}{% else %}{{ forloop.counter }}{% endif %}
+	                                                    {% endif %}
+	                                                    {% trans "Height and Wieght" %}
+	                                                </label>
+	                                                <div class="row">
+	                                                    <div class="col-sm-4 col-xs-4">
+	                                                        <select class="form-control" style="width: 75%;float: left;"
+	                                                                name="{{ st_dependent_info_form.Feet.html_name }}">
+	                                                            <option value=""></option>
+	                                                            {% for choice in st_dependent_info_form.Feet.field.choices %}
+	                                                            <option value="{{ choice.0 }}"
+	                                                                    {% if st_dependent_info_form.Feet.value == choice.0 %}
+	                                                                    selected{% endif %}>{{ choice.1 }}</option>
+	                                                            {% endfor %}
+	                                                        </select>
+	                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">ft.</span>
+	                                                        <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.Feet.id_for_label }}_error"></span>
+	                                                    </div>
+	                                                    <div class="col-sm-4 col-xs-4">
+	                                                        <select class="form-control" style="width: 75%;float: left;"
+	                                                                name="{{ st_dependent_info_form.Inch.html_name }}">
+	                                                            <option value=""></option>
+	                                                            {% for choice in st_dependent_info_form.Inch.field.choices %}
+	                                                            <option value="{{ choice.0 }}"
+	                                                                    {% if st_dependent_info_form.Inch.value == choice.0 %}
+	                                                                    selected{% endif %}>{{ choice.1 }}</option>
+	                                                            {% endfor %}
+	                                                        </select>
+	                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">in.</span>
+	                                                        <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.Inch.id_for_label }}_error"></span>
+	                                                    </div>
+	                                                    <div class="col-sm-4 col-xs-4">
+	                                                        <input type="text" class="form-control" style="width: 75%;float: left;"
+	                                                               name="{{ st_dependent_info_form.Weight.html_name }}"
+	                                                               value="{{ st_dependent_info_form.Weight.value|default:'' }}">
+	                                                        <span style="width: 25%;float: right;padding-left: 0.5rem;">lbs.</span>
+	                                                        <span class="form_field_error dependent_error" id="{{ st_dependent_info_form.Weight.id_for_label }}_error"></span>
+	                                                    </div>
+	                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if not forloop.last %}
+                                        <hr>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                            {% endif %}
+
+
+                            {# =================== #}
+                            {# Contact Information #}
+                            {# =================== #}
+                            <div class="row section">
+                                <div class="col-sm-12 custom_form-border">
+                                    <h3>{% trans "Contact Information" %}</h3>
+                                    {# Address and City #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Addess" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Address.html_name }}"
+	                                                   value="{{ st_application_info_form.Address.value|default:'' }}">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.Address.id_for_label }}_error"></span>
+	                                        </div>
+                                        </div>
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "City" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.City.html_name }}"
+	                                                   value="{{ st_application_info_form.City.value|default:'' }}">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.City.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# State/Zip and Email Address #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <div class="row">
+	                                                <div class="col-sm-6 col-xs-6">
+	                                                    <label class="required">{% trans "State" %}</label>
+	                                                    <input type="text" class="form-control"
+	                                                           name="{{ st_application_info_form.State.html_name }}"
+	                                                           value="{{ form_data.State }}" readonly>
+	                                                    <span class="form_field_error" id="{{ st_application_info_form.State.id_for_label }}_error"></span>
+	                                                </div>
+	                                                <div class="col-sm-6 col-xs-6">
+	                                                    <label class="required">{% trans "Zip" %}</label>
+	                                                    <input type="text" class="form-control"
+	                                                           name="{{ st_application_info_form.ZipCode.html_name }}"
+	                                                           value="{{ form_data.Zip_Code }}" readonly>
+	                                                    <span class="form_field_error" id="{{ st_application_info_form.ZipCode.id_for_label }}_error"></span>
+	                                                </div>
+	                                            </div>
+	                                        </div>
+                                        </div>
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Email Address" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Email.html_name }}"
+	                                                   value="{{ st_application_info_form.Email.value|default:'' }}">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.Email.id_for_label }}_error"></span>
+	                                        </div>
+                                        </div>
+                                    </div>
+
+
+                                    {# Phone Number #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Phone Number" %}</label>
+	                                            <input type="text" class="form-control phone_input"
+	                                                   name="{{ st_application_info_form.DayPhone.html_name }}"
+	                                                   value="{{ st_application_info_form.DayPhone.value|default:'' }}"
+	                                                   placeholder="###-###-####">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.DayPhone.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Alternate Phone Number" %}</label>
+	                                            <input type="text" class="form-control phone_input"
+	                                                   name="{{ st_application_info_form.CellPhone.html_name }}"
+	                                                   value="{{ st_application_info_form.CellPhone.value|default:'' }}"
+	                                                   placeholder="###-###-####">
+	                                            <span class="form_field_error" id="{{ st_application_info_form.CellPhone.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+	                                            <input type="checkbox" name="{{ st_application_info_form.mailing_not_as_contact.html_name }}"
+	                                                   id="{{ st_application_info_form.mailing_not_as_contact.id_for_label }}"
+	                                                    {% if st_application_info_form.mailing_not_as_contact.value %}checked{% endif %}>
+	                                            <label for="{{ st_application_info_form.mailing_not_as_contact.id_for_label }}">
+	                                                {% trans "Check if mailing address is different than contact address" %}
+	                                            </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            {# =============== #}
+                            {# Mailing Address #}
+                            {# =============== #}
+                            <div class="row section {% if not st_application_info_form.mailing_not_as_contact.value %}none{% endif %}" id="mailing_address_section">
+                                <div class="col-sm-12 custom_form-border">
+                                    <h3>{% trans "Mailing Address" %}</h3>
+
+                                    {# Name and Address #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Name" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Mailing_Name.html_name }}"
+	                                                   value="{{ st_application_info_form.Mailing_Name.value|default:'' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "Address" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Mailing_Address.html_name }}"
+	                                                   value="{{ st_application_info_form.Mailing_Address.value|default:'' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# State/Zip and City #}
+                                    <div class="row" style="margin-bottom: 1.5rem;">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+	                                            <div class="row">
+	                                                <div class="col-sm-6 col-xs-6">
+	                                                    <label class="required">{% trans "State" %}</label>
+	                                                    <select type="text" class="form-control"
+	                                                            name="{{ st_application_info_form.Mailing_State.html_name }}"
+	                                                            value="{{ st_application_info_form.Mailing_State.value|default:'' }}">
+	                                                        <option>{% trans "Select State" %}</option>
+	                                                        {% for choice in st_application_info_form.Mailing_State.field.choices %}
+	                                                            <option value="{{ choice.0 }}"
+	                                                                    {% if st_application_info_form.Mailing_State.value == choice.0 %}selected{% endif %}>
+	                                                                {{ choice.1 }}
+	                                                            </option>
+	                                                        {% endfor %}
+	                                                    </select>
+	                                                </div>
+	                                                <div class="col-sm-6 col-xs-6">
+	                                                    <label class="required">{% trans "Zip" %}</label>
+	                                                    <input type="text" class="form-control"
+	                                                           name="{{ st_application_info_form.Mailing_ZipCode.html_name }}"
+	                                                           value="{{ st_application_info_form.Mailing_ZipCode.value|default:'' }}">
+	                                                </div>
+	                                            </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+	                                        <div class="form-group">
+	                                            <label class="required">{% trans "City" %}</label>
+	                                            <input type="text" class="form-control"
+	                                                   name="{{ st_application_info_form.Mailing_City.html_name }}"
+	                                                   value="{{ st_application_info_form.Mailing_City.value|default:'' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </form>
+
+
+
+                        <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                            <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+                                <p id="info-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
+                                <a class="btn btn-lg btn-yellow"
+                                   id="continue_next_stage_link"
+                                   data-stage="{{ stage }}"
+                                   data-next-stage="{{ next_stage }}"
+                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                    {% trans "Continue to Step 3 - Payment & Billing" %} &gt;
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    {% comment %}<div class="app-page-right-bar col-md-3">
+                        <div id="js-app-page-summary" class="app-page-summary">
+                            <div class="summary-wrapper">
+                                <p class="emphasize">Policy Summary</p>
+
+                                <div class="carrierLogo">
+                                    <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                </div>
+                                <p class="policy-label">PLAN</p>
+
+                                <div class="plan-summary">
+                                    <p>{{ plan.plan_name }}</p>
+                                    {% if form_data.Ins_Type == 'stm' %}
+                                    <p>Deductible: ${{ plan.option|intcomma }}</p>
+                                    <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                                    {% endif %}
+                                </div>
+
+                                <p class="policy-label">APPLICANT</p>
+                                <p id="summary-censusSummary">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</p>
+
+                                <p class="policy-label">Policy Effective Date</p>
+                                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
+
+                                {% if form_data.Ins_Type == 'stm' %}
+                                <p class="policy-label">Policy Expiration Date</p>
+                                <p>{% plan_coverage_end_date %}</p>
+                                {% endif %}
+
+                                <div class="js-price-breakdown policy-breakdown-link">
+                                    <p class="policy-label">
+                                        {% if form_data.Payment_Option == '1' %}
+                                            MONTHLY PREMIUM
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            PREMIUM
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        {% if form_data.Payment_Option == '1' %}
+                                            ${{ plan.actual_premium }}
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            ${% plan_single_premium %}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                {% if selected_addon_plans %}
+                                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                                    <ul class="add-on-plan-list">
+                                        {% for add_on in selected_addon_plans %}
+                                        <li>
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>{% endcomment %}
+                    
+                    <div class="app-page-right-bar col-md-4">
+                        <div id="js-app-page-summary" class="app-page-summary">
+                            <div class="summary-wrapper">
+                                <p class="emphasize">Policy Summary</p>
+                                <div class="carrierLogo">
+                                    <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                </div>
+                                <p class="policy-label">PLAN</p>
+                                <div class="plan-summary">
+                                    <p>{{ plan.plan_name }}</p>
+                                    {% if form_data.Ins_Type == 'stm' %}
+                                    <p>Deductible: ${{ plan.option|intcomma }}</p>
+
+                                    <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                                    {% endif %}
+                                </div>
+
+                            {% comment %}
+                                <p class="policy-label">APPLICANT</p>
+                                <p id="summary-censusSummary">
+                                    {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                                </p>
+
+                                <p class="policy-label">Policy Effective Date</p>
+                                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
+
+                                {% if form_data.Ins_Type == 'stm' %}
+                                <p class="policy-label">Policy Expiration Date</p>
+                                <p>{% plan_coverage_end_date %}</p>
+                                {% endif %}
+
+                                <div class="js-price-breakdown policy-breakdown-link">
+                                    <p class="policy-label">
+                                        {% if form_data.Payment_Option == '1' %}
+                                            MONTHLY PREMIUM
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            TOTAL PREMIUM
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        {% if form_data.Payment_Option == '1' %}
+                                            ${{ plan.actual_premium }}
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            ${% plan_single_premium %}
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                {% if selected_addon_plans %}
+                                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                                    <ul class="add-on-plan-list">
+                                        {% for add_on in selected_addon_plans %}
+                                        <li>
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                {% endcomment %}
+                            
+                            
+	                            <table class="table">
+	
+	                                <tr>
+		                                <td>Applicant:</td>
+		                                <td>
+		                                    <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+		                                </td>
+	                                </tr>
+		                            {% if plan.Coinsurance_Percentage %}
+		                            <tr>
+		                                <td>Deductible:</td>
+		                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Out of Pocket:</td>
+		                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Coverage Max:</td>
+		                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Coinsurance:</td>
+		                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+		                            </tr>
+		                            {% endif %}
+		
+		
+		                            <tr>
+		                                <td>Effective Date:</td>
+		                                <td>
+		                                    <span class="emphasize badge" id="app-effective-date-change">
+		                                        {% form_date_field_value form_data.Effective_Date %}
+		                                    </span>
+		                                </td>
+		                            </tr>
+		
+		
+		                            {% if form_data.Ins_Type == 'stm' %}
+		                            <tr>
+		                                <td>Expiration Date:</td>
+		                                <td><span>{% plan_coverage_end_date %}</span></td>
+		                            </tr>
+		                            {% endif %}
+		
+		
+		                            <tr>
+		                                <td>Monthly Premium:</td>
+		                                <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+		                            </tr>
+		                            <tr>
+		                                <td>Enrollment Fee:</td>
+		                                <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+		                            </tr>
+		
+		                        </table>
+                            
+                                <div class="addon-holder" id="sidebar-add-on-holder">
+			                        {% if selected_addon_plans %}
+			                        <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+			                            ADD-ON PLAN
+			                        </h4>
+			
+			                        {% for add_on in selected_addon_plans %}
+			                        <div class="addon-single">
+			                            <h4 class="review_addon">{{ add_on.Name }}</h4>
+			
+			                            <div class="table-responsive">
+			                                <table class="table mrg-b-0">
+			                                    <tbody>
+			                                        <tr>
+			                                            <td>Premium</td>
+			                                            <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+			                                        </tr>
+			                                        <tr>
+			                                            <td>Enrollment Fee</td>
+			                                            <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+			                                        </tr>
+			                                    </tbody>
+			                                </table>
+			                            </div>
+			                        </div>
+			                        {% endfor %}
+			                        {% endif %}
+	                                
+	                                {% comment %}{% if selected_addon_plans %}
+	                                    <p class="emphasize policy-label">Add-On Plan</p>
+	                                    <ul class="add-on-plan-list">
+	                                        {% for add_on in selected_addon_plans %}
+	                                        <li>
+	                                            <span data-container="body"
+	                                                  data-placement="top"
+	                                                  data-toggle="popover"
+	                                                  data-content="Plan Name">
+		                                            {{ add_on.Name }}
+	                                            </span>
+		                                        :
+	                                            <span data-container="body"
+	                                                  data-placement="top"
+	                                                  data-toggle="popover"
+	                                                  data-content="Premium">
+		                                            ${{ add_on.actual_premium }}
+	                                            </span>
+	                                        </li>
+	                                        {% endfor %}
+	                                    </ul>
+                                    {% endif %}{% endcomment %}
+	                                
+			
+			                    </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock container %}
+{% block footer-info %}{% endblock %}
+{% block hamburger %}{% endblock %}
+{% block extra_js %}
+{#<script type="text/javascript" src="{% static 'quotes/js/jquery-ui.min.js' %}"></script>#}
+{#<script type="text/javascript" src="{% static 'quotes/js/vimm_key_code.js' %}"></script>#}
+
+{# To be replaced by vue.js #}
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script type="text/javascript">
+
+    $(document).keydown(function(e) {
+        if (e.keyCode == 17 || e.keyCode == 91) {
+            VimmCtrlDown = true;
+        }
+    }).keyup(function(e) {
+        if (e.keyCode == 17 || e.keyCode == 91) {
+            VimmCtrlDown = false;
+        }
+    });
+
+    function copied_dob_formater(match, p1, p2, p3, offset, string) {
+        var result = '';
+        result += p1 + (p1.length == 2? '/': '');
+        result += p2 + (p2.length == 2? '/': '');
+        result += p3;
+      return result;
+    }
+
+
+
+    // ssn input formatting
+    function copied_ssn_formatter(match, p1, p2, p3, offset, string) {
+        var result = '';
+        result += p1 + (p1.length == 3? '-': '');
+        result += p2 + (p2.length == 2? '-': '');
+        result += p3;
+      return result;
+    }
+    $('form').on('keyup', ".ssn_input", function(e){
+        if ( ($.inArray(e.keyCode, VimmAllowedKeys) == -1) &&
+                ($.inArray(e.keyCode, VimmKeyCode) != -1) &&
+                (VimmCtrlDown == false) ) {
+            $(this).val(
+                $(this).val().substr( 0, $(this).val().length-1 )
+            );
+        } else if (VimmCtrlDown == true && e.keyCode == 86) {
+            var pv = $(this).val();
+            pv = pv.replace(/[^0-9]*/g, '');
+            $(this).val(pv.replace(/(\d{0,3})(\d{0,2})(\d{0,4})/, copied_ssn_formatter));
+        }
+        var value = $(this).val();
+        if ( (value.length == 3 || value.length == 6) && value.substr(value.length - 1) != '-' ) {
+            $(this).val( $(this).val() + '-' );
+        }
+    });
+
+    // date formatting
+    {#$('form').on('keyup', ".date-picker", function(e){#}
+    {#    if ( ($.inArray(e.keyCode, VimmAllowedKeys) == -1) &&#}
+    {#            ($.inArray(e.keyCode, VimmKeyCode) != -1) &&#}
+    {#            (VimmCtrlDown == false) ) {#}
+    {#        $(this).val(#}
+    {#            $(this).val().substr( 0, $(this).val().length-1 )#}
+    {#        );#}
+    {#    } else if (VimmCtrlDown == true && e.keyCode == 86) {#}
+    {#        var pv = $(this).val();#}
+    {#        pv = pv.replace(/[^0-9]*/g, '');#}
+    {#        $(this).val(pv.replace(/(\d{0,2})(\d{0,2})(\d{0,4})/, copied_dob_formater));#}
+    {#    }#}
+    {#    var value = $(this).val();#}
+    {#    if ( (value.length == 2 || value.length == 5) && value.substr(value.length - 1) != '/' ) {#}
+    {#        $(this).val( $(this).val() + '/' );#}
+    {#    }#}
+    {% comment %}});{% endcomment %}
+
+    function copied_pn_formater(match, p1, p2, p3, offset, string) {
+        var result = '';
+        result += p1 + (p1.length == 3? '-': '');
+        result += p2 + (p2.length == 3? '-': '');
+        result += p3;
+      return result;
+    }
+
+
+    // phone number formating
+    $('form').on('keyup', ".phone_input", function(e){
+        if ( ($.inArray(e.keyCode, VimmAllowedKeys) == -1) &&
+                ($.inArray(e.keyCode, VimmKeyCode) != -1) &&
+                (VimmCtrlDown == false) ) {
+            $(this).val(
+                $(this).val().substr( 0, $(this).val().length-1 )
+            );
+        } else if (VimmCtrlDown == true && e.keyCode == 86) {
+            var pv = $(this).val();
+            pv = pv.replace(/[^0-9]*/g, '');
+            $(this).val(pv.replace(/(\d{0,3})(\d{0,3})(\d{0,4})/, copied_pn_formater));
+        }
+        var value = $(this).val();
+        if ( (value.length == 3 || value.length == 7) && value.substr(value.length - 1) != '-' ) {
+            $(this).val( $(this).val() + '-' );
+        }
+    });
+
+    {#$(".date-picker").datepicker({#}
+    {#    changeMonth: true,#}
+    {#    changeYear: true,#}
+    {#    yearRange: "1950:2025",#}
+    {#    dateFormat: "mm/dd/yy"#}
+    {#});#}
+
+    $(function() {
+        var $contact_as_mailing = $('input[name="mailing_not_as_contact"]');
+        var $mailing_address_section = $('#mailing_address_section');
+        $contact_as_mailing.click(function(e) {
+            if ($(this).prop('checked') == true) {
+                $mailing_address_section.removeClass('none');
+            } else if ($(this).prop('checked') == false) {
+                $mailing_address_section.addClass('none');
+            }
+        });
+    });
+
+    $(function() {
+        var $continue_next_stage_link = $('#continue_next_stage_link');
+        function handle_applicant_errors(applicant_errors) {
+            $.each(applicant_errors, function(field_name, field_errors) {
+                $('#id_'+  field_name + '_error').html(field_errors.join(' '));
+            });
+        }
+
+        function handle_formset_errors(formset_errors) {
+            $.each(formset_errors, function(index, error) {
+                $.each(error, function(field_name, field_errors) {
+                    $('#id_st_dependent-'+ index + '-' + field_name + '_error').html(field_errors.join(' '));
+                });
+            });
+        }
+
+        $continue_next_stage_link.click(function(ev) {
+            ev.preventDefault();
+            var $this = $(this);
+            var $applicant_info_form = $('#applicant_info_form');
+            var form_data = $applicant_info_form.serialize();
+            form_data += "&question_request_name=transition&stage=" + $this.data('stage') + '&next_stage='+$this.data('next-stage');
+            $('.form_field_error').empty();
+            $.ajax({
+                url: $this.data("stage-url"),
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: form_data, type: 'POST', dataType: 'json',
+                success: function(json) {
+                    if (json.status == 'success') {
+                        $("#info-form-error-message-fix").addClass('none');
+                        location.href = json.redirect_url;
+                    } else if (json.status == 'fail') {
+                        if (json.applicant_errors) {
+                            handle_applicant_errors(json.applicant_errors);
+                        }
+                        if (json.parent_errors) {
+                            handle_applicant_errors(json.parent_errors);
+                        }
+                        if (json.dependent_formset_errors) {
+                            handle_formset_errors(json.dependent_formset_errors);
+                        }
+                        $("#info-form-error-message-fix").removeClass('none');
+                    }
+                },
+                error: function() {alert("Internal Error; Please try again after some time.");}
+            });
+        });
+    });
+</script>
+{#{% if dev_debug %}#}
+<script>
+    {#Amir Bhai's user info populating function#}
+$(function () {
+    function makeid() {
+      var text = "";
+      var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 5; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      // 'ZZ11' added to identify the values are using on test
+      return 'ZZ11' + text;
+    }
+
+    var user_info_fields = [
+        'DayPhone', 'CellPhone', 'First_Name', 'Middle_Name', 'Last_Name', 'Email',
+        'Address', 'Mailing_Address', 'City', 'Mailing_City'
+    ];
+
+    var user_info_fields_value = {
+        'DayPhone': '123-456-7890',
+        'CellPhone': '123-456-7890',
+        'Email': 'torsho.92@gmail.com'
+    };
+
+    $.each(user_info_fields, function( index, value ) {
+
+        var $input_field = $('input[name="' + value + '"]');
+
+        var input_field_val = $input_field.val();
+
+        if (! input_field_val) {
+            var value = user_info_fields_value[value];
+            if (! value) {
+                value = makeid();
+            }
+            $input_field.val(value);
+        }
+    });
+
+});
+</script>
+{#{% endif %}#}
+{% endblock extra_js %}

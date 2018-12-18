@@ -1,0 +1,849 @@
+{# TODO {% extends 'base.html' %}#}
+{% load i18n static humanize hp_tags %}
+{% block title %}
+{# TODO   {{ block.super }}#}
+{% endblock title %}
+{% load i18n hp_tags %}
+{% block extra_css %}
+    <style type="text/css">
+        body {line-height: 1.42857; font-size: 1.6rem;}
+        @media (max-width: 760px) {
+            #application-body {padding-left: 15px !important;}
+        }
+        #application-body ul {margin: 0px; padding: 0px;}
+        #application-body li {list-style-type: none;}
+        #application-body {color: #949494;}
+        .app_body_panel {
+            background-color: #eff6ff;
+            box-shadow: 0 0 6px rgba(0, 0, 10, 0.8);
+            margin-bottom: 1.5rem;
+            color: rgba(0, 0, 0, 0.6);
+        }
+        #payment-form-error-message-fix {
+            color: #ff6500;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+{% endblock extra_css %}
+{% block top-menu-block %}{% endblock %}
+{% block mobile-header %}{% endblock %}
+{% block content %}
+
+    <div class="row" style="margin-top: 1rem;">
+        <div id="application-body" class="col-sm-7">
+            <div class="row">
+                <div class="col-sm-12 app_body_panel">
+                    <h3>
+                        <span style="text-transform: uppercase;">{% trans "Applicant Info" %}</span>
+                        {% if not esign_req_sent %}
+                        <small><a href="{% url 'quotes:stm_enroll' plan_url 2 %}">Edit</a></small>
+                        {% endif %}
+                    </h3>
+                    <div class="row" style="margin: 1rem 0 2rem;">
+                        <div class="col-sm-6 col-xs-12">
+                            <ul>
+                                <li>
+                                    {{ applicant_info.First_Name }} {{ applicant_info.Last_Name }}
+                                </li>
+                                <li>{{ applicant_info.Gender }}</li>
+                                <li>{% form_date_field_value applicant_info.DOB %}</li>
+                                <li>
+                                    {{ applicant_info.Feet }}ft. {{ applicant_info.Inch }}in. {{ applicant_info.Weight }}lbs.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-sm-6 col-xs-12">
+                            <ul>
+                                <li>{{ applicant_info.Email }}</li>
+                                <li>{{ applicant_info.DayPhone }}</li>
+                            </ul>
+
+                            <ul>
+                                <li><span style="color: #000000;">CONTACT ADDRESS</span></li>
+                                <li>{{ applicant_info.Address }}</li>
+                                <li>{{ applicant_info.City }}, {{ applicant_info.State }} {{ applicant_info.ZipCode }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 app_body_panel">
+                    <h3>
+                        <span style="text-transform: uppercase;">{% trans "Payment & Billing Info" %}</span>
+                        {% if not esign_req_sent %}
+                        <small><a href="{% url 'quotes:stm_enroll' plan_url 3 %}">Edit</a></small>
+                        {% endif %}
+                    </h3>
+                    <div class="row" style="margin: 1rem 0 2rem;">
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>{{ payment_info.Payment_Method }}</li>
+                                {% if payment_info.Payment_Method == 'BankDraft' %}
+                                    <li>{{ payment_info.Bank_Name }}</li>
+                                    <li>{{ payment_info.Bank_Account_Name }}</li>
+                                    <li>{{ payment_info.Bank_Routing_Number }}</li>
+                                    <li>{{ payment_info.Bank_Account_Number }}</li>
+                                {% else %}
+                                    <li>{{ payment_info.Card_Type }}</li>
+                                    <li>#*{{ payment_info.Card_Number|slice:"-4:" }}</li>
+                                    <li>{{ payment_info.CardHolder_Name }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <ul>
+                                <li><span style="color: #000000;">BILLING ADDRESS</span></li>
+                                <li>{{ payment_info.Billing_Address }}</li>
+                                <li>{{ payment_info.Billing_City }}, {{ payment_info.Billing_State }} {{ payment_info.Billing_ZipCode }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12">
+                            <p style="margin-top: 10px;"><span style="font-weight: bold;">Total Payment</span>: ${% plan_total_payment %}</p>
+                            {% if form_data.Payment_Option == '2' %}
+                                <p>
+                                    <span style="font-weight: bold;">{{ plan.Name }}</span> with an effective date of
+                                    {% form_date_field_value form_data.Effective_Date %}. Cost: ${{ plan.actual_premium }}
+                                </p>
+                            {% else %}
+                                <p>
+                                    <span style="font-weight: bold;">{{ plan.Name }}</span> with an effective date of
+                                    {% form_date_field_value form_data.Effective_Date %}. Monthly Cost: ${{ plan.actual_premium }}
+                                </p>
+                                <p>
+                                    Note: One time Enrollment Fee ${{ plan.Enrollment_Fee }}
+                                </p>
+                            {% endif %}
+                            {% for add_on_plan in selected_addon_plans %}
+                                <p><span style="font-weight: bold;">{{ add_on_plan.carrier_name }}</span>
+                                    Premium: ${{ add_on_plan.actual_premium }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if not esign_req_sent %}
+            <div class="row">
+                <div class="col-sm-12" style="box-shadow: 0 0 4px rgba(0, 0, 0, 0.5); margin-bottom: 7rem;">
+                    <h3 style="text-transform: uppercase;">Review & Submit</h3>
+                    <p>Please review the information of your application before submitting for approval.</p>
+                    <p style="color: #000; font-weight: bold;">Consent to Electronic Transactions</p>
+                    <div class="row">
+                        <div class="col-sm-2" style="vertical-align: middle; display: table-cell; float: none;">
+                            <form id="consent_form">
+                                {% csrf_token %}
+                                <input type="checkbox" id="consent_checkbox_custom" name="consent" style="text-align:center; display: block; margin-left: auto; margin-right: auto;">
+                                <label for="consent_checkbox_custom" id="consent_checkbox_label_custom"></label>
+                            </form>
+                        </div>
+                        <div class="col-sm-8" style="vertical-align: middle; display: table-cell; float: none;">
+                            <label for="consent_checkbox_custom">
+                                <p>
+                                    I have read the
+                                    <a href="{% url 'quotes:legal' 'terms-of-use' %}" target="_blank">NationsHealthInsurance Terms and Agreements</a>
+                                    and I agree that by using this site, my agreement and consent will be legally binding and enforcable and the legal equivalent of my handwritten signature.
+                                    <sup style="color: #ff0000;">*</sup>
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-10, col-sm-offset-2" style="padding-left: 37px;">
+                            <span class="form_field_error" id="consent_error"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+{#                        <div class="col-sm-10, col-sm-offset-2" style="padding-left: 0px;">#}
+                            <span class="form_field_error" id="consent_error"></span>
+{#                        </div>#}
+            </div>
+            {% endif %}
+
+
+
+            <!--<div class="row" style="margin-bottom:30px;margin-top:30px;">-->
+            {#                <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">#}
+            {#                    <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>#}
+            {#                    <a class="btn btn-lg btn-yellow vimm-nim-width-btn"#}
+            {#                       id="continue_next_stage_link"#}
+            {#                       data-status=""#}
+            {#                       data-stage="{{ stage }}"#}
+            {#                       data-next-stage="{{ next_stage }}"#}
+            {#                       data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"#}
+            {#                       href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">#}
+            {#                        {% trans "Submit Your Application" %}#}
+            {#                    </a>#}
+            {#                </div>#}
+
+            {% if not esign_req_sent %}
+                <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                    <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+                        <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
+                        <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn"
+                                id="send_e_sign_link_btn"
+                                data-verification="{{ verification|default:'' }}"
+                                data-action="{% url 'quotes:e_signature_enrollment' stm_enroll_obj.vimm_enroll_id %}">
+                            <h4>Send E-Sign Link</h4>
+                        </button>
+                        <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/images/ajax-loader-stripe-002.gif' %}" alt="">
+                    </div>
+                </div>
+            {% else %}
+                <h4 class="row"color="Blue">An email from <em> echosign@echosign.com </em>
+                    containing the instructions for signing your {{ plan.Name }} application has been sent to your email address.
+                    Please check your email {{ applicant_info.Email }}.
+                </h4>
+                <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                <div class="col-md-2 col-md-offset-4">
+                    <button type="button" class="btn btn-lg btn-yellow hii_esign_enroll_action_btn"
+                            id = "hii_esign_enroll_action_btn"
+                            data-action="enroll"
+                            data-url="{% url 'quotes:esign_verification_payment' stm_enroll_obj.vimm_enroll_id %}">
+                        <h4>Check Signed</h4>
+                    </button>
+                    <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/images/ajax-loader-stripe-002.gif' %}" alt="">
+                </div>
+                </div>
+            {% endif %}
+
+
+
+            {% comment %}                        <div class="col-sm-4">
+                            <button type="button" class="btn btn-sm btn-yellow hii_esign_enroll_action_btn"
+                                    data-action="resend"
+                                    data-url="{% url 'quotes:esign_verification_resend' stm_enroll_obj.vimm_enroll_id %}">
+                                Re-Send Link
+                            </button>
+                        </div>{% endcomment %}
+
+        </div>
+        {% comment %}<div class="col-sm-4 col-sm-offset-1 app-page-summary" style="border-color: #57adef #ddd #ddd; border-style: solid; border-width: 5px 1px 1px;">
+        <h3 style="text-transform: uppercase; color: #57adef; font-size: 22px;">Summary</h3>
+        <div class="carrierLogo">
+            <img class="carrier-logo-image"
+                 src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" alt="{{ plan.plan_name }}">
+        </div>
+        <p>{{ plan.plan_name }}</p>
+        <div class="row">
+            <div class="col-sm-7 col-xs-7">
+                POLICY EFFECTIVE DATE:
+            </div>
+            <div class="col-sm-5 col-xs-5">
+                {% form_date_field_value form_data.Effective_Date %}
+            </div>
+
+            {% if form_data.Ins_Type == 'stm' %}
+            <div class="col-sm-7 col-xs-7">
+                POLICY EXPIRATION DATE:
+            </div>
+            <div class="col-sm-5 col-xs-5">
+                {% plan_coverage_end_date %}
+            </div>
+            {% endif %}
+
+
+            <div class="col-sm-7 col-xs-7">
+                {% if form_data.Payment_Option == '1' %}
+                    MONTHLY PREMIUM:
+                {% elif form_data.Payment_Option == '2' %}
+                    TOTAL PREMIUM:
+                {% endif %}
+            </div>
+            <div class="col-sm-5 col-xs-5">
+                {% if form_data.Payment_Option == '1' %}
+                    ${% plan_actual_premium %}
+                {% elif form_data.Payment_Option == '2' %}
+                    ${% plan_single_premium %}
+                {% endif %}
+            </div>
+            <div class="col-sm-12">
+                {% if selected_addon_plans %}
+                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                    <ul class="add-on-plan-list">
+                        {% for add_on in selected_addon_plans %}
+                        <li>
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>{% endcomment %}
+
+        <div class="app-page-right-bar col-md-4 col-sm-offset-1">
+            <div id="js-app-page-summary" class="app-page-summary">
+                <div class="summary-wrapper">
+                    <p class="emphasize">Policy Summary</p>
+                    <div class="carrierLogo">
+                        <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                    </div>
+                    <p class="policy-label">PLAN</p>
+                    <div class="plan-summary">
+                        <p>{{ plan.plan_name }}</p>
+                        {% if form_data.Ins_Type == 'stm' %}
+                            <p>Deductible: ${{ plan.option|intcomma }}</p>
+
+                            <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                        {% endif %}
+                    </div>
+
+                    {% comment %}
+                <p class="policy-label">APPLICANT</p>
+                <p id="summary-censusSummary">
+                    {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                </p>
+
+                <p class="policy-label">Policy Effective Date</p>
+                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
+
+                {% if form_data.Ins_Type == 'stm' %}
+                <p class="policy-label">Policy Expiration Date</p>
+                <p>{% plan_coverage_end_date %}</p>
+                {% endif %}
+
+                <div class="js-price-breakdown policy-breakdown-link">
+                    <p class="policy-label">
+                        {% if form_data.Payment_Option == '1' %}
+                            MONTHLY PREMIUM
+                        {% elif form_data.Payment_Option == '2' %}
+                            TOTAL PREMIUM
+                        {% endif %}
+                    </p>
+                    <p>
+                        {% if form_data.Payment_Option == '1' %}
+                            ${{ plan.actual_premium }}
+                        {% elif form_data.Payment_Option == '2' %}
+                            ${% plan_single_premium %}
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if selected_addon_plans %}
+                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                    <ul class="add-on-plan-list">
+                        {% for add_on in selected_addon_plans %}
+                        <li>
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+				{% endcomment %}
+
+
+                    <table class="table">
+
+                        <tr>
+                            <td>Applicant:</td>
+                            <td>
+                                <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+                            </td>
+                        </tr>
+                        {% if plan.Coinsurance_Percentage %}
+                            <tr>
+                                <td>Deductible:</td>
+                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Out of Pocket:</td>
+                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Coverage Max:</td>
+                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Coinsurance:</td>
+                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+                            </tr>
+                        {% endif %}
+
+
+                        <tr>
+                            <td>Effective Date:</td>
+                            <td>
+                            <span class="emphasize badge" id="app-effective-date-change">
+                                {% form_date_field_value form_data.Effective_Date %}
+                            </span>
+                            </td>
+                        </tr>
+
+
+                        {% if form_data.Ins_Type == 'stm' %}
+                            <tr>
+                                <td>Expiration Date:</td>
+                                <td><span>{% plan_coverage_end_date %}</span></td>
+                            </tr>
+                        {% endif %}
+
+
+                        <tr>
+                            <td>Monthly Premium:</td>
+                            <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Enrollment Fee:</td>
+                            <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+                        </tr>
+
+                    </table>
+
+                    <div class="addon-holder" id="sidebar-add-on-holder">
+                        {% if selected_addon_plans %}
+                            <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+                                ADD-ON PLAN
+                            </h4>
+
+                            {% for add_on in selected_addon_plans %}
+                                <div class="addon-single">
+                                    <h4 class="review_addon">{{ add_on.Name }}</h4>
+
+                                    <div class="table-responsive">
+                                        <table class="table mrg-b-0">
+                                            <tbody>
+                                            <tr>
+                                                <td>Premium</td>
+                                                <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Enrollment Fee</td>
+                                                <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% comment %}{% if selected_addon_plans %}
+                        <p class="emphasize policy-label">Add-On Plan</p>
+                        <ul class="add-on-plan-list">
+                            {% for add_on in selected_addon_plans %}
+                            <li>
+                                <span data-container="body"
+                                      data-placement="top"
+                                      data-toggle="popover"
+                                      data-content="Plan Name">
+                                    {{ add_on.Name }}
+                                </span>
+                                :
+                                <span data-container="body"
+                                      data-placement="top"
+                                      data-toggle="popover"
+                                      data-content="Premium">
+                                    ${{ add_on.actual_premium }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}{% endcomment %}
+
+
+{#                    </div>      This breaks the dom structure#}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block footer-info %}{% endblock %}
+{% block hamburger %}{% endblock %}
+
+{% block extra_js %}
+{#    <script type="text/javascript" src="{% static 'quotes/js/mustache.js' %}"></script>#}
+
+    {# To be replaced by vue.js #}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script type="text/javascript">
+        Mustache.tags = ['[[', ']]'];
+        
+{#        {% if esign_req_sent %}#}
+{#          $(window).load(function() {#}
+{#            $("html, body").animate({#}
+{#              scrollTop: $('h4').offset().top -150#}
+{#            }, 1000);#}
+{#          });#}
+{#        {% endif %}#}
+
+        function reload_page_on_demand(url, time) {
+            setTimeout(function () {
+                location.href = url;
+            }, time);
+        }
+
+        $(function() {
+            var $continue_next_stage_link = $('#continue_next_stage_link');
+            $continue_next_stage_link.click(function(ev) {
+                ev.preventDefault();
+                var $this = $(this);
+
+                $('.form_field_error').empty();
+                $this.attr('data-status', "");
+                $("#payment-form-error-message-fix").addClass('none');
+
+                vimm_button_click_processing(
+                    $this,
+                    function($button) {return $button.attr('data-status') === 'fail';},
+                    ["Submitting Your Application...", "Submitting Your Application..", "Submitting Your Application."]
+                );
+
+                var form_data = $('#consent_form').serialize();
+                $.ajax({
+                    url: $this.data("stage-url"),
+                    beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                    data: form_data, type: 'POST', dataType: 'json',
+                    success: function(json) {
+                        console.table(json)
+                        if (json.status == 'success') {
+                            location.href = json.redirect_url;
+                            {#location.href ="{% url 'quotes:thank_you' stm_enroll_obj.vimm_enroll_id %}";#}
+                        } else if (json.status == 'fail') {
+                            $this.attr('data-status', json.status);
+                            $('#consent_error').html(json.error_msg);
+                            $("#payment-form-error-message-fix").removeClass('none');
+                            $this.removeClass('none');
+                        }
+                    },
+                    error: function() {alert("Sorry Something Went Wrong. Please try again after some time.");}
+                });
+            });
+        });
+
+
+        $('body').on('click', '#send_e_sign_link_btn', function (e) {
+            e.preventDefault();
+
+            var $this = $(this);
+            var $submit_ajax_loader = $('.submit-ajax-loader');
+
+            var $hii_esign_enroll_action_btn = $("#hii_esign_enroll_action_btn");
+
+            var e_sign_verification_action_process_template = $('#e_sign_verification_action_process_template').html();
+
+            $hii_esign_enroll_action_btn.prop({disabled: false});
+
+            var $send_e_sign_link_action_message = $('.send_e_sign_link_action_message');
+            $send_e_sign_link_action_message.empty();
+
+            var $hold_or_later_process_enroll_review_box = $('#hold_or_later_process_enroll_review_box');
+            $hold_or_later_process_enroll_review_box.remove();
+
+            $this.addClass('none');
+            $submit_ajax_loader.show();
+            $('.form_field_error').empty();
+            $this.attr('data-status', "");
+            $("#payment-form-error-message-fix").addClass('none');
+
+
+            console.log("send_e_sign_link_btn");
+
+            {#vimm_button_click_processing(#}
+            {#    $this,#}
+            {#    function($button) {return $button.attr('data-status') === 'fail';},#}
+            {#    ["Submitting Your Application...", "Submitting Your Application..", "Submitting Your Application."]#}
+            {#);#}
+
+            console.log("stm_enroll_review -- Line No. 537: {{ res.applicant.email }}")
+
+            var form_data = $('#consent_form').serialize();
+
+            $.ajax({
+                url: $this.attr("data-action"),
+
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                type: 'POST',
+                data: form_data,
+                cache: false,
+                dataType: 'json',
+
+                success: function(json) {
+                    {#$processing_status_img.addClass( 'none' );#}
+                    {#$submission_type_change.prop({'disabled': true, 'readonly': true});#}
+                    console.log("SUCCESS -- send_e_sign_link_btn response: " + JSON.stringify(json));
+                    $hii_esign_enroll_action_btn.prop({'disabled': false});
+                    if (json.status == 'success') {
+                        console.log('packages/quotes/templates/quotes/stm_enroll_review.html Line No. 556: verification success');
+                        console.log("packages/quotes/templates/quotes/stm_enroll_review.html Line No. 557: {{ applicant_info.Email }}");
+
+                        $('consent_error').html("Email has been sent to your email address {{ applicant_info.Email }}"); /** Why does this not work? --ds87 **/
+
+                        console.log("packages/quotes/templates/quotes/stm_enroll_review.html Line No. 579: json:" + json);
+                        var applicant = {};
+                        if (json.hii_applicant){
+                            $.extend(
+                                applicant,
+                                json.hii_applicant,
+                                {
+                                    'discard_url': json.discard_url,
+                                    'enroll_url': json.enroll_url,
+                                    'esign_verification_agent_sign': json.esign_verification_agent_sign,
+                                    'esign_verification_payment': json.esign_verification_payment,
+                                    'esign_verification_resend': json.esign_verification_resend,
+                                    'cross_enrollment': json.cross_enrollment,
+                                    'hii_applicant': true
+
+                                });
+                        }
+
+                        {% comment %}      if (json.a1_applicant){
+                                  $.extend(
+                                      applicant,
+                                      json.a1_applicant,
+                                      {
+                                          'discard_url': json.discard_url,
+                                          'enroll_url': json.enroll_url,
+                                          'esign_verification_payment': json.esign_verification_payment,
+                                          'cross_enrollment': json.cross_enrollment,
+                                          'a1_applicant': true
+
+                                      });
+                              }{% endcomment %}
+
+                        $.extend(
+                            json.applicant,
+                            {
+                                'discard_url': json.discard_url,
+                                'enroll_url': json.enroll_url,
+                                'esign_verification_agent_sign': json.esign_verification_agent_sign,
+                                'esign_verification_payment': json.esign_verification_payment,
+                                'esign_verification_resend': json.esign_verification_resend,
+                                'cross_enrollment': json.cross_enrollment
+
+                            });
+
+                        console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 623: applicant" + JSON.stringify(applicant));
+
+                        if (json.applicant_enrolled === true) {
+                          alert('You have already enrolled');
+                          document.location.href = json.redirect_url;
+                        }
+
+                        /*
+                         *var e_sign_verification_message_template_rendered = Mustache.to_html(
+                         *    e_sign_verification_action_process_template,
+                         *    applicant
+                         *);
+                         */
+
+                        {% comment %}
+                        Do these work? Does back button not work? I don't know -ds87
+                        console.log("stm_enroll_review line 589");                    {#$submission_type_specific_action_row_col.html(e_sign_verification_message_template_rendered);#}
+                        function changeHashOnLoad() {
+                            window.location.href += "#";
+                            setTimeout("changeHashAgain()", "50");
+                        }
+
+                        function changeHashAgain()
+                        {
+                            window.location.href += "1";
+                        }
+
+                        var storedHash = window.location.hash;
+                        window.setInterval(function () {
+                            if (window.location.hash != storedHash) {
+                                window.location.hash = storedHash;
+                            }
+                        }, 50);{% endcomment %}
+
+
+                        reload_page_on_demand('', 1000);
+
+                    } else if (json.status == 'error') {
+                        console.log("e-sign send link request status error: " + JSON.stringify(json));
+
+                        $this.removeClass('none');
+
+                        if (!json.error) {
+                            console.log("Anything other than JSON error");
+                        } else {
+                            console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 695: "+ json.error);
+                            $submit_ajax_loader.hide();
+                            $this.removeClass('none');
+                            // TODO: Prettify error messages
+                            $('#consent_error').html(json.error);
+                        }
+
+                    } else if (json.status == 'fail') {
+                      console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 709");
+
+                        $this.attr('data-status', json.status);
+                        $('#consent_error').html(json.error_msg);
+                        $("#payment-form-error-message-fix").removeClass('none');
+
+                        $this.removeClass('none');
+                        $submit_ajax_loader.hide();
+                        {#reload_page_on_demand('', 5000);#}
+
+                    }
+                },
+                error: function(json) {
+                    console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 684");
+                    alert("Sorry Something Went Wrong. Please try again after some time.");
+                    {#$processing_status_img.addClass( 'none' );#}
+                    {#$submission_type_change.prop({'disabled': false, 'readonly': false});#}
+                    $submit_ajax_loader.hide();
+                    $this.removeClass('none');
+
+                    //$send_e_sign_link_action_message.html(e_sign_verification_message_template_rendered);
+                }
+            });
+
+        });
+
+        $('body').on('click', '#hii_esign_enroll_action_btn', function (e) {
+            e.preventDefault();
+
+            var action = $(this).attr('data-action');
+            var $enrollment_heading = $('#hii_enrollment_heading');
+            var $esign_enroll_action_btn_group = $('.hii_esign_enroll_action_btn_group');
+            var $esign_enroll_action_btn_group_status_img = $('.hii_esign_enroll_action_btn_group_status_img');
+            var $submission_type_selection_row = $('#submission_type_selection_row');
+            var $submit_ajax_loader = $('.submit-ajax-loader');
+
+
+
+            var $this = $(this);
+            $this.addClass('none');
+            $submit_ajax_loader.show();
+
+            var $enroll_details_button_panel = $('#enroll_details_button_panel');
+
+            console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 763: action" + action);
+            console.log("packages/quotes/templates/quotes/stm_enroll_review.html Line No. 764 : {{ applicant_info.Email }}");
+
+            $esign_enroll_action_btn_group.addClass('none');
+            $esign_enroll_action_btn_group_status_img.removeClass('none');
+
+            var $hii_esign_verification_and_enrollment_result = $('#hii_esign_verification_and_enrollment_result');
+
+            $.ajax({
+                url: $(this).attr('data-url'),
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: {'action': action, 'api_source': 'hii'},
+                type: 'POST', dataType: 'json',
+                success: function(json) {
+                    $esign_enroll_action_btn_group_status_img.addClass('none');
+
+                    if (action == 'enroll' || action == 'agent-enroll') {
+
+                        if (json.status == 'success') {
+                            console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 731")
+                            console.log(json.toString());
+
+                            {#                            $submission_type_selection_row.remove();#}
+                            {#                            $submission_type_specific_action_row.remove();#}
+                            $enrollment_heading.html('Hii Enrollment: Successfully Enrolled');
+                            $hii_esign_verification_and_enrollment_result.empty();
+                            $hii_esign_verification_and_enrollment_result.append(json.enroll_info_panel_body);
+
+                            if (json.all_enrolled == true){
+                                $submission_type_selection_row.remove();
+                                $enroll_details_button_panel.removeClass('no-display')
+                            }
+
+                            //$a1_esign_enroll_action_btn.prop('disabled', false);
+                            document.location.href ="{% url 'quotes:thank_you' stm_enroll_obj.vimm_enroll_id %}";
+
+                        }
+                        else if (json.status === 'switch_esign_to_voice') {
+                            console.log('switching esign to voice');
+                            {#$submission_type_change.val('B');#}
+                            console.log('submission type changed to voice verification, "B"');
+                            {#$submission_type_change.prop({'disabled': true, 'readonly': true});#}
+                            $('.plan_edit_btn').trigger({
+                                type: 'vimmaniac.supervisor_verification_code.disable_editing',
+                                verification: json.verification
+                            });
+
+                            $('.plan_edit_btn_info').trigger({
+                                type: 'vimmaniac.supervisor_verification_code.disable_editing',
+                                verification: json.verification
+                            });
+
+                            $('.plan_edit').trigger({
+                                type: 'vimmaniac.supervisor_verification_code.disable_editing',
+                                verification: json.verification
+                            });
+
+
+                            //$hii_e_sign_verification_actions.html(rendered);
+                        }else if (json.status == 'fail') {
+                            {#$submission_type_change.prop({'disabled': false, 'readonly': false});#}
+                            //$e_sign_action_message.html(esign_enroll_message_template_rendered);
+                            reload_page_on_demand('', 5000);
+
+                        } else if (json.status == 'error') {
+                            $this.removeClass('none');
+                            $submit_ajax_loader.hide();
+                            $('#consent_error').html(json.error);
+                            console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 849 -- json status: error");
+                        } else {
+                            $this.removeClass('none');
+                            reload_page_on_demand('', 5000);
+                        }
+
+                    } else if (action == 'resend') {
+                        {#$submission_type_change.prop({'disabled': true, 'readonly': true});#}
+                        if (json.status == 'success') {
+                            console.log("packages/quotes/templates/quotes/stm_enroll_review.html -- Line No. 838: " + JSON.stringify(json));
+                            $esign_enroll_action_btn_group.removeClass('none');
+                            //$e_sign_action_message.html(esign_resend_message_template_rendered);
+                        } else {
+                            $esign_enroll_action_btn_group.removeClass('none');
+                            //$e_sign_action_message.html(esign_resend_message_template_rendered);
+                            reload_page_on_demand('', 5000);
+                        }
+                    } else {
+
+                        if (json.redirect_url) {
+                            location.href = json.redirect_url;
+                        } else if (json.error_message) {
+                            $esign_enroll_action_btn_group.removeClass('none');
+
+
+                            $('#supervisor_verification_confirm_error').html(json.error_message);
+                        } else {
+                            $('#supervisor_verification_confirm_error').html("Something unexpected happened, Please try again after some time.");
+                        }
+                    }
+                },
+
+                error: function() {
+                    {#$submission_type_change.prop({'disabled': false, 'readonly': false});#}
+                    $esign_enroll_action_btn_group_status_img.addClass('none');
+                    $esign_enroll_action_btn_group.removeClass('none');
+                }
+            });
+
+
+        });
+
+    </script>
+{% endblock extra_js %}
