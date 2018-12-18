@@ -14,7 +14,7 @@ class PageForm(forms.ModelForm):
     # content.widget.field_settings = {'your': 'custom', 'settings': True}
     class Meta:
         model = Page
-        fields = '__all__'
+        exclude = ['status', ]
 
 
 class ArticleForm(forms.ModelForm):

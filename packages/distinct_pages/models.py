@@ -2,6 +2,7 @@ from django.db import models
 from django.shortcuts import reverse
 from writing.utils import custom_slugify
 from djrichtextfield.models import RichTextField
+from writing.utils import STATUS_CHOICES
 
 
 class Page(models.Model):
@@ -13,6 +14,12 @@ class Page(models.Model):
         allow_unicode=True,
         editable=False,
         unique=True,
+    )
+
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default='p'
     )
 
     template_file = models.CharField(
