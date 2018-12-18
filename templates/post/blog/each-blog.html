@@ -48,21 +48,21 @@
                     </div>
 
                 </div>
+
                 {% if blog.feature_img %}
-                    <img src="{{ blog.feature_img.url }}" alt="">
-                    <br>
+                    <img src="{{ blog.feature_img.url }}" alt="" class="mb-4">
                 {% endif %}
                     {{ blog.content|safe }}
                 </div>
 
             </div>
             <div class="col-md-3">
-                <div class="border rounded">
+                <div class="border rounded border-bottom-0">
                     <h4 class="py-4 ml-4 font-weight-bold">Related Posts</h4>
-                    <div class="related-post ml-4">
+                    <div class="related-post ">
                         {% with ''|center:'8' as range %}
                             {% for _ in range %}
-                                <a href="" class=""><h6 class="text-dark font-weight-bold mb-4">Top 10 Procedures to
+                                <a href="" class=""><h6 class="text-dark font-weight-bold py-2 border-bottom pl-4">Top 10 Procedures to
                                     Help You Reach</h6></a>
                             {% endfor %}
                         {% endwith %}
@@ -73,4 +73,14 @@
             </div>
         </div>
     </div>
+    <div class=" linear-gradient">
+    <div class="container text-center py-5 ">
+        <h3 class="text-white">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</h3>
+   </div>
+        </div>
+    <div class="container mt-5">
+        <h2 class="text-center">More article in health insurance</h2>
+
+    </div>
+
 {% endblock %}

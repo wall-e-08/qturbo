@@ -19,8 +19,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import serve
 from django.contrib.auth import views as auth_views
-from writing.views.blog import each_blog as blog_views
-from writing.views.article import each_article as article_views
+from distinct_pages.views import slugified_page
 
 
 def static(prefix, view=serve, **kwargs):
@@ -41,6 +40,5 @@ urlpatterns = [
     path('info/', include('writing.urls.article_urls')),
     path('admin/', admin.site.urls),
     path('dj-rich-text-field/', include('djrichtextfield.urls')),
-    path('<slug>/', blog_views, name='each_blog'),
-    path('<slug>/', article_views, name='each_article'),
+    path('<slug>/', slugified_page, name='slugified_page'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
