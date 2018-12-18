@@ -3,56 +3,64 @@
     "model": "writing.blog",
     "pk": 8,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 1
     }
   },
   {
     "model": "writing.blog",
     "pk": 9,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 2
     }
   },
   {
     "model": "writing.blog",
     "pk": 10,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 2
     }
   },
   {
     "model": "writing.blog",
     "pk": 11,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 1
     }
   },
   {
     "model": "writing.blog",
     "pk": 12,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 3
     }
   },
   {
     "model": "writing.blog",
     "pk": 13,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 4
     }
   },
   {
     "model": "writing.blog",
     "pk": 14,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 5
     }
   },
   {
     "model": "writing.blog",
     "pk": 15,
     "fields": {
-      "post_type": "b"
+      "post_type": "b",
+      "section": 3
     }
   }
 ]
