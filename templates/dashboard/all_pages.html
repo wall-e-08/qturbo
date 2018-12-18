@@ -22,77 +22,86 @@
 {% block vue_templates %}
     <script type="text/x-template" id="page-template">
         <div>
-            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Published Pages</h2>
-            <div class="row">
-                <div class="col-md-4" v-for="p in published_pages">
-                    <div class="card w-100 h-100 border-success">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
-                                <span>slug: [[ p.slug ]]</span>
+            <template v-if="published_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Published Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in published_pages">
+                        <div class="card w-100 h-100 border-success">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text" v-html="p.content"></p>
-                            <p class="small">[[ p.created ]]</p>
-                        </div>
-                        <div class="card-footer">
-                            <a :href="p.view_url" target="_blank" class="btn btn-success">view</a>
-                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.view_url" target="_blank" class="btn btn-success">view</a>
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </template>
+            <template v-else>No Published Page found !</template>
             <hr class="my-5">
             
-            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Unpublished Pages</h2>
-            <div class="row">
-                <div class="col-md-4" v-for="p in unpublished_pages">
-                    <div class="card w-100 h-100 border-warning">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
-                                <span>slug: [[ p.slug ]]</span>
+            <template v-if="unpublished_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Unpublished Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in unpublished_pages">
+                        <div class="card w-100 h-100 border-warning">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text" v-html="p.content"></p>
-                            <p class="small">[[ p.created ]]</p>
-                        </div>
-                        <div class="card-footer">
-                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </template>
+            <template v-else>No Unpublished Page found !</template>
             <hr class="my-5">
             
-            <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Archived Pages</h2>
-            <div class="row">
-                <div class="col-md-4" v-for="p in archived_pages">
-                    <div class="card w-100 h-100 border-danger">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
-                                <span>slug: [[ p.slug ]]</span>
+            <template v-if="archived_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Archived Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in archived_pages">
+                        <div class="card w-100 h-100 border-danger">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text" v-html="p.content"></p>
-                            <p class="small">[[ p.created ]]</p>
-                        </div>
-                        <div class="card-footer">
-                            <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </template>
+            <template v-else>No Archived Page found !</template>
 
             <b-modal id="del_confirmation_modal" ref="del_confirmation_modal" centered title="Do you really want to delete?" :hide-footer="true">
                 <div class="d-flex">
