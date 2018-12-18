@@ -61,15 +61,15 @@ def get_initials_for_dependents_formset(initial_form_data):
                             "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', dependent["Child_DOB"]),
                             "Age": dependent["Child_Age"]})
     return initial
-#
-#
-# def get_st_dependent_info_formset(formset_class, initial_form_data):
-#     initial = get_initials_for_dependents_formset(initial_form_data)
-#     if initial:
-#         return formset_class(initial=initial)
-#     return formset_class()
-#
-#
+
+
+def get_st_dependent_info_formset(formset_class, initial_form_data):
+    initial = get_initials_for_dependents_formset(initial_form_data)
+    if initial:
+        return formset_class(initial=initial)
+    return formset_class()
+
+
 def clean_number(number):
     _numbers = []
     for n in str(number):

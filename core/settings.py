@@ -292,6 +292,16 @@ CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
 CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
 
 
+# ----------------------+
+# E-Signature Variables |
+# ----------------------+
+
+ESIGN_SIGNATURE_COMPLETED_TXT = "Signature is Completed"
+
+ESIGNATURE_VERIFICATION = 'Y'
+ESIGN_SEND_METHOD = 'Email'  # 'Text'
+
+
 # -----------------+
 #   PLAN LIST      +
 # -----------------+

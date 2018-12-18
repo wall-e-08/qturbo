@@ -24,7 +24,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_applicant_info_from_form_data, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
-                    save_enrolled_applicant_info)
+                    save_enrolled_applicant_info, get_st_dependent_info_formset)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -179,7 +179,7 @@ def plan_quote(request, ins_type):
                                'Email': '',
                                'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
                                'Phone': '',
-                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-Male-1-11-12-2018-N-'+random_state_zip_combo[1],
+                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-Male-1-11-12-2018-N-'+random_ins_type,
                                'Zip_Code': random_state_zip_combo[1],
                                'Spouse_DOB': None,
                                'State': random_state_zip_combo[0],
@@ -221,10 +221,10 @@ def plan_quote(request, ins_type):
     """ Changing quote store key regarding insurance type  """
     if ins_type == "stm":
         quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
-    # elif ins_type == "lim":
-    #     quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
-    # elif ins_type == "anc":
-    #     quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
+    elif ins_type == "lim":
+        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
+    elif ins_type == "anc":
+        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
 
     """ Calling celery for populating quote list """
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
