@@ -1116,3 +1116,136 @@ class AddonPlan(models.Model):
 
     def get_json_data(self):
         return self.data_as_dict()
+
+
+class StandAloneAddonPlan(models.Model):
+
+    stm_enroll = models.ForeignKey(
+        StmEnroll,
+        on_delete=models.CASCADE,
+        verbose_name=_("Enroll"),
+    )
+
+    vimm_enroll_id = models.CharField(
+        max_length=20,
+        unique=True,
+        db_index=True
+    )
+
+    Plan_ID = models.CharField(
+        verbose_name=_("Plan ID"),
+        max_length=600,
+        db_index=True
+    )
+
+    Plan_Type = models.CharField(
+        max_length=500,
+        choices=(
+            ('Single Member', 'Single Member'),
+            ('Member+1', 'Member+1'),
+            ('Family', 'Family'),
+
+        )
+    )
+
+    Name = models.CharField(
+        max_length=600,
+        db_index=True
+    )
+
+    Lim_Plan_Name = models.CharField(
+        max_length=200,
+        db_index=True
+    )
+
+    plan_name_for_img = models.CharField(
+        max_length=600,
+        db_index=True
+    )
+
+    plan_name = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    unique_url = models.CharField(
+        max_length=700,
+        db_index=True,
+        blank=True, null=True
+    )
+
+    Premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    EnrollmentFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Enrollment_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Administrative_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+
+    )
+
+    AdministrativeFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+
+    )
+
+    actual_premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Quote_ID = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    Access_Token = models.CharField(
+        max_length=700,
+        blank=True, null=True
+    )
+
+    quote_request_timestamp = models.IntegerField(
+        blank=True, null=True
+    )
+
+    note = models.TextField(
+        blank=True, null=True
+    )
+
+    def get_json_data(self):
+        return {
+            'vimm_enroll_id': self.vimm_enroll_id,
+            'Plan_ID': self.Plan_ID,
+            'Name': self.Name,
+            'Lim_Plan_Name': self.Lim_Plan_Name,
+            'plan_name_for_img': self.plan_name_for_img,
+            'plan_name': self.plan_name,
+            'unique_url': self.unique_url,
+            'Premium': str(self.Premium),
+            'EnrollmentFee': str(self.EnrollmentFee),
+            'Enrollment_Fee': str(self.Enrollment_Fee),
+            'AdministrativeFee': str(self.AdministrativeFee),
+            'Administrative_Fee': str(self.Administrative_Fee),
+            'actual_premium': str(self.actual_premium),
+            'quote_request_timestamp': self.quote_request_timestamp,
+            'Quote_ID': self.Quote_ID,
+            'Access_Token': self.Access_Token,
+            'note': self.note
+        }
+
+    class Meta:
+        db_table = 'stand_alone_addon_plan'
