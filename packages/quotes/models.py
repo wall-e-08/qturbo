@@ -898,6 +898,65 @@ class VitalaCare(LimitedBase):
         db_table = 'vitala_care'
 
 
+class HealthChoice(LimitedBase):
+
+    Plan_Type = models.CharField(
+        max_length=500,
+        choices=(
+            ('Single Member', 'Single Member'),
+            ('Member+1', 'Member+1'),
+            ('Family', 'Family'),
+
+        )
+    )
+
+    TelaDocFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    TelaDoc_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    RxAdvocacy_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    RxAdvocacyFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    ChoiceValue_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    ChoiceValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    def get_json_data(self):
+        data = super(HealthChoice, self).get_json_data()
+        data.update({
+            'Plan_Type': self.Plan_Type,
+            'TelaDocFee': str(self.TelaDocFee),
+            'TelaDoc_Fee': str(self.TelaDoc_Fee),
+            'RxAdvocacyFee': str(self.RxAdvocacyFee),
+            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+        })
+        return data
+
+    class Meta:
+        db_table = 'health_choice'
+
+
 class LegionLimitedMedical(LimitedBase):
 
     Plan_Type = models.CharField(

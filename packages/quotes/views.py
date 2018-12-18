@@ -153,9 +153,9 @@ def plan_quote(request, ins_type):
     random_tobacco = random.choice(['Y', 'N'])
     tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
     random_state_zip_combo = random.choice([
-        # ('OH', '44102'),
+        ('OH', '44102'),
         # ('WV', '24867'),
-        ('FL', '33129')
+        # ('FL', '33129')
     ])
     random_ins_type = random.choice([
         'stm',
@@ -179,7 +179,9 @@ def plan_quote(request, ins_type):
                                'Email': '',
                                'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
                                'Phone': '',
-                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-Male-1-11-12-2018-N-'+random_ins_type,
+                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-' +
+                                                  random_gender + '-1-11-12-2018-' + random_tobacco +
+                                                  '-'+random_ins_type,
                                'Zip_Code': random_state_zip_combo[1],
                                'Spouse_DOB': None,
                                'State': random_state_zip_combo[0],
