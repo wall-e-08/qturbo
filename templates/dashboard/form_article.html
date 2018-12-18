@@ -20,7 +20,7 @@
         <div class="row justify-content-md-center align-items-center">
             <div class="col-md-7">
                 <h1>Add New Info</h1>
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
 
@@ -35,6 +35,18 @@
 
                         {% if form.title.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group border border-secondary p-2">
+                        <label for="{{ form.feature_img.id_for_label }}">Feature Image</label>
+                        <b-form-file accept=".jpg, .png, .gif"
+                               class="form-control {% if form.feature_img.errors %}border-danger{% endif %}"
+                               name="{{ form.feature_img.name }}"
+                               id="{{ form.feature_img.id_for_label }}"
+                               value="{{ form.feature_img.value|default:'' }}"></b-form-file>
+                        {% if form.feature_img.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.feature_img.errors|join:" " }}</div>
                         {% endif %}
                     </div>
 

@@ -57,7 +57,8 @@ def all_pages(request):
 # create START ##
 def create_article(request):
     if request.method == 'POST':
-        form = ArticleForm(request.POST)
+        print(request.POST)
+        form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
             blog = form.save()
             return redirect(blog.get_absolute_url())
@@ -96,7 +97,7 @@ def create_blog(request):
                         try:
                             cat = Category.objects.get(id=int(k[4:]))
                             Categorize.objects.update_or_create(
-                                post=blog,
+                                blog=blog,
                                 category=cat,
                             )
                         except Category.DoesNotExist as err:
@@ -104,7 +105,7 @@ def create_blog(request):
             else:
                 cat, create = Category.objects.get_or_create(name="Uncategorized")
                 Categorize.objects.update_or_create(
-                    post=blog,
+                    blog=blog,
                     category=cat,
                 )
             return redirect(blog.get_absolute_url())
