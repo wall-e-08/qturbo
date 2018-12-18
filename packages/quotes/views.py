@@ -3,12 +3,14 @@ import decimal
 import json
 from collections import OrderedDict
 
+import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core import settings
@@ -21,10 +23,11 @@ from .redisqueue import redis_connect
 from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions,
                     update_applicant_info_from_form_data, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
-                    save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info)
+                    save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
+                    save_enrolled_applicant_info)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
-from .enroll import Enroll, Response as EnrollResponse, ESignResponse
+from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
 
 import quotes.models as qm
 
@@ -1011,7 +1014,6 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 # removing plans from redis after successful enrollment
                 redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
                                                    quote_request_form_data['quote_store_key']))
-                request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
                 return HttpResponseRedirect(reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id]))
             else:
                 print("STAGE5: enrollment error - {0}".format(formatted_enroll_response.error))
@@ -1104,7 +1106,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
     main_plan_obj = None
     # carrier = None
     try:
-        # stm_enroll_obj = hm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, discarded=False, enrolled=False)
+        # stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, discarded=False, enrolled=False)
         stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=False)
         stm_dependent_objs = stm_enroll_obj.dependent_set.all()
         # hii_addon_plan_objs = stm_enroll_obj.addonplan_set.filter(Q(api_source='hii'))
@@ -1118,7 +1120,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
         logger.error("Error on esign enrollment: {0} \nvimm_enroll_id: {1}".format(err, vimm_enroll_id))
         print("Stm enroll object does not exist or it is enrolled.")
         try:
-            stm_enroll_obj = hm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=True)
+            stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=True)
             print("STM enroll object exists and is enrolled")
 
             # Is this risky? we may send login url to the wrong person. Whats the alternative? -ds87
@@ -1293,7 +1295,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
             'status': 'success',
             'hii_applicant': hii_formatted_enroll_response.applicant,
             'esign_verification_payment': reverse('quotes:esign_verification_payment', args=[vimm_enroll_id]),
-            'esign_verification_resend': reverse('quotes:esign_verification_resend', args=[vimm_enroll_id]),
+            # 'esign_verification_resend': reverse('quotes:esign_verification_resend', args=[vimm_enroll_id]),
             'main_api_source': 'hii'
         })
 
@@ -1314,7 +1316,6 @@ def e_signature_enrollment(request, vimm_enroll_id):
     # Deleting quote key
     redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
                                        quote_request_form_data['quote_store_key']))
-    request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
     return JsonResponse(final_response)
 
 
@@ -1345,7 +1346,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         return JsonResponse({"status": "fail"})
 
     try:
-        stm_enroll_obj = hm.StmEnroll.objects.get(
+        stm_enroll_obj = qm.StmEnroll.objects.get(
             vimm_enroll_id=vimm_enroll_id,
             enrolled=False,
             esign_verification_starts=True,
@@ -1354,7 +1355,7 @@ def esign_verification_payment(request, vimm_enroll_id):
     except ObjectDoesNotExist as err:
         print("stm_enroll object does not exist/Enrolled!=False")
         try:
-            stm_enroll_obj = hm.StmEnroll.objects.get(
+            stm_enroll_obj = qm.StmEnroll.objects.get(
                 vimm_enroll_id=vimm_enroll_id,
                 enrolled=True,
                 esign_verification_starts=True,
@@ -1364,7 +1365,7 @@ def esign_verification_payment(request, vimm_enroll_id):
             # Is not working. Why? -ds87
             request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
 
-            return JsonResponse({'applicant_enrolled': True, 'redirect_url': reverse('healthplans:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
+            return JsonResponse({'applicant_enrolled': True, 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
 
         except ObjectDoesNotExist as err:
             print("stm_enroll object does not exist/Enrolled!=True")
@@ -1457,7 +1458,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         #     {'res': hii_formatted_enroll_response}
         # )
         """ Now doing it like before eg. stm_enroll method """
-        template = 'healthplans/stm_enroll_done.html'
+        template = 'quotes/stm_enroll_done.html'
 
         print("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
         logger.info("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
@@ -1472,15 +1473,14 @@ def esign_verification_payment(request, vimm_enroll_id):
         quote_request_form_data = request.session.get('{0}_form_data'.format(stm_enroll_obj.app_url), {})
         redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
                                            quote_request_form_data['quote_store_key']))
-        request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
 
         # Updating application stage into final stage
         update_application_stage(stm_enroll_obj, 5)
 
         # request.session['applicant_enrolled'] = True
         # request.session['enrolled_plan_{0}'.format(stm_enroll_obj.app_url)] = 'formatted_esign_response'
-        # return HttpResponseRedirect(reverse('healthplans:thank_you', args=[]))
-        # return render(request, 'healthplans/thank_you.html',
+        # return HttpResponseRedirect(reverse('quotes:thank_you', args=[]))
+        # return render(request, 'quotes/thank_you.html',
         #               {'plan_url': stm_enroll_obj.app_url,
         #                'form_data': quote_request_form_data,
         #                'stage': 5,
@@ -1489,7 +1489,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         # print("formatting response: {}".format(formatted_esign_response))
 
         # enroll_info_panel_body = loader.render_to_string  (
-        #     'healthplans/thank_you.html',
+        #     'quotes/thank_you.html',
         #     {'res': formatted_esign_response,
         #      'stm_enroll_obj': stm_enroll_obj}
         # )
@@ -1500,7 +1500,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         # })
 
         return JsonResponse(
-            {'status': 'success', 'redirect_url': reverse('healthplans:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
+            {'status': 'success', 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
 
 
     else:

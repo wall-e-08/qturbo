@@ -484,13 +484,13 @@
     <script type="text/javascript">
         Mustache.tags = ['[[', ']]'];
         
-        {% if esign_req_sent %}
-          $(window).load(function() {
-            $("html, body").animate({
-              scrollTop: $('h4').offset().top -150
-            }, 1000);
-          });
-        {% endif %}
+{#        {% if esign_req_sent %}#}
+{#          $(window).load(function() {#}
+{#            $("html, body").animate({#}
+{#              scrollTop: $('h4').offset().top -150#}
+{#            }, 1000);#}
+{#          });#}
+{#        {% endif %}#}
 
         function reload_page_on_demand(url, time) {
             setTimeout(function () {

@@ -270,34 +270,34 @@ def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
     return stm_plan_obj
 
 
-# def update_addon_plan_at_enroll(stm_enroll_obj, add_ons):
-#     fields = ['Member_ID']
-#     for add_on in add_ons:
-#         try:
-#             add_on_obj = stm_enroll_obj.addonplan_set.get(addon_id=add_on['ID'], carrier_name=add_on['Name'])
-#             add_on_obj.Member_ID = add_on.get('Member_ID', None)
-#             add_on_obj.save(update_fields=fields)
-#         except ObjectDoesNotExist as err:
-#             print(err)
-#     return stm_enroll_obj
-#
-#
-# def save_enrolled_applicant_info(stm_enroll_obj, enrolled_applicant_info, enrolled=True):
-#     fields = ['Member_ID', 'Payment_Status_Date', 'Password', 'User_ID',
-#               'Status', 'ApplicantID', 'LoginURL', 'enrolled']
-#
-#     for field in fields:
-#         if field in ['Payment_Status_Date']:
-#             setattr(stm_enroll_obj, field, QR_DATE_PATTERN.sub(r'\3-\1-\2', enrolled_applicant_info.get(field, '')))
-#             continue
-#         setattr(stm_enroll_obj, field, enrolled_applicant_info.get(field, None))
-#
-#     stm_enroll_obj.enrolled = True
-#     stm_enroll_obj.save(update_fields=fields)
-#
-#     if stm_enroll_obj.addonplan_set.count() and enrolled_applicant_info.get('Add_ons', None):
-#         update_addon_plan_at_enroll(stm_enroll_obj, enrolled_applicant_info.get('Add_ons', []))
-#     return stm_enroll_obj
+def update_addon_plan_at_enroll(stm_enroll_obj, add_ons):
+    fields = ['Member_ID']
+    for add_on in add_ons:
+        try:
+            add_on_obj = stm_enroll_obj.addonplan_set.get(addon_id=add_on['ID'], carrier_name=add_on['Name'])
+            add_on_obj.Member_ID = add_on.get('Member_ID', None)
+            add_on_obj.save(update_fields=fields)
+        except ObjectDoesNotExist as err:
+            print(err)
+    return stm_enroll_obj
+
+
+def save_enrolled_applicant_info(stm_enroll_obj, enrolled_applicant_info, enrolled=True):
+    fields = ['Member_ID', 'Payment_Status_Date', 'Password', 'User_ID',
+              'Status', 'ApplicantID', 'LoginURL', 'enrolled']
+
+    for field in fields:
+        if field in ['Payment_Status_Date']:
+            setattr(stm_enroll_obj, field, QR_DATE_PATTERN.sub(r'\3-\1-\2', enrolled_applicant_info.get(field, '')))
+            continue
+        setattr(stm_enroll_obj, field, enrolled_applicant_info.get(field, None))
+
+    stm_enroll_obj.enrolled = True
+    stm_enroll_obj.save(update_fields=fields)
+
+    if stm_enroll_obj.addonplan_set.count() and enrolled_applicant_info.get('Add_ons', None):
+        update_addon_plan_at_enroll(stm_enroll_obj, enrolled_applicant_info.get('Add_ons', []))
+    return stm_enroll_obj
 #
 
 def get_askable_questions(sorted_question):

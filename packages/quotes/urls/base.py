@@ -94,6 +94,10 @@ urlpatterns = [
         views.e_signature_enrollment,
         name='e_signature_enrollment'),
 
+    re_path('stm/e_sign_verification_payment/(?P<vimm_enroll_id>[a-zA-Z0-9]+)/$',
+        views.esign_verification_payment,
+        name='esign_verification_payment'),
+
     re_path('stm/successfully_enrolled/(?P<vimm_enroll_id>[a-zA-Z0-9]+)/$', views.thank_you, name='thank_you'),
 
     re_path(r'^pages/legal/(?P<slug>[a-z\-]+)/$', views.legal, name='legal'),
