@@ -107,7 +107,7 @@ def get_random_string(length=12,
             ).digest())
     return ''.join(random.choice(allowed_chars) for i in range(length))
 
-def update_applicant_info_from_form_data(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
+def update_applicant_info(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
     """I am recreating update_applicant_info method such that it does not need session vars.
 
     :param stm_enroll_obj:
@@ -116,9 +116,10 @@ def update_applicant_info_from_form_data(stm_enroll_obj, applicant_info, applica
     :return:
     """
 
-    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
-                  'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
-                  'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
+    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Applicant_is_Child',
+                  'Age', 'Feet', 'Inch', 'IP_Address', 'Weight', 'Address', 'City', 'State',
+                  'ZipCode', 'Email', 'DayPhone', 'CellPhone', 'Mailing_Name', 'Mailing_Address',
+                  'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
         if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
                 'Health Choice']):
@@ -148,9 +149,10 @@ def save_applicant_info(stm_enroll_model, applicant_info, applicant_parent_info,
     :return:
     """
     stm_enroll_obj = stm_enroll_model(vimm_enroll_id=plan['vimm_enroll_id'], stm_name=plan['Name'])
-    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
-                  'Effective_Date', 'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
-                  'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
+    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Applicant_is_Child',
+                  'Age', 'Feet', 'Inch', 'IP_Address', 'Effective_Date', 'Weight', 'Address', 'City',
+                  'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone', 'Mailing_Name', 'Mailing_Address',
+                  'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
         if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
                 'Health Choice', 'Legion Limited Medical', 'Foundation Dental',

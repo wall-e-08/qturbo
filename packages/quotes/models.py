@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from core import settings
-from .us_states import states, states_list
+from .us_states import states
 
 
 
@@ -126,6 +126,8 @@ class StmEnroll(models.Model):
 
     Mailing_ZipCode = models.CharField(max_length=5)
 
+    Applicant_is_Child = models.BooleanField(default=False)
+
     # TODO: Populate Question data in view
     question_data = models.TextField(
         blank=True, null=True
@@ -170,7 +172,7 @@ class StmEnroll(models.Model):
         unique=True,
         blank=True, null=True
     )
-    # TODO: Now highest stage in model is 4. Need to make it 5
+
     stage = models.IntegerField(
         verbose_name=_("Application Stage"),
         default=0
@@ -364,7 +366,7 @@ class StmEnroll(models.Model):
 
 
     def get_billing_info(self):
-        #TODO Make fields for billing address in model
+        # TODO Make fields for billing address in model
         # if self.same_as_contact_address:
         return {
             'same_as_contact_address': True,
@@ -432,7 +434,53 @@ class StmEnroll(models.Model):
         data.update(self.get_payment_info())
         return data
 
+    def get_applicant_info_for_update(self):
+        stm_plan_obj = self.get_stm_plan()
+        plan = stm_plan_obj.get_json_data()
+        data = {
+            'Plan_ID': plan['Plan_ID'],
+            'Name': plan['Name'],
+            'Quote_ID': plan['Quote_ID'],
+            'Access_Token': plan["Access_Token"],
+            'First_Name': self.First_Name,
+            'Middle_Name': self.Middle_Name,
+            'Last_Name': self.Last_Name,
+            'Address': self.Address,
+            'City': self.City,
+            'Email': self.Email,
+            'DayPhone': self.DayPhone,
+            'Mailing_Name': self.Mailing_Name,
+            'Mailing_Address': self.Mailing_Address,
+            'Mailing_City': self.Mailing_City,
+            'Mailing_State': self.Mailing_State,
+            'Mailing_ZipCode': self.Mailing_ZipCode,
 
+            'Payment_Method': self.Payment_Method,
+            'same_as_contact_address': self.same_as_contact_address,
+            'Billing_Address': self.Address,
+            'Billing_City': self.City,
+            'Billing_State': self.State,
+            'Billing_ZipCode': self.ZipCode,
+
+            'Name_Enroll': self.Name_Enroll,
+            'Name_Auth': self.Name_Auth,
+        }
+        if self.applicant_is_child:
+            data.update({
+                'Parent_First_Name': self.Parent_First_Name or '',
+                'Parent_Middle_Name': self.Parent_Middle_Name or '',
+                'Parent_Last_Name': self.Parent_Last_Name or '',
+                'Parent_Gender': self.Parent_Gender or '',
+                'Parent_DOB': self.Parent_DOB.strftime('%Y-%m-%d') or '',
+                'Parent_Address': self.Parent_Address or self.Address,
+                'Parent_City': self.Parent_City or self.City,
+                'Parent_State': self.Parent_State or self.State,
+                'Parent_ZipCode': self.Parent_ZipCode or self.ZipCode,
+                'Parent_Email': self.Parent_Email or '',
+                'Parent_DayPhone': self.Parent_DayPhone or '',
+                'Parent_CellPhone': self.Parent_CellPhone or '',
+            })
+        return data
 
 
     def __str__(self):
@@ -484,7 +532,7 @@ class Dependent(models.Model):
 
     def get_json_data(self):
         return {'vimm_enroll_id': self.vimm_enroll_id,
-                'app_url': self.app_url,
+                'app_url': self.stm_enroll.app_url,
                 'Relation': self.Relation,
                 'First_Name': self.First_Name,
                 'Middle_Name': self.Middle_Name,

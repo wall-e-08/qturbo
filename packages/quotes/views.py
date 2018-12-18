@@ -21,7 +21,7 @@ from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
 from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions,
-                    update_applicant_info_from_form_data, save_applicant_info, update_application_stage,
+                    update_applicant_info, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
                     save_enrolled_applicant_info, get_st_dependent_info_formset)
@@ -153,8 +153,8 @@ def plan_quote(request, ins_type):
     random_tobacco = random.choice(['Y', 'N'])
     tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
     random_state_zip_combo = random.choice([
-        ('OH', '44102'),
-        # ('WV', '24867'),
+        # ('OH', '44102'),
+        ('WV', '24867'),
         # ('FL', '33129')
     ])
     random_ins_type = random.choice([
@@ -163,32 +163,87 @@ def plan_quote(request, ins_type):
         # 'anc'
     ])
 
-    quote_request_form_data = {'Payment_Option': '1',
-                               'applicant_is_child': False,
-                               'Tobacco': random_tobacco,
-                               'Dependents': [],
-                               'Ins_Type': random_ins_type,
-                               'Coverage_Days': None,
-                               'First_Name': '',
-                               'Children_Count': 0,
-                               'Applicant_Age': str(2018-random_year),
-                               'Address1': '',
-                               'Applicant_DOB': '10-18-' + (str(random_year)),
-                               'Include_Spouse': 'No',
-                               'quote_request_timestamp': 1541930336,
-                               'Email': '',
-                               'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
-                               'Phone': '',
-                               'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-' +
-                                                  random_gender + '-1-11-12-2018-' + random_tobacco +
-                                                  '-'+random_ins_type,
-                               'Zip_Code': random_state_zip_combo[1],
-                               'Spouse_DOB': None,
-                               'State': random_state_zip_combo[0],
-                               'Spouse_Gender': '',
-                               'Applicant_Gender': random_gender,
-                               'Last_Name': ''
-                               }
+    FLAG_HAS_A_CHILD = False
+    FLAG_HAS_SPOUSE = False
+    FLAG_APPLICANT_IS_CHILD = False
+
+    init_data = {'Payment_Option': '1',
+                 'applicant_is_child': False,
+                 'Tobacco': random_tobacco,
+                 'Dependents': [],
+                 'Ins_Type': random_ins_type,
+                 'Coverage_Days': None,
+                 'First_Name': '',
+                 'Children_Count': 0,
+                 'Applicant_Age': str(2018-random_year),
+                 'Address1': '',
+                 'Applicant_DOB': '10-18-' + (str(random_year)),
+                 'Include_Spouse': 'No',
+                 'quote_request_timestamp': 1541930336,
+                 'Email': '',
+                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
+                 'Phone': '',
+                 'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-' +
+                                    random_gender + '-1-11-12-2018-' + random_tobacco +
+                                    '-'+random_ins_type,
+                 'Zip_Code': random_state_zip_combo[1],
+                 'Spouse_DOB': None,
+                 'State': random_state_zip_combo[0],
+                 'Spouse_Gender': '',
+                 'Applicant_Gender': random_gender,
+                 'Last_Name': ''
+                 }
+
+    applicant_is_a_child_data = {
+        'Spouse_DOB': None,
+                                 'Include_Spouse': 'No',
+                                 'Applicant_Age': 6,
+                                 'quote_request_timestamp': 1545130810,
+                                 'Email': '',
+                                 'Children_Count': 0,
+                                 'Spouse_Age': None,
+                                 'quote_store_key': '33129-11-01-2012-Male-1-12-19-2018-N-lim',
+                                 'State': 'FL',
+                                 'Applicant_Gender': 'Male',
+                                 'applicant_is_child': True,
+                                 'Ins_Type': 'lim',
+                                 'Applicant_DOB': '11-01-2012',
+                                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
+                                 'Phone': '',
+                                 'Zip_Code': '33129',
+                                 'Address1': '',
+                                 'Tobacco': 'N',
+                                 'Spouse_Gender': '',
+                                 'Payment_Option': '1',
+                                 'Dependents': [],
+                                 'Coverage_Days': None
+    }
+
+
+    child_data = {
+                  'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-27-1997-Female-lim',
+                  'Children_Count': 1,
+                  'Dependents': [{'Child_DOB': '11-27-1997',
+                                  'Child_Gender': 'Female',
+                                  'Child_Age': 21}]}
+
+    wife_data = {
+        'Include_Spouse': 'Yes',
+
+        'Spouse_DOB': '11-04-1975',
+        'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-04-1975-Female-lim',
+        'Spouse_Gender': 'Female',
+        'Spouse_Age': 43,
+    }
+
+    quote_request_form_data = init_data
+    if not FLAG_APPLICANT_IS_CHILD:
+        if FLAG_HAS_A_CHILD:
+            quote_request_form_data = {**quote_request_form_data, **child_data}
+        if FLAG_HAS_SPOUSE:
+            quote_request_form_data = {**quote_request_form_data, **wife_data}
+    else:
+        quote_request_form_data = applicant_is_a_child_data
 
     # Setting a dummy quote request form data in session
     request.session['quote_request_form_data'] = quote_request_form_data
@@ -326,6 +381,7 @@ def stm_plan(request, plan_url):
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
                    'remaining_addon_plans': remaining_addon_plans})
+
 
 def stm_apply(request, plan_url):
     quote_request_form_data = request.session.get('quote_request_form_data', {})
@@ -828,8 +884,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
             with transaction.atomic():
                 if stm_enroll_obj:
                     logger.info("Updating applicant info.")
-                    update_applicant_info_from_form_data(stm_enroll_obj, applicant_cleaned_data,
-                                                         applicant_parent_form_cleaned_data, plan)
+                    update_applicant_info(stm_enroll_obj, applicant_cleaned_data,
+                                          applicant_parent_form_cleaned_data, plan)
                 if stm_enroll_obj is None:
                     logger.info("Saving applicant info.")
                     stm_enroll_obj = save_applicant_info(qm.StmEnroll, applicant_cleaned_data,
@@ -1207,9 +1263,8 @@ def e_signature_enrollment(request, vimm_enroll_id):
     plan = main_plan_obj.get_json_data()
     selected_addon_plans = [addon_plan.data_as_dict() for addon_plan in hii_addon_plan_objs]
     # TODO: Populate applicant info
-    # applicant_info = stm_enroll_obj.get_applicant_info_for_update()
-    # applicant_parent_info = stm_enroll_obj.get_applicant_info_for_update()
-    # applicant_dependents_info = [dependent.get_json_data() for dependent in stm_dependent_objs]
+    applicant_info = stm_enroll_obj.get_applicant_info()
+
     # payment_info = stm_enroll_obj.get_billing_payment_info()
     # stm_questions = json_decoder.decode(stm_enroll_obj.question_data or '{}')
 
@@ -1224,18 +1279,16 @@ def e_signature_enrollment(request, vimm_enroll_id):
     })
     # stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
 
-    """ Experimental mode: getting variables from sessions """
 
     res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
-    # formatted_enroll_response = res and EnrollResponse(res)
     print(applicant_info)
     if not res:
-        applicant_info = applicant_info
+        # applicant_info = applicant_info
         payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
+        applicant_parent_info = stm_enroll_obj.get_applicant_parent_info()
+        applicant_dependents_info = [dependent.get_json_data() for dependent in stm_dependent_objs]
         stm_questions = request.session.get('enroll_{0}_stm_question'.format(plan_url), {})
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
-        applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
-        applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(plan_url), {})
         enr = Enroll({'Plan_ID': plan['Plan_ID'], 'Name': plan['Name']},
                      applicant_data=applicant_info,
                      payment_data=payment_info,
@@ -1248,7 +1301,6 @@ def e_signature_enrollment(request, vimm_enroll_id):
         # stm_enroll_obj.processed_date = timezone.now()
         # stm_enroll_obj.save(update_fields=['processed_date'])
 
-    """ Experiment end """
 
     # TODO: Implement post date
     # if stm_enroll_obj.is_post_date and has_post_date_api(stm_enroll_obj, Carrier):
@@ -1523,17 +1575,6 @@ def thank_you(request, vimm_enroll_id):
     :param: request: Django request object.
     :returns: HttpResponse object with rendered text.
     """
-    '''
-    If we use session to read data:
-    '''
-    # applicant_enrolled = request.session.get('applicant_enrolled', False)
-    # if not applicant_enrolled:
-    #     return HttpResponseRedirect(reverse('quotes:plan_quote', args=[]))
-    # plan_url = applicant_enrolled['plan_url']
-    # vimm_enroll_id = plan_url.rsplit('-', 1)[-1]
-    '''
-    Or we can try to read from model:
-    '''
     try:
         stm_enroll_obj = qm.StmEnroll.objects.get(
             vimm_enroll_id=vimm_enroll_id,
@@ -1541,7 +1582,6 @@ def thank_you(request, vimm_enroll_id):
             esign_verification_starts=True,
             esign_verification_pending=False
         )
-        applicant_enrolled = stm_enroll_obj.enrolled
         logger.info("Thank You page: Application found in database")
 
     except (ObjectDoesNotExist, AttributeError) as err:

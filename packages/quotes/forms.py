@@ -714,6 +714,7 @@ class STApplicantInfoForm(forms.Form):
                                       "DayPhone": self.initial_form_data.get("Phone"),
                                       "CellPhone": self.initial_form_data.get("Phone"),
                                       "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', self.initial_form_data["Applicant_DOB"]),
+                                      "Applicant_is_Child": self.initial_form_data.get("applicant_is_child"),
                                       "Address": self.initial_form_data.get("Address1"),
                                       'Gender': self.initial_form_data["Applicant_Gender"],
                                       "State": self.initial_form_data["State"],
@@ -754,6 +755,8 @@ class STApplicantInfoForm(forms.Form):
         label=_("Date of Birth"),
         required=False
     )
+
+    Applicant_is_Child = forms.BooleanField(required=False)
 
     # only for Select STM + Cardinal Choice
     Occupation = forms.CharField(
@@ -904,6 +907,7 @@ class STApplicantInfoForm(forms.Form):
         super().clean()
         self.cleaned_data['Age'] = self.initial_form_data['Applicant_Age']
         self.cleaned_data['Gender'] = self.initial_form_data['Applicant_Gender']
+        self.cleaned_data['Applicant_is_Child'] = self.initial_form_data['applicant_is_child']
         self.cleaned_data['DOB'] = QR_DATE_PATTERN.sub(r'\3-\1-\2', self.initial_form_data["Applicant_DOB"])
 
         mailing_not_as_contact = self.cleaned_data.get('mailing_not_as_contact', False)
