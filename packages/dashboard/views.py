@@ -152,6 +152,18 @@ def create_or_edit_page(request, page_id=None):
     })
 
 
+def delete_page(request):
+    if request.method == 'GET':
+        pid = request.GET.get('page_id', None)
+        if pid:
+            try:
+                Page.objects.get(id=int(pid)).delete()
+                return JsonResponse({"success": True})
+            except Page.DoesNotExist as err:
+                print("Wtf ! page not found : {}".format(err))
+    return JsonResponse({"success": False})
+
+
 # section and category START ##
 def article_section(request):
     items = Section.objects.filter(post_type='a')

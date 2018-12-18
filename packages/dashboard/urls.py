@@ -11,6 +11,7 @@ urlpatterns = [
     path('page/', login_required(views.all_pages), name='all_pages'),
     path('page/create/', login_required(views.create_or_edit_page), name='create_page'),
     path('page/edit/<page_id>', login_required(views.create_or_edit_page), name='edit_page'),
+    path('page/delete/', login_required(views.delete_page), name='delete_page'),
 
     # article
     path('info/', login_required(views.all_articles), name='all_articles'),

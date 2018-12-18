@@ -40,7 +40,7 @@
                         <div class="card-footer">
                             <a :href="p.view_url" target="_blank" class="btn btn-success">view</a>
                             <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
+                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         </div>
                         <div class="card-footer">
                             <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
+                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
                         </div>
                     </div>
                 </div>
@@ -88,11 +88,18 @@
                         </div>
                         <div class="card-footer">
                             <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
+                            <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <b-modal id="del_confirmation_modal" ref="del_confirmation_modal" centered title="Do you really want to delete?" :hide-footer="true">
+                <div class="d-flex">
+                    <b-btn variant="success" :block="true" class="m-1" @click.prevent="close_modal">No</b-btn>
+                    <b-btn variant="danger" :block="true" class="m-1" @click.prevent="confirm_delete">Yes</b-btn>
+                </div>
+            </b-modal>
         </div>
     </script>
 {% endblock %}
@@ -116,6 +123,7 @@
                             edit_url: "{% url 'dashboard:edit_page' p.id %}",
                         },{% endfor %}
                     ],
+                    active_page_id: "",
                 }
             },
             computed: {
@@ -134,6 +142,26 @@
                         return pg.status === 'a';
                     });
                 },
+            },
+            methods: {
+                close_modal: function () {
+                    this.$refs.del_confirmation_modal.hide()
+                },
+                confirm_delete: function () {
+                    let _t = this;
+                    let ajax_req = new XMLHttpRequest();
+                    ajax_req.onreadystatechange = function () {
+                        if (ajax_req.readyState === 4 && ajax_req.status === 200) {
+                            let data = JSON.parse(ajax_req.responseText);
+                            if (data.success){
+                                _t.pages.splice(_t.pages.findIndex(p => p.page_id == _t.active_page_id), 1);
+                                _t.close_modal();
+                            }
+                        }
+                    };
+                    ajax_req.open("GET", "{% url 'dashboard:delete_page' %}?page_id=" + _t.active_page_id, true);
+                    ajax_req.send();
+                }
             },
             template: '#page-template'
         };
