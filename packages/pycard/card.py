@@ -13,14 +13,34 @@ class Card(object):
     # A mapping from common credit card brands to their number regexps
     BRAND_VISA = 'visa'
     BRAND_MASTERCARD = 'mastercard'
+    BRAND_AMEX = 'amex'
+    BRAND_DISCOVER = 'discover'
+    BRAND_DANKORT = 'dankort'
+    BRAND_MAESTRO = 'maestro'
+    BRAND_DINERS = 'diners'
     BRAND_UNKNOWN = u'unknown'
     BRANDS = {
         BRAND_VISA: re.compile(r'^4\d{12}(\d{3})?$'),
-        BRAND_MASTERCARD: re.compile(r'^(5[1-5]\d{4}|677189)\d{10}$'),
+        BRAND_MASTERCARD: re.compile(r'''
+            ^(5[1-5]\d{4}|677189)\d{10}$|  # Traditional 5-series + RU support
+            ^(222[1-9]|2[3-6]\d{2}|27[0-1]\d|2720)\d{12}$  # 2016 2-series
+        ''', re.VERBOSE),
+        BRAND_AMEX: re.compile(r'^3[47]\d{13}$'),
+        BRAND_DISCOVER: re.compile(r'^(6011|65\d{2})\d{12}$'),
+        BRAND_DANKORT: re.compile(r'^(5019)\d{12}$'),
+        BRAND_MAESTRO:
+            re.compile(r'^(?:5[0678]\d\d|6304|6390|67\d\d)\d{8,15}$'),
+        BRAND_DINERS:
+            re.compile(r'^3(?:0[0-5]|[68][0-9])[0-9]{11}$'),
     }
     FRIENDLY_BRANDS = {
-        BRAND_VISA: 'VISA',
+        BRAND_VISA: 'Visa',
         BRAND_MASTERCARD: 'MasterCard',
+        BRAND_AMEX: 'American Express',
+        BRAND_DISCOVER: 'Discover',
+        BRAND_DANKORT: 'Dankort',
+        BRAND_MAESTRO: 'Maestro',
+        BRAND_DINERS: 'Diners Club',
     }
 
     # Common test credit cards
@@ -45,12 +65,13 @@ class Card(object):
         '4242424242424242',
     )
 
-    def __init__(self, number, month=None, year=None, cvc=None, holder=None):
+    def __init__(self, number, month, year, cvc, holder=None):
         """
         Attaches the provided card data and holder to the card after removing
         non-digits from the provided number.
         """
         self.number = self.non_digit_regexp.sub('', number)
+        self.exp_date = ExpDate(month, year)
         self.cvc = cvc
         self.holder = holder
 
@@ -59,7 +80,11 @@ class Card(object):
         Returns a typical repr with a simple representation of the masked card
         number and the exp date.
         """
-        return u'<Card brand={b} number={n}>'.format(b=self.brand, n=self.mask)
+        return u'<Card brand={b} number={n}, exp_date={e}>'.format(
+            b=self.brand,
+            n=self.mask,
+            e=self.exp_date.mmyyyy
+        )
 
     @property
     def mask(self):
@@ -71,6 +96,10 @@ class Card(object):
         # If the card is invalid, return an "invalid" message
         if not self.is_mod10_valid:
             return u'invalid'
+
+        # If the card is an Amex, it will have special formatting
+        if self.brand == self.BRAND_AMEX:
+            return u'XXXX-XXXXXX-X{e}'.format(e=self.number[11:15])
 
         # All other cards
         return u'XXXX-XXXX-XXXX-{e}'.format(e=self.number[12:16])
@@ -103,11 +132,18 @@ class Card(object):
         return self.number in self.TESTS
 
     @property
+    def is_expired(self):
+        """
+        Returns whether or not the card is expired.
+        """
+        return self.exp_date.is_expired
+
+    @property
     def is_valid(self):
         """
         Returns whether or not the card is a valid card for making payments.
         """
-        return self.brand != self.BRAND_UNKNOWN and self.is_mod10_valid
+        return not self.is_expired and self.is_mod10_valid
 
     @property
     def is_mod10_valid(self):
@@ -194,6 +230,13 @@ class ExpDate(object):
         cards.
         """
         return self.expired_after.strftime('%m/%y')
+
+    @property
+    def MMYY(self):
+        """
+        Returns the expiration date in MMYY format
+        """
+        return self.expired_after.strftime('%m%y')
 
     @property
     def mm(self):

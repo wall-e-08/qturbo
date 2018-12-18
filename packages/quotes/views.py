@@ -4,16 +4,23 @@ import json
 from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from quotes.forms import AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo
+from core import settings
+
+from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
+                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
-from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions)
+from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions,
+                    update_applicant_info_from_form_data, save_applicant_info_from_form_data, update_application_stage,
+                    save_stm_plan, save_dependent_info_from_form_data, update_dependent_info_from_form_data,
+                    save_add_on_info, get_initials_for_dependents_formset)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 
@@ -765,6 +772,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                                        "applicant_error_keys": list(app_form.errors.keys())})
 
             parent_form = None
+            applicant_parent_form_cleaned_data = None
             if has_parent:
                 parent_form = STParentInfo(initial=applicant_cleaned_data, data=request.POST)
                 if parent_form.is_valid():
@@ -813,12 +821,10 @@ def stm_enroll(request, plan_url, stage=None, template=None):
             with transaction.atomic():
                 if stm_enroll_obj:
                     logger.info("Updating applicant info.")
-                    # update_applicant_info(stm_enroll_obj, request, plan, plan_url)
                     update_applicant_info_from_form_data(stm_enroll_obj, applicant_cleaned_data,
                                                          applicant_parent_form_cleaned_data, plan)
                 if stm_enroll_obj is None:
                     logger.info("Saving applicant info.")
-                    # stm_enroll_obj = save_applicant_info(qm.StmEnroll, request, plan, plan_url)
                     stm_enroll_obj = save_applicant_info_from_form_data(qm.StmEnroll, applicant_cleaned_data,
                                                                         applicant_parent_form_cleaned_data, plan,
                                                                         plan_url)

@@ -133,36 +133,36 @@ def get_random_string(length=12,
 #
 #     return stm_enroll_obj
 #
-# def update_applicant_info_from_form_data(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
-#     """I am recreating update_applicant_info method such that it does not need session vars.
-#     This method will replace and be renamed save_applicant_info_from_form_data after testing.
-#
-#     :param stm_enroll_obj:
-#     :param request:
-#     :param plan:
-#     :return:
-#     """
-#
-#     for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
-#                   'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
-#                   'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
-#         if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
-#                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
-#                 'Health Choice']):
-#             continue
-#         setattr(stm_enroll_obj, field, applicant_info[field])
-#     if applicant_parent_info:
-#         for field in ['Name_Enroll', 'Name_Auth', 'Parent_First_Name', 'Parent_Middle_Name', 'Parent_Last_Name',
-#                       'Parent_Gender', 'Parent_DOB', 'Parent_Address', 'Parent_City', 'Parent_State',
-#                       'Parent_ZipCode', 'Parent_Email', 'Parent_DayPhone', 'Parent_CellPhone']:
-#             setattr(stm_enroll_obj, field, applicant_parent_info.get(field, ''))
-#     else:
-#         stm_enroll_obj.Name_Enroll = applicant_info['Name_Enroll']
-#         stm_enroll_obj.Name_Auth = applicant_info['Name_Auth']
-#     stm_enroll_obj.save()
-#
-#     return stm_enroll_obj
-#
+def update_applicant_info_from_form_data(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
+    """I am recreating update_applicant_info method such that it does not need session vars.
+    This method will replace and be renamed save_applicant_info_from_form_data after testing.
+
+    :param stm_enroll_obj:
+    :param request:
+    :param plan:
+    :return:
+    """
+
+    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
+                  'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
+                  'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
+        if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
+                'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
+                'Health Choice']):
+            continue
+        setattr(stm_enroll_obj, field, applicant_info[field])
+    if applicant_parent_info:
+        for field in ['Name_Enroll', 'Name_Auth', 'Parent_First_Name', 'Parent_Middle_Name', 'Parent_Last_Name',
+                      'Parent_Gender', 'Parent_DOB', 'Parent_Address', 'Parent_City', 'Parent_State',
+                      'Parent_ZipCode', 'Parent_Email', 'Parent_DayPhone', 'Parent_CellPhone']:
+            setattr(stm_enroll_obj, field, applicant_parent_info.get(field, ''))
+    else:
+        stm_enroll_obj.Name_Enroll = applicant_info['Name_Enroll']
+        stm_enroll_obj.Name_Auth = applicant_info['Name_Auth']
+    stm_enroll_obj.save()
+
+    return stm_enroll_obj
+
 # def save_applicant_info(stm_enroll_model, request, plan, plan_url):
 #     applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
 #     applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
@@ -192,42 +192,42 @@ def get_random_string(length=12,
 #
 #     return stm_enroll_obj
 #
-# def save_applicant_info_from_form_data(stm_enroll_model, applicant_info, applicant_parent_info, plan, plan_url):
-#     """I am recreating save_applicant_info method such that it does not need session vars.
-#     This method will replace and be renamed save_applicant_info_from_form_data after testing.
-#
-#     :param stm_enroll_model:
-#     :param applicant_info:
-#     :param applicant_parent_info:
-#     :param plan:
-#     :param plan_url:
-#     :return:
-#     """
-#     stm_enroll_obj = stm_enroll_model(vimm_enroll_id=plan['vimm_enroll_id'], stm_name=plan['Name'])
-#     for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
-#                   'Effective_Date', 'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
-#                   'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
-#         if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
-#                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
-#                 'Health Choice', 'Legion Limited Medical', 'Foundation Dental',
-#                 'USA Dental', 'Safeguard Critical Illness', 'Freedom Spirit Plus']):
-#             print("{0} is not needed in {1}".format(field, plan['Name']))
-#             continue
-#         setattr(stm_enroll_obj, field, applicant_info[field])
-#     if applicant_parent_info:
-#         for field in ['Name_Enroll', 'Name_Auth', 'Parent_First_Name', 'Parent_Middle_Name', 'Parent_Last_Name',
-#                       'Parent_Gender', 'Parent_DOB', 'Parent_Address', 'Parent_City', 'Parent_State',
-#                       'Parent_ZipCode', 'Parent_Email', 'Parent_DayPhone', 'Parent_CellPhone']:
-#             setattr(stm_enroll_obj, field, applicant_parent_info.get(field, ''))
-#     else:
-#         stm_enroll_obj.Name_Enroll = applicant_info['Name_Enroll']
-#         stm_enroll_obj.Name_Auth = applicant_info['Name_Auth']
-#
-#     setattr(stm_enroll_obj, 'app_url', plan_url)
-#     stm_enroll_obj.save()
-#
-#
-#     return stm_enroll_obj
+def save_applicant_info_from_form_data(stm_enroll_model, applicant_info, applicant_parent_info, plan, plan_url):
+    """I am recreating save_applicant_info method such that it does not need session vars.
+    This method will replace and be renamed save_applicant_info_from_form_data after testing.
+
+    :param stm_enroll_model:
+    :param applicant_info:
+    :param applicant_parent_info:
+    :param plan:
+    :param plan_url:
+    :return:
+    """
+    stm_enroll_obj = stm_enroll_model(vimm_enroll_id=plan['vimm_enroll_id'], stm_name=plan['Name'])
+    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Age', 'Feet', 'Inch', 'IP_Address',
+                  'Effective_Date', 'Weight', 'Address', 'City', 'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone',
+                  'Mailing_Name', 'Mailing_Address', 'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
+        if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
+                'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
+                'Health Choice', 'Legion Limited Medical', 'Foundation Dental',
+                'USA Dental', 'Safeguard Critical Illness', 'Freedom Spirit Plus']):
+            print("{0} is not needed in {1}".format(field, plan['Name']))
+            continue
+        setattr(stm_enroll_obj, field, applicant_info[field])
+    if applicant_parent_info:
+        for field in ['Name_Enroll', 'Name_Auth', 'Parent_First_Name', 'Parent_Middle_Name', 'Parent_Last_Name',
+                      'Parent_Gender', 'Parent_DOB', 'Parent_Address', 'Parent_City', 'Parent_State',
+                      'Parent_ZipCode', 'Parent_Email', 'Parent_DayPhone', 'Parent_CellPhone']:
+            setattr(stm_enroll_obj, field, applicant_parent_info.get(field, ''))
+    else:
+        stm_enroll_obj.Name_Enroll = applicant_info['Name_Enroll']
+        stm_enroll_obj.Name_Auth = applicant_info['Name_Auth']
+
+    setattr(stm_enroll_obj, 'app_url', plan_url)
+    stm_enroll_obj.save()
+
+
+    return stm_enroll_obj
 #
 #
 # def save_applicant_payment_info(stm_enroll_obj, request, plan_url):
@@ -271,52 +271,52 @@ def get_random_string(length=12,
 #     return dependents
 #
 #
-# def save_dependent_info_from_form_data(dependent_model, dependents_info_form_data, plan, stm_enroll_obj):
-#     dependents = []
-#     for dependent_info in copy.deepcopy(dependents_info_form_data):
-#         for field in ['Feet', 'Inch', 'Weight']:
-#             dependent_info[field] = dependent_info[field] or None
-#         if plan['Name'] in ['Principle Advantage']:
-#             for field in ['Feet', 'Inch', 'Weight']:
-#                 dependent_info[field] = None
+def save_dependent_info_from_form_data(dependent_model, dependents_info_form_data, plan, stm_enroll_obj):
+    dependents = []
+    for dependent_info in copy.deepcopy(dependents_info_form_data):
+        for field in ['Feet', 'Inch', 'Weight']:
+            dependent_info[field] = dependent_info[field] or None
+        if plan['Name'] in ['Principle Advantage']:
+            for field in ['Feet', 'Inch', 'Weight']:
+                dependent_info[field] = None
+
+        dependents.append(dependent_model.objects.create(
+            stm_enroll=stm_enroll_obj,
+            vimm_enroll_id=plan['vimm_enroll_id'],
+            **dependent_info
+        ))
+    return dependents
+
+
+def update_dependent_info_from_form_data(dependents_info_obj, dependent_info_form_data):
+    for dependent_info, dependent_obj in zip(copy.deepcopy(dependent_info_form_data), dependents_info_obj):
+        if str(dependent_obj.DOB) == dependent_info['DOB']:
+            for field in ['Feet', 'Inch', 'Weight']:
+                dependent_info[field] = dependent_info[field] or None
+            for field in ['Relation', 'First_Name', 'Middle_Name',
+                          'Last_Name', 'Gender', 'DOB', 'Age',
+                          'Feet', 'Inch', 'Weight', 'SSN']:
+                setattr(dependent_obj, field, dependent_info[field])
+
+            dependent_obj.save()
+        else:
+            logger.warning("Date of birth does not match for dependent {0} {1}".format(dependent_info['First_Name'],
+                                                                                       dependent_info['Last_Name']))
+
+    return dependents_info_obj
+
 #
-#         dependents.append(dependent_model.objects.create(
-#             stm_enroll=stm_enroll_obj,
-#             vimm_enroll_id=plan['vimm_enroll_id'],
-#             **dependent_info
-#         ))
-#     return dependents
-#
-#
-# def update_dependent_info_from_form_data(dependents_info_obj, dependent_info_form_data):
-#     for dependent_info, dependent_obj in zip(copy.deepcopy(dependent_info_form_data), dependents_info_obj):
-#         if str(dependent_obj.DOB) == dependent_info['DOB']:
-#             for field in ['Feet', 'Inch', 'Weight']:
-#                 dependent_info[field] = dependent_info[field] or None
-#             for field in ['Relation', 'First_Name', 'Middle_Name',
-#                           'Last_Name', 'Gender', 'DOB', 'Age',
-#                           'Feet', 'Inch', 'Weight', 'SSN']:
-#                 setattr(dependent_obj, field, dependent_info[field])
-#
-#             dependent_obj.save()
-#         else:
-#             logger.warning("Date of birth does not match for dependent {0} {1}".format(dependent_info['First_Name'],
-#                                                                                        dependent_info['Last_Name']))
-#
-#     return dependents_info_obj
-#
-#
-# def save_add_on_info(add_on_model, selected_add_on_plans, plan, stm_enroll_obj):
-#     add_ons = []
-#     for add_on_plan in selected_add_on_plans:
-#         add_ons.append(add_on_model.objects.create(
-#             stm_enroll=stm_enroll_obj,
-#             vimm_enroll_id=plan['vimm_enroll_id'],
-#             **add_on_plan
-#         ))
-#     return add_ons
-#
-#
+def save_add_on_info(add_on_model, selected_add_on_plans, plan, stm_enroll_obj):
+    add_ons = []
+    for add_on_plan in selected_add_on_plans:
+        add_ons.append(add_on_model.objects.create(
+            stm_enroll=stm_enroll_obj,
+            vimm_enroll_id=plan['vimm_enroll_id'],
+            **add_on_plan
+        ))
+    return add_ons
+
+
 def get_plan_type_principle_limited(form_data):
     if ((form_data['Include_Spouse'] == 'Yes' and len(form_data['Dependents']) == 0) or
             (form_data['Include_Spouse'] == 'No' and len(form_data['Dependents']) == 1)):
@@ -327,24 +327,24 @@ def get_plan_type_principle_limited(form_data):
     return 'Single Member'
 
 
-# def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
-#     ancillaries_plans = settings.ANCILLARIES_PLANS
-#
-#     if plan['Name'] == 'Principle Advantage':
-#         plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
-#
-#     elif plan['Name'] in ancillaries_plans:
-#         stm_plan_model = hm.StandAloneAddonPlan
-#         stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
-#         stm_plan_obj.save()
-#         return  stm_plan_obj
-#
-#     stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
-#     stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
-#     stm_plan_obj.save()
-#     return stm_plan_obj
-#
-#
+def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
+    ancillaries_plans = settings.ANCILLARIES_PLANS
+
+    if plan['Name'] == 'Principle Advantage':
+        plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
+
+    elif plan['Name'] in ancillaries_plans:
+        stm_plan_model = hm.StandAloneAddonPlan
+        stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
+        stm_plan_obj.save()
+        return  stm_plan_obj
+
+    stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
+    stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
+    stm_plan_obj.save()
+    return stm_plan_obj
+
+
 # def update_addon_plan_at_enroll(stm_enroll_obj, add_ons):
 #     fields = ['Member_ID']
 #     for add_on in add_ons:
@@ -460,11 +460,11 @@ def validate_name(name, allowed_chars="abcdefghijklmnopqrstuvwxyz"
             return False
     return True
 
-# def update_application_stage(stm_enroll_obj, stage):
-#     if (stm_enroll_obj.stage < stage) and (stage <= 5):
-#         stm_enroll_obj.stage = stage
-#         stm_enroll_obj.save(update_fields=['stage'])
-#     return stm_enroll_obj
+def update_application_stage(stm_enroll_obj, stage):
+    if (stm_enroll_obj.stage < stage) and (stage <= 5):
+        stm_enroll_obj.stage = stage
+        stm_enroll_obj.save(update_fields=['stage'])
+    return stm_enroll_obj
 #
 # def log_user_info(dict):
 #     info = {
