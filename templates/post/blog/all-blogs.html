@@ -1,6 +1,10 @@
 {% extends 'post/base.html' %}
 {% load qturbo_post_tags %}
 
+{% block title %}
+    Blog | {{ block.super }}
+{% endblock title %}
+
 {% block main_content %}
     <div class="container mb-5 pb-5">
         <div class="row">
