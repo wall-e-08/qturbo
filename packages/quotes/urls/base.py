@@ -6,6 +6,7 @@ app_name = 'quotes'
 urlpatterns = [
     path('', views.home, name='home'),
     path('health-insurance/', include('quotes.urls.survey')),
+    path('get_plan_quote_data_ajax/', views.get_plan_quote_data_ajax, name='get_plan_quote_data_ajax'),
 
     re_path('health-insurance/quote(?:/(?P<zip_code>\d{5}))?/$', views.plans, name='plans'), # TODO
     
@@ -89,5 +90,12 @@ urlpatterns = [
         r'-[a-z]{2}-[a-zA-Z0-9_]+(Plus)?-[0-9]+-[0-9a-zA-Z]{12})(?:/(?P<stage>[1-5]{1}))?/$',
         views.stm_enroll, name='stm_enroll'),
 
-    path('get_plan_quote_data_ajax/', views.get_plan_quote_data_ajax, name='get_plan_quote_data_ajax')
+    re_path('stm/e_signature_enrollment/(?P<vimm_enroll_id>[a-zA-Z0-9]+)/$',
+        views.e_signature_enrollment,
+        name='e_signature_enrollment'),
+
+    re_path('stm/successfully_enrolled/(?P<vimm_enroll_id>[a-zA-Z0-9]+)/$', views.thank_you, name='thank_you'),
+
+    re_path(r'^pages/legal/(?P<slug>[a-z\-]+)/$', views.legal, name='legal'),
+
 ]

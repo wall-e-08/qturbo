@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
+from django.template import TemplateDoesNotExist
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -18,11 +19,12 @@ from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
 from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions,
-                    update_applicant_info_from_form_data, save_applicant_info_from_form_data, update_application_stage,
-                    save_stm_plan, save_dependent_info_from_form_data, update_dependent_info_from_form_data,
-                    save_add_on_info, get_initials_for_dependents_formset)
+                    update_applicant_info_from_form_data, save_applicant_info, update_application_stage,
+                    save_stm_plan, save_dependent_info, update_dependent_info,
+                    save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
+from .enroll import Enroll, Response as EnrollResponse, ESignResponse
 
 import quotes.models as qm
 
@@ -825,9 +827,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                                                          applicant_parent_form_cleaned_data, plan)
                 if stm_enroll_obj is None:
                     logger.info("Saving applicant info.")
-                    stm_enroll_obj = save_applicant_info_from_form_data(qm.StmEnroll, applicant_cleaned_data,
-                                                                        applicant_parent_form_cleaned_data, plan,
-                                                                        plan_url)
+                    stm_enroll_obj = save_applicant_info(qm.StmEnroll, applicant_cleaned_data,
+                                                         applicant_parent_form_cleaned_data, plan, plan_url)
                     update_application_stage(stm_enroll_obj, stage)
                 if stm_plan_obj is None:
                     logger.info("Saving Plan Info.")
@@ -835,11 +836,10 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 if stm_dependent_objs is None and has_dependents:
                     logger.info("Saving dependents Info.")
                     # save_dependent_info(qm.Dependent, request, plan, plan_url, stm_enroll_obj)
-                    save_dependent_info_from_form_data(qm.Dependent, dependent_info_form_data,
-                                                       plan, stm_enroll_obj)
+                    save_dependent_info(qm.Dependent, dependent_info_form_data, plan, stm_enroll_obj)
                 if stm_dependent_objs and has_dependents:
                     logger.info("Updating dependents Info.")
-                    update_dependent_info_from_form_data(stm_dependent_objs, dependent_info_form_data)
+                    update_dependent_info(stm_dependent_objs, dependent_info_form_data)
                 if stm_addon_plan_objs is None and selected_addon_plans:
                     logger.info("Saving add-on plan info.")
                     save_add_on_info(qm.AddonPlan, selected_addon_plans, plan, stm_enroll_obj)
@@ -1027,7 +1027,6 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     return render(request, template, ctx)
 
 
-
 def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     """This page is called from the plan_list_lim.html the first time the page
     is loaded. This function returns the plans.
@@ -1066,3 +1065,542 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     return JsonResponse({
         'monthly_plans': sp,
     })
+
+
+def e_signature_enrollment(request, vimm_enroll_id):
+    """E Signature Enrollment function for customer signature.
+
+    :param request: Django request object
+    :param vimm_enroll_id: random string, unique field in Enroll object
+    :return: Django JsonResponse object
+
+    In the enrollment review page(stage 4) when the user clicks the button for esign,
+    this method is called by AJAX. We get the STM enrollment object using the vimm_enroll_id.
+
+    There is a test case when user has already enrolled but somehow has gotten to this page
+    and pressed the esign req button. We'll prevent him from again resubmitting
+    by sending him to Thank You page.
+
+    Bear in mind, we are putting a session variable called esign_req_sent in request.session.
+    When it is true, this button will not show up.
+
+    When the user reaches the end of the function we'll delete the redis key.
+    We are also deleting the key in stage 5 which might be unnecessary.
+
+    Some features like post_date, logger will be implemented. -ds87
+
+    """
+    if request.is_ajax() and request.POST:
+        enrolled_form = GetEnrolledForm(request.POST)
+        if not enrolled_form.is_valid():
+            return JsonResponse({'status': 'fail', 'error_msg': 'provide consent'})
+
+    # request_user_info = log_user_info(request.user)
+    logger.info('Starting E-Signature enrollment...log_vimm_enroll_id: {0}'.format(vimm_enroll_id))
+    stm_enroll_obj = None
+    stm_dependent_objs = []
+    # hii_addon_plan_objs = []
+    # a1_addon_plan_objs = []
+    main_plan_obj = None
+    # carrier = None
+    try:
+        # stm_enroll_obj = hm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, discarded=False, enrolled=False)
+        stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=False)
+        stm_dependent_objs = stm_enroll_obj.dependent_set.all()
+        # hii_addon_plan_objs = stm_enroll_obj.addonplan_set.filter(Q(api_source='hii'))
+        hii_addon_plan_objs = stm_enroll_obj.addonplan_set.all()
+        # a1_addon_plan_objs = stm_enroll_obj.addonplan_set.filter(Q(api_source='a1'))
+        main_plan_obj = stm_enroll_obj.get_stm_plan()
+        # main_plan_obj = stm_enroll_obj.
+        # carrier = Carrier.objects.get(name=stm_enroll_obj.stm_name)
+    except ObjectDoesNotExist as err:
+        logger.debug('Object does not exist on StmEnroll table\n vimm_enroll_id: {0}'.format(vimm_enroll_id))
+        logger.error("Error on esign enrollment: {0} \nvimm_enroll_id: {1}".format(err, vimm_enroll_id))
+        print("Stm enroll object does not exist or it is enrolled.")
+        try:
+            stm_enroll_obj = hm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=True)
+            print("STM enroll object exists and is enrolled")
+
+            # Is this risky? we may send login url to the wrong person. Whats the alternative? -ds87
+            request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
+            return JsonResponse(
+                {'status': 'success', 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
+
+        except ObjectDoesNotExist as err:
+            print("STM enroll object does not exist confirmed.")
+
+    # finally:
+    #     # This is useless and should be deleted
+    #     if stm_enroll_obj and stm_enroll_obj.enrolled:
+    #         logger.warning('already enrolled')
+    #         return JsonResponse({
+    #             'status': 'failed',
+    #             'redirect_url': reverse('ins_supervisor:details_of_stm_enroll',
+    #                                     args=[stm_enroll_obj.vimm_enroll_id])
+    #         })
+
+    # if not main_plan_obj or not carrier:
+    #     logger.error("not stm_plan_obj or not carrier")
+    #     raise Http404()
+
+    plan_url = stm_enroll_obj.app_url
+
+    hii_formatted_enroll_response = None
+
+    if stm_enroll_obj.esign_verification_starts and stm_enroll_obj.esign_verification_pending:
+        res = json_decoder.decode(stm_enroll_obj.esign_verification_applicant_info or '{}')
+        hii_formatted_enroll_response = res and EnrollResponse(res)
+        # hii_formatted_enroll_response = res and EnrollResponse(res, request=request_user_info)
+
+    if hii_formatted_enroll_response:
+        print(hii_formatted_enroll_response)
+        return JsonResponse({
+            'status': 'success',
+            'res': hii_formatted_enroll_response.applicant,
+            'verification': 'Y'
+        })
+
+    # TODO: Need to put quote_request_form_data in model
+    # quote_request_form_data = json_decoder.decode(stm_enroll_obj.form_data)
+
+    quote_request_form_data = request.session.get('{0}_form_data'.format(stm_enroll_obj.app_url), {})
+    if quote_request_form_data and not form_data_is_valid(quote_request_form_data):
+        quote_request_form_data = {}
+    if not quote_request_form_data:
+        logger.warning('quote_request_form_data - empty')
+        return JsonResponse({
+            'status': 'failed',
+            'redirect_url': reverse('ins_supervisor:verify_and_enroll', args=[stm_enroll_obj.vimm_enroll_id])
+        })
+
+    stage = int(stm_enroll_obj.stage or 1)
+    stm_stages = request.session.get('enroll_{0}_stm_stages'.format(plan_url), None)
+    if stm_stages is None:
+        request.session['enroll_{0}_stm_stages'.format(plan_url)] = []
+        stm_stages = []
+    stage = get_app_stage(stage, stm_stages)
+    if stage != 4:
+        return JsonResponse({
+            'status': 'failed',
+            'error_message': 'Refresh the page & try again.'
+        })
+
+    # if not post_date_test(stm_enroll_obj, Carrier):
+    #     return JsonResponse({
+    #         'status': 'failed',
+    #         'error_message': 'ESignature verification is not allowed.'
+    #     })
+
+    final_response = {
+        'status': 'error',
+        'verification': 'Y',
+        'api_source': 'hii',
+        'cross_enrollment': False
+    }
+
+    esign_verification_update_fields = []
+
+    plan = main_plan_obj.get_json_data()
+    selected_addon_plans = [addon_plan.data_as_dict() for addon_plan in hii_addon_plan_objs]
+    # TODO: Populate applicant info
+    # applicant_info = stm_enroll_obj.get_applicant_info_for_update()
+    # applicant_parent_info = stm_enroll_obj.get_applicant_info_for_update()
+    # applicant_dependents_info = [dependent.get_json_data() for dependent in stm_dependent_objs]
+    # payment_info = stm_enroll_obj.get_billing_payment_info()
+    # stm_questions = json_decoder.decode(stm_enroll_obj.question_data or '{}')
+
+    # Question: Why do we do this? -ds87
+    applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
+    applicant_info = copy.deepcopy(applicant_info)
+
+    applicant_info.update({
+        'ESign_Option': settings.ESIGNATURE_VERIFICATION,
+        'Esign_Option': settings.ESIGNATURE_VERIFICATION,
+        'ESign_Send_Method': settings.ESIGN_SEND_METHOD,
+    })
+    # stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
+
+    """ Experimental mode: getting variables from sessions """
+
+    res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
+    # formatted_enroll_response = res and EnrollResponse(res)
+    print(applicant_info)
+    if not res:
+        applicant_info = applicant_info
+        payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
+        stm_questions = request.session.get('enroll_{0}_stm_question'.format(plan_url), {})
+        stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
+        applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
+        applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(plan_url), {})
+        enr = Enroll({'Plan_ID': plan['Plan_ID'], 'Name': plan['Name']},
+                     applicant_data=applicant_info,
+                     payment_data=payment_info,
+                     question_data=stm_questions_values,
+                     parent_data=applicant_parent_info,
+                     dependents_data=applicant_dependents_info,
+                     add_on_plans_data=selected_addon_plans)
+
+        # Should be deleted: Not sure
+        # stm_enroll_obj.processed_date = timezone.now()
+        # stm_enroll_obj.save(update_fields=['processed_date'])
+
+    """ Experiment end """
+
+    # TODO: Implement post date
+    # if stm_enroll_obj.is_post_date and has_post_date_api(stm_enroll_obj, Carrier):
+    #     post_date = stm_enroll_obj.post_date
+    #     delay_application_date = post_date.strftime('%Y-%m-%d')
+    #     applicant_info.update({
+    #         'Delay_Application_Flag': 'Y',
+    #         'Delay_Application_Date': stm_enroll_obj.post_date.strftime('%Y-%m-%d')
+    #     })
+
+    res = enr.get_response()
+    logger.info('Esign Verification applicant info:\nResponse: {0}\nlog_vimm_enroll_id: {1}'.format(res, vimm_enroll_id))
+    print('\n\nenrolled response: ', res)
+    stm_enroll_obj.esign_verification_applicant_info = json_encoder.encode(res)
+    stm_enroll_obj.save(update_fields=['esign_verification_applicant_info'])
+    print(esign_verification_update_fields)
+    res2_formatted = None
+    # TODO Post date
+    # if stm_enroll_obj.is_post_date:
+    #     try:
+    #         res1 = res.split('</Result>', 1)[0] + '</Result>'
+    #         res2 = res.split('</Result>', 1)[1]
+    #         logger.info("Esign Verification post date res2: {0}".format(res2),
+    #                     user_info=request_user_info, log_vimm_enroll_id=vimm_enroll_id)
+    #         if res2.strip():
+    #             try:
+    #                 res2_formatted = ESignResponse(res2, request=request_user_info)
+    #             except ParseError as err:
+    #                 logger.warning("Esign Verification res2 parse error: {0}".format(err),
+    #                                user_info=request_user_info, log_vimm_enroll_id=vimm_enroll_id)
+    #                 res1 = res
+    #         res = res1
+    #     except IndexError:
+    #         pass
+    hii_formatted_enroll_response = ESignResponse(res)  # , request=request_user_info)
+    logger.info(hii_formatted_enroll_response)
+    final_response['error'] = hii_formatted_enroll_response.error
+
+    if hii_formatted_enroll_response.applicant:
+        if res2_formatted and res2_formatted.applicant:
+            hii_formatted_enroll_response.applicant.update(res2_formatted.applicant)
+        logger.info("Esign Verification applicant info -- Formatted Enroll Response: {0} -- Applicant Info: {1}".format(
+            hii_formatted_enroll_response.applicant,
+            log_user_info(request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url)))))
+        final_response.update({
+            'status': 'success',
+            'hii_applicant': hii_formatted_enroll_response.applicant,
+            'esign_verification_payment': reverse('quotes:esign_verification_payment', args=[vimm_enroll_id]),
+            'esign_verification_resend': reverse('quotes:esign_verification_resend', args=[vimm_enroll_id]),
+            'main_api_source': 'hii'
+        })
+
+    if not hii_formatted_enroll_response.error:
+        stm_enroll_obj.esign_verification_starts = True
+        stm_enroll_obj.esign_verification_pending = True
+    print("packages/quotes/views.py Line No. 1740: -- esign_verification_update_fields",
+          esign_verification_update_fields)
+    esign_verification_update_fields.extend(['esign_verification_starts', 'esign_verification_pending'])
+    print("packages/quotes/views.py Line No. 1743: -- esign_verification_update_fields",
+          esign_verification_update_fields)
+    stm_enroll_obj.save(update_fields=esign_verification_update_fields)
+    logger.info('Esign Enrollment: sent mail, Response:{0}, user info:{1}'.format(final_response,
+                                                                                  log_user_info(request.session.get(
+                                                                                      'applicant_info_{0}'.format(
+                                                                                          stm_enroll_obj.app_url)))))
+
+    # Deleting quote key
+    redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
+                                       quote_request_form_data['quote_store_key']))
+    request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
+    return JsonResponse(final_response)
+
+
+def esign_verification_payment(request, vimm_enroll_id):
+    """ESign Verification for customer signature
+
+    :param request: Django request object
+    :param vimm_enroll_id: random string, unique field in Enroll object
+    :returns: a object which tells ajax method to request verification for
+    esignature payment.
+    :rtype: Django JsonResponse object
+
+    In the enrollment review page, if esign request has already been sent, this button
+    calling this method appears.
+
+    Clicking it gets the user data from session and asks for response from hiiquote wheather
+    the user has completed his e-signature. It parses the response using functions from
+    enroll.py and acts accordingly meaning it show the error if error occurs. If verification is
+    a success it saves the applicant data and shows a page including the users login info.
+
+    """
+    # request_user_info = log_user_info(request.user)
+    requested_api_source = None
+    if request.is_ajax() and request.POST:
+        requested_api_source = request.POST.get('api_source')
+        print(requested_api_source)
+    else:
+        return JsonResponse({"status": "fail"})
+
+    try:
+        stm_enroll_obj = hm.StmEnroll.objects.get(
+            vimm_enroll_id=vimm_enroll_id,
+            enrolled=False,
+            esign_verification_starts=True,
+            esign_verification_pending=True
+        )
+    except ObjectDoesNotExist as err:
+        print("stm_enroll object does not exist/Enrolled!=False")
+        try:
+            stm_enroll_obj = hm.StmEnroll.objects.get(
+                vimm_enroll_id=vimm_enroll_id,
+                enrolled=True,
+                esign_verification_starts=True,
+                esign_verification_pending=False
+            )
+            print("Object exists and is enrolled")
+            # Is not working. Why? -ds87
+            request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
+
+            return JsonResponse({'applicant_enrolled': True, 'redirect_url': reverse('healthplans:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
+
+        except ObjectDoesNotExist as err:
+            print("stm_enroll object does not exist/Enrolled!=True")
+
+        return JsonResponse({"status": 'fail'})
+    hii_formatted_enroll_response = None
+    a1_formatted_enroll_response = None
+    enroll_info_panel_body = None
+    main_plan_obj = stm_enroll_obj.get_stm_plan()
+
+    print('\n\nHii Main plan esign check...')
+    fields_to_update_on_hii_enrollment = []
+    esign_res = json_decoder.decode(stm_enroll_obj.esign_verification_applicant_info or '{}')
+    # applicant_info_dict = json_decoder.decode(stm_enroll_obj.applicant_info or '{}')
+    applicant_info_dict = request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url), {})
+    print(applicant_info_dict)
+    if not esign_res:
+        return JsonResponse({'status': 'fail'})
+    res2_formatted = None
+    # TODO Implement post date
+    # if stm_enroll_obj.is_post_date:
+    #     try:
+    #         res1 = esign_res.split('</Result>', 1)[0] + '</Result>'
+    #         res2 = esign_res.split('</Result>', 1)[1]
+    #         if res2.strip():
+    #             try:
+    #                 res2_formatted = ESignResponse(res2, request=request_user_info)
+    #             except ParseError as err:
+    #                 logger.warning("Esign Verification payment res2 parse error: {0}".format(err),
+    #                                user_info=request_user_info, log_vimm_enroll_id=vimm_enroll_id)
+    #                 res1 = esign_res
+    #         esign_res = res1
+    #     except IndexError:
+    #         pass
+    print(esign_res)
+    formatted_esign_response = ESignResponse(esign_res)  # , request=request_user_info)
+    print("formatted_esign_response.applicant:", formatted_esign_response.applicant)
+    # if formatted_esign_response.applicant and res2_formatted and res2_formatted.applicant:
+    #     formatted_esign_response.applicant.update(res2_formatted.applicant)
+
+    if (not formatted_esign_response.applicant) or (not applicant_info_dict):
+        return JsonResponse({'status': 'fail'})
+
+    logger.info('formatted_esign_response.applicant: {0}, User info: {1}, enroll id:{2}'.format(
+        formatted_esign_response.applicant,
+        log_user_info(request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url))),
+        stm_enroll_obj.vimm_enroll_id))
+
+    attr_data = {
+        'Quote_ID': applicant_info_dict['Quote_ID'],
+        'ApplicantID': formatted_esign_response.applicant['ApplicantID'],
+        'Access_Token': formatted_esign_response.applicant['Access_Token'],
+        'Process_Option': 'payment'
+    }
+
+    esign_enroll = ESignVerificationEnroll(attr_data=attr_data)
+    try:
+        res = esign_enroll.get_response()
+    except requests.exceptions.RequestException as err:
+        logger.error(str(err))
+        return JsonResponse({'status': 'error'})
+
+    # storing last esign checked time
+    stm_enroll_obj.last_esign_checked_at = timezone.now()
+    stm_enroll_obj.save(update_fields=['last_esign_checked_at'])
+
+    hii_formatted_enroll_response = res and EnrollResponse(res)
+    if hii_formatted_enroll_response.applicant:
+        logger.info("ESign verified enrollment: {0}, User Information: {1}"
+                    "Enrollment ID: {2}".format(hii_formatted_enroll_response.applicant,
+                                                log_user_info(request.session.get(
+                                                    'applicant_info_{0}'.format(stm_enroll_obj.app_url))),
+                                                stm_enroll_obj.vimm_enroll_id))
+        stm_enroll_obj.enrolled_plan_res = json_encoder.encode(res)
+        fields_to_update_on_hii_enrollment.append('enrolled_plan_res')
+
+        stm_enroll_obj.esign_verification_pending = False
+        # TODO check and test if these two flags are working as expected.
+        stm_enroll_obj.processed = True
+        stm_enroll_obj.processed_at = timezone.now()
+        stm_enroll_obj.esign_completed = True
+        fields_to_update_on_hii_enrollment.extend(['esign_verification_pending', 'processed',
+                                                   'processed_at', 'esign_completed'])
+        stm_enroll_obj.save(update_fields=fields_to_update_on_hii_enrollment)
+        save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant, enrolled=True)
+
+        # TODO: Need to implement loader from salesfusion django/templates/loader
+        # enroll_info_panel_body = loader.render_to_string(
+        #     'stm/render/app_stage_5_enroll_info.html',
+        #     {'res': hii_formatted_enroll_response}
+        # )
+        """ Now doing it like before eg. stm_enroll method """
+        template = 'healthplans/stm_enroll_done.html'
+
+        print("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
+        logger.info("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
+        request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
+        save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant)
+        # sending mail on successful enrollment
+        # send_enroll_email(request, quote_request_form_data, formatted_enroll_response, stm_enroll_obj)
+        # send_sales_notification(request, stm_enroll_obj)
+        # removing plans from redis after successful enrollment
+
+        # TODO: Put this in model
+        quote_request_form_data = request.session.get('{0}_form_data'.format(stm_enroll_obj.app_url), {})
+        redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
+                                           quote_request_form_data['quote_store_key']))
+        request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
+
+        # Updating application stage into final stage
+        update_application_stage(stm_enroll_obj, 5)
+
+        # request.session['applicant_enrolled'] = True
+        # request.session['enrolled_plan_{0}'.format(stm_enroll_obj.app_url)] = 'formatted_esign_response'
+        # return HttpResponseRedirect(reverse('healthplans:thank_you', args=[]))
+        # return render(request, 'healthplans/thank_you.html',
+        #               {'plan_url': stm_enroll_obj.app_url,
+        #                'form_data': quote_request_form_data,
+        #                'stage': 5,
+        #                'stm_enroll_obj': stm_enroll_obj})
+
+        # print("formatting response: {}".format(formatted_esign_response))
+
+        # enroll_info_panel_body = loader.render_to_string  (
+        #     'healthplans/thank_you.html',
+        #     {'res': formatted_esign_response,
+        #      'stm_enroll_obj': stm_enroll_obj}
+        # )
+
+        # return JsonResponse({
+        #     'status': 'success',
+        #     'enroll_info_panel_body': enroll_info_panel_body
+        # })
+
+        return JsonResponse(
+            {'status': 'success', 'redirect_url': reverse('healthplans:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
+
+
+    else:
+        logger.warning("ESign verification: {0}".format(hii_formatted_enroll_response.error))
+        logger.info("User info: {0}".format(
+            log_user_info(request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url)))))
+        print(hii_formatted_enroll_response.error)
+        return JsonResponse({
+            'status': "error",
+            'error': hii_formatted_enroll_response.error
+        })
+
+
+
+
+def thank_you(request, vimm_enroll_id):
+    """thank_you method for showing final information to customer.
+    :param: request: Django request object.
+    :returns: HttpResponse object with rendered text.
+    """
+    '''
+    If we use session to read data:
+    '''
+    # applicant_enrolled = request.session.get('applicant_enrolled', False)
+    # if not applicant_enrolled:
+    #     return HttpResponseRedirect(reverse('quotes:plan_quote', args=[]))
+    # plan_url = applicant_enrolled['plan_url']
+    # vimm_enroll_id = plan_url.rsplit('-', 1)[-1]
+    '''
+    Or we can try to read from model:
+    '''
+    try:
+        stm_enroll_obj = qm.StmEnroll.objects.get(
+            vimm_enroll_id=vimm_enroll_id,
+            enrolled=True,
+            esign_verification_starts=True,
+            esign_verification_pending=False
+        )
+        applicant_enrolled = stm_enroll_obj.enrolled
+        logger.info("Thank You page: Application found in database")
+
+    except (ObjectDoesNotExist, AttributeError) as err:
+        logger.warning("Application data not found in database: {0}.".format(str(err)))
+        return HttpResponseRedirect(reverse('quotes:plan_quote', args=[]))
+
+    # Destroying session vimm_enroll_id
+    applicant_enrolled = request.session.get('applicant_enrolled', False)
+    plan_url = applicant_enrolled['plan_url']
+    del request.session[plan_url]['vimm_enroll_id']
+    logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
+
+    # res = request.session.get('applicant_info_{0}'.format(plan_url), '')
+    # res = stm_enroll_obj.enrolled_plan_res
+    res = json_decoder.decode(stm_enroll_obj.enrolled_plan_res or '{}')
+    formatted_enroll_response = res and EnrollResponse(res)
+    return render(request, 'quotes/thank_you.html',
+                  {'res': formatted_enroll_response})
+
+
+
+# meta description for legal info
+legal_page_info = [
+    {
+        'slug': 'privacy',
+        'meta': 'NationsHealthInsurance.com is a full service health insurance brokerage focusing on direct to consumer relations via our revolutionary '
+                'web based enrollment platform',
+    },
+    {
+        'slug': 'terms-of-use',
+        'meta': 'Terms and Conditions of Use Updated 9/10/2016',
+    },
+    {
+        'slug': 'licensing',
+        'meta': 'NationsHealthInsurance.com Licensing Information',
+    },
+    {
+        'slug': 'copyright',
+        'meta': 'NationsHealthInsurance.com respects the rights of others for their intellectual property. The following is our policy for copyright infringement notice and counter notice',
+    },
+
+]
+
+
+def legal(request, slug):
+    try:
+        template_response = render(request, 'quotes/pages/legal/{0}.html'.format(slug),
+                                   {'slug': slug, "metaDesc": None, })
+    except TemplateDoesNotExist:
+        raise Http404()
+
+    meta = ""
+    metablog = [d for d in legal_page_info if d['slug'] == slug]
+    if (len(metablog) > 0):
+        meta = metablog[0]['meta']
+        template_response = render(request, "quotes/pages/legal/{0}.html".format(slug),
+                                   {"slug": slug, "metaDesc": meta, })
+        print(template_response)
+
+    else:
+
+        return template_response
+
+    return template_response

@@ -442,6 +442,62 @@ class StmEnroll(models.Model):
         verbose_name = _("Enroll")
 
 
+class Dependent(models.Model):
+
+    stm_enroll = models.ForeignKey(
+        to=StmEnroll,
+        verbose_name=_("Enroll"),
+        on_delete=models.CASCADE
+    )
+
+    vimm_enroll_id = models.CharField(
+        max_length=20
+    )
+
+    Relation = models.CharField(
+        max_length=50,
+        choices=(('Spouse', 'Spouse'), ('Child', 'Child'))
+    )
+
+    First_Name = models.TextField()
+
+    Middle_Name = models.TextField(blank=True, null=True)
+
+    Last_Name = models.TextField()
+
+    Gender = models.CharField(
+        max_length=50,
+        choices=(('Male', 'Male'), ('Female', 'Female'))
+    )
+
+    DOB = models.DateField()
+
+    Age = models.IntegerField(blank=True, null=True)
+
+    Feet = models.IntegerField(blank=True, null=True)
+
+    Inch = models.IntegerField(blank=True, null=True)
+
+    Weight = models.IntegerField(blank=True, null=True)
+
+    SSN = models.TextField(blank=True, null=True)
+
+    def get_json_data(self):
+        return {'vimm_enroll_id': self.vimm_enroll_id,
+                'app_url': self.app_url,
+                'Relation': self.Relation,
+                'First_Name': self.First_Name,
+                'Middle_Name': self.Middle_Name,
+                'Last_Name': self.Last_Name,
+                'Gender': self.Gender,
+                'DOB': self.DOB,
+                'Age': self.Age,
+                'Feet': self.Feet,
+                'Inch': self.Inch,
+                'Weight': self.Weight,
+                'SSN': self.SSN}
+
+
 class StmPlanBase(models.Model):
 
     stm_enroll = models.ForeignKey(
@@ -610,3 +666,105 @@ class LifeshieldStm(StmPlanBase):
                      'Coverage_Max': str(self.Coverage_Max),
                      'Benefit_Amount': str(self.Benefit_Amount)})
         return data
+
+
+class AddonPlan(models.Model):
+
+    stm_enroll = models.ForeignKey(
+        to=StmEnroll,
+        verbose_name=_("Enroll"),
+        on_delete=models.CASCADE
+    )
+
+    vimm_enroll_id = models.CharField(max_length=20)
+
+    stm_name = models.CharField(
+        max_length=100,
+        verbose_name=_("Main Plan"),
+        choices=(
+            ('Everest STM', 'Everest STM'),
+            ('LifeShield STM', 'LifeShield STM'),
+            ('HealtheFlex STM', 'HealtheFlex STM'),
+            ('HealtheMed STM', 'HealtheMed STM'),
+            ('Premier STM', 'Premier STM'),
+            ('Sage STM', 'Sage STM'),
+            ('Principle Advantage', 'Principle Advantage'),
+        )
+    )
+
+    addon_id = models.IntegerField()
+
+    Name = models.TextField()
+
+    carrier_name = models.TextField(blank=True, null=True)
+
+    carrier_id = models.TextField(blank=True, null=True)
+
+    Premium = models.DecimalField(
+        verbose_name=_("Premium"),
+        max_digits=20,
+        decimal_places=2
+    )
+
+    actual_premium = models.DecimalField(
+        verbose_name=_("Actual Premium"),
+        max_digits=20,
+        decimal_places=2
+    )
+
+    AdministrativeFee = models.DecimalField(
+        verbose_name=_("Administrative Fee"),
+        max_digits=20,
+        decimal_places=2
+    )
+
+    EnrollmentFee = models.DecimalField(
+        verbose_name=_("Enrollment Fee"),
+        max_digits=20,
+        decimal_places=2
+    )
+
+    MedsenseFee = models.DecimalField(
+        verbose_name=_("Medsense Fee"),
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Embeded = models.CharField(max_length=100)
+
+    Plan = models.CharField(max_length=100, blank=True, null=True)
+
+    Plan_Code = models.CharField(max_length=100, blank=True, null=True)
+
+    Deductible = models.CharField(max_length=100, blank=True, null=True)
+
+    Member_ID = models.CharField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+        return "(smt_name: {0}, addon_id: {1}, name: {2}, 'premium': {3})".format(self.stm_name, self.addon_id,
+                                                                                  self.Name, self.Premium)
+
+    def data_as_dict(self):
+        data = dict(
+            stm_name=self.stm_name,
+            addon_id=self.addon_id,
+            Name=self.Name,
+            carrier_name=self.carrier_name,
+            carrier_id=self.carrier_id,
+            Premium=str(self.Premium),
+            AdministrativeFee=str(self.AdministrativeFee),
+            EnrollmentFee=str(self.EnrollmentFee),
+            MedsenseFee=str(self.MedsenseFee),
+            Embeded=self.Embeded,
+            actual_premium=str(self.actual_premium),
+        )
+        if int(self.addon_id) == 38:
+            data.update({
+                'Plan': self.Plan,
+                'Plan_Code': self.Plan_Code,
+                'Deductible': self.Deductible,
+            })
+        return data
+
+    def get_json_data(self):
+        return self.data_as_dict()

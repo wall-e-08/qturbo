@@ -1,6 +1,8 @@
-{% extends 'base.html' %}
+{# TODO {% extends 'base.html' %}#}
 {% load i18n static humanize hp_tags %}
-{% block title %}{{ block.super }}{% endblock title %}
+{% block title %}
+{# TODO   {{ block.super }}#}
+{% endblock title %}
 {% load i18n hp_tags %}
 {% block extra_css %}
     <style type="text/css">
@@ -471,7 +473,13 @@
 {% block hamburger %}{% endblock %}
 
 {% block extra_js %}
-    <script type="text/javascript" src="{% static 'quotes/js/mustache.js' %}"></script>
+{#    <script type="text/javascript" src="{% static 'quotes/js/mustache.js' %}"></script>#}
+
+    {# To be replaced by vue.js #}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <script type="text/javascript">
         Mustache.tags = ['[[', ']]'];
