@@ -1,7 +1,7 @@
-{#{% TODO extends "base.html" %}#}
+{% extends 'base_nhaquote.html' %}
 {% load i18n hp_tags %}
 {% block title %}
-    Apply For Plan {{ plan.plan_name }} | {% comment %} TODO {{ block.super }}{% endcomment %}
+    Apply For Plan {{ plan.plan_name }} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
 <style type="text/css">

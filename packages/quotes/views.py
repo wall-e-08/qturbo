@@ -16,7 +16,7 @@ from django.views.decorators.http import require_POST
 from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
-                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm)
+                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
@@ -309,7 +309,13 @@ def plan_quote(request, ins_type):
     })
 
 
-def stm_plan(request, plan_url):
+def stm_plan(request, plan_url) -> HttpResponse:
+    """Show currently selected plan to user for application.
+
+    :param request: Django request object
+    :param plan_url: Unique url for plan that sits in plan_data
+    :return: HttpResponse
+    """
     logger.info(f"Plan details: {plan_url}")
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -353,9 +359,7 @@ def stm_plan(request, plan_url):
             try:
                 related_plans_dict[i['Coinsurance_Percentage']].append(i)
             except KeyError as k:
-                print(
-                    "Preparing stm_plan template... Creating related plan dictionary for {0} percent co-insurance".format(
-                        k))
+                print(f"Preparing stm_plan template... Creating related plan dictionary for {k} percent co-insurance")
                 related_plans_dict[i['Coinsurance_Percentage']] = []
                 related_plans_dict[i['Coinsurance_Percentage']].append(i)
 
@@ -364,7 +368,7 @@ def stm_plan(request, plan_url):
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
 
-    logger.info('related_plans: {0}'.format(related_plans))
+    logger.info(f'Number of RELATED PLANS: {len(related_plans)}')
     print('PLAN: ', plan)
 
     # addon plans
@@ -1263,7 +1267,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
     plan = main_plan_obj.get_json_data()
     selected_addon_plans = [addon_plan.data_as_dict() for addon_plan in hii_addon_plan_objs]
     # TODO: Populate applicant info
-    applicant_info = stm_enroll_obj.get_applicant_info()
+    # applicant_info = stm_enroll_obj.get_applicant_info_for_update()
 
     # payment_info = stm_enroll_obj.get_billing_payment_info()
     # stm_questions = json_decoder.decode(stm_enroll_obj.question_data or '{}')
@@ -1392,7 +1396,6 @@ def esign_verification_payment(request, vimm_enroll_id):
 
     """
     # request_user_info = log_user_info(request.user)
-    requested_api_source = None
     if request.is_ajax() and request.POST:
         requested_api_source = request.POST.get('api_source')
         print(requested_api_source)
@@ -1416,7 +1419,6 @@ def esign_verification_payment(request, vimm_enroll_id):
                 esign_verification_pending=False
             )
             print("Object exists and is enrolled")
-            # Is not working. Why? -ds87
             request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
 
             return JsonResponse({'applicant_enrolled': True, 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
@@ -1425,10 +1427,6 @@ def esign_verification_payment(request, vimm_enroll_id):
             print("stm_enroll object does not exist/Enrolled!=True")
 
         return JsonResponse({"status": 'fail'})
-    hii_formatted_enroll_response = None
-    a1_formatted_enroll_response = None
-    enroll_info_panel_body = None
-    main_plan_obj = stm_enroll_obj.get_stm_plan()
 
     print('\n\nHii Main plan esign check...')
     fields_to_update_on_hii_enrollment = []

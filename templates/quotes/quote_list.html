@@ -1,4 +1,4 @@
-{## TODO{#{% extends 'base.html' %}#}
+{% extends 'base_nhaquote.html' %}
 {% load i18n static humanize hp_tags %}
 {% block title %}
 {% if form_data.Ins_Type == 'stm' %}
@@ -8,7 +8,7 @@
 {% elif form_data.Ins_Type == 'anc' %}
   {% trans 'Ancilliary Plans' %}
 {% endif %}
-{#TODO{#| {{ block.super }}#}
+    {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
 <style type="text/css">
@@ -46,10 +46,10 @@ li#featured-premium-plan .quote-plan {box-shadow: 0 0 20px 0px #000}
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900');
 /*@import url("animate.css");*/
 /*@import url("slick.css");*/
-@import url("bootstrap.min.css");
-@import url("font-awesome.min.css");
-@import url("ms-setting.css");
-@import url("vimm_style.css");
+@import url("nhaquote_old/css/bootstrap.min.css");
+@import url("nhaquote_old/css/font-awesome.min.css");
+@import url("nhaquote_old/css/ms-setting.css");
+@import url("nhaquote_old/css/vimm_style.css");
 /*-------------------------------------------
     Basic Setting
 --------------------------------------------*/
@@ -2871,7 +2871,7 @@ hr.small-hr:before {
                         <div class="quote-info-inner" style="display: inline-grid;text-align: center">
                             {% if form_data.Ins_Type == 'lim' %}Limited{% elif form_data.Ins_Type == 'anc' %}Ancillary{% else %}STM{% endif %}
                             / {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
-                            &nbsp;<a title="Get Health Insurance Quotes" href="{% url 'quotes:plans' %}" class="js-change-info">(edit)</a>
+                            &nbsp;<a title="Get Health Insurance Quotes" href="/#/health-insurance/member" class="js-change-info">(edit)</a>
                         </div>
                 </ul>
                 </li>
@@ -3367,11 +3367,13 @@ hr.small-hr:before {
 {% endblock container %}
 
 {% block extra_js %}
-<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-{#<script src="{% static 'quotes/js/plugins/numeral.min.js' %}"></script>#}
+
+{#<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>#}
+{#<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>#}
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>#}
+<script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
+
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
     <li class="ms-row">
         <div class="ms-col">
@@ -3680,7 +3682,7 @@ hr.small-hr:before {
         </div>
     </li>
 </script>
-<script type="text/javascript" src="{% static 'quotes/js/plugins/mustache.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
 <script>
 if (!Array.prototype.filter) {
   Array.prototype.filter = function(fun/*, thisArg*/) {
