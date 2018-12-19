@@ -16,7 +16,7 @@ from django.views.decorators.http import require_POST
 from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
-                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm)
+                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
