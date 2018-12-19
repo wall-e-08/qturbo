@@ -1,6 +1,10 @@
 'use strict';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
+const v_cookies_keys = {
+    zip_code: "qt_zip_code",
+};
+
 const v_templates = {
     children: '<router-view></router-view>', // for children templates
     zip_code: '#zipcode-template',
@@ -139,6 +143,13 @@ const router = new VueRouter({
                     current_marker: undefined,
                 }
             },
+            created: function(){
+                let cookie_zip = this.$cookies.get(v_cookies_keys.zip_code);
+                if(cookie_zip){
+                    this.zip_code = cookie_zip;
+                    this.is_valid_zip = true;
+                }
+            },
             methods: {
                 validate_zip: function (e) {
                     if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
@@ -146,9 +157,10 @@ const router = new VueRouter({
                 },
                 check_zipcode: function () {
                     if (this.is_valid_zip) {
+                        this.$cookies.set(v_cookies_keys.zip_code, this.zip_code, 60 * 60 * 24);
                         router.push({name: 'survey-member'});
                     } else {
-
+                        this.$cookies.remove(v_cookies_keys.zip_code);
                     }
                 }
             },
@@ -231,7 +243,11 @@ const router = new VueRouter({
                     }
                 },
                 created() {
-                    //check zip code
+                    let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
+                    console.log("cookies:  " + zip_code);
+                    if(!zip_code){
+                        router.push({name: 'root'});
+                    }
                 }
             },
             name: 'survey-member',
