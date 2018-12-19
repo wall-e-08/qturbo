@@ -13,7 +13,7 @@
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
-            <div class="col-md-7">
+            <div class="col-12">
                 <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Blog</h1>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
