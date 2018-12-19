@@ -1,25 +1,19 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Create Info | {{ block.super }}{% endblock title %}
-
-{% block head_js %}
-    {% with selector=form.content.id_for_label %}
-        {% include 'snippets/tinymc-init.html' %}
-    {% endwith %}
-{% endblock %}
+{% block title %}{{ action }} Info | {{ block.super }}{% endblock title %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{% url 'dashboard:all_articles' %}">Info</a></li>
-    <li class="breadcrumb-item active">Create Info</li>
+    <li class="breadcrumb-item active">{{ action }} Info</li>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
-            <div class="col-md-7">
-                <h1>Add New Info</h1>
+            <div class="col-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Info</h1>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
@@ -54,8 +48,7 @@
                         <label for="{{ form.content.id_for_label }}">Content</label>
                         <textarea class="form-control {% if form.content.errors %}border-danger{% endif %}"
                                   name="{{ form.content.name }}"
-                                  id="{{ form.content.id_for_label }}"
-                                  value="{{ form.content.value|default:'' }}"></textarea>
+                                  id="{{ form.content.id_for_label }}">{{ form.content.value|default:'' }}</textarea>
 
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
@@ -80,4 +73,10 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block bottom_js %}
+    {% with selector=form.content.id_for_label %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
 {% endblock %}

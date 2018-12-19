@@ -3,12 +3,6 @@
 
 {% block title %}{{ action }} Page | {{ block.super }}{% endblock title %}
 
-{% block head_js %}
-    {% with selector=form.content.id_for_label %}
-        {% include 'snippets/tinymc-init.html' %}
-    {% endwith %}
-{% endblock %}
-
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{% url 'dashboard:all_pages' %}">Page</a></li>
@@ -18,7 +12,7 @@
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
-            <div class="col-md-7">
+            <div class="col-12">
                 <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} page</h1>
                 <form method="post">
                     {% csrf_token %}
@@ -66,4 +60,10 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block bottom_js %}
+    {% with selector=form.content.id_for_label %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
 {% endblock %}

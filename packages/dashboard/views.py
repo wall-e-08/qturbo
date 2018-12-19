@@ -1,9 +1,12 @@
-from writing.models import Article, Blog, Category, Categorize, Section
-from django.shortcuts import render, redirect, reverse
-from .forms import PageForm, ArticleForm, BlogForm
-from django.http import Http404, JsonResponse
-from .utils import get_category_list_by_blog
+import os
+from django.conf import settings
 from distinct_pages.models import Page
+from .utils import get_category_list_by_blog
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import render, redirect, reverse
+from django.http import Http404, JsonResponse, HttpResponse
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm
+from writing.models import Article, Blog, Category, Categorize, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -33,7 +36,6 @@ def all_articles(request):
         "posts": articles,
         "type": "Info",
         "create_new_url": reverse('dashboard:create_article'),
-        "edit_url": "#",
     })
 
 
@@ -55,70 +57,118 @@ def all_pages(request):
 
 
 # create START ##
-def create_article(request):
-    if request.method == 'POST':
-        print(request.POST)
-        form = ArticleForm(request.POST, request.FILES)
-        if form.is_valid():
-            blog = form.save()
-            return redirect(blog.get_absolute_url())
-        else:
-            print("create_blog  Form not valid. errors: {}".format(form.errors))
+def create_or_edit_article(request, article_id=None):
+    if article_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = ArticleForm(request.POST, request.FILES)
+            if form.is_valid():
+                blog = form.save()
+                return redirect(blog.get_absolute_url())
+            else:
+                print("create_blog  Form not valid. errors: {}".format(form.errors))
+        form = ArticleForm()
     else:
-        print("create_blog  not post req.. {}".format(request.method))
-
-    form = ArticleForm()
+        action = "Edit"
+        try:
+            article = Article.objects.get(id=int(article_id))
+            if request.method == 'POST':
+                form = ArticleForm(request.POST, instance=article)
+                if form.is_valid():
+                    article = form.save()
+                    return redirect(article.get_absolute_url())
+            form = ArticleForm(instance=article)
+        except Article.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No info found")
     return render(request, 'dashboard/form_article.html', {
         "form": form,
+        "action": action,
     })
 
 
-def create_blog(request):
+def create_or_edit_blog(request, blog_id=None):
+    all_categories = []
     cat_prefix = 'cat-'
-    if request.method == 'POST':
-        print("create_blog post req")
-        form = BlogForm(request.POST)
-        if form.is_valid():
-            print("form valid")
-            blog = form.save()
-
-            # if no category found bound on that post
-            is_cat = False
-            for x in request.POST:
-                if x[:4] == cat_prefix:
-                    is_cat = True
-                    continue
-
-            # manually managed category
-            # If you're confused, see "request.POST" values and the template file
-            if is_cat:
-                for k in request.POST:
-                    if k[:4] == cat_prefix:
-                        try:
-                            cat = Category.objects.get(id=int(k[4:]))
-                            Categorize.objects.update_or_create(
-                                blog=blog,
-                                category=cat,
-                            )
-                        except Category.DoesNotExist as err:
-                            print("Very unexpected !! Category not found !! Err: {}".format(err))
+    if blog_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print("create_blog post req")
+            form = BlogForm(request.POST)
+            if form.is_valid():
+                print("form valid")
+                blog = form.save()
+    
+                # if no category found bound on that post
+                is_cat = False
+                for x in request.POST:
+                    if x[:4] == cat_prefix:
+                        is_cat = True
+                        continue
+    
+                # manually managed category
+                # If you're confused, see "request.POST" values and the template file
+                if is_cat:
+                    for k in request.POST:
+                        if k[:4] == cat_prefix:
+                            try:
+                                cat = Category.objects.get(id=int(k[4:]))
+                                Categorize.objects.update_or_create(
+                                    blog=blog,
+                                    category=cat,
+                                )
+                            except Category.DoesNotExist as err:
+                                print("Very unexpected !! Category not found !! Err: {}".format(err))
+                else:
+                    cat, create = Category.objects.get_or_create(name="Uncategorized")
+                    Categorize.objects.update_or_create(
+                        blog=blog,
+                        category=cat,
+                    )
+                return redirect(blog.get_absolute_url())
             else:
-                cat, create = Category.objects.get_or_create(name="Uncategorized")
-                Categorize.objects.update_or_create(
-                    blog=blog,
-                    category=cat,
-                )
-            return redirect(blog.get_absolute_url())
-        else:
-            print("create_blog  Form not valid. errors: {}".format(form.errors))
+                print("create_blog  Form not valid. errors: {}".format(form.errors))
+        form = BlogForm()
     else:
-        print("create_blog  not post req.. {}".format(request.method))
+        action = "Edit"
+        try:
+            blog = Blog.objects.get(id=int(blog_id))
+        except Blog.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No blog found")
+        if request.method == 'POST':
+            category_list = []
+            for key, val in request.POST.items():
+                if key[:4] == cat_prefix:
+                    category_list.append(int(val))
 
-    form = BlogForm()
+            # updating categories
+            for cat in Category.objects.all():
+                if cat.id in category_list:  # check if any new category is added
+                    print("addding")
+                    Categorize.objects.update_or_create(
+                        blog=blog,
+                        category=Category.objects.get(id=cat.id),  # this might create error if some1 delete it from another dashboard
+                    )
+                else:  # if unmarked, delete it
+                    obj = Categorize.objects.filter(category=cat, blog=blog)  # delete only selected relation with post and category
+                    if obj:
+                        obj.delete()  # delete queryset if not changed from unassigned
+
+            form = BlogForm(request.POST, request.FILES, instance=blog)
+            if form.is_valid():
+                blog = form.save()
+                return redirect(blog.get_absolute_url())
+        else:
+            form = BlogForm(instance=blog)
+            all_categories = get_category_list_by_blog(blog)
+    
     return render(request, 'dashboard/form_blog.html', {
         "form": form,
-        "all_categories": get_category_list_by_blog(),
-        "category_prefix": cat_prefix
+        "all_categories": all_categories,
+        "category_prefix": cat_prefix,
+        "action": action,
     })
 
 
@@ -240,5 +290,31 @@ def ajax_add_new_cat_or_sec(request):
     return JsonResponse(json)
 
 
+def editor_media_upload(request):
+    form = EditorMediaForm(request.POST, request.FILES)
+    if form.is_valid():
+        loc = os.path.join(settings.MEDIA_ROOT, 'editor')
+        base_url = os.path.join(settings.MEDIA_URL, 'editor')
+        fs = FileSystemStorage(location=loc, base_url=base_url)
+
+        file = request.FILES['media_file']
+        filename = fs.save(file.name, file)
+        print(fs.url(filename))
+        url = request.build_absolute_uri(fs.url(filename))
+        return HttpResponse(
+            """<script>
+                var doc = top.document.querySelector('.mce-btn.mce-open').parentNode;
+                var child = null;
+                for (var i = 0; i < doc.childNodes.length; i++) {
+                    if (doc.childNodes[i].className == "mce-textbox") {
+                      child = doc.childNodes[i];
+                      break;
+                    }
+                }
+                child.value = '%s';
+            </script>
+            """% url)
+        # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
+    return HttpResponse()
 
 

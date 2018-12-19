@@ -1,3 +1,10 @@
+{# for media file upload hack #}
+<iframe id="form-target" name="upload_target" class="d-none"></iframe>
+<form id="media-upload-form" action="{% url 'dashboard:editor_media_upload' %}" target="upload_target" method="post" enctype="multipart/form-data" class="d-none">
+    {% csrf_token %}
+    <input name="media_file" type="file" onchange="document.getElementById('media-upload-form').submit();this.value='';">
+</form>
+
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 
 <script>
@@ -26,13 +33,7 @@
             '//www.tinymce.com/css/codepen.min.css'
         ],
         file_browser_callback: function (fieldname, url, type, win) {
-            {# TODO: this needs to be updated programmatically #}
-            console.log(fieldname + ", " + url + ", " + type + ", " + win);
-            {% comment %}if (type == 'image') {
-                $('#editor_file_upload input').click();
-            } else {
-                $('#editor_file_upload input').click();
-            }{% endcomment %}
+            document.querySelector("#media-upload-form input[name='media_file']").click();
         }
     })
 </script>
