@@ -5,6 +5,10 @@ from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list
 
 
+class EditorMediaForm(forms.Form):
+    media_file = forms.FileField()
+
+
 class PageForm(forms.ModelForm):
     content = forms.CharField(widget=RichTextWidget())  # RichTextWidget(field_settings='basic')
     template_file = forms.ChoiceField(
@@ -22,7 +26,7 @@ class ArticleForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        exclude = ['status',]
+        exclude = ['status', ]
 
 
 class BlogForm(forms.ModelForm):
@@ -30,4 +34,4 @@ class BlogForm(forms.ModelForm):
 
     class Meta:
         model = Blog
-        exclude = ['status',]
+        exclude = ['status', ]

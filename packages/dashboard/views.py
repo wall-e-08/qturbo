@@ -1,9 +1,12 @@
-from writing.models import Article, Blog, Category, Categorize, Section
-from django.shortcuts import render, redirect, reverse
-from .forms import PageForm, ArticleForm, BlogForm
-from django.http import Http404, JsonResponse
-from .utils import get_category_list_by_blog
+import os
+from django.conf import settings
 from distinct_pages.models import Page
+from .utils import get_category_list_by_blog
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import render, redirect, reverse
+from django.http import Http404, JsonResponse, HttpResponse
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm
+from writing.models import Article, Blog, Category, Categorize, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -240,5 +243,31 @@ def ajax_add_new_cat_or_sec(request):
     return JsonResponse(json)
 
 
+def editor_media_upload(request):
+    form = EditorMediaForm(request.POST, request.FILES)
+    if form.is_valid():
+        loc = os.path.join(settings.MEDIA_ROOT, 'editor')
+        base_url = os.path.join(settings.MEDIA_URL, 'editor')
+        fs = FileSystemStorage(location=loc, base_url=base_url)
+
+        file = request.FILES['media_file']
+        filename = fs.save(file.name, file)
+        print(fs.url(filename))
+        url = request.build_absolute_uri(fs.url(filename))
+        return HttpResponse(
+            """<script>
+                var doc = top.document.querySelector('.mce-btn.mce-open').parentNode;
+                var child = null;
+                for (var i = 0; i < doc.childNodes.length; i++) {
+                    if (doc.childNodes[i].className == "mce-textbox") {
+                      child = doc.childNodes[i];
+                      break;
+                    }
+                }
+                child.value = '%s';
+            </script>
+            """% url)
+        # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
+    return HttpResponse()
 
 

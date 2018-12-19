@@ -3,11 +3,6 @@
 
 {% block title %}Create Blog | {{ block.super }}{% endblock title %}
 
-{% block head_js %}
-    {% with selector=form.content.id_for_label %}
-        {% include 'snippets/tinymc-init.html' %}
-    {% endwith %}
-{% endblock %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
@@ -105,6 +100,9 @@
 {% endblock %}
 
 {% block bottom_js %}
+    {% with selector=form.content.id_for_label %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
     <script>
         all_components['all-category'] = {
             delimiters: ['[[', ']]'],

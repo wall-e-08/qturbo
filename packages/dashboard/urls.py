@@ -7,6 +7,8 @@ app_name = 'dashboard'
 urlpatterns = [
     path('', login_required(views.index), name='index'),
 
+    path('upload_media_file/', login_required(views.editor_media_upload), name='editor_media_upload'),
+
     # pages | currently not active in website
     path('page/', login_required(views.all_pages), name='all_pages'),
     path('page/create/', login_required(views.create_or_edit_page), name='create_page'),
