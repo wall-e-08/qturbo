@@ -11,7 +11,7 @@ import threading
 from quotes.redisqueue import redis_connect
 from quotes.quote_request import get_xml_requests
 from quotes.quote_response import AddonPlan
-# from quotes.addon_properties import properties as add_on_properties
+from quotes.addon_properties import properties as add_on_properties
 
 json_encoder = json.JSONEncoder()
 json_decoder = json.JSONDecoder()

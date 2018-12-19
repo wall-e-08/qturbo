@@ -12,14 +12,14 @@ from django.conf import settings
 
 # from quotes.models import Carrier # TODO
 # from quotes.us_states import states # TODO
-
-
+from quotes.models import Carrier
 from quotes.quote_response import (StmQuoteResponse, EverestResponse, HealtheFlexResponse,
                                         HealtheMedResponse, PremierResponse, SageResponse, SelectResponse,
                                         LimQuoteResponse, PrincipleResponse, UnifiedResponse, LifeShieldResponse,
                                         CardinalResponse, VitalaCareResponse, HealthChoiceResponse,
                                         LegionLimitedMedicalResponse, USADentalResponse, FoundationDentalResponse,
                                         FreedomSpiritPlusResponse, SafeguardCriticalIllnessResponse)
+from quotes.us_states import states
 
 MONTH_OPTION_PATTERN = re.compile(r'^Option(?P<option_for>\d+)$')
 
@@ -62,7 +62,7 @@ class QRXmlBase(object):
         try:
             carrier_obj = Carrier.objects.get(name=cls.Name)
         except Carrier.DoesNotExist:
-            print("Carrier {0} not found in db.".format(cls.Name)) # TODO: Replace with logger.
+            print(f"Carrier {cls.Name} not found in db.")
             return states
 
         return carrier_obj.get_carrier_available_states()
@@ -1019,15 +1019,14 @@ def get_xml_requests(data:dict) -> list:
     print('\n\nget_xml_class data: ', data)
     print('\n\nins_type: ', data['Ins_Type'])
 
-    # app_state = data['State']
+    app_state = data['State']
     xml_requests = []
-    for xml_cls in insurance_selector[data['Ins_Type']]:#[CardinalChoiceXml, EverestXml, PrincipleXml, SageXml, LifeShieldXML]:  # [PrincipleXml,
-        # SageXml, EverestXml]:
-        # if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
-        #     print("{0} is available in state: {1}".format(xml_cls.Name, app_state))
+    for xml_cls in insurance_selector[data['Ins_Type']]:
+        if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
+            print(f"{xml_cls.Name} is available in state: {app_state}")
             xml_requests += xml_cls.all(data)
-        # else:
-        #     print("{0} is NOT available in state: {1}".format(xml_cls.Name, app_state))
+        else:
+            print(f"{xml_cls.Name} is NOT available in state: {app_state}")
 
     print("xml_request objects: ", xml_requests.__str__())
     print("Returning xml requests.")

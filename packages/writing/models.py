@@ -21,7 +21,7 @@ class Post(models.Model):
     status = models.CharField(
         max_length=1,
         choices=STATUS_CHOICES,
-        default='u'
+        default='p'
     )
 
     feature_img = models.ImageField(
@@ -88,7 +88,7 @@ class Article(Post):
 
     def get_absolute_url(self):
         return reverse(
-            'article:each_article',
+            'slugified_page',
             args=[str(self.slug),]
         )
 
@@ -110,7 +110,7 @@ class Blog(Post):
 
     def get_absolute_url(self):
         return reverse(
-            'blog:each_blog',
+            'slugified_page',
             args=[str(self.slug),]
         )
 
