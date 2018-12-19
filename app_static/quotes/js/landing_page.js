@@ -72,19 +72,28 @@ const v_survey_card = {
             required: true,
             default: 21,
         },
+        inputs:{
+            type: Object,
+            default: () => ({
+                dob: '',
+                gender: '',
+                tobacco: '',
+            }),
+        },
     },
     data: function () {
         return {
             current_stage: this.prop_current_stage,
-            dob: "",
-            gender: '',
-            tobacco: '',
+            gg: this.inputs,
         }
     },
+    created: function(){
+        this.check_age();
+    },
     watch: {
-        gender: function () {
-            if (this.gender) this.current_stage = survey_card_stages[2];
-        },
+        inputs: function(val, oldVal) {
+            this.check_age();
+        }
     },
     methods: {
         txt_whos: function () {
@@ -92,25 +101,25 @@ const v_survey_card = {
             return this.survey_type === holder_types_enum.own ? "your" : "his/her";
         },
         prevent_NaN_input: function (e) {
-            if (this.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
+            if (this.inputs.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
                 // prevent user from inserting non number and no more than 10 character
                 e.preventDefault();
             }
         },
         auto_slash_insert: function () {
             this.current_stage = survey_card_stages[0];
-            if (this.dob.length === 2 || this.dob.length === 5) {
-                if (this.dob[this.dob.length - 1] !== '/') {
-                    this.dob += '/';
+            if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
+                if (this.inputs.dob[this.inputs.dob.length - 1] !== '/') {
+                    this.inputs.dob += '/';
                 }
-            } else if (this.dob.length >= 10) {
+            } else if (this.inputs.dob.length >= 10) {
                 this.check_age();
             }
         },
         check_age: function () {
             //Your age must be under 99 years old
             // Your age must be at least 21
-            var dob = new Date(this.dob);
+            var dob = new Date(this.inputs.dob);
             if (dob == 'Invalid Date') {
                 console.warn("invalid date");
                 return false;
@@ -122,9 +131,16 @@ const v_survey_card = {
                 console.warn("your age must be at least 21");
             } else {
                 this.current_stage = survey_card_stages[1];
-                if (this.gender) this.current_stage = survey_card_stages[2];
+                if (this.inputs.gender) this.current_stage = survey_card_stages[2];
             }
         },
+        remove_component: function (holder_type, idx) {
+            if(holder_type === this.$parent.holder_types_enum.child){
+                this.$parent.remove_dependent(idx);
+            }else if(holder_type === this.$parent.holder_types_enum.spouse) {
+                this.$parent.spouse = false;
+            }
+        }
     },
     template: v_templates.survey_card
 };
@@ -192,28 +208,31 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
-                        my_dob: '',
-                        spouse_dob: '',
+                        own_input: {
+                            dob: '',
+                            gender: '',
+                            tobacco: '',
+                        },
                         spouse: false,
+                        spouse_input: {
+                            dob: '',
+                            gender: '',
+                            tobacco: '',
+                        },
                         dependents: [],
                         max_dependents: 5,
                     }
                 },
                 methods: {
-                    add_spouse: function () {
-                        this.spouse = true;
-                    },
                     add_dependent: function () {
-                        this.dependents.push('baccha');
+                        this.dependents.push({
+                            dob: "",
+                            gender: '',
+                            tobacco: '',
+                        });
                     },
-                    remove_survey_card: function (holder_type, key=0) {
-                        console.log(holder_type);
-                        console.warn(key);
-                        if (holder_type === this.holder_types_enum.spouse) {
-                            this.spouse = false;
-                        } else if(holder_type === this.holder_types_enum.child){
-                            this.dependents.splice(key, 1)
-                        }
+                    remove_dependent: function(idx) {
+                        this.dependents.splice(idx, 1);
                     },
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         console.log("Welcome to the jungle!");
@@ -241,6 +260,11 @@ const router = new VueRouter({
 
                         })
                     }
+                },
+                watch: {
+                    spouse_input: function () {
+                        this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
+                    },
                 },
                 created() {
                     let zip_code = this.$cookies.get(v_cookies_keys.zip_code);

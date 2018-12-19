@@ -851,7 +851,7 @@
                 <span class="border border-secondary rounded-circle cur-p qt-tooltip"
                       v-if="survey_type == 'me'">?</span>
             </p>
-            <input type="text" placeholder="mm/dd/yyyy" v-model="dob" :name="'dob-'+survey_type+index"
+            <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
                    @keypress="prevent_NaN_input($event)" @keyup="auto_slash_insert"
                    class="font-mm border border-secondary mb-3 rounded qt-survey-input">
 
@@ -863,11 +863,11 @@
                 </p>
                 <div class="btn-group w-100" role="group">
                     <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m"
-                           :id="'gender_m-'+survey_type+index" v-model="gender">
+                           :id="'gender_m-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
 
                     <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f"
-                           :id="'gender_f-'+survey_type+index" v-model="gender">
+                           :id="'gender_f-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female
                     </label>
                 </div>
@@ -883,16 +883,16 @@
                 </p>
                 <div class="btn-group w-100" role="group">
                     <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
-                           value="true" :id="'tobacco_y-'+survey_type+index" v-model="tobacco">
+                           value="true" :id="'tobacco_y-'+survey_type+index" v-model="inputs.tobacco">
                     <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_y-'+survey_type+index">Yes</label>
 
                     <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
-                           value="false" :id="'tobacco_n-'+survey_type+index" v-model="tobacco">
+                           value="false" :id="'tobacco_n-'+survey_type+index" v-model="inputs.tobacco">
                     <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_n-'+survey_type+index">No</label>
                 </div>
             </div>
             <div v-if="survey_type !== 'me'"
-                 class="position-absolute cur-p font-md font-wight-600 remove-card-X" {% comment %}@click="remove_survey_card(holder_types_enum.child, index)"{% endcomment %}>
+                 class="position-absolute cur-p font-md font-wight-600 remove-card-X" @click="remove_component(survey_type, index)">
                 X
             </div>
         </div>
@@ -922,12 +922,12 @@
                     <div class="row text-left">
                         <div class="col-6 offset-3">
                             <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
-                                         :prop_min_age="21"></survey-card>
+                                         :prop_min_age="21" :inputs="own_input"></survey-card>
 
                             <template>
                                 <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
-                                             :prop_min_age="21"></survey-card>
-                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_spouse"
+                                             :prop_min_age="21" :inputs="spouse_input"></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
                                      v-else>
                                     <div class="d-flex align-items-center qt-survey-who">
                                         <div class="font-md pl-2 font-sm font-wight-600 text-primary">
@@ -942,7 +942,7 @@
 
                             <template>
                                 <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
-                                             :key="index" :index="index" :survey_type="holder_types_enum.child"
+                                             :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
                                              :prop_max_age="99" :prop_min_age="21"></survey-card>
                                 <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
                                      v-if="dependents.length <= max_dependents">
