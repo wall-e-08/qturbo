@@ -1,9 +1,10 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from multiselectfield import MultiSelectField
 
 from core import settings
-from .us_states import states
+from .us_states import states, states_list
 
 
 
@@ -18,6 +19,106 @@ class Leads(models.Model):
 
     def __str__(self):
         return "{}_{}".format(self.zip_code, self.gender)
+
+class Carrier(models.Model):
+    plan_id = models.CharField(
+        blank=True, null=True,
+        max_length=100
+    )
+
+    ins_type = models.CharField(
+        max_length=100,
+        choices=(
+            ('stm', 'STM'),
+            ('lim', 'Limited'),
+            ('anc', 'ANC'),
+        ),
+        verbose_name=_("Insurance Type"),
+        db_index=True
+    )
+
+    name = models.CharField(
+        max_length=100,
+        choices=settings.MAIN_PLANS,
+        verbose_name=_("Name"),
+        unique=True,
+        db_index=True
+    )
+
+    allowed_state = MultiSelectField(
+        verbose_name=_("States"),
+        max_length=500,
+        choices=states,
+        default=states_list,
+        blank=True, null=True
+    )
+
+    has_question_api = models.BooleanField(
+        default=False
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    child_allowed = models.BooleanField(
+        default=True    )
+
+    spouse_allowed = models.BooleanField(
+        default=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+    # @property
+    # def plan_id(self):
+    #     """Is this necessary?
+    #     :return: int
+    #     """
+    #     return self.plan_id
+
+    @classmethod
+    def get_carrier_ins_type(cls, carrier_name):
+        try:
+            obj = cls.objects.get(name=carrier_name)
+        except cls.DoesNotExist:
+            return None
+        return obj.ins_type
+
+    @classmethod
+    def get_provider_choices(cls):
+        choices = []
+        for obj in cls.objects.filter(is_active=True):
+            choices.append([obj.name, obj.name])
+        return choices
+
+    def get_carrier_available_states(self):
+        """
+        :return: All the available states set n admin/db
+        """
+        return self.allowed_state
+
+    def get_carrier_active_state(self):
+        """
+        :return: True if is_active is set true in model
+        """
+        return self.is_active
+
+    def get_sub_plan_list(self):
+        available_sub_plan = self.carriersubplan_set.filter(carrier=self).order_by('sub_plan_name')
+        available_sub_plan_name = list(set([sub_plan.sub_plan_name for sub_plan in available_sub_plan]))
+        available_sub_plan_name.sort()
+        return available_sub_plan_name
+
+    def get_sub_plan_first(self):
+        return self.get_sub_plan_list()[0] if self.get_sub_plan_list() else None
+
 
 
 class StmEnroll(models.Model):
