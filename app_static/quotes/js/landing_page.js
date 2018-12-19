@@ -236,5 +236,22 @@ const router = new VueRouter({
             },
             name: 'survey-member',
         },]
+    },{
+        path: '/dashboard',
+        component: {
+            created: function () {
+                window.location = '/dashboard/';
+            }
+        }
+    },{
+        path: '/login',
+        component: {
+            created: function () {
+                window.location = '/login/';
+            }
+        }
+    },{
+        path: '*',
+        redirect: '/'
     },]
 });
