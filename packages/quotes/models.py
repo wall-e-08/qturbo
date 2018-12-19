@@ -344,8 +344,8 @@ class StmEnroll(models.Model):
         return None
 
     def get_applicant_parent_info(self):
-        # if not self.applicant_is_child:
-        #     return {}
+        if not self.Applicant_is_Child:
+            return {}
         return {
             'Parent_First_Name': self.Parent_First_Name or '',
             'Parent_Middle_Name': self.Parent_Middle_Name or '',
@@ -465,7 +465,7 @@ class StmEnroll(models.Model):
             'Name_Enroll': self.Name_Enroll,
             'Name_Auth': self.Name_Auth,
         }
-        if self.applicant_is_child:
+        if self.Applicant_is_Child:
             data.update({
                 'Parent_First_Name': self.Parent_First_Name or '',
                 'Parent_Middle_Name': self.Parent_Middle_Name or '',
