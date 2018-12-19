@@ -2871,7 +2871,7 @@ hr.small-hr:before {
                         <div class="quote-info-inner" style="display: inline-grid;text-align: center">
                             {% if form_data.Ins_Type == 'lim' %}Limited{% elif form_data.Ins_Type == 'anc' %}Ancillary{% else %}STM{% endif %}
                             / {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
-                            &nbsp;<a title="Get Health Insurance Quotes" href="{% url 'quotes:plans' %}" class="js-change-info">(edit)</a>
+                            &nbsp;<a title="Get Health Insurance Quotes" href="/#/health-insurance/member" class="js-change-info">(edit)</a>
                         </div>
                 </ul>
                 </li>

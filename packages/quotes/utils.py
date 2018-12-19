@@ -122,7 +122,8 @@ def update_applicant_info(stm_enroll_obj, applicant_info, applicant_parent_info,
                   'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
         if (field in ['Feet', 'Inch', 'Weight']) and (plan['Name'] in [
                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
-                'Health Choice']):
+                'Health Choice', 'Legion Limited Medical', 'Foundation Dental',
+                'USA Dental', 'Safeguard Critical Illness', 'Freedom Spirit Plus']):
             continue
         setattr(stm_enroll_obj, field, applicant_info[field])
     if applicant_parent_info:
