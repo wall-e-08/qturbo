@@ -309,7 +309,13 @@ def plan_quote(request, ins_type):
     })
 
 
-def stm_plan(request, plan_url):
+def stm_plan(request, plan_url) -> HttpResponse:
+    """Show currently selected plan to user for application.
+
+    :param request: Django request object
+    :param plan_url: Unique url for plan that sits in plan_data
+    :return: HttpResponse
+    """
     logger.info(f"Plan details: {plan_url}")
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -353,9 +359,7 @@ def stm_plan(request, plan_url):
             try:
                 related_plans_dict[i['Coinsurance_Percentage']].append(i)
             except KeyError as k:
-                print(
-                    "Preparing stm_plan template... Creating related plan dictionary for {0} percent co-insurance".format(
-                        k))
+                print(f"Preparing stm_plan template... Creating related plan dictionary for {k} percent co-insurance")
                 related_plans_dict[i['Coinsurance_Percentage']] = []
                 related_plans_dict[i['Coinsurance_Percentage']].append(i)
 
@@ -364,7 +368,7 @@ def stm_plan(request, plan_url):
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
 
-    logger.info('related_plans: {0}'.format(related_plans))
+    logger.info(f'Number of RELATED PLANS: {len(related_plans)}')
     print('PLAN: ', plan)
 
     # addon plans
