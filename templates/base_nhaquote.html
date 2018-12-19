@@ -64,7 +64,7 @@
 {#        - Get Best Health Insurance Quotes and Buy Medical Coverage online#}
 
         {% block css %}
-            <link href="{% static 'quotes/css/style.css' %}" rel="stylesheet">
+            <link href="{% static 'nhaquote_old/css/style.css' %}" rel="stylesheet">
         {% endblock css %}
 
         {% block extra_css %}{% endblock extra_css %}
@@ -88,7 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="col-xs-12">
                         <div class="logo-container">
                             <a href="{% url 'quotes:home' %}">
-                                <img src="{% static 'quotes/images/logo.png' %}" alt="Logo"/>
+                                <img src="{% static 'nhaquote_old/images/logo.png' %}" alt="Logo"/>
                             </a>
                         </div>
                         {% block top-menu-block %}
@@ -292,11 +292,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
         {% block js %}
-        <script type="text/javascript" src="{% static 'quotes/js/jquery.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'quotes/js/bootstrap.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'quotes/js/jquery.cookie.js' %}"></script>
-        <script type="text/javascript" src="{% static 'quotes/js/functionsObjects.js' %}"></script>
-        <script type="text/javascript" src="{% static 'quotes/js/main.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nhaquote_old/js/jquery.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nhaquote_old/js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nhaquote_old/js/jquery.cookie.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nhaquote_old/js/functionsObjects.js' %}"></script>
+        <script type="text/javascript" src="{% static 'nhaquote_old/js/main.js' %}"></script>
         <script type="text/javascript">
             function vimm_button_click_processing($button_element, halt_checker, processing_text, animation_delay) {
                 halt_checker = halt_checker || ($button >= !$button.prop('disabled'));  //typo fixed by debu
