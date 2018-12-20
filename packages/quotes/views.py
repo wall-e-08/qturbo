@@ -1,5 +1,4 @@
 import copy
-import decimal
 import json
 from collections import OrderedDict
 
@@ -16,7 +15,8 @@ from django.views.decorators.http import require_POST
 from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
-                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm)
+                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
+                    ChildInfoFormSet, LeadForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
@@ -24,10 +24,13 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_applicant_info, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
-                    save_enrolled_applicant_info, get_st_dependent_info_formset)
+                    save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
+
+# For dummy data generation
+import datetime
 
 import quotes.models as qm
 
@@ -122,6 +125,72 @@ def plans(request, zip_code=None):
     return render(request, 'quotes/landing_page.html')  # TODO
 
 
+@require_POST
+def validate_quote_form(request) -> JsonResponse:
+    """
+
+    :param request: Django request object
+    :return: Django JsonResponse Object
+    """
+
+    print(f"POST DATA:\n----------------\n{request.POST}")
+
+
+    form = ApplicantInfoForm(request.POST)
+    # formset = ChildInfoFormSet(request.POST)
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+    request.session['applicant_enrolled'] = False
+    request.session.modified = True
+    if form.is_valid(): # and formset.is_valid():
+        logger.info("quote info form is valid")
+        quote_request_form_data = form.cleaned_data
+
+        if quote_request_form_data.get('applicant_is_child', True):
+            logger.info("applicant is child - making sure there is no dependents")
+            quote_request_form_data['Dependents'] = []
+            # quote_request_formset_data = []
+        else:
+            # quote_request_formset_data = formset.cleaned_data
+            logger.info("dependents info to quote request form data")
+            # quote_request_form_data['Dependents'] = quote_request_formset_data
+
+        # temp
+        quote_request_form_data['Dependents'] = None
+
+        quote_request_form_data['quote_store_key'] = get_quote_store_key(copy.deepcopy(quote_request_form_data))
+        logger.info("quote_request_form_data['quote_store_key'] {0}".format(quote_request_form_data['quote_store_key']))
+
+        request.session['quote_request_form_data'] = quote_request_form_data
+        # request.session['quote_request_formset_data'] = quote_request_formset_data
+        request.session['quote_request_response_data'] = {}
+
+        lead_form = LeadForm(quote_request_form_data)
+        if lead_form.is_valid():
+            print("lead form is valid")
+            logger.info("saving lead info")
+            lead_form.save()
+        else:
+            print(lead_form.errors)
+
+        return JsonResponse(
+            {
+                'status': 'success',
+                'url': reverse('quotes:plan_quote', kwargs={'ins_type': quote_request_form_data['Ins_Type']})
+            }
+        )
+    return JsonResponse(
+        {
+            'status': 'fail',
+            'error': "Failed",
+            "errors": dict(form.errors.items()),
+            "error_keys": list(form.errors.keys()),
+            # "formset_errors": formset.errors
+         }
+    )
+
+
+
 
 def survey_members(request):
     return render(request, 'quotes/survey/members.html', {})
@@ -134,119 +203,8 @@ def plan_quote(request, ins_type):
     :param ins_type: stm/lim/anc
     :return: Django HttpResponse Object
     """
-    '''Testing'''
-    post_data_zip_code = request.POST.get("zip_code", "")
-    print("post_data_zip_code: ", post_data_zip_code)
 
-    """
-    We see that post data is not working. We are writing some 
-    dummy variables to test the view functions. Then we shall
-    write vue getter methods to pass data.
-    
-    TODO: We have to create a quote_store_key
-    """
-
-    import random
-    import datetime
-    random_year = random.choice(range(1956, 1996))
-    random_gender = random.choice(['Male', 'Female'])
-    random_tobacco = random.choice(['Y', 'N'])
-    tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
-    random_state_zip_combo = random.choice([
-        # ('OH', '44102'),
-        ('WV', '24867'),
-        # ('FL', '33129')
-    ])
-    random_ins_type = random.choice([
-        'stm',
-        # 'lim',
-        # 'anc'
-    ])
-
-    FLAG_HAS_A_CHILD = False
-    FLAG_HAS_SPOUSE = False
-    FLAG_APPLICANT_IS_CHILD = False
-
-    init_data = {'Payment_Option': '1',
-                 'applicant_is_child': False,
-                 'Tobacco': random_tobacco,
-                 'Dependents': [],
-                 'Ins_Type': random_ins_type,
-                 'Coverage_Days': None,
-                 'First_Name': '',
-                 'Children_Count': 0,
-                 'Applicant_Age': str(2018-random_year),
-                 'Address1': '',
-                 'Applicant_DOB': '10-18-' + (str(random_year)),
-                 'Include_Spouse': 'No',
-                 'quote_request_timestamp': 1541930336,
-                 'Email': '',
-                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
-                 'Phone': '',
-                 'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-' +
-                                    random_gender + '-1-11-12-2018-' + random_tobacco +
-                                    '-'+random_ins_type,
-                 'Zip_Code': random_state_zip_combo[1],
-                 'Spouse_DOB': None,
-                 'State': random_state_zip_combo[0],
-                 'Spouse_Gender': '',
-                 'Applicant_Gender': random_gender,
-                 'Last_Name': ''
-                 }
-
-    applicant_is_a_child_data = {
-        'Spouse_DOB': None,
-                                 'Include_Spouse': 'No',
-                                 'Applicant_Age': 6,
-                                 'quote_request_timestamp': 1545130810,
-                                 'Email': '',
-                                 'Children_Count': 0,
-                                 'Spouse_Age': None,
-                                 'quote_store_key': '33129-11-01-2012-Male-1-12-19-2018-N-lim',
-                                 'State': 'FL',
-                                 'Applicant_Gender': 'Male',
-                                 'applicant_is_child': True,
-                                 'Ins_Type': 'lim',
-                                 'Applicant_DOB': '11-01-2012',
-                                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
-                                 'Phone': '',
-                                 'Zip_Code': '33129',
-                                 'Address1': '',
-                                 'Tobacco': 'N',
-                                 'Spouse_Gender': '',
-                                 'Payment_Option': '1',
-                                 'Dependents': [],
-                                 'Coverage_Days': None
-    }
-
-
-    child_data = {
-                  'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-27-1997-Female-lim',
-                  'Children_Count': 1,
-                  'Dependents': [{'Child_DOB': '11-27-1997',
-                                  'Child_Gender': 'Female',
-                                  'Child_Age': 21}]}
-
-    wife_data = {
-        'Include_Spouse': 'Yes',
-
-        'Spouse_DOB': '11-04-1975',
-        'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-04-1975-Female-lim',
-        'Spouse_Gender': 'Female',
-        'Spouse_Age': 43,
-    }
-
-    quote_request_form_data = init_data
-    if not FLAG_APPLICANT_IS_CHILD:
-        if FLAG_HAS_A_CHILD:
-            quote_request_form_data = {**quote_request_form_data, **child_data}
-        if FLAG_HAS_SPOUSE:
-            quote_request_form_data = {**quote_request_form_data, **wife_data}
-    else:
-        quote_request_form_data = applicant_is_a_child_data
-
-    # Setting a dummy quote request form data in session
-    request.session['quote_request_form_data'] = quote_request_form_data
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
 
     # quote_request_form_data = {} # TODO
     # quote_request_form_data = request.session.get('quote_request_form_data', {})

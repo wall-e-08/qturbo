@@ -313,29 +313,29 @@ def get_askable_questions(sorted_question):
                 quss.append(sub_qus)
     return quss
 
-#
-# def get_quote_store_key(form_data):
-#     """
-#
-#     :param form_data: Quotation request form data.
-#     :type form_data: python dictionary object
-#     :return: str: Nearly unique key which is then
-#     concatanated with session key to form redis key.
-#     """
-#     _key = '{0}-{1}-{2}-{3}-{4}-{5}'.format(form_data['Zip_Code'], form_data['Applicant_DOB'],
-#                                             form_data['Applicant_Gender'], form_data['Payment_Option'],
-#                                             form_data['Effective_Date'], form_data['Tobacco'])
-#     if form_data['Coverage_Days']:
-#         _key += '-{0}'.format(form_data['Coverage_Days'])
-#     if form_data['Include_Spouse'] == 'Yes':
-#         _key += '-{0}-{1}'.format(form_data['Spouse_DOB'], form_data['Spouse_Gender'])
-#     if form_data['Dependents']:
-#         for dependent in form_data['Dependents']:
-#             _key += '-{0}-{1}'.format(dependent['Child_DOB'], dependent['Child_Gender'])
-#
-#     _key += '-{0}'.format(form_data['Ins_Type'])
-#     return _key
-#
+
+def get_quote_store_key(form_data):
+    """
+
+    :param form_data: Quotation request form data.
+    :type form_data: python dictionary object
+    :return: str: Nearly unique key which is then
+    concatanated with session key to form redis key.
+    """
+    _key = '{0}-{1}-{2}-{3}-{4}-{5}'.format(form_data['Zip_Code'], form_data['Applicant_DOB'],
+                                            form_data['Applicant_Gender'], form_data['Payment_Option'],
+                                            form_data['Effective_Date'], form_data['Tobacco'])
+    if form_data['Coverage_Days']:
+        _key += '-{0}'.format(form_data['Coverage_Days'])
+    if form_data['Include_Spouse'] == 'Yes':
+        _key += '-{0}-{1}'.format(form_data['Spouse_DOB'], form_data['Spouse_Gender'])
+    if form_data['Dependents']:
+        for dependent in form_data['Dependents']:
+            _key += '-{0}-{1}'.format(dependent['Child_DOB'], dependent['Child_Gender'])
+
+    _key += '-{0}'.format(form_data['Ins_Type'])
+    return _key
+
 #
 # def send_enroll_email(request, form_data, enroll,
 #                       stm_enroll_obj,

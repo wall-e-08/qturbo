@@ -958,7 +958,7 @@
                             </template>
                             <button id="submit_quote_request"
                                     class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                    v-on:click='redirect_to_plans("{% url 'quotes:plan_quote' 'stm' %}", "{{ csrf_token }}")'>
+                                    v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
                                 Check Quote
                             </button>
                         </div>

@@ -12,6 +12,8 @@ urlpatterns = [
     
     re_path('health-insurance/quotes/(?P<ins_type>(stm|lim|anc))/$', views.plan_quote, name='plan_quote'),
 
+    path('health-insurance/validate_quote_form/', views.validate_quote_form, name='validate_quote_form'),
+
     re_path('stm/plan/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
         r'-[a-z]{2}-Plan[A-Z0-9_]+-[0-9]+)/$',
         views.stm_plan, name='stm_plan'),

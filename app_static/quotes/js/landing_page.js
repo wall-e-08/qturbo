@@ -236,12 +236,21 @@ const router = new VueRouter({
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         let _t = this;
                         let form_data = {
-                            zip_code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                            Include_Spouse: this.spouse ? 'Yes': 'No',
+                            Payment_Option: '1',
                         };
                         if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
-                            form_data['applicant_dob'] = _t.own_input.dob;
-                            form_data['applicant_gender'] = _t.own_input.gender;
-                            form_data['applicant_tobacco'] = _t.own_input.tobacco == 'true';
+                            form_data['Applicant_DOB'] = _t.own_input.dob;
+                            form_data['Applicant_Gender'] = _t.own_input.gender == 'm' ? 'Male' : 'Female';
+                            form_data['Ins_Type'] = 'lim';
+                            form_data['Tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';
+                            form_data['Children_Count'] = _t.dependents.length;
+
+                            var newDate = new Date();
+                            newDate.setDate(newDate.getDate() + 1);
+                            form_data['Effective_Date'] = newDate.toISOString().split('T')[0];
+
                         } else {
                             console.error("Please insert data to see plans");
                             return null;
@@ -285,6 +294,7 @@ const router = new VueRouter({
                             success: function (data) {
                                 console.log("Success");
                                 console.table(data);
+                                location.href = data.url;
                             }
                         })
                     }
@@ -299,6 +309,11 @@ const router = new VueRouter({
                     console.log("cookies:  " + zip_code);
                     if(!zip_code){
                         router.push({name: 'root'});
+                    }
+                    this.own_input = {
+                        dob: '11/12/1992',
+                        gender: 'm',
+                        tobacco: 'true',
                     }
                 }
             },
