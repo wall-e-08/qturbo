@@ -9,7 +9,7 @@ def all_articles(request):
 
 def sectionized_article(request, slug):
     print(slug)
-    return HttpResponse("sectionized_article page")
+    return render(request, 'post/article/sectionized-article.html')
 
 
 def each_article(request, model_obj):

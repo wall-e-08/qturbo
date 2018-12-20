@@ -1,12 +1,26 @@
 {% extends 'post/base.html' %}
+{% load static %}
 {% load qturbo_post_tags %}
 
 {% block main_content %}
-    <div class="container mb-5 pb-5">
+    <section id="banner">
+        <div class="each-article-banner position-relative">
+            <div class="each-article-banner-content position-absolute text-center text-white">
+                <a href="" class=""> Learn »</a>
+                <h2 class="font-weight-bold">The standard Lorem Ipsum passage,consectetur consectetur</h2>
+                <h5 class="font-weight-bold">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed doconsectetur consectetur
+                    eiusmod"</h5>
+                <p class="date"> Sep 25, 2018 - By Hal Levy</p>
+            </div>
+
+        </div>
+    </section>
+    <section id="main-content">
+    <div class="container py-5">
         <div class="row">
             <div class="col">
-                
-                {# THIS IS TEST TEMPLATE #}
+
+                THIS IS TEST TEMPLATE
                 <h1 class="font-wight-700 font-xl">{{ article.title }}</h1>
                 <br>
                 {% if article.feature_img %}
@@ -14,9 +28,59 @@
                     <br>
                 {% endif %}
                 {{ article.content|safe }}
-                
-                
+
+                ghghghg
             </div>
         </div>
     </div>
+    </section>
+
+
+    <section id="related-article" class="border-top">
+        <div class="qt-related-article container py-5">
+            <h2 class="text-center mb-5"> Related articles</h2>
+            <div class="row">
+                {% with ''|center:'7' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4">
+
+                            <div class="card hi-article mb-4">
+                                <a href="#">
+                                    <img class="card-img-top" src="{% static 'post/img/article-banner1.jpg' %}"
+                                         alt="Card image cap">
+                                </a>
+                                <div class="card-body max-height">
+                                    <a href="#"><h3 class="card-title text-dark">Top 10 Procedures to Help, Some quick
+                                        example text to build on</h3></a>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the
+                                        bulk of
+                                        the card's content.</p>
+                                    <a href="#">
+                                        <p>Learn more
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="text-center mt-5 mb-3">
+                <a href="" class="btn btn-lg btn-primary text-white text-center font-weight-bold px-4">See More Medicare
+                    article
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
 {% endblock %}

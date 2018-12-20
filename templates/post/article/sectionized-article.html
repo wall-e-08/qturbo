@@ -1,0 +1,157 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% load qturbo_post_tags %}
+
+{% block main_content %}
+    <section id="banner">
+        <div class="qt-article-heading position-relative">
+            <div class="qt-article-heading-content position-absolute text-center text-white">
+                <a href="" class=""> Learn »</a>
+                <h2 class="font-weight-bold">The standard Lorem Ipsum passage</h2>
+                <h5 class="font-weight-bold">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod</h5>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="popular-article" class="border-bottom">
+        <div class="qt-popular-article container py-5">
+            <h2 class="text-center mb-5"> Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+            <div class="row">
+                {% with ''|center:'3' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4">
+
+                            <div class="card hi-article mb-4">
+                                <a href="#">
+                                    <img class="card-img-top" src="{% static 'post/img/author.jpg' %}"
+                                         alt="Card image cap">
+                                </a>
+                                <div class="card-body max-height">
+                                    <a href="#"><h3 class="card-title text-dark">Top 10 Procedures to Help, Some quick
+                                        example text to build on</h3></a>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the
+                                        bulk of
+                                        the card's content.</p>
+                                    <a href="#">
+                                        <p>Learn more
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="text-center mt-5 mb-3">
+                <a href="" class="btn btn-lg btn-primary text-white text-center font-weight-bold px-4">See all Medicare Advantages
+                    article
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+    <section id="popular-question" class="border-bottom">
+        <div class="qt-popular-article container py-5">
+            <h2 class="text-center mb-5"> Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+            <div class="row">
+                {% with ''|center:'3' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4">
+
+                            <div class="card hi-article mb-4">
+                                {% comment %}<a href="#">
+                                <img class="card-img-top" src="{% static 'post/img/author.jpg' %}" alt="Card image cap">
+                            </a>{% endcomment %}
+                                <div class="card-body max-height">
+                                    <a href="#"><h3 class="card-title text-dark">Q: Top 10 Procedures to Help, Some
+                                        quick example text to build on</h3></a>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the
+                                        bulk of
+                                        the card's content.</p>
+                                    <a href="#">
+                                        <p>Read more
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="text-center mt-5 mb-3">
+                <a href="" class="btn btn-lg btn-primary text-white text-center font-weight-bold px-4">See all
+                    questions
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+    <section id="popular-article" class="border-bottom py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-5">
+                    <div class="mb-3">
+                        <h2 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                        <ul class="mt-4">
+                            <li>Lorem ipsum dolor sit amet</li>
+                            <li>Lorem ipsum dolor sit amet</li>
+                            <li>Lorem ipsum dolor sit amet</li>
+
+                        </ul>
+                        <h5 class="my-4">consectetur adipiscing elit,</h5>
+
+                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Get a Free
+                            Quote
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-5">
+                    <div>
+                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <section id="topic">
+        <div class="container">
+            <h2 class="text-center my-5">Browse by topics</h2>
+            <div class="row mb-5">
+                {% with ''|center:'9' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-6 col-lg-4">
+
+                            <a href="">
+                                <button class="btn btn-lg btn-outline-primary mb-4 w-100">
+                                    Health Insurance
+                                </button>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+        </div>
+
+    </section>
+{% endblock %}

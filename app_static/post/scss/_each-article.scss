@@ -1,0 +1,51 @@
+.each-article-banner{
+  background: url("/static/post/img/article-banner2.jpg") #0053A5 center center / cover;
+  height: 50vh;
+  max-height: 760px;
+}
+
+.each-article-banner-content{
+  background: rgba(0,0,0,.4);
+  height: 100%;
+  width: 100%;
+  max-height: 768px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.each-article-banner-content a{
+  position: absolute;
+  top: 20px;
+  color: white;
+}
+.each-article-banner-content h2{
+   max-width: 800px;
+}
+.each-article-banner-content h5{
+   max-width: 800px;
+}
+
+.each-article-banner-content .date{
+  position: absolute;
+  bottom: 0;
+}
+
+.each-article-banner-content a:hover{
+  color: #19b4fa;
+}
+
+#related-article{
+  background-color: #f2f2f2;
+}
+@media (max-width: 448px) {
+  .each-article-banner-content h2{
+    font-size: 18px;
+  }
+  .each-article-banner-content h5{
+    font-size: 14px;
+  }
+
+}

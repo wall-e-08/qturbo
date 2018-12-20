@@ -1,0 +1,58 @@
+.qt-article-heading{
+  background: url("/static/post/img/article-banner1.jpg") center / cover #19B4FA;
+  height: 50vh;
+  max-height: 760px;
+  background-position: center;
+}
+
+.qt-article-heading-content{
+  background: rgba(0,0,0,.4);
+  height: 100%;
+  width: 100%;
+  max-height: 768px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.qt-article-heading-content h2{
+   max-width: 800px;
+}
+.qt-article-heading-content h5{
+   max-width: 800px;
+}
+
+.qt-article-heading-content a{
+  position: absolute;
+  top: 20px;
+  color: white;
+}
+.qt-article-heading-content a:hover{
+  color: #19b4fa !important;
+}
+
+#popular-article{
+  background-color: #f2f2f2;
+}
+.card-title{
+   color: #343a40 !important;
+  transition: all 1s cubic-bezier(0.19, 1, 0.22, 1) 0s;;
+ }
+.card-title:hover{
+  color: #19b4fa !important;
+ }
+button a:hover{
+  color: white;
+ }
+
+@media (max-width: 448px) {
+  .qt-article-heading-content h2{
+    font-size: 18px;
+  }
+  .qt-article-heading-content h5{
+    font-size: 14px;
+  }
+
+}
