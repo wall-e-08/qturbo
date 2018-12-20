@@ -1,6 +1,5 @@
 'use strict';
-axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
+
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
 };
@@ -236,7 +235,9 @@ const router = new VueRouter({
                     },
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         let _t = this;
-                        let form_data = {};
+                        let form_data = {
+                            zip_code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                        };
                         if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
                             form_data['applicant_dob'] = _t.own_input.dob;
                             form_data['applicant_gender'] = _t.own_input.gender;
@@ -274,14 +275,25 @@ const router = new VueRouter({
                         console.table(form_data);
                         console.log("Welcome to the jungle!");
                         console.log("Redirect URL is: "+ redirect_url)
-                        axios({
-                            method: 'post',
-                            url: [[redirect_url]],
+
+                        $.ajax({
+                            url: redirect_url,
+                            method: 'get',
                             headers: {
                                 'X-CSRFToken': csrf_token,
                                 'Content-Type': 'application/json',
                             },
                             data: form_data,
+                        })
+                        
+                        /*axios({
+                            method: 'post',
+                            url: redirect_url,
+                            headers: {
+                                'X-CSRFToken': csrf_token,
+                                'Content-Type': 'application/json',
+                            },
+                            data: {"GG":true},
                         })
                         .then(function(response){
                             console.log("Response: "+ response.status); // TODO DEBUG
@@ -290,7 +302,7 @@ const router = new VueRouter({
                                 window.location = redirect_url;
                             }
 
-                        })
+                        })*/
                     }
                 },
                 watch: {
