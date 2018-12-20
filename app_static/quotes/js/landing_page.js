@@ -273,36 +273,20 @@ const router = new VueRouter({
                             form_data['children'] = child_data;
                         }
                         console.table(form_data);
-                        console.log("Welcome to the jungle!");
-                        console.log("Redirect URL is: "+ redirect_url)
-
+                        console.log("Redirect URL is: "+ redirect_url);
                         $.ajax({
                             url: redirect_url,
-                            method: 'get',
-                            headers: {
-                                'X-CSRFToken': csrf_token,
-                                'Content-Type': 'application/json',
+                            method: 'post',
+                            dataType: 'json',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
                             },
                             data: form_data,
-                        })
-                        
-                        /*axios({
-                            method: 'post',
-                            url: redirect_url,
-                            headers: {
-                                'X-CSRFToken': csrf_token,
-                                'Content-Type': 'application/json',
-                            },
-                            data: {"GG":true},
-                        })
-                        .then(function(response){
-                            console.log("Response: "+ response.status); // TODO DEBUG
-                            if (response.status === 200) {
-                                console.log("Redirecting");
-                                window.location = redirect_url;
+                            success: function (data) {
+                                console.log("Success");
+                                console.table(data);
                             }
-
-                        })*/
+                        })
                     }
                 },
                 watch: {
