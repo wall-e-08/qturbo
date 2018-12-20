@@ -235,6 +235,43 @@ const router = new VueRouter({
                         this.dependents.splice(idx, 1);
                     },
                     redirect_to_plans: function(redirect_url, csrf_token) {
+                        let _t = this;
+                        let form_data = {};
+                        if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
+                            form_data['applicant_dob'] = _t.own_input.dob;
+                            form_data['applicant_gender'] = _t.own_input.gender;
+                            form_data['applicant_tobacco'] = _t.own_input.tobacco == 'true';
+                        } else {
+                            console.error("Please insert data to see plans");
+                            return null;
+                        }
+                        if (_t.spouse) {
+                            if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
+                                form_data['spouse_dob'] = _t.spouse_input.dob;
+                                form_data['spouse_gender'] = _t.spouse_input.gender;
+                                form_data['spouse_tobacco'] = _t.spouse_input.tobacco == 'true';
+                            } else {
+                                console.error("Please insert spouse data correctly to see plans");
+                                return null;
+                            }
+                        }
+                        if(_t.dependents.length > 0) {
+                            let child_data = [];
+                            for(var i=0; i<_t.dependents.length; i++){
+                                if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
+                                    child_data.push({
+                                        'child_dob': _t.dependents[i].dob,
+                                        'child_gender': _t.dependents[i].gender,
+                                        'child_tobacco': _t.dependents[i].tobacco == 'true',
+                                    });
+                                } else {
+                                    console.error("Please insert child data correctly to see plans");
+                                    return null;
+                                }
+                            }
+                            form_data['children'] = child_data;
+                        }
+                        console.table(form_data);
                         console.log("Welcome to the jungle!");
                         console.log("Redirect URL is: "+ redirect_url)
                         axios({
@@ -244,12 +281,7 @@ const router = new VueRouter({
                                 'X-CSRFToken': csrf_token,
                                 'Content-Type': 'application/json',
                             },
-                            data: {
-                                'zip_code': this.zip_code,
-                                'dob': this.dob,
-                                'gender': this.gender,
-                                'tobacco': this.tobacco
-                            },
+                            data: form_data,
                         })
                         .then(function(response){
                             console.log("Response: "+ response.status); // TODO DEBUG
