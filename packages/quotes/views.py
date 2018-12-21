@@ -133,36 +133,34 @@ def validate_quote_form(request) -> JsonResponse:
     :return: Django JsonResponse Object
     """
 
-    print(f"POST DATA:\n----------------\n{request.POST}")
+    print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
 
 
     form = ApplicantInfoForm(request.POST)
-    # formset = ChildInfoFormSet(request.POST)
+    formset = ChildInfoFormSet(request.POST)
     if not request.session.exists(request.session.session_key):
         request.session.create()
     request.session['applicant_enrolled'] = False
     request.session.modified = True
-    if form.is_valid(): # and formset.is_valid():
+    if form.is_valid() and formset.is_valid():
         logger.info("quote info form is valid")
+        print("quote info form is valid")
         quote_request_form_data = form.cleaned_data
 
         if quote_request_form_data.get('applicant_is_child', True):
             logger.info("applicant is child - making sure there is no dependents")
             quote_request_form_data['Dependents'] = []
-            # quote_request_formset_data = []
+            quote_request_formset_data = []
         else:
-            # quote_request_formset_data = formset.cleaned_data
+            quote_request_formset_data = formset.cleaned_data
             logger.info("dependents info to quote request form data")
-            # quote_request_form_data['Dependents'] = quote_request_formset_data
-
-        # temp
-        quote_request_form_data['Dependents'] = None
+            quote_request_form_data['Dependents'] = quote_request_formset_data
 
         quote_request_form_data['quote_store_key'] = get_quote_store_key(copy.deepcopy(quote_request_form_data))
         logger.info("quote_request_form_data['quote_store_key'] {0}".format(quote_request_form_data['quote_store_key']))
 
         request.session['quote_request_form_data'] = quote_request_form_data
-        # request.session['quote_request_formset_data'] = quote_request_formset_data
+        request.session['quote_request_formset_data'] = quote_request_formset_data
         request.session['quote_request_response_data'] = {}
 
         lead_form = LeadForm(quote_request_form_data)
@@ -179,13 +177,16 @@ def validate_quote_form(request) -> JsonResponse:
                 'url': reverse('quotes:plan_quote', kwargs={'ins_type': quote_request_form_data['Ins_Type']})
             }
         )
+    else:
+        print(form.errors)
+        print(formset.errors)
     return JsonResponse(
         {
             'status': 'fail',
             'error': "Failed",
             "errors": dict(form.errors.items()),
             "error_keys": list(form.errors.keys()),
-            # "formset_errors": formset.errors
+            "formset_errors": formset.errors
          }
     )
 

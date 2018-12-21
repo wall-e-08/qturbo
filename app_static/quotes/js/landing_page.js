@@ -83,7 +83,6 @@ const v_survey_card = {
     data: function () {
         return {
             current_stage: this.prop_current_stage,
-            gg: this.inputs,
         }
     },
     created: function(){
@@ -124,6 +123,8 @@ const v_survey_card = {
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
+            console.error(age)
+            console.error("this.prop_max_age:   " + this.prop_max_age)
             if (age > this.prop_max_age) {
                 console.warn("your age must be under 99 years old !!")
             } else if (age < this.prop_min_age) {
@@ -219,7 +220,7 @@ const router = new VueRouter({
                             tobacco: '',
                         },
                         dependents: [],
-                        max_dependents: 5,
+                        max_dependents: 9,
                     }
                 },
                 methods: {
@@ -239,17 +240,21 @@ const router = new VueRouter({
                             Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
                             Include_Spouse: this.spouse ? 'Yes': 'No',
                             Payment_Option: '1',
+                            Ins_Type: 'lim',
+                            'child-TOTAL_FORMS': this.dependents.length,
+                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
+                            'child-MIN_NUM_FORMS': 0,
+                            'child-MAX_NUM_FORMS': this.max_dependents,
                         };
                         if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
                             form_data['Applicant_DOB'] = _t.own_input.dob;
-                            form_data['Applicant_Gender'] = _t.own_input.gender == 'm' ? 'Male' : 'Female';
-                            form_data['Ins_Type'] = 'lim';
+                            form_data['Applicant_Gender'] = _t.own_input.gender;
                             form_data['Tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';
                             form_data['Children_Count'] = _t.dependents.length;
 
                             var newDate = new Date();
                             newDate.setDate(newDate.getDate() + 1);
-                            form_data['Effective_Date'] = newDate.toISOString().split('T')[0];
+                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
 
                         } else {
                             console.error("Please insert data to see plans");
@@ -258,7 +263,7 @@ const router = new VueRouter({
                         if (_t.spouse) {
                             if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
                                 form_data['Spouse_DOB'] = _t.spouse_input.dob;
-                                form_data['Spouse_Gender'] = _t.own_input.gender == 'm' ? 'Male' : 'Female';
+                                form_data['Spouse_Gender'] = _t.spouse_input.gender;
                                 form_data['spouse_tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
                             } else {
                                 console.error("Please insert spouse data correctly to see plans");
@@ -266,20 +271,18 @@ const router = new VueRouter({
                             }
                         }
                         if(_t.dependents.length > 0) {
-                            let child_data = [];
                             for(var i=0; i<_t.dependents.length; i++){
                                 if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
-                                    child_data.push({
-                                        'child_dob': _t.dependents[i].dob,
-                                        'child_gender': _t.dependents[i].gender,
-                                        'child_tobacco': _t.dependents[i].tobacco == 'true',
-                                    });
+
+                                    form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
+                                    form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
+                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
+
                                 } else {
                                     console.error("Please insert child data correctly to see plans");
                                     return null;
                                 }
                             }
-                            form_data['children'] = child_data;
                         }
                         console.table(form_data);
                         console.log("Redirect URL is: "+ redirect_url);
@@ -294,7 +297,10 @@ const router = new VueRouter({
                             success: function (data) {
                                 console.log("Success");
                                 console.table(data);
-                                location.href = data.url;
+                                if(data.url)
+                                    location.href = data.url;
+                                else
+                                    console.error("XXXXXX")
                             }
                         })
                     }
@@ -312,7 +318,7 @@ const router = new VueRouter({
                     }
                     this.own_input = {
                         dob: '11/12/1992',
-                        gender: 'm',
+                        gender: 'Male',
                         tobacco: 'true',
                     }
                 }

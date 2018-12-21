@@ -288,8 +288,7 @@ class ApplicantInfoForm(forms.Form):
                 _("Invalid Coverage Start Date. Coverage Start Date must be 1-28th of any month."),
                 code='invalid'
             )
-        # Changed according to javascript iso date format
-        return effective_date.strftime("%Y-%m-%d")
+        return effective_date.strftime("%m-%d-%Y")
 
     def clean_Coverage_Days(self):
         coverage_end = self.cleaned_data['Coverage_Days']
