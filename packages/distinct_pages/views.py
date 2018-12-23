@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from .utils import get_model_obj_by_slug
+from .utils.model_dependent import get_model_obj_by_slug
 from writing.views.article import each_article
 from writing.views.blog import each_blog
 

@@ -9,7 +9,7 @@
 
 <script>
     tinymce.init({
-        selector: '#{{ selector }}',
+        selector: '{{ selectors }}',
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
@@ -34,6 +34,14 @@
         ],
         file_browser_callback: function (fieldname, url, type, win) {
             document.querySelector("#media-upload-form input[name='media_file']").click();
+        },
+        setup:function (tmc) {
+            tmc.on('change', function (e) {
+                var selectors = document.querySelectorAll('{{ selectors }}');
+                [].forEach.call(selectors, function (sl) {
+                    sl.value = tmc.getContent();
+                });
+            });
         }
     })
 </script>

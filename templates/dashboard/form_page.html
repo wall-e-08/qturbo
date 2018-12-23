@@ -60,10 +60,169 @@
             </div>
         </div>
     </div>
+
+    <hr class="my-5">
+
+    <all-btns-with-modal></all-btns-with-modal>
+
 {% endblock %}
 
+<!--
+ItemList
+    icon
+    content
+    url
+-->
+<!--
+ItemIcon
+    title
+    svg_icon
+    img_icon
+    icon_type
+-->
+<!--
+ItemTwoColumn
+    title
+    img
+    content
+    url
+    url_text
+-->
+<!--
+ItemGuide
+    url
+    url_text -->
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="all-btn-template">
+        <div class="container">
+            <div id="list-item">
+                <div class="row">
+                    <template v-for="item in items">
+                        <div class="col-md-4">
+                            <div class="card w-100">
+                                <img class="card-img-top" :src="item.img" alt="Card image cap">
+                                <div class="card-body">
+                                    <div>ID: [[ item.id ]]</div>
+                                    <div>URL: [[ item.url ]]</div>
+                                    <div class="card-text" v-html="item.content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <b-btn v-b-modal.item_list_form_modal>Add New List</b-btn>
+                <b-modal id="item_list_form_modal" centered title="Add new List" ref="item_list_form_modal"
+                         @ok="handle_ok" {# when pressing ok button, prevent empty input #}
+                         @shown="clear_form"> {# when showing modal, clear the form #}
+                    <form class="qt-dsb-item-form" id="qt-dsb-item-list-form">
+                        <div class="form-group">
+                            <label for="{{ item_list_form.icon.id_for_label }}">Icon</label>
+                            <select name="{{ item_list_form.icon.html_name }}" id="{{ item_list_form.icon.id_for_label }}" class="form-control">
+                                {% for val, opt in item_list_form.fields.icon.choices %}
+                                    <option value="{{ val }}" {% if item_list_form.icon.value == val %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ item_list_form.url.id_for_label }}">Url</label>
+                            <b-form-input id="{{ item_list_form.url.id_for_label }}" type="text" placeholder="Enter url"
+                                          name="{{ item_list_form.url.html_name }}"></b-form-input>
+                        </div>
+                        <div class="form-group">
+                            <label for="item-list-content">Content</label>
+                            <textarea id="item-list-content" name="{{ item_list_form.content.html_name }}"></textarea>
+                        </div>
+                    </form>
+                </b-modal>
+            </div>
+        </div>
+    </script>
+{% comment %}
+    <script type="text/x-template" id="list-template">
+    
+    </script>
+
+    <script type="text/x-template" id="icon-template">
+    
+    </script>
+
+    <script type="text/x-template" id="two_col-template">
+    
+    </script>
+
+    <script type="text/x-template" id="guide-template">
+    
+    </script>{% endcomment %}
+{% endblock %}
+
+
 {% block bottom_js %}
-    {% with selector=form.content.id_for_label %}
+    {% with selectors='#item-list-content, #'|add:form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
+
+    <script src="{% static 'jquery/jquery-ajax-only.min.js' %}"></script>
+
+    <script>
+        all_components['all-btns-with-modal'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    form_data: {},
+                    items: [],
+                }
+            },
+            methods: {
+                toJSONString: function (form) {
+                    var _t = this;
+                    var elements = form.querySelectorAll("input, select, textarea");
+                    for (var i = 0; i < elements.length; ++i) {
+                        {#console.error(elements[i].name)#}
+                        var element = elements[i];
+                        var name = element.name ? element.name : 'null';
+                        _t.form_data[name] = element.value;
+                    }
+                },
+                handle_ok: function (e) {
+                    // Prevent modal from closing
+                    e.preventDefault();
+                    var _t = this;
+                    _t.toJSONString(document.querySelector('.qt-dsb-item-form'));
+                    if (_t.form_data) {
+                        $.ajax({
+                            url: '/dashboard/ajax_item_list_save/',
+                            method: 'get',
+                            dataType: 'json',
+                            data: _t.form_data,
+                            success: function (data) {
+                                if(data.success){
+                                    {# TODO: need to bind with page here #}
+                                    _t.form_data.id = data.item_list_id;
+                                    _t.items.push(_t.form_data);
+                                } else {
+                                    console.error("WTF ERROR!!")
+                                }
+                            },
+                            {% comment %}error: function (err) {
+                                console.error(err)
+                            }{% endcomment %}
+                        });
+                    } else{
+                        console.error("Enter form data");
+                    }
+                    this.$refs.item_list_form_modal.hide();
+                },
+                clear_form: function () {
+                    document.getElementById('qt-dsb-item-list-form').reset()
+                }
+            },
+            created: function () {
+                
+            },
+            template: '#all-btn-template'
+        };
+    </script>
 {% endblock %}

@@ -76,7 +76,7 @@
 {% endblock %}
 
 {% block bottom_js %}
-    {% with selector=form.content.id_for_label %}
+    {% with selectors='#'|add:form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 {% endblock %}

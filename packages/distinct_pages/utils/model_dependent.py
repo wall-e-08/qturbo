@@ -1,5 +1,5 @@
+from ..models import Page
 from writing.models import Article, Blog
-from .models import Page
 
 
 def get_model_obj_by_slug(slug):
