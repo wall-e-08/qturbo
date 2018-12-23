@@ -14,23 +14,22 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-}
-
-.each-article-banner-content a{
-  position: absolute;
-  top: 20px;
-  color: white;
-}
-.each-article-banner-content h2{
-   max-width: 800px;
-}
-.each-article-banner-content h5{
-   max-width: 800px;
-}
-
-.each-article-banner-content .date{
-  position: absolute;
-  bottom: 0;
+  .banner-top{
+    top: 20px;
+  }
+  a{
+    color: white;
+  }
+  h2{
+    max-width: 800px;
+  }
+  h5{
+    max-width: 800px;
+  }
+  .date{
+    position: absolute;
+    bottom: 0;
+  }
 }
 
 .each-article-banner-content a:hover{
@@ -48,4 +47,8 @@
     font-size: 14px;
   }
 
+}
+.social-share{
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,.05);
 }
