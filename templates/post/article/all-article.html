@@ -1,0 +1,307 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% load qturbo_post_tags %}
+
+{% block main_content %}
+    <section id="banner">
+        <div class="all-article-banner position-relative">
+            <div class="all-article-banner-content position-absolute text-center text-white">
+                <h2 class="font-weight-bold">The standard Lorem Ipsum passage,consectetur consectetur</h2>
+                <h5 class="font-weight-bold d-none d-md-block">"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed doconsectetur
+                    consectetur
+                    eiusmod"</h5>
+                <!---------------------- To Do form and HI-category---------------------------->
+
+            </div>
+
+        </div>
+    </section>
+    <section id="qt-add" class="bg-primary">
+
+        <div class="container">
+            <div class="row py-5">
+                <div class="col-md-6">
+                    <div class="text-center text-white ">
+                        <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+                        <h3 class="font-weight-bold">The standard Lorem Ipsum </h3>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center text-white">
+                        <a href="">
+                            <button class="btn btn-lg qt-plan-button px-5">Find my plan</button>
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <section id="all-article-info" class="py-5 border-bottom">
+        <h2 class="mt-5  text-center font-weight-bold">Featured content</h2>
+
+        <div id="vue-tab" class="container d-flex justify-content-between my-5">
+            <b-tabs>
+                <div class="">
+                    <b-tab title="Obamacare" active :title-link-class="'text-center px-5 font-weight-bold'">
+                        <div class="row ">
+                            {% with ''|center:'3' as range %}
+                                {% for _ in range %}
+                                    <div class="col-md-4">
+
+                                        <div class="card hi-article mt-4">
+                                            <img class="card-img-top"
+                                                 src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                            <div class="card-body">
+                                                <a href="#" class="font-weight-bold">
+                                                    <h5 class="card-title text-dark font-weight-bold">Where does it come
+                                                        from?</h5></a>
+                                                <p class="card-text text-muted font-weight-normal">The standard
+                                                    chunk of
+                                                    Lorem Ipsum used since the 1500s is reproduced below for those
+                                                    interested. Sections 1.10.32 and 1.10.33.</p>
+                                                <a href="#" class="font-weight-bold">
+                                                    <p> Learn More
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                            <path fill="currentColor"
+                                                                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                                        </svg>
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+
+
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Health Insurance"
+                           :title-link-class="'text-center px-5 font-weight-bold d-none d-md-block'">
+                        <div class="row ">
+                            {% with ''|center:'3' as range %}
+                                {% for _ in range %}
+                                    <div class="col-md-4">
+
+                                        <div class="card hi-article mt-4">
+                                            <img class="card-img-top d-none d-md-block"
+                                                 src="{% static 'quotes/img/2.jpg' %}" alt="Card image cap">
+                                            <div class="card-body">
+                                                <a href="#" class="font-weight-bold">
+                                                    <h5 class="card-title text-dark font-weight-bold">Where does it come
+                                                        from?</h5></a>
+                                                <p class="card-text text-muted font-weight-normal">The standard
+                                                    chunk of
+                                                    Lorem Ipsum used since the 1500s is reproduced below for those
+                                                    interested. Sections 1.10.32 and 1.10.33.</p>
+                                                <a href="#" class="font-weight-bold">
+                                                    <p> Learn More
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                            <path fill="currentColor"
+                                                                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                                        </svg>
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                    <b-tab title="Medicare" :title-link-class="'text-center px-5 font-weight-bold'">
+                        <div class="row ">
+                            {% with ''|center:'3' as range %}
+                                {% for _ in range %}
+                                    <div class="col-md-4">
+
+                                        <div class="card hi-article mt-4">
+                                            <img class="card-img-top "
+                                                 src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                            <div class="card-body">
+                                                <a href="#" class="font-weight-bold">
+                                                    <h5 class="card-title text-dark font-weight-bold">Where does it come
+                                                        from?</h5></a>
+                                                <p class="card-text text-muted font-weight-normal">The standard
+                                                    chunk of
+                                                    Lorem Ipsum used since the 1500s is reproduced below for those
+                                                    interested. Sections 1.10.32 and 1.10.33.</p>
+                                                <a href="#" class="font-weight-bold">
+                                                    <p> Learn More
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                            <path fill="currentColor"
+                                                                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                                        </svg>
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </b-tab>
+                </div>
+                <div>
+                </div>
+                <div>
+                    <b-tab title="Small Business"
+                           :title-link-class="'text-center pl-5 font-weight-bold d-none d-md-block'">
+                        <div class="row ">
+                            {% with ''|center:'3' as range %}
+                                {% for _ in range %}
+                                    <div class="col-md-4">
+
+                                        <div class="card hi-article mt-4">
+                                            <img class="card-img-top"
+                                                 src="{% static 'quotes/img/1.jpg' %}" alt="Card image cap">
+                                            <div class="card-body">
+                                                <a href="#" class="font-weight-bold">
+                                                    <h5 class="card-title text-dark font-weight-bold">Where does it come
+                                                        from?</h5></a>
+                                                <p class="card-text text-muted font-weight-normal">The standard
+                                                    chunk of
+                                                    Lorem Ipsum used since the 1500s is reproduced below for those
+                                                    interested. Sections 1.10.32 and 1.10.33.</p>
+                                                <a href="#" class="font-weight-bold">
+                                                    <p> Learn More
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                            <path fill="currentColor"
+                                                                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                                        </svg>
+                                                    </p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endwith %}
+
+
+                        </div>
+                    </b-tab>
+                </div>
+            </b-tabs>
+        </div>
+        <div class="text-center">
+            <a href="#" target="_blank">
+                <button class=" btn btn-primary font-weight-bold">See more Medicare articles</button>
+            </a>
+        </div>
+    </section>
+    <section id="popular-question" class="">
+        <div class=" container py-5">
+            <h2 class="text-center mb-5">Most Popular Questions</h2>
+            <div class="row">
+                {% with ''|center:'3' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4">
+
+                            <div class="card hi-article mb-4">
+                                {% comment %}<a href="#">
+                                <img class="card-img-top" src="{% static 'post/img/author.jpg' %}" alt="Card image cap">
+                            </a>{% endcomment %}
+                                <div class="card-body max-height">
+                                    <a href="#"><h3 class="card-title text-dark">Q: Top 10 Procedures to Help, Some
+                                        quick example text to build on</h3></a>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the
+                                        bulk of
+                                        the card's content.</p>
+                                    <a href="#">
+                                        <p>Learn more
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="text-center mt-5 mb-3">
+                <a href="" class="btn btn-lg btn-primary text-white text-center font-weight-bold px-4">See all
+                    questions
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+    <section id="qt-hi-category-all">
+        <div class="container">
+            <div class="row">
+                {% with ''|center:'5' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4 mb-5">
+                            <h3 class="text-center">Health Insurance</h3>
+                            <div class="card hi-article mt-4">
+                                <img class="card-img-top"
+                                     src="{% static 'quotes/img/2.jpg' %}" alt="Card image cap">
+                                <div class="card-body">
+                                    <a href="#" class="font-weight-bold">
+                                        <h5 class="card-title text-dark font-weight-bold">Where does it come
+                                            from?</h5>
+                                    </a>
+                                    <p class="card-text text-muted font-weight-normal">The standard
+                                        chunk of
+                                        Lorem Ipsum used since the 1500s is reproduced below for those
+                                        interested. Sections 1.10.32 and 1.10.33.</p>
+                                    <a href="#" class="font-weight-bold">
+                                        <p> Learn More
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="hi-article border mt-4">
+                                <div class="d-flex flex-row py-3 px-2">
+                                    <div>
+                                        <img src="{% static 'quotes/img/2.jpg' %}" alt="">
+                                    </div>
+                                    <div class="pl-4 font-14">
+                                        <p>
+                                            <a href="#" target="_blank">Lorem Ipsum used since the 1500s is reproduced
+                                                below for those
+                                                interested
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4 font-weight-bold">
+                                <a href="#" target="_blank" class="">See more on Health Insurance</a>
+                            </div>
+                        </div>
+
+
+                    {% endfor %}
+                {% endwith %}
+
+            </div>
+        <div class="text-center my-5">
+                <a href="" class="btn btn-lg btn-primary text-white text-center font-weight-bold px-4">See all
+                    articles
+                </a>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}
