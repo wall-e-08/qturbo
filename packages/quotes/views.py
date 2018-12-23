@@ -1,5 +1,4 @@
 import copy
-import decimal
 import json
 from collections import OrderedDict
 
@@ -16,7 +15,8 @@ from django.views.decorators.http import require_POST
 from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
-                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm)
+                    STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
+                    ChildInfoFormSet, LeadForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
 from .redisqueue import redis_connect
@@ -24,10 +24,12 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_applicant_info, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
-                    save_enrolled_applicant_info, get_st_dependent_info_formset)
+                    save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
+                    update_lead_vimm_enroll_id, update_leads_stm_id)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
+
 
 import quotes.models as qm
 
@@ -39,88 +41,85 @@ json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
 
-def home(request):
+def home(request) -> HttpResponse:
     return render(request, 'quotes/landing_page.html', {})
 
-def plans(request, zip_code=None):
-    pass
-    # """
-    # This is the view that shows up to gather users information
-    # and then we click Compare Health Insurance button to start asking
-    # for quotes.
-    # :param request: Django request object
-    # :param zip_code: zip code for area for which quote is given
-    # :type zip_code: str
-    # :return: Django HttpResponse Object
-    # """
-    # # session bug fixed
-    # # anonymous session is created if there is a true need
-    # quote_request_form_data = {}
-    # if request.session._get_session_key() is not None:
-    #     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    #     # Amir Bhai's change for checking Ins type
-    #     # quote_request_form_data['Ins_Type'] = 'lim'
-    # else:
-    #     request.session['quote_request_formset_data'] = quote_request_form_data
-    #     request.session.modified = True
-    # print('\n90 quote_request_form_data: ', quote_request_form_data)
-    # if quote_request_form_data:
-    #     quote_request_formset_data = request.session.get('quote_request_formset_data', [])
-    # else:
-    #     quote_request_formset_data = []
-    #
-    # if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-    #     quote_request_form_data = {}
-    #     quote_request_formset_data = []
-    #     request.session['quote_request_form_data'] = {}
-    #     request.session['quote_request_formset_data'] = []
-    #
-    # if quote_request_form_data and quote_request_formset_data:
-    #     if quote_request_form_data['Children_Count'] != len(quote_request_formset_data):
-    #         quote_request_formset_data = []
-    #         quote_request_form_data['Children_Count'] = 0
-    #
-    # form = None
-    # formset = None
-    # if quote_request_form_data and (zip_code is None or quote_request_form_data.get('Zip_Code') == zip_code):
-    #     form = ApplicantInfoForm(initial=quote_request_form_data)
-    #     logger.info("{0}".format(quote_request_form_data))
-    #
-    # if zip_code:
-    #     zip_form = ZipCodeForm({'zip_code': zip_code})
-    #     if zip_form.is_valid():
-    #         zip_code = zip_form.cleaned_data['zip_code']
-    #     else:
-    #         return HttpResponseRedirect(reverse('quotes:plans'))
-    #
-    # if form is None:
-    #     quote_request_formset_data = []
-    #     effective_date = (timezone.now() + datetime.timedelta(
-    #         days=1, minutes=settings.EFFECTIVE_DATE_OFFSET_BY_MINUTES)).date()
-    #     if effective_date.day > 28:
-    #         effective_date = datetime.date(
-    #             year=(effective_date.year if effective_date.month < 12 else effective_date.year + 1),
-    #             month=((effective_date.month + 1) if effective_date.month < 12 else 1),
-    #             day=1
-    #         )
-    #     form = ApplicantInfoForm(
-    #         initial={
-    #             'Ins_Type': 'lim',
-    #             'Payment_Option': '1',
-    #             'Effective_Date': effective_date,
-    #             'Tobacco': 'N'
-    #         }
-    #     )
-    # if quote_request_formset_data:
-    #     formset = ChildInfoFormSet(initial=quote_request_formset_data)
-    # if formset is None:
-    #     formset = ChildInfoFormSet()
-    #
-    # print('\n\nplans: quote_request_form_data:', quote_request_form_data)
-    # return render(request, 'quotes/plans.html',
-    #               {"zip_code": zip_code, "form": form, 'formset': formset})
-    return render(request, 'quotes/landing_page.html')  # TODO
 
+def plans(request, zip_code=None) -> HttpResponse:
+    """View is handled in whole entiarity in vuejs.
+
+    :param request: Django request object
+    :return: Django HttpResponse Object
+    """
+    return render(request, 'quotes/landing_page.html')
+
+
+@require_POST
+def validate_quote_form(request) -> JsonResponse:
+    """
+
+    :param request: Django request object
+    :return: Django JsonResponse Object
+    """
+
+    print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
+
+    form = ApplicantInfoForm(request.POST)
+    formset = ChildInfoFormSet(request.POST)
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+    request.session['applicant_enrolled'] = False
+    request.session.modified = True
+    if form.is_valid() and formset.is_valid():
+        logger.info("quote info form is valid")
+        print("quote info form is valid")
+        quote_request_form_data = form.cleaned_data
+
+        if quote_request_form_data.get('applicant_is_child', True):
+            logger.info("applicant is child - making sure there is no dependents")
+            quote_request_form_data['Dependents'] = []
+            quote_request_formset_data = []
+        else:
+            quote_request_formset_data = formset.cleaned_data
+            logger.info("dependents info to quote request form data")
+            quote_request_form_data['Dependents'] = quote_request_formset_data
+
+        quote_request_form_data['quote_store_key'] = get_quote_store_key(copy.deepcopy(quote_request_form_data))
+        logger.info(f"quote_request_form_data['quote_store_key'] <--- {quote_request_form_data['quote_store_key']}")
+
+        request.session['quote_request_form_data'] = quote_request_form_data
+        request.session['quote_request_formset_data'] = quote_request_formset_data
+        request.session['quote_request_response_data'] = {}
+
+        lead_form = LeadForm(quote_request_form_data)
+        if lead_form.is_valid():
+            print("lead form is valid")
+            logger.info("saving lead info")
+            lead_form.save()
+        else:
+            print(f'----------------\nLead Form Errors :\n----------------\n{lead_form.errors}')
+
+        # Saving Lead Form Info
+        save_lead_info(qm.Leads, lead_form.cleaned_data)
+
+        return JsonResponse(
+            {
+                'status': 'success',
+                'url': reverse('quotes:plan_quote', kwargs={'ins_type': quote_request_form_data['Ins_Type']})
+            }
+        )
+    else:
+        print(form.errors)
+        print(formset.errors)
+    return JsonResponse(
+        {
+            'status': 'fail',
+            'error': "Failed",
+            "errors": dict(form.errors.items()),
+            "error_keys": list(form.errors.keys()),
+            "formset_errors": formset.errors
+         }
+    )
 
 
 def survey_members(request):
@@ -134,148 +133,32 @@ def plan_quote(request, ins_type):
     :param ins_type: stm/lim/anc
     :return: Django HttpResponse Object
     """
-    '''Testing'''
-    post_data_zip_code = request.POST.get("zip_code", "")
-    print("post_data_zip_code: ", post_data_zip_code)
 
-    """
-    We see that post data is not working. We are writing some 
-    dummy variables to test the view functions. Then we shall
-    write vue getter methods to pass data.
-    
-    TODO: We have to create a quote_store_key
-    """
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
 
-    import random
-    import datetime
-    random_year = random.choice(range(1956, 1996))
-    random_gender = random.choice(['Male', 'Female'])
-    random_tobacco = random.choice(['Y', 'N'])
-    tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
-    random_state_zip_combo = random.choice([
-        # ('OH', '44102'),
-        ('WV', '24867'),
-        # ('FL', '33129')
-    ])
-    random_ins_type = random.choice([
-        'stm',
-        # 'lim',
-        # 'anc'
-    ])
-
-    FLAG_HAS_A_CHILD = False
-    FLAG_HAS_SPOUSE = False
-    FLAG_APPLICANT_IS_CHILD = False
-
-    init_data = {'Payment_Option': '1',
-                 'applicant_is_child': False,
-                 'Tobacco': random_tobacco,
-                 'Dependents': [],
-                 'Ins_Type': random_ins_type,
-                 'Coverage_Days': None,
-                 'First_Name': '',
-                 'Children_Count': 0,
-                 'Applicant_Age': str(2018-random_year),
-                 'Address1': '',
-                 'Applicant_DOB': '10-18-' + (str(random_year)),
-                 'Include_Spouse': 'No',
-                 'quote_request_timestamp': 1541930336,
-                 'Email': '',
-                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
-                 'Phone': '',
-                 'quote_store_key': random_state_zip_combo[1] + '-10-18-' + (str(random_year)) + '-' +
-                                    random_gender + '-1-11-12-2018-' + random_tobacco +
-                                    '-'+random_ins_type,
-                 'Zip_Code': random_state_zip_combo[1],
-                 'Spouse_DOB': None,
-                 'State': random_state_zip_combo[0],
-                 'Spouse_Gender': '',
-                 'Applicant_Gender': random_gender,
-                 'Last_Name': ''
-                 }
-
-    applicant_is_a_child_data = {
-        'Spouse_DOB': None,
-                                 'Include_Spouse': 'No',
-                                 'Applicant_Age': 6,
-                                 'quote_request_timestamp': 1545130810,
-                                 'Email': '',
-                                 'Children_Count': 0,
-                                 'Spouse_Age': None,
-                                 'quote_store_key': '33129-11-01-2012-Male-1-12-19-2018-N-lim',
-                                 'State': 'FL',
-                                 'Applicant_Gender': 'Male',
-                                 'applicant_is_child': True,
-                                 'Ins_Type': 'lim',
-                                 'Applicant_DOB': '11-01-2012',
-                                 'Effective_Date': tomorrow_date.strftime('%m-%d-%Y'),
-                                 'Phone': '',
-                                 'Zip_Code': '33129',
-                                 'Address1': '',
-                                 'Tobacco': 'N',
-                                 'Spouse_Gender': '',
-                                 'Payment_Option': '1',
-                                 'Dependents': [],
-                                 'Coverage_Days': None
-    }
-
-
-    child_data = {
-                  'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-27-1997-Female-lim',
-                  'Children_Count': 1,
-                  'Dependents': [{'Child_DOB': '11-27-1997',
-                                  'Child_Gender': 'Female',
-                                  'Child_Age': 21}]}
-
-    wife_data = {
-        'Include_Spouse': 'Yes',
-
-        'Spouse_DOB': '11-04-1975',
-        'quote_store_key': '33129-10-30-1978-Male-1-12-19-2018-N-11-04-1975-Female-lim',
-        'Spouse_Gender': 'Female',
-        'Spouse_Age': 43,
-    }
-
-    quote_request_form_data = init_data
-    if not FLAG_APPLICANT_IS_CHILD:
-        if FLAG_HAS_A_CHILD:
-            quote_request_form_data = {**quote_request_form_data, **child_data}
-        if FLAG_HAS_SPOUSE:
-            quote_request_form_data = {**quote_request_form_data, **wife_data}
-    else:
-        quote_request_form_data = applicant_is_a_child_data
-
-    # Setting a dummy quote request form data in session
-    request.session['quote_request_form_data'] = quote_request_form_data
-
-    # quote_request_form_data = {} # TODO
-    # quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
-    # if quote_request_form_data.get('applicant_is_child', True): # TODO
-    #     request.session['quote_request_formset_data'] = []
+    if quote_request_form_data.get('applicant_is_child', True):
+        request.session['quote_request_formset_data'] = []
 
-    # TODO
-    # if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-    #     quote_request_form_data = {}
-    #     request.session['quote_request_form_data'] = {}
-    #     request.session['quote_request_formset_data'] = []
-    #     request.session['quote_request_response_data'] = {}
+    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+        quote_request_form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+        request.session['quote_request_response_data'] = {}
 
-    # if not quote_request_form_data:
-    # WE HAVE TO DO SOMETHING
-    #     return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+    if not quote_request_form_data:
+        return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    # TODO
     quote_request_form_data['Ins_Type'] = ins_type
     logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
     d = {'monthly_plans': [], 'addon_plans': []}
     request.session['quote_request_response_data'] = d
     request.session.modified = True
-    # logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
+    logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
-    """ Changing quote store key regarding insurance type  """
+    # Changing quote store key regarding insurance type
     if ins_type == "stm":
         quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
     elif ins_type == "lim":
@@ -283,7 +166,7 @@ def plan_quote(request, ins_type):
     elif ins_type == "anc":
         quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
 
-    """ Calling celery for populating quote list """
+    # Calling celery for populating quote list
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
     print(f"Calling celery task for ins_type: {ins_type}")
@@ -302,7 +185,6 @@ def plan_quote(request, ins_type):
             LimPlanTask.delay(request.session.session_key, quote_request_form_data)
         elif ins_type == 'anc':
             AncPlanTask.delay(request.session.session_key, quote_request_form_data)
-
 
     return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
@@ -545,6 +427,10 @@ def stm_application(request, plan_url):
     plan['vimm_enroll_id'] = get_random_string()
     app_url = "{0}-{1}".format(plan['unique_url'], plan['vimm_enroll_id'])
     logger.info("app url: {0}".format(app_url))
+
+    # Updating vimm enroll id of leads
+    update_lead_vimm_enroll_id(qm.Leads, quote_request_form_data['quote_store_key'], plan['vimm_enroll_id'])
+
     if not request.session.get(app_url, {}):
         request.session[app_url] = plan
         request.session["{0}_form_data".format(app_url)] = copy.deepcopy(quote_request_form_data)
@@ -794,7 +680,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     # if applicant is child required parent info no spouse or child
     # if applicant is adult no parent info but spouse info and child info could present
     if stage == 2:
-        print("Plan dictionary: ", plan)
+        print("Plan dictionary: ", json.dumps(plan, indent=4, sort_keys=True))
         logger.info('STAGE2: form_data - {0}'.format(quote_request_form_data))
         if stm_plan_obj:
             try:
@@ -908,6 +794,12 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 if stm_addon_plan_objs is None and selected_addon_plans:
                     logger.info("Saving add-on plan info.")
                     save_add_on_info(qm.AddonPlan, selected_addon_plans, plan, stm_enroll_obj)
+
+                try:
+                    # Updating lead info in database
+                    update_leads_stm_id(qm.Leads, stm_enroll_obj, quote_request_form_data['quote_store_key'])
+                except (ValueError, KeyError):
+                    logger.warning("Cannot update Lead info database")
 
             return JsonResponse(
                 {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 3])}
@@ -1285,7 +1177,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
 
 
     res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
-    print(applicant_info)
+    print(f'applicant_info: {json.dumps(applicant_info, indent=4, sort_keys=True)}')
     if not res:
         # applicant_info = applicant_info
         payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
@@ -1300,10 +1192,6 @@ def e_signature_enrollment(request, vimm_enroll_id):
                      parent_data=applicant_parent_info,
                      dependents_data=applicant_dependents_info,
                      add_on_plans_data=selected_addon_plans)
-
-        # Should be deleted: Not sure
-        # stm_enroll_obj.processed_date = timezone.now()
-        # stm_enroll_obj.save(update_fields=['processed_date'])
 
 
     # TODO: Implement post date

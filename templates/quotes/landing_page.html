@@ -862,11 +862,11 @@
                           v-if="survey_type == 'me'">?</span>
                 </p>
                 <div class="btn-group w-100" role="group">
-                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="m"
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="Male"
                            :id="'gender_m-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
 
-                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="f"
+                    <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="Female"
                            :id="'gender_f-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
                     <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female
                     </label>
@@ -943,7 +943,7 @@
                             <template>
                                 <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
                                              :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
-                                             :prop_max_age="99" :prop_min_age="21"></survey-card>
+                                             :prop_max_age="25" :prop_min_age="2"></survey-card>
                                 <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
                                      v-if="dependents.length <= max_dependents">
                                     <div class="d-flex align-items-center qt-survey-who">
@@ -958,7 +958,7 @@
                             </template>
                             <button id="submit_quote_request"
                                     class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                    v-on:click='redirect_to_plans("{% url 'quotes:plan_quote' 'stm' %}", "{{ csrf_token }}")'>
+                                    v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
                                 Check Quote
                             </button>
                         </div>
