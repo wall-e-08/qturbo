@@ -1,0 +1,36 @@
+.all-article-banner{
+  background: url("/static/post/img/all-article-banner.jpg") #0053A5 center center / cover;
+  height: 85vh;
+}
+
+.all-article-banner-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  top: 40px;
+  font-weight: 800;
+}
+
+.qt-plan-button{
+    background: #FE8829;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    border-bottom: 4px solid #B4601C;
+}
+#all-article-info{
+  background-color: #f2f2f2;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link{
+  color: #19b4fa;
+  border-color: #f2f2f2;
+  border-bottom: 4px solid;
+  background: #f2f2f2;
+}
+.nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
+    border-color: #f2f2f2;
+}
+.nav-tabs .nav-link.active:hover, .nav-tabs .nav-link.active:focus {
+    border-bottom-color: #19b4fa;
+}

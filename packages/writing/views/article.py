@@ -4,7 +4,7 @@ from ..models import Article
 
 
 def all_articles(request):
-    return HttpResponse("all article page")
+    return render(request, 'post/article/all-article.html')
 
 
 def sectionized_article(request, slug):
