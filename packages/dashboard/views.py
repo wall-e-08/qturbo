@@ -5,7 +5,7 @@ from .utils import get_category_list_by_blog
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm
 from writing.models import Article, Blog, Category, Categorize, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
@@ -200,6 +200,7 @@ def create_or_edit_page(request, page_id=None):
     return render(request, 'dashboard/form_page.html', {
         "form": form,
         "action": action,
+        "item_list_form": ItemListForm(),
     })
 
 
@@ -316,5 +317,21 @@ def editor_media_upload(request):
             """% url)
         # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
     return HttpResponse()
+
+
+"""page items operations"""
+def ajax_item_list_save(request):
+    json = {"success": False, }
+    if request.GET:
+        form = ItemListForm(request.GET)
+        if form.is_valid():
+            il = form.save()
+            json["success"] = True
+            json['item_list_id'] = il.id
+        else:
+            print("ItemListForm Error: {}".format(form.errors))
+    return JsonResponse(json)
+
+
 
 
