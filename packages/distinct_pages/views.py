@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from .utils.model_dependent import get_model_obj_by_slug
 from writing.views.article import each_article
 from writing.views.blog import each_blog
+from distinct_pages.models import ItemList
 
 
 def slugified_page(request, slug):
@@ -15,5 +16,13 @@ def slugified_page(request, slug):
         return each_blog(request, model_obj=data.get('model_obj'))
     
     page = data.get('model_obj')
+    item_data = {
+        "list": ItemList.objects.filter(page=page),
+    }
 
-    return render(request, 'distinct-pages/base.html', {"page": page})
+    ctx = {
+        "page": page,
+        "item_data": item_data
+    }
+
+    return render(request, 'distinct-pages/base.html', ctx)

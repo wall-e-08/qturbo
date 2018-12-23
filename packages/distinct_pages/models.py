@@ -30,8 +30,6 @@ class Page(models.Model):
         max_length=100,
     )
 
-    page_content = []
-
     create_time = models.DateTimeField(auto_now_add=True)
 
     # override models save method for slug saving:
@@ -66,6 +64,13 @@ class Homepage(Page):
 
 
 class ItemList(models.Model):
+    page = models.ForeignKey(
+        'Page',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
     icon = models.ForeignKey(
         'ItemIcon',
         on_delete=models.SET_NULL,

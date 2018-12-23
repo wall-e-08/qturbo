@@ -14,7 +14,7 @@
         <div class="row justify-content-md-center align-items-center">
             <div class="col-12">
                 <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} page</h1>
-                <form method="post">
+                <form method="post" ref="main_form">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
 
@@ -54,8 +54,8 @@
                             {% endfor %}
                         </select>
                     </div>
-
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <input type="hidden" name="all_items" :value="all_items_json"> {# saving page contents #}
+                    <button type="submit" class="btn btn-success" @click.prevent="before_submit">Save</button>
                 </form>
             </div>
         </div>
@@ -99,8 +99,8 @@ ItemGuide
         <div class="container">
             <div id="list-item">
                 <div class="row">
-                    <template v-for="item in items">
-                        <div class="col-md-4">
+                    <template v-for="item in $parent.item_list">
+                        <div class="col-md-4 mb-5">
                             <div class="card w-100">
                                 <img class="card-img-top" :src="item.img" alt="Card image cap">
                                 <div class="card-body">
@@ -172,7 +172,6 @@ ItemGuide
             data: function () {
                 return {
                     form_data: {},
-                    items: [],
                 }
             },
             methods: {
@@ -201,14 +200,17 @@ ItemGuide
                                 if(data.success){
                                     {# TODO: need to bind with page here #}
                                     _t.form_data.id = data.item_list_id;
-                                    _t.items.push(_t.form_data);
+                                    _t.$parent.item_list.push(_t.form_data);
+                                    _t.form_data = {};
                                 } else {
-                                    console.error("WTF ERROR!!")
+                                    console.error("WTF ERROR!!");
+                                    _t.form_data = {};
                                 }
                             },
-                            {% comment %}error: function (err) {
-                                console.error(err)
-                            }{% endcomment %}
+                            error: function (err) {
+                                console.error(err);
+                                _t.form_data = {};
+                            }
                         });
                     } else{
                         console.error("Enter form data");
@@ -224,5 +226,34 @@ ItemGuide
             },
             template: '#all-btn-template'
         };
+    </script>
+{% endblock %}
+
+
+{% block bootstrap_vue_init %}
+    <script type="text/javascript">
+        /****************
+         * bootstrap-vue *
+         *****************/
+        // this should be initialized at last.
+        new Vue({
+            delimiters: ['[[', ']]'],
+            data: {
+                all_items_json: '',
+                item_list: [],
+            },
+            methods: {
+                before_submit: function () {
+                    var json = {};
+                    json.item_list = this.item_list.map(itm => itm.id);
+                    this.all_items_json = JSON.stringify(json);
+                    console.log(this.all_items_json);
+                    this.$nextTick(() => {
+                        this.$refs.main_form.submit();
+                    });
+                },
+            },
+            components: all_components,
+        }).$mount('#bootstrap-vue');
     </script>
 {% endblock %}

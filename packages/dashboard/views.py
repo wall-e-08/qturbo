@@ -1,6 +1,7 @@
 import os
+import json
 from django.conf import settings
-from distinct_pages.models import Page
+from distinct_pages.models import Page, ItemList
 from .utils import get_category_list_by_blog
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
@@ -191,7 +192,15 @@ def create_or_edit_page(request, page_id=None):
             if request.method == 'POST':
                 form = PageForm(request.POST, instance=page)
                 if form.is_valid():
+                    all_items = json.loads(request.POST.get('all_items'))
                     page = form.save()
+                    for item_id in all_items.get('item_list', []):
+                        try:
+                            item = ItemList.objects.get(id=int(item_id))
+                            item.page = page
+                            item.save()
+                        except ItemList.DoesNotExist as err:
+                            print("Weird err: {}".format(err))
                     return redirect(page.get_absolute_url())
             form = PageForm(instance=page)
         except Page.DoesNotExist as err:
