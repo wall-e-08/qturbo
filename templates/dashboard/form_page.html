@@ -63,16 +63,15 @@
 
     <hr class="my-5">
 
-    <all-btns-with-modal></all-btns-with-modal>
+    <page-item-list></page-item-list>
+
+    <hr class="my-5">
+
+    <page-item-icon></page-item-icon>
 
 {% endblock %}
 
-<!--
-ItemList
-    icon
-    content
-    url
--->
+
 <!--
 ItemIcon
     title
@@ -95,7 +94,7 @@ ItemGuide
 
 
 {% block vue_templates %}
-    <script type="text/x-template" id="all-btn-template">
+    <script type="text/x-template" id="list-template">
         <div class="container">
             <div id="list-item">
                 <div class="row">
@@ -113,7 +112,7 @@ ItemGuide
                     </template>
                 </div>
 
-                <b-btn v-b-modal.item_list_form_modal>Add New List</b-btn>
+                <b-btn v-b-modal.item_list_form_modal>New List</b-btn>
                 <b-modal id="item_list_form_modal" centered title="Add new List" ref="item_list_form_modal"
                          @ok="handle_ok" {# when pressing ok button, prevent empty input #}
                          @shown="clear_form"> {# when showing modal, clear the form #}
@@ -140,22 +139,57 @@ ItemGuide
             </div>
         </div>
     </script>
-{% comment %}
-    <script type="text/x-template" id="list-template">
-    
-    </script>
 
     <script type="text/x-template" id="icon-template">
-    
-    </script>
+        <div class="container">
+            <div id="icon-item">
+                <div class="row">
+                    <template v-for="item in $parent.item_icon">
+                        <div class="col-md-4 mb-5">
+                            <div class="card w-100">
+                                <img class="card-img-top" :src="item.img" alt="Card image cap">
+                                <div class="card-body">
+                                    <div>ID: [[ item.id ]]</div>
+                                    <div>Title: [[ item.title ]]</div>
+                                    <div class="card-text" v-html="item.content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
 
-    <script type="text/x-template" id="two_col-template">
-    
+                <b-btn v-b-modal.item_icon_form_modal>New Icon</b-btn>
+                <b-modal id="item_icon_form_modal" centered title="Add new Icon" ref="item_icon_form_modal"
+                         @ok="handle_ok" {# when pressing ok button, prevent empty input #}
+                         @shown="clear_form"> {# when showing modal, clear the form #}
+                    <form class="qt-dsb-item-form" id="qt-dsb-item-icon-form" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="{{ item_icon_form.title.id_for_label }}">Icon Title</label>
+                            <b-form-input id="{{ item_icon_form.title.id_for_label }}" type="text" placeholder="Icon Name"
+                                          name="{{ item_icon_form.title.html_name }}"></b-form-input>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ item_icon_form.icon_type.id_for_label }}">Icon Type</label>
+                            <select name="{{ item_icon_form.icon_type.html_name }}" id="{{ item_icon_form.icon_type.id_for_label }}" class="form-control" v-model="icon_type">
+                                {% for val, opt in item_icon_form.fields.icon_type.choices %}
+                                    <option value="{{ val }}" {% if item_icon_form.icon_type.value == val %}selected{% endif %}>{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" v-if="icon_type == 'svg'">
+                            <label for="{{ item_icon_form.svg_icon.id_for_label }}">SVG Icon</label>
+                            <textarea id="{{ item_icon_form.svg_icon.id_for_label }}" class="form-control" name="{{ item_icon_form.svg_icon.html_name }}"></textarea>
+                        </div>
+                        <div class="form-group" v-if="icon_type == 'img'">
+                            <label for="{{ item_icon_form.img_icon.id_for_label }}">Image File</label>
+                            <b-form-file id="{{ item_icon_form.img_icon.id_for_label }}" placeholder="Inser image file"
+                                          name="{{ item_icon_form.img_icon.html_name }}" accept="image/*"></b-form-file>
+                        </div>
+                    </form>
+                </b-modal>
+            </div>
+        </div>
     </script>
-
-    <script type="text/x-template" id="guide-template">
-    
-    </script>{% endcomment %}
 {% endblock %}
 
 
@@ -167,7 +201,19 @@ ItemGuide
     <script src="{% static 'jquery/jquery-ajax-only.min.js' %}"></script>
 
     <script>
-        all_components['all-btns-with-modal'] = {
+        var toJSONString = function (form) {
+            var obj = {};
+            var elements = form.querySelectorAll("input, select, textarea");
+            for (var i = 0; i < elements.length; ++i) {
+                {#console.error(elements[i].name)#}
+                var element = elements[i];
+                var name = element.name ? element.name : 'null';
+                obj[name] = element.value;
+            }
+            return obj;
+        };
+
+        all_components['page-item-list'] = {
             delimiters: ['[[', ']]'],
             data: function () {
                 return {
@@ -175,21 +221,11 @@ ItemGuide
                 }
             },
             methods: {
-                toJSONString: function (form) {
-                    var _t = this;
-                    var elements = form.querySelectorAll("input, select, textarea");
-                    for (var i = 0; i < elements.length; ++i) {
-                        {#console.error(elements[i].name)#}
-                        var element = elements[i];
-                        var name = element.name ? element.name : 'null';
-                        _t.form_data[name] = element.value;
-                    }
-                },
                 handle_ok: function (e) {
                     // Prevent modal from closing
                     e.preventDefault();
                     var _t = this;
-                    _t.toJSONString(document.querySelector('.qt-dsb-item-form'));
+                    _t.form_data = toJSONString(document.getElementById('qt-dsb-item-list-form'));
                     if (_t.form_data) {
                         $.ajax({
                             url: '/dashboard/ajax_item_list_save/',
@@ -198,7 +234,6 @@ ItemGuide
                             data: _t.form_data,
                             success: function (data) {
                                 if(data.success){
-                                    {# TODO: need to bind with page here #}
                                     _t.form_data.id = data.item_list_id;
                                     _t.$parent.item_list.push(_t.form_data);
                                     _t.form_data = {};
@@ -224,7 +259,72 @@ ItemGuide
             created: function () {
                 
             },
-            template: '#all-btn-template'
+            template: '#list-template'
+        };
+
+        all_components['page-item-icon'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    form_data: {},
+                    icon_type: "{{ item_icon_form.icon_type.value|default:'img' }}",
+                }
+            },
+            watch: {
+                icon_type: function (val, old_val) {
+                    if (val === 'svg') {
+                        document.getElementById('{{ item_icon_form.img_icon.id_for_label }}').value = '';
+                    } else if(val === 'img') {
+                        document.getElementById('{{ item_icon_form.svg_icon.id_for_label }}').value = '';
+                    }
+                }
+            },
+            methods: {
+                handle_ok: function (e) {
+                    // Prevent modal from closing
+                    e.preventDefault();
+                    var _t = this;
+                    var icon_form = document.getElementById('qt-dsb-item-icon-form');
+                    _t.form_data = toJSONString(icon_form);
+                    if (_t.form_data) {
+                        $.ajax({
+                            url: '/dashboard/ajax_item_icon_save/',
+                            method: 'post',
+                            processData: false,
+                            contentType: false,
+                            data: new FormData(icon_form),
+                            enctype: 'multipart/form-data',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                            },
+                            success: function (data) {
+                                if(data.success){
+                                    _t.form_data.id = data.item_icon_id;
+                                    _t.$parent.item_icon.push(_t.form_data);
+                                    _t.form_data = {};
+                                } else {
+                                    console.error("WTF ERROR!!");
+                                    _t.form_data = {};
+                                }
+                            },
+                            error: function (err) {
+                                console.error(err);
+                                _t.form_data = {};
+                            }
+                        });
+                    } else{
+                        console.error("Enter form data");
+                    }
+                    this.$refs.item_icon_form_modal.hide();
+                },
+                clear_form: function () {
+                    document.getElementById('qt-dsb-item-list-form').reset()
+                }
+            },
+            created: function () {
+                
+            },
+            template: '#icon-template'
         };
     </script>
 {% endblock %}
@@ -241,11 +341,13 @@ ItemGuide
             data: {
                 all_items_json: '',
                 item_list: [],
+                item_icon: [],
             },
             methods: {
                 before_submit: function () {
                     var json = {};
                     json.item_list = this.item_list.map(itm => itm.id);
+                    json.item_icon = this.item_icon.map(itm => itm.id);
                     this.all_items_json = JSON.stringify(json);
                     console.log(this.all_items_json);
                     this.$nextTick(() => {

@@ -1,5 +1,5 @@
 from django import forms
-from distinct_pages.models import Page, ItemList
+from distinct_pages.models import Page, ItemList, ItemIcon
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list
@@ -45,6 +45,13 @@ class ItemListForm(forms.ModelForm):
 
     class Meta:
         model = ItemList
+        fields = '__all__'
+
+
+class ItemIconForm(forms.ModelForm):
+    # TODO: need svg format validation
+    class Meta:
+        model = ItemIcon
         fields = '__all__'
 
 

@@ -1,12 +1,12 @@
 import os
 import json
 from django.conf import settings
-from distinct_pages.models import Page, ItemList
+from distinct_pages.models import Page, ItemList, ItemIcon
 from .utils import get_category_list_by_blog
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm
 from writing.models import Article, Blog, Category, Categorize, Section
 
 """login_required decorator added in urls.py... So no need to add here"""
@@ -200,7 +200,14 @@ def create_or_edit_page(request, page_id=None):
                             item.page = page
                             item.save()
                         except ItemList.DoesNotExist as err:
-                            print("Weird err: {}".format(err))
+                            print("Item List id: {}, err: {}".format(item_id, err))
+                    for item_id in all_items.get('item_icon', []):
+                        try:
+                            item = ItemIcon.objects.get(id=int(item_id))
+                            item.page = page
+                            item.save()
+                        except ItemList.DoesNotExist as err:
+                            print("Item List id: {}, err: {}".format(item_id, err))
                     return redirect(page.get_absolute_url())
             form = PageForm(instance=page)
         except Page.DoesNotExist as err:
@@ -210,6 +217,7 @@ def create_or_edit_page(request, page_id=None):
         "form": form,
         "action": action,
         "item_list_form": ItemListForm(),
+        "item_icon_form": ItemIconForm(),
     })
 
 
@@ -341,6 +349,19 @@ def ajax_item_list_save(request):
             print("ItemListForm Error: {}".format(form.errors))
     return JsonResponse(json)
 
+
+def ajax_item_icon_save(request):
+    print("---------- request: {}".format(request.FILES))
+    json = {"success": False, }
+    if request.POST:
+        form = ItemIconForm(request.POST, request.FILES)
+        if form.is_valid():
+            il = form.save()
+            json["success"] = True
+            json['item_icon_id'] = il.id
+        else:
+            print("ItemListForm Error: {}".format(form.errors))
+    return JsonResponse(json)
 
 
 
