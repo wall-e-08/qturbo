@@ -107,6 +107,58 @@ def get_random_string(length=12,
             ).digest())
     return ''.join(random.choice(allowed_chars) for i in range(length))
 
+
+def save_lead_info(stm_lead_model, lead_form_cleaned_data):
+    """ We are saving  quote store key without the last parts ie: stm, lim, anc
+
+    :param stm_lead_model:
+    :param lead_form_cleaned_data:
+    :return:
+    """
+
+    try:
+        stm_lead_obj = stm_lead_model(
+            Zip_Code=lead_form_cleaned_data['Zip_Code'],
+            DOB=lead_form_cleaned_data['Applicant_DOB'],
+            Gender=lead_form_cleaned_data['Applicant_Gender'],
+            quote_store_key=lead_form_cleaned_data['quote_store_key'][:-4]
+        )
+        print(f'Saving lead form info')
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except KeyError:
+        logger.warning("Unable to save lead data")
+
+
+def update_lead_vimm_enroll_id(stm_lead_model, quote_store_key, vimm_enroll_id):
+    try:
+        stm_lead_obj = stm_lead_model.objects.filter(quote_store_key=quote_store_key[:-4]).latest('created')
+        stm_lead_obj.vimm_enroll_id = vimm_enroll_id
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except Exception as e:
+        print(f'Cannot update lead info Vimm enrollment ID. The following exception happened:\n'
+        f'{e}')
+
+
+def update_leads_stm_id(stm_lead_model, stm_enroll_obj, quote_store_key):
+    """
+    :return:
+    """
+    try:
+        stm_lead_obj = stm_lead_model.objects.filter(
+            quote_store_key=quote_store_key[:-4],
+            vimm_enroll_id=stm_enroll_obj.vimm_enroll_id
+        ).latest('created')
+        stm_lead_obj.stm_enroll = stm_enroll_obj
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except Exception as e:
+        print(f'Cannot update lead info stm enrollment ID. The following exception happened:\n'
+              f'{e}')
+
+
+
 def update_applicant_info(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
     """I am recreating update_applicant_info method such that it does not need session vars.
 

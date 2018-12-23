@@ -1698,11 +1698,33 @@ class LeadForm(forms.ModelForm):
         ]
     )
 
-    Phone = forms.CharField()
+    Applicant_Gender = forms.ChoiceField(
+        label=_("Applicant Gender"),
+        choices=(
+            ("Male", _("Male")),
+            ("Female", _("Female"))
+        ),
+        error_messages={"required": _("Applicant Gender is required.")},
+        required=True
+    )
 
-    def clean_Phone(self):
-        phone = self.cleaned_data.get('Phone', '')
-        return clean_number(phone)
+    Zip_Code = forms.CharField(
+        label=_("Zip Code"),
+        max_length=5,
+        min_length=5,
+        strip=True,
+        error_messages={'required': _("Zip Code is required.")}
+    )
+
+    quote_store_key = forms.CharField(
+        max_length=500,
+    )
+
+
+
+    # def clean_Phone(self):
+    #     phone = self.cleaned_data.get('Phone', '')
+    #     return clean_number(phone)
 
     class Meta:
         model = Leads

@@ -24,7 +24,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_applicant_info, save_applicant_info, update_application_stage,
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
-                    save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key)
+                    save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
+                    update_lead_vimm_enroll_id, update_leads_stm_id)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -40,87 +41,17 @@ json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
 
-def home(request):
+def home(request) -> HttpResponse:
     return render(request, 'quotes/landing_page.html', {})
 
-def plans(request, zip_code=None):
-    pass
-    # """
-    # This is the view that shows up to gather users information
-    # and then we click Compare Health Insurance button to start asking
-    # for quotes.
-    # :param request: Django request object
-    # :param zip_code: zip code for area for which quote is given
-    # :type zip_code: str
-    # :return: Django HttpResponse Object
-    # """
-    # # session bug fixed
-    # # anonymous session is created if there is a true need
-    # quote_request_form_data = {}
-    # if request.session._get_session_key() is not None:
-    #     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    #     # Amir Bhai's change for checking Ins type
-    #     # quote_request_form_data['Ins_Type'] = 'lim'
-    # else:
-    #     request.session['quote_request_formset_data'] = quote_request_form_data
-    #     request.session.modified = True
-    # print('\n90 quote_request_form_data: ', quote_request_form_data)
-    # if quote_request_form_data:
-    #     quote_request_formset_data = request.session.get('quote_request_formset_data', [])
-    # else:
-    #     quote_request_formset_data = []
-    #
-    # if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-    #     quote_request_form_data = {}
-    #     quote_request_formset_data = []
-    #     request.session['quote_request_form_data'] = {}
-    #     request.session['quote_request_formset_data'] = []
-    #
-    # if quote_request_form_data and quote_request_formset_data:
-    #     if quote_request_form_data['Children_Count'] != len(quote_request_formset_data):
-    #         quote_request_formset_data = []
-    #         quote_request_form_data['Children_Count'] = 0
-    #
-    # form = None
-    # formset = None
-    # if quote_request_form_data and (zip_code is None or quote_request_form_data.get('Zip_Code') == zip_code):
-    #     form = ApplicantInfoForm(initial=quote_request_form_data)
-    #     logger.info("{0}".format(quote_request_form_data))
-    #
-    # if zip_code:
-    #     zip_form = ZipCodeForm({'zip_code': zip_code})
-    #     if zip_form.is_valid():
-    #         zip_code = zip_form.cleaned_data['zip_code']
-    #     else:
-    #         return HttpResponseRedirect(reverse('quotes:plans'))
-    #
-    # if form is None:
-    #     quote_request_formset_data = []
-    #     effective_date = (timezone.now() + datetime.timedelta(
-    #         days=1, minutes=settings.EFFECTIVE_DATE_OFFSET_BY_MINUTES)).date()
-    #     if effective_date.day > 28:
-    #         effective_date = datetime.date(
-    #             year=(effective_date.year if effective_date.month < 12 else effective_date.year + 1),
-    #             month=((effective_date.month + 1) if effective_date.month < 12 else 1),
-    #             day=1
-    #         )
-    #     form = ApplicantInfoForm(
-    #         initial={
-    #             'Ins_Type': 'lim',
-    #             'Payment_Option': '1',
-    #             'Effective_Date': effective_date,
-    #             'Tobacco': 'N'
-    #         }
-    #     )
-    # if quote_request_formset_data:
-    #     formset = ChildInfoFormSet(initial=quote_request_formset_data)
-    # if formset is None:
-    #     formset = ChildInfoFormSet()
-    #
-    # print('\n\nplans: quote_request_form_data:', quote_request_form_data)
-    # return render(request, 'quotes/plans.html',
-    #               {"zip_code": zip_code, "form": form, 'formset': formset})
-    return render(request, 'quotes/landing_page.html')  # TODO
+
+def plans(request, zip_code=None) -> HttpResponse:
+    """View is handled in whole entiarity in vuejs.
+
+    :param request: Django request object
+    :return: Django HttpResponse Object
+    """
+    return render(request, 'quotes/landing_page.html')
 
 
 @require_POST
@@ -132,7 +63,6 @@ def validate_quote_form(request) -> JsonResponse:
     """
 
     print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
-
 
     form = ApplicantInfoForm(request.POST)
     formset = ChildInfoFormSet(request.POST)
@@ -169,6 +99,9 @@ def validate_quote_form(request) -> JsonResponse:
         else:
             print(f'----------------\nLead Form Errors :\n----------------\n{lead_form.errors}')
 
+        # Saving Lead Form Info
+        save_lead_info(qm.Leads, lead_form.cleaned_data)
+
         return JsonResponse(
             {
                 'status': 'success',
@@ -187,8 +120,6 @@ def validate_quote_form(request) -> JsonResponse:
             "formset_errors": formset.errors
          }
     )
-
-
 
 
 def survey_members(request):
@@ -227,7 +158,7 @@ def plan_quote(request, ins_type):
     request.session.modified = True
     logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
-    """ Changing quote store key regarding insurance type  """
+    # Changing quote store key regarding insurance type
     if ins_type == "stm":
         quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
     elif ins_type == "lim":
@@ -235,7 +166,7 @@ def plan_quote(request, ins_type):
     elif ins_type == "anc":
         quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
 
-    """ Calling celery for populating quote list """
+    # Calling celery for populating quote list
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
     print(f"Calling celery task for ins_type: {ins_type}")
@@ -496,6 +427,10 @@ def stm_application(request, plan_url):
     plan['vimm_enroll_id'] = get_random_string()
     app_url = "{0}-{1}".format(plan['unique_url'], plan['vimm_enroll_id'])
     logger.info("app url: {0}".format(app_url))
+
+    # Updating vimm enroll id of leads
+    update_lead_vimm_enroll_id(qm.Leads, quote_request_form_data['quote_store_key'], plan['vimm_enroll_id'])
+
     if not request.session.get(app_url, {}):
         request.session[app_url] = plan
         request.session["{0}_form_data".format(app_url)] = copy.deepcopy(quote_request_form_data)
@@ -859,6 +794,12 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 if stm_addon_plan_objs is None and selected_addon_plans:
                     logger.info("Saving add-on plan info.")
                     save_add_on_info(qm.AddonPlan, selected_addon_plans, plan, stm_enroll_obj)
+
+                try:
+                    # Updating lead info in database
+                    update_leads_stm_id(qm.Leads, stm_enroll_obj, quote_request_form_data['quote_store_key'])
+                except (ValueError, KeyError):
+                    logger.warning("Cannot update Lead info database")
 
             return JsonResponse(
                 {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 3])}

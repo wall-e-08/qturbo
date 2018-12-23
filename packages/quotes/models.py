@@ -7,19 +7,6 @@ from core import settings
 from .us_states import states, states_list
 
 
-
-class Leads(models.Model):
-    zip_code = models.CharField(max_length=5)
-
-    dob = models.DateField()
-
-    gender = models.CharField(max_length=1)
-
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return "{}_{}".format(self.zip_code, self.gender)
-
 class Carrier(models.Model):
     plan_id = models.CharField(
         blank=True, null=True,
@@ -118,7 +105,6 @@ class Carrier(models.Model):
 
     def get_sub_plan_first(self):
         return self.get_sub_plan_list()[0] if self.get_sub_plan_list() else None
-
 
 
 class StmEnroll(models.Model):
@@ -589,6 +575,35 @@ class StmEnroll(models.Model):
 
     class Meta:
         verbose_name = _("Enroll")
+
+
+class Leads(models.Model):
+
+    stm_enroll = models.ForeignKey(
+        to=StmEnroll,
+        verbose_name=_("Enroll"),
+        on_delete=models.SET_NULL,
+
+        null=True, blank=True
+    )
+
+    vimm_enroll_id = models.CharField(
+        max_length=20,
+        null=True, blank=True
+    )
+
+    Zip_Code = models.CharField(max_length=5)
+
+    DOB = models.DateField()
+
+    Gender = models.CharField(max_length=6)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    quote_store_key = models.CharField(max_length=500)
+
+    def __str__(self):
+        return "{}_{}".format(self.zip_code, self.gender)
 
 
 class Dependent(models.Model):
