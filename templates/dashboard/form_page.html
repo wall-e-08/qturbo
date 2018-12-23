@@ -56,7 +56,7 @@
                 
                     <div class="form-group">
                         <label for="{{ form.template_file.id_for_label }}">Template File</label>
-                        <select name="{{ form.template_file.html_name }}" id="{{ form.template_file.id_for_label }}">
+                        <select name="{{ form.template_file.html_name }}" id="{{ form.template_file.id_for_label }}" class="form-control">
                             <option selected>---</option>
                             {% for val, opt in form.fields.template_file.choices %}
                                 <option value="{{ val }}" {% if form.template_file.value == val %}selected{% endif %}>{{ opt }}</option>
@@ -71,24 +71,12 @@
     </div>
 
     <hr class="my-5">
-
     <page-item-list></page-item-list>
-
     <hr class="my-5">
-
-    {% comment %}<page-item-icon></page-item-icon>{% endcomment %}
+    <page-item-two-col></page-item-two-col>
 
 {% endblock %}
 
-
-<!--
-ItemTwoColumn
-    title
-    img
-    content
-    url
-    url_text
--->
 <!--
 ItemGuide
     url
@@ -141,17 +129,19 @@ ItemGuide
         </div>
     </script>
 
-    {% comment %}<script type="text/x-template" id="icon-template">
+    <script type="text/x-template" id="two-col-template">
         <div class="container">
-            <div id="icon-item">
+            <div id="two-col-item">
                 <div class="row">
-                    <template v-for="item in $parent.item_icon">
+                    <template v-for="item in $parent.item_two_col">
                         <div class="col-md-4 mb-5">
                             <div class="card w-100">
                                 <img class="card-img-top" :src="item.img" alt="Card image cap">
                                 <div class="card-body">
                                     <div>ID: [[ item.id ]]</div>
                                     <div>Title: [[ item.title ]]</div>
+                                    <div>URL: [[ item.url ]]</div>
+                                    <div>URL Text: [[ item.url_text ]]</div>
                                     <div class="card-text" v-html="item.content"></div>
                                 </div>
                             </div>
@@ -159,38 +149,40 @@ ItemGuide
                     </template>
                 </div>
 
-                <b-btn v-b-modal.item_icon_form_modal>New Icon</b-btn>
-                <b-modal id="item_icon_form_modal" centered title="Add new Icon" ref="item_icon_form_modal"
+                <b-btn v-b-modal.item_two_col_form_modal>New Two Column</b-btn>
+                <b-modal id="item_two_col_form_modal" centered title="Add new Icon" ref="item_two_col_form_modal"
                          @ok="handle_ok" {# when pressing ok button, prevent empty input #}
                          @shown="clear_form"> {# when showing modal, clear the form #}
-                    <form class="qt-dsb-item-form" id="qt-dsb-item-icon-form" enctype="multipart/form-data">
+                    <form class="qt-dsb-item-form" id="qt-dsb-item-two-col-form" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="{{ item_icon_form.title.id_for_label }}">Icon Title</label>
-                            <b-form-input id="{{ item_icon_form.title.id_for_label }}" type="text" placeholder="Icon Name"
-                                          name="{{ item_icon_form.title.html_name }}"></b-form-input>
+                            <label for="{{ item_two_col_form.title.id_for_label }}">Title</label>
+                            <b-form-input id="{{ item_two_col_form.title.id_for_label }}" type="text" placeholder="Title"
+                                          name="{{ item_two_col_form.title.html_name }}"></b-form-input>
                         </div>
                         <div class="form-group">
-                            <label for="{{ item_icon_form.icon_type.id_for_label }}">Icon Type</label>
-                            <select name="{{ item_icon_form.icon_type.html_name }}" id="{{ item_icon_form.icon_type.id_for_label }}" class="form-control" v-model="icon_type">
-                                {% for val, opt in item_icon_form.fields.icon_type.choices %}
-                                    <option value="{{ val }}" {% if item_icon_form.icon_type.value == val %}selected{% endif %}>{{ opt }}</option>
-                                {% endfor %}
-                            </select>
+                            <label for="{{ item_two_col_form.content.id_for_label }}">Content</label>
+                            <textarea id="{{ item_two_col_form.content.id_for_label }}" class="form-control" name="{{ item_two_col_form.content.html_name }}"></textarea>
                         </div>
-                        <div class="form-group" v-if="icon_type == 'svg'">
-                            <label for="{{ item_icon_form.svg_icon.id_for_label }}">SVG Icon</label>
-                            <textarea id="{{ item_icon_form.svg_icon.id_for_label }}" class="form-control" name="{{ item_icon_form.svg_icon.html_name }}"></textarea>
+                        <div class="form-group">
+                            <label for="{{ item_two_col_form.img.id_for_label }}">Image File</label>
+                            <b-form-file id="{{ item_two_col_form.img.id_for_label }}" placeholder="Insert image file"
+                                          name="{{ item_two_col_form.img.html_name }}" accept="image/*"></b-form-file>
                         </div>
-                        <div class="form-group" v-if="icon_type == 'img'">
-                            <label for="{{ item_icon_form.img_icon.id_for_label }}">Image File</label>
-                            <b-form-file id="{{ item_icon_form.img_icon.id_for_label }}" placeholder="Inser image file"
-                                          name="{{ item_icon_form.img_icon.html_name }}" accept="image/*"></b-form-file>
+                        <div class="form-group">
+                            <label for="{{ item_two_col_form.url.id_for_label }}">URL</label>
+                            <b-form-input id="{{ item_two_col_form.url.id_for_label }}" type="text" placeholder="URL"
+                                          name="{{ item_two_col_form.url.html_name }}"></b-form-input>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ item_two_col_form.url_text.id_for_label }}">URL Text</label>
+                            <b-form-input id="{{ item_two_col_form.url_text.id_for_label }}" type="text" placeholder="URL Text"
+                                          name="{{ item_two_col_form.url_text.html_name }}"></b-form-input>
                         </div>
                     </form>
                 </b-modal>
             </div>
         </div>
-    </script>{% endcomment %}
+    </script>
 {% endblock %}
 
 
@@ -256,27 +248,14 @@ ItemGuide
                     document.getElementById('qt-dsb-item-list-form').reset()
                 }
             },
-            created: function () {
-                
-            },
             template: '#list-template'
         };
 
-        {% comment %}all_components['page-item-icon'] = {
+        all_components['page-item-two-col'] = {
             delimiters: ['[[', ']]'],
             data: function () {
                 return {
                     form_data: {},
-                    icon_type: "{{ item_icon_form.icon_type.value|default:'img' }}",
-                }
-            },
-            watch: {
-                icon_type: function (val, old_val) {
-                    if (val === 'svg') {
-                        document.getElementById('{{ item_icon_form.img_icon.id_for_label }}').value = '';
-                    } else if(val === 'img') {
-                        document.getElementById('{{ item_icon_form.svg_icon.id_for_label }}').value = '';
-                    }
                 }
             },
             methods: {
@@ -284,23 +263,22 @@ ItemGuide
                     // Prevent modal from closing
                     e.preventDefault();
                     var _t = this;
-                    var icon_form = document.getElementById('qt-dsb-item-icon-form');
-                    _t.form_data = toJSONString(icon_form);
+                    var two_col_form = document.getElementById('qt-dsb-item-two-col-form');
+                    _t.form_data = toJSONString(two_col_form);
                     if (_t.form_data) {
                         $.ajax({
-                            url: '/dashboard/ajax_item_icon_save/',
+                            url: '{% url 'dashboard:ajax_item_two_col_save' %}',
                             method: 'post',
                             processData: false,
                             contentType: false,
-                            data: new FormData(icon_form),
+                            data: new FormData(two_col_form),
                             enctype: 'multipart/form-data',
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                             },
-                            success: function (data) {
-                                if(data.success){
-                                    _t.form_data.id = data.item_icon_id;
-                                    _t.$parent.item_icon.push(_t.form_data);
+                            success: function (json) {
+                                if(json.success){
+                                    _t.$parent.item_two_col.push(json.data);
                                     _t.form_data = {};
                                 } else {
                                     console.error("WTF ERROR!!");
@@ -315,17 +293,14 @@ ItemGuide
                     } else{
                         console.error("Enter form data");
                     }
-                    this.$refs.item_icon_form_modal.hide();
+                    this.$refs.item_two_col_form_modal.hide();
                 },
                 clear_form: function () {
                     document.getElementById('qt-dsb-item-list-form').reset()
                 }
             },
-            created: function () {
-                
-            },
-            template: '#icon-template'
-        };{% endcomment %}
+            template: '#two-col-template'
+        };
     </script>
 {% endblock %}
 
@@ -341,11 +316,13 @@ ItemGuide
             data: {
                 all_items_json: '',
                 item_list: [],
+                item_two_col: [],
             },
             methods: {
                 before_submit: function () {
                     var json = {};
                     json.item_list = this.item_list.map(itm => itm.id);
+                    json.item_two_col = this.item_two_col.map(itm => itm.id);
                     this.all_items_json = JSON.stringify(json);
                     console.log(this.all_items_json);
                     this.$nextTick(() => {
@@ -362,6 +339,17 @@ ItemGuide
                         icon_type: "{{ il.icon.icon_type }}",
                         content: `{{ il.content|safe|default:'' }}`,
                         url: "{{ il.url }}",
+                    },{% endfor %}];
+                {% endif %}
+            
+                {% if item_data.two_col %}
+                    this.item_two_col = [{% for il in item_data.two_col %}{
+                        id: "{{ il.id }}",
+                        title: `{{ il.title }}`,
+                        img: "{% if il.img %}{{ il.img.url }}{% endif %}",
+                        content: `{{ il.content|safe|default:'' }}`,
+                        url: "{{ il.url }}",
+                        url_text: "{{ il.url_text }}",
                     },{% endfor %}];
                 {% endif %}
             },

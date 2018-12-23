@@ -2,7 +2,7 @@ import os
 import json
 from django.conf import settings
 from writing.models import Category, Categorize
-from distinct_pages.models import Page, ItemIcon, ItemList
+from distinct_pages.models import Page, ItemTwoColumn, ItemList
 
 
 def get_category_list_by_blog(blog=None):
@@ -52,11 +52,11 @@ def save_page_items(req_post, page_id):
             item.save()
         except ItemList.DoesNotExist as err:
             print("Item List id: {}, err: {}".format(item_id, err))
-    for item_id in all_items.get('item_icon', []):
+    for item_id in all_items.get('item_two_col', []):
         try:
-            item = ItemIcon.objects.get(id=int(item_id))
+            item = ItemTwoColumn.objects.get(id=int(item_id))
             item.page = page
             item.save()
-        except ItemList.DoesNotExist as err:
-            print("Item List id: {}, err: {}".format(item_id, err))
+        except ItemTwoColumn.DoesNotExist as err:
+            print("ItemTwoColumn id: {}, err: {}".format(item_id, err))
 

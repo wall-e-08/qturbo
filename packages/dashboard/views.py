@@ -3,10 +3,10 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from distinct_pages.models import Page, ItemList, ItemIcon
+from distinct_pages.models import Page, ItemList, ItemTwoColumn
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog, save_page_items
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -192,6 +192,7 @@ def create_or_edit_page(request, page_id=None):
             page = Page.objects.get(id=int(page_id))
             item_data = {
                 "lists": ItemList.objects.filter(page=page),
+                "two_col": ItemTwoColumn.objects.filter(page=page),
             }
             if request.method == 'POST':
                 form = PageForm(request.POST, instance=page)
@@ -207,6 +208,7 @@ def create_or_edit_page(request, page_id=None):
         "form": form,
         "action": action,
         "item_list_form": ItemListForm(),
+        "item_two_col_form": ItemTwoColumnForm(),
         "item_data": item_data,
     })
 
@@ -361,6 +363,29 @@ def ajax_item_icon_save(request):
         else:
             print("ItemListForm Error: {}".format(form.errors))
     return JsonResponse(json)
+
+
+def ajax_item_two_col_save(request):
+    json = {"success": False, }
+    if request.POST:
+        form = ItemTwoColumnForm(request.POST, request.FILES)
+        if form.is_valid():
+            itc = form.save()
+            json.update({
+                "success": True,
+                "data": {
+                    "id": itc.id,
+                    "title": itc.title,
+                    "img": itc.img.url if itc.img else "",
+                    "content": itc.content,
+                    "url": itc.url,
+                    "url_text": itc.url_text,
+                },
+            })
+        else:
+            print("ItemTwoColumnForm Error: {}".format(form.errors))
+    return JsonResponse(json)
+
 
 
 

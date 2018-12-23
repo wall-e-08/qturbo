@@ -1,5 +1,5 @@
 from django import forms
-from distinct_pages.models import Page, ItemList, ItemIcon
+from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list
@@ -54,4 +54,9 @@ class ItemIconForm(forms.ModelForm):
         model = ItemIcon
         fields = '__all__'
 
+
+class ItemTwoColumnForm(forms.ModelForm):
+    class Meta:
+        model = ItemTwoColumn
+        fields = '__all__'
 

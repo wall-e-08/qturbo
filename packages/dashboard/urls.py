@@ -33,4 +33,5 @@ urlpatterns = [
     # page items
     path('ajax_item_list_save/', login_required(views.ajax_item_list_save), name='ajax_item_list_save'),
     path('ajax_item_icon_save/', login_required(views.ajax_item_icon_save), name='ajax_item_icon_save'),
+    path('ajax_item_two_col_save/', login_required(views.ajax_item_two_col_save), name='ajax_item_two_col_save'),
 ]
