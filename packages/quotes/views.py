@@ -29,8 +29,6 @@ from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
 
-# For dummy data generation
-import datetime
 
 import quotes.models as qm
 
@@ -157,7 +155,7 @@ def validate_quote_form(request) -> JsonResponse:
             quote_request_form_data['Dependents'] = quote_request_formset_data
 
         quote_request_form_data['quote_store_key'] = get_quote_store_key(copy.deepcopy(quote_request_form_data))
-        logger.info("quote_request_form_data['quote_store_key'] {0}".format(quote_request_form_data['quote_store_key']))
+        logger.info(f"quote_request_form_data['quote_store_key'] <--- {quote_request_form_data['quote_store_key']}")
 
         request.session['quote_request_form_data'] = quote_request_form_data
         request.session['quote_request_formset_data'] = quote_request_formset_data
@@ -169,7 +167,7 @@ def validate_quote_form(request) -> JsonResponse:
             logger.info("saving lead info")
             lead_form.save()
         else:
-            print(lead_form.errors)
+            print(f'----------------\nLead Form Errors :\n----------------\n{lead_form.errors}')
 
         return JsonResponse(
             {
@@ -207,32 +205,27 @@ def plan_quote(request, ins_type):
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
 
-    # quote_request_form_data = {} # TODO
-    # quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
-    # if quote_request_form_data.get('applicant_is_child', True): # TODO
-    #     request.session['quote_request_formset_data'] = []
+    if quote_request_form_data.get('applicant_is_child', True):
+        request.session['quote_request_formset_data'] = []
 
-    # TODO
-    # if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-    #     quote_request_form_data = {}
-    #     request.session['quote_request_form_data'] = {}
-    #     request.session['quote_request_formset_data'] = []
-    #     request.session['quote_request_response_data'] = {}
+    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+        quote_request_form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+        request.session['quote_request_response_data'] = {}
 
-    # if not quote_request_form_data:
-    # WE HAVE TO DO SOMETHING
-    #     return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+    if not quote_request_form_data:
+        return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    # TODO
     quote_request_form_data['Ins_Type'] = ins_type
     logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
     d = {'monthly_plans': [], 'addon_plans': []}
     request.session['quote_request_response_data'] = d
     request.session.modified = True
-    # logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
+    logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
     """ Changing quote store key regarding insurance type  """
     if ins_type == "stm":
@@ -261,7 +254,6 @@ def plan_quote(request, ins_type):
             LimPlanTask.delay(request.session.session_key, quote_request_form_data)
         elif ins_type == 'anc':
             AncPlanTask.delay(request.session.session_key, quote_request_form_data)
-
 
     return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
@@ -753,7 +745,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     # if applicant is child required parent info no spouse or child
     # if applicant is adult no parent info but spouse info and child info could present
     if stage == 2:
-        print("Plan dictionary: ", plan)
+        print("Plan dictionary: ", json.dumps(plan, indent=4, sort_keys=True))
         logger.info('STAGE2: form_data - {0}'.format(quote_request_form_data))
         if stm_plan_obj:
             try:
@@ -1244,7 +1236,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
 
 
     res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
-    print(applicant_info)
+    print(f'applicant_info: {json.dumps(applicant_info, indent=4, sort_keys=True)}')
     if not res:
         # applicant_info = applicant_info
         payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
@@ -1259,10 +1251,6 @@ def e_signature_enrollment(request, vimm_enroll_id):
                      parent_data=applicant_parent_info,
                      dependents_data=applicant_dependents_info,
                      add_on_plans_data=selected_addon_plans)
-
-        # Should be deleted: Not sure
-        # stm_enroll_obj.processed_date = timezone.now()
-        # stm_enroll_obj.save(update_fields=['processed_date'])
 
 
     # TODO: Implement post date
