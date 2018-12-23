@@ -1,13 +1,12 @@
 import os
-import json
 from django.conf import settings
-from distinct_pages.models import Page, ItemList, ItemIcon
-from .utils import get_category_list_by_blog
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm
+from distinct_pages.models import Page, ItemList, ItemIcon
 from writing.models import Article, Blog, Category, Categorize, Section
+from .utils import get_category_list_by_blog, save_page_items
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -174,12 +173,14 @@ def create_or_edit_blog(request, blog_id=None):
 
 
 def create_or_edit_page(request, page_id=None):
+    item_data = {}
     if page_id is None:
         action = 'Create'
         if request.method == 'POST':
             form = PageForm(request.POST)
             if form.is_valid():
                 page = form.save()
+                save_page_items(request.POST, page.id)
                 return redirect(page.get_absolute_url())
             else:
                 print("Form is not valid")
@@ -189,25 +190,14 @@ def create_or_edit_page(request, page_id=None):
         action = "Edit"
         try:
             page = Page.objects.get(id=int(page_id))
+            item_data = {
+                "lists": ItemList.objects.filter(page=page),
+            }
             if request.method == 'POST':
                 form = PageForm(request.POST, instance=page)
                 if form.is_valid():
-                    all_items = json.loads(request.POST.get('all_items'))
                     page = form.save()
-                    for item_id in all_items.get('item_list', []):
-                        try:
-                            item = ItemList.objects.get(id=int(item_id))
-                            item.page = page
-                            item.save()
-                        except ItemList.DoesNotExist as err:
-                            print("Item List id: {}, err: {}".format(item_id, err))
-                    for item_id in all_items.get('item_icon', []):
-                        try:
-                            item = ItemIcon.objects.get(id=int(item_id))
-                            item.page = page
-                            item.save()
-                        except ItemList.DoesNotExist as err:
-                            print("Item List id: {}, err: {}".format(item_id, err))
+                    save_page_items(request.POST, page.id)
                     return redirect(page.get_absolute_url())
             form = PageForm(instance=page)
         except Page.DoesNotExist as err:
@@ -217,7 +207,7 @@ def create_or_edit_page(request, page_id=None):
         "form": form,
         "action": action,
         "item_list_form": ItemListForm(),
-        "item_icon_form": ItemIconForm(),
+        "item_data": item_data,
     })
 
 
@@ -343,8 +333,17 @@ def ajax_item_list_save(request):
         form = ItemListForm(request.GET)
         if form.is_valid():
             il = form.save()
-            json["success"] = True
-            json['item_list_id'] = il.id
+            json.update({
+                "success": True,
+                "data": {
+                    "id": il.id,
+                    "svg_icon": il.icon.svg_icon,
+                    "img_icon": il.icon.img_icon.url if il.icon.img_icon else "",
+                    "icon_type": il.icon.icon_type,
+                    "content": il.content,
+                    "url": il.url,
+                },
+            })
         else:
             print("ItemListForm Error: {}".format(form.errors))
     return JsonResponse(json)

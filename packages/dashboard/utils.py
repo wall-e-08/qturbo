@@ -1,6 +1,8 @@
 import os
+import json
 from django.conf import settings
 from writing.models import Category, Categorize
+from distinct_pages.models import Page, ItemIcon, ItemList
 
 
 def get_category_list_by_blog(blog=None):
@@ -34,3 +36,27 @@ def get_distinct_page_template_file_list():
             temp_list.remove(tm)
     temp_name = [tm.replace(".html", "") for tm in temp_list]
     return zip(temp_list, temp_name)
+
+
+def save_page_items(req_post, page_id):
+    all_items = json.loads(req_post.get('all_items'))
+    try:
+        page = Page.objects.get(id=page_id)
+    except Page.DoesNotExist as err:
+        print("Very weird err: {}".format(err))
+        return None
+    for item_id in all_items.get('item_list', []):
+        try:
+            item = ItemList.objects.get(id=int(item_id))
+            item.page = page
+            item.save()
+        except ItemList.DoesNotExist as err:
+            print("Item List id: {}, err: {}".format(item_id, err))
+    for item_id in all_items.get('item_icon', []):
+        try:
+            item = ItemIcon.objects.get(id=int(item_id))
+            item.page = page
+            item.save()
+        except ItemList.DoesNotExist as err:
+            print("Item List id: {}, err: {}".format(item_id, err))
+

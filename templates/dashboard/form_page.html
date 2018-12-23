@@ -9,6 +9,15 @@
     <li class="breadcrumb-item active">{{ action }} Page</li>
 {% endblock %}
 
+{% block head_css %}
+    <style>
+    svg {
+        width: 50px;
+        height: 50px;
+    }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
@@ -67,18 +76,11 @@
 
     <hr class="my-5">
 
-    <page-item-icon></page-item-icon>
+    {% comment %}<page-item-icon></page-item-icon>{% endcomment %}
 
 {% endblock %}
 
 
-<!--
-ItemIcon
-    title
-    svg_icon
-    img_icon
-    icon_type
--->
 <!--
 ItemTwoColumn
     title
@@ -98,18 +100,17 @@ ItemGuide
         <div class="container">
             <div id="list-item">
                 <div class="row">
-                    <template v-for="item in $parent.item_list">
-                        <div class="col-md-4 mb-5">
-                            <div class="card w-100">
-                                <img class="card-img-top" :src="item.img" alt="Card image cap">
-                                <div class="card-body">
-                                    <div>ID: [[ item.id ]]</div>
-                                    <div>URL: [[ item.url ]]</div>
-                                    <div class="card-text" v-html="item.content"></div>
-                                </div>
+                    <div class="col-md-4 mb-5" v-for="item in $parent.item_list">
+                        <div class="card w-100">
+                            <img v-if="item.icon_type=='img'" class="card-img-top" :src="item.img_icon" alt="Card image cap">
+                            <div style="height: 50px;" class="mx-auto p-4" v-else-if="item.icon_type=='svg'" v-html="item.svg_icon"></div>
+                            <div class="card-body">
+                                <div>ID: [[ item.id ]]</div>
+                                <div>URL: [[ item.url ]]</div>
+                                <div class="card-text" v-html="item.content"></div>
                             </div>
                         </div>
-                    </template>
+                    </div>
                 </div>
 
                 <b-btn v-b-modal.item_list_form_modal>New List</b-btn>
@@ -140,7 +141,7 @@ ItemGuide
         </div>
     </script>
 
-    <script type="text/x-template" id="icon-template">
+    {% comment %}<script type="text/x-template" id="icon-template">
         <div class="container">
             <div id="icon-item">
                 <div class="row">
@@ -189,7 +190,7 @@ ItemGuide
                 </b-modal>
             </div>
         </div>
-    </script>
+    </script>{% endcomment %}
 {% endblock %}
 
 
@@ -234,8 +235,7 @@ ItemGuide
                             data: _t.form_data,
                             success: function (data) {
                                 if(data.success){
-                                    _t.form_data.id = data.item_list_id;
-                                    _t.$parent.item_list.push(_t.form_data);
+                                    _t.$parent.item_list.push(data.data);
                                     _t.form_data = {};
                                 } else {
                                     console.error("WTF ERROR!!");
@@ -262,7 +262,7 @@ ItemGuide
             template: '#list-template'
         };
 
-        all_components['page-item-icon'] = {
+        {% comment %}all_components['page-item-icon'] = {
             delimiters: ['[[', ']]'],
             data: function () {
                 return {
@@ -325,7 +325,7 @@ ItemGuide
                 
             },
             template: '#icon-template'
-        };
+        };{% endcomment %}
     </script>
 {% endblock %}
 
@@ -341,19 +341,29 @@ ItemGuide
             data: {
                 all_items_json: '',
                 item_list: [],
-                item_icon: [],
             },
             methods: {
                 before_submit: function () {
                     var json = {};
                     json.item_list = this.item_list.map(itm => itm.id);
-                    json.item_icon = this.item_icon.map(itm => itm.id);
                     this.all_items_json = JSON.stringify(json);
                     console.log(this.all_items_json);
                     this.$nextTick(() => {
                         this.$refs.main_form.submit();
                     });
                 },
+            },
+            created: function () {
+                {% if item_data.lists %}
+                    this.item_list = [{% for il in item_data.lists %}{
+                        id: "{{ il.id }}",
+                        svg_icon: `{{ il.icon.svg_icon|safe|default:'' }}`,
+                        img_icon: "{% if il.icon.img_icon %}{{ il.icon.img_icon.url }}{% endif %}",
+                        icon_type: "{{ il.icon.icon_type }}",
+                        content: `{{ il.content|safe|default:'' }}`,
+                        url: "{{ il.url }}",
+                    },{% endfor %}];
+                {% endif %}
             },
             components: all_components,
         }).$mount('#bootstrap-vue');

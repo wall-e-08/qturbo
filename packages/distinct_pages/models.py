@@ -91,13 +91,6 @@ class ItemList(models.Model):
 
 
 class ItemIcon(models.Model):
-    page = models.ForeignKey(
-        'Page',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
     title = models.CharField(max_length=100)
 
     svg_icon = models.TextField(

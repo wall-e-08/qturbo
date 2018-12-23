@@ -18,7 +18,6 @@ def slugified_page(request, slug):
     page = data.get('model_obj')
     item_data = {
         "lists": ItemList.objects.filter(page=page),
-        "icons": ItemIcon.objects.filter(page=page),
     }
 
     ctx = {
