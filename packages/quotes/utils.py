@@ -107,6 +107,58 @@ def get_random_string(length=12,
             ).digest())
     return ''.join(random.choice(allowed_chars) for i in range(length))
 
+
+def save_lead_info(stm_lead_model, lead_form_cleaned_data):
+    """ We are saving  quote store key without the last parts ie: stm, lim, anc
+
+    :param stm_lead_model:
+    :param lead_form_cleaned_data:
+    :return:
+    """
+
+    try:
+        stm_lead_obj = stm_lead_model(
+            Zip_Code=lead_form_cleaned_data['Zip_Code'],
+            DOB=lead_form_cleaned_data['Applicant_DOB'],
+            Gender=lead_form_cleaned_data['Applicant_Gender'],
+            quote_store_key=lead_form_cleaned_data['quote_store_key'][:-4]
+        )
+        print(f'Saving lead form info')
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except KeyError:
+        logger.warning("Unable to save lead data")
+
+
+def update_lead_vimm_enroll_id(stm_lead_model, quote_store_key, vimm_enroll_id):
+    try:
+        stm_lead_obj = stm_lead_model.objects.filter(quote_store_key=quote_store_key[:-4]).latest('created')
+        stm_lead_obj.vimm_enroll_id = vimm_enroll_id
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except Exception as e:
+        print(f'Cannot update lead info Vimm enrollment ID. The following exception happened:\n'
+        f'{e}')
+
+
+def update_leads_stm_id(stm_lead_model, stm_enroll_obj, quote_store_key):
+    """
+    :return:
+    """
+    try:
+        stm_lead_obj = stm_lead_model.objects.filter(
+            quote_store_key=quote_store_key[:-4],
+            vimm_enroll_id=stm_enroll_obj.vimm_enroll_id
+        ).latest('created')
+        stm_lead_obj.stm_enroll = stm_enroll_obj
+        stm_lead_obj.save()
+        return stm_lead_obj
+    except Exception as e:
+        print(f'Cannot update lead info stm enrollment ID. The following exception happened:\n'
+              f'{e}')
+
+
+
 def update_applicant_info(stm_enroll_obj, applicant_info, applicant_parent_info, plan):
     """I am recreating update_applicant_info method such that it does not need session vars.
 
@@ -313,29 +365,29 @@ def get_askable_questions(sorted_question):
                 quss.append(sub_qus)
     return quss
 
-#
-# def get_quote_store_key(form_data):
-#     """
-#
-#     :param form_data: Quotation request form data.
-#     :type form_data: python dictionary object
-#     :return: str: Nearly unique key which is then
-#     concatanated with session key to form redis key.
-#     """
-#     _key = '{0}-{1}-{2}-{3}-{4}-{5}'.format(form_data['Zip_Code'], form_data['Applicant_DOB'],
-#                                             form_data['Applicant_Gender'], form_data['Payment_Option'],
-#                                             form_data['Effective_Date'], form_data['Tobacco'])
-#     if form_data['Coverage_Days']:
-#         _key += '-{0}'.format(form_data['Coverage_Days'])
-#     if form_data['Include_Spouse'] == 'Yes':
-#         _key += '-{0}-{1}'.format(form_data['Spouse_DOB'], form_data['Spouse_Gender'])
-#     if form_data['Dependents']:
-#         for dependent in form_data['Dependents']:
-#             _key += '-{0}-{1}'.format(dependent['Child_DOB'], dependent['Child_Gender'])
-#
-#     _key += '-{0}'.format(form_data['Ins_Type'])
-#     return _key
-#
+
+def get_quote_store_key(form_data):
+    """
+
+    :param form_data: Quotation request form data.
+    :type form_data: python dictionary object
+    :return: str: Nearly unique key which is then
+    concatanated with session key to form redis key.
+    """
+    _key = '{0}-{1}-{2}-{3}-{4}-{5}'.format(form_data['Zip_Code'], form_data['Applicant_DOB'],
+                                            form_data['Applicant_Gender'], form_data['Payment_Option'],
+                                            form_data['Effective_Date'], form_data['Tobacco'])
+    if form_data['Coverage_Days']:
+        _key += '-{0}'.format(form_data['Coverage_Days'])
+    if form_data['Include_Spouse'] == 'Yes':
+        _key += '-{0}-{1}'.format(form_data['Spouse_DOB'], form_data['Spouse_Gender'])
+    if form_data['Dependents']:
+        for dependent in form_data['Dependents']:
+            _key += '-{0}-{1}'.format(dependent['Child_DOB'], dependent['Child_Gender'])
+
+    _key += '-{0}'.format(form_data['Ins_Type'])
+    return _key
+
 #
 # def send_enroll_email(request, form_data, enroll,
 #                       stm_enroll_obj,

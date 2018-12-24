@@ -3,11 +3,15 @@ from django.shortcuts import reverse
 from writing.utils import custom_slugify
 from djrichtextfield.models import RichTextField
 from writing.utils import STATUS_CHOICES
+from .utils import get_img_path
 
 
 class Page(models.Model):
     title = models.CharField(max_length=200)
-    content = RichTextField()
+    content = RichTextField(
+        blank=True,
+        null=True,
+    )
 
     slug = models.SlugField(
         max_length=1000,
@@ -25,8 +29,6 @@ class Page(models.Model):
     template_file = models.CharField(
         max_length=100,
     )
-
-    page_content = []
 
     create_time = models.DateTimeField(auto_now_add=True)
 
@@ -52,7 +54,7 @@ class Page(models.Model):
     def get_absolute_url(self):
         return reverse(
             'slugified_page',
-            args=[str(self.slug),]
+            args=[str(self.slug), ]
         )
 
 
@@ -60,3 +62,111 @@ class Homepage(Page):
     # page_content = Page.page_content + []
     pass
 
+
+class ItemList(models.Model):
+    page = models.ForeignKey(
+        'Page',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    icon = models.ForeignKey(
+        'ItemIcon',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    content = RichTextField(
+        blank=True,
+        null=True,
+    )
+
+    url = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+
+class ItemIcon(models.Model):
+    title = models.CharField(max_length=100)
+
+    svg_icon = models.TextField(
+        verbose_name='SVG Code',
+        blank=True,
+        null=True,
+    )
+
+    img_icon = models.ImageField(
+        verbose_name='Image File',
+        upload_to=get_img_path,
+        blank=True,
+        null=True,
+    )
+
+    icon_type = models.CharField(
+        choices=(
+            ('svg', 'SVG Code'),
+            ('img', 'Image file'),
+        ),
+        max_length=3,
+    )
+
+    def __str__(self):
+        return self.title
+
+
+class ItemTwoColumn(models.Model):
+    """items with 2 columns: image + text"""
+    page = models.ForeignKey(
+        'Page',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+    img = models.ImageField(
+        verbose_name='Single Image',
+        upload_to=get_img_path,
+        blank=True,
+        null=True
+    )
+
+    content = RichTextField()
+
+    url = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+    url_text = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+
+class ItemGuide(models.Model):
+    page = models.ForeignKey(
+        'Page',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    url = models.CharField(
+        max_length=200,
+    )
+
+    url_text = models.CharField(
+        max_length=200,
+    )

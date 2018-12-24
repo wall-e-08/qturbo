@@ -1,4 +1,5 @@
 {% extends 'post/base.html' %}
+{% load static %}
 {% load qturbo_post_tags %}
 
 {% block title %}
@@ -6,21 +7,122 @@
 {% endblock title %}
 
 {% block main_content %}
-    <div class="container mb-5 pb-5">
-        <div class="row">
-            <div class="col">
-                
-                {# THIS IS TEST TEMPLATE #}
-                <h1 class="font-wight-700 font-xl">{{ article.title }}</h1>
-                <br>
-                {% if article.feature_img %}
-                    <img src="{{ article.feature_img.url }}" alt="">
-                    <br>
-                {% endif %}
-                {{ article.content|safe }}
-                
-                
+    <section id="banner">
+        <div class="each-article-banner position-relative">
+            <div class="each-article-banner-content position-absolute text-center text-white">
+                <p class="d-flex flex-row position-absolute banner-top">
+                    <a href="#" class="">Learn</a>&nbsp;» &nbsp;<a href="#" class="">Medicare &nbsp;</a>
+                    »
+                </p>
+                <h2 class="font-weight-bold">The standard Lorem Ipsum passage,consectetur consectetur</h2>
+                <h5 class="font-weight-bold">"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed doconsectetur
+                    consectetur
+                    eiusmod"</h5>
+                <p class="date"> Sep 25, 2018 - By Hal Levy</p>
+            </div>
+
+        </div>
+    </section>
+    <section id="main-content">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-3 mb-5 d-none d-md-block">
+                    <div class="social-share py-5 px-3">
+                        <p class="text-muted">SHARE:</p>
+                        <div class="d-flex flex-row ">
+                            <a href="#" target="_blank" class="mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 264 512">
+                                    <path fill="currentColor"
+                                          d="M76.7 512V283H0v-91h76.7v-71.7C76.7 42.4 124.3 0 193.8 0c33.3 0 61.9 2.5 70.2 3.6V85h-48.2c-37.8 0-45.1 18-45.1 44.3V192H256l-11.7 91h-73.6v229"></path>
+                                </svg>
+                            </a>
+                            <a href="#" target="_blank" class="mr-3">
+                                <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583
+                                                    298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-5">
+                    <div class="">
+                        THIS IS TEST TEMPLATE
+                        <h1 class="font-wight-700 font-xl">{{ article.title }}</h1>
+                        <br>
+                        {% if article.feature_img %}
+                            <img src="{{ article.feature_img.url }}" alt="">
+                            <br>
+                        {% endif %}
+                        {{ article.content|safe }}
+
+                        ghghghg
+                    </div>
+                </div>
+                <div class="col-md-3 mb-5">
+                    <div class="border rounded border-bottom-0 text-center">
+                        <h5 class="py-4 font-weight-bold text-muted">Terms to know</h5>
+                        <div class="related-post ">
+                            {% with ''|center:'5' as range %}
+                                {% for _ in range %}
+                                    <p class="py-2 border-bottom">
+                                        <a href="#" class="">Top
+                                            10 Procedure
+                                        </a>
+                                    </p>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+    <section id="related-article" class="border-top">
+        <div class="container py-5">
+            <h2 class="text-center mb-5"> Related articles</h2>
+            <div class="row">
+                {% with ''|center:'7' as range %}
+                    {% for _ in range %}
+                        <div class="col-md-4">
+
+                            <div class="card hi-article mb-4">
+                                <a href="#">
+                                    <img class="card-img-top" src="{% static 'post/img/article-banner1.jpg' %}"
+                                         alt="Card image cap">
+                                </a>
+                                <div class="card-body max-height">
+                                    <a href="#"><h3 class="card-title text-dark">Top 10 Procedures to Help, Some quick
+                                        example text to build on</h3></a>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the
+                                        bulk of
+                                        the card's content.</p>
+                                    <a href="#">
+                                        <p>Learn more
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                                                <path fill="currentColor"
+                                                      d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                                            </svg>
+                                        </p>
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="text-center mt-5">
+                <a href="" class="">
+                    <button class="btn btn-primary text-white font-weight-bold px-4">See Moremedicare article</button>
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
 {% endblock %}

@@ -107,7 +107,11 @@ class Enroll(object):
         return dom.toxml(encoding='iso-8859-1')
 
     def _make_request(self):
-        print({'HII_New_Business': self.toXML().decode('iso-8859-1')})
+        pretty_xml = minidom.parseString(self.toXML().decode("iso-8859-1")).toprettyxml()
+        print(f'\n------------------------------\n'
+              f'HII_New_Business request XML :\n'
+              f'------------------------------\n'
+              f' {pretty_xml}')
         return requests.post(self._url, data={'HII_New_Business': self.toXML().decode('iso-8859-1')})
 
     def _get_value(self, r):

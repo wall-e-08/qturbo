@@ -1,12 +1,12 @@
 import os
 from django.conf import settings
-from distinct_pages.models import Page
-from .utils import get_category_list_by_blog
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm
+from distinct_pages.models import Page, ItemList, ItemTwoColumn
 from writing.models import Article, Blog, Category, Categorize, Section
+from .utils import get_category_list_by_blog, save_page_items
+from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -173,12 +173,14 @@ def create_or_edit_blog(request, blog_id=None):
 
 
 def create_or_edit_page(request, page_id=None):
+    item_data = {}
     if page_id is None:
         action = 'Create'
         if request.method == 'POST':
             form = PageForm(request.POST)
             if form.is_valid():
                 page = form.save()
+                save_page_items(request.POST, page.id)
                 return redirect(page.get_absolute_url())
             else:
                 print("Form is not valid")
@@ -188,10 +190,15 @@ def create_or_edit_page(request, page_id=None):
         action = "Edit"
         try:
             page = Page.objects.get(id=int(page_id))
+            item_data = {
+                "lists": ItemList.objects.filter(page=page),
+                "two_col": ItemTwoColumn.objects.filter(page=page),
+            }
             if request.method == 'POST':
                 form = PageForm(request.POST, instance=page)
                 if form.is_valid():
                     page = form.save()
+                    save_page_items(request.POST, page.id)
                     return redirect(page.get_absolute_url())
             form = PageForm(instance=page)
         except Page.DoesNotExist as err:
@@ -200,6 +207,9 @@ def create_or_edit_page(request, page_id=None):
     return render(request, 'dashboard/form_page.html', {
         "form": form,
         "action": action,
+        "item_list_form": ItemListForm(),
+        "item_two_col_form": ItemTwoColumnForm(),
+        "item_data": item_data,
     })
 
 
@@ -316,5 +326,66 @@ def editor_media_upload(request):
             """% url)
         # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
     return HttpResponse()
+
+
+"""page items operations"""
+def ajax_item_list_save(request):
+    json = {"success": False, }
+    if request.GET:
+        form = ItemListForm(request.GET)
+        if form.is_valid():
+            il = form.save()
+            json.update({
+                "success": True,
+                "data": {
+                    "id": il.id,
+                    "svg_icon": il.icon.svg_icon,
+                    "img_icon": il.icon.img_icon.url if il.icon.img_icon else "",
+                    "icon_type": il.icon.icon_type,
+                    "content": il.content,
+                    "url": il.url,
+                },
+            })
+        else:
+            print("ItemListForm Error: {}".format(form.errors))
+    return JsonResponse(json)
+
+
+def ajax_item_icon_save(request):
+    print("---------- request: {}".format(request.FILES))
+    json = {"success": False, }
+    if request.POST:
+        form = ItemIconForm(request.POST, request.FILES)
+        if form.is_valid():
+            il = form.save()
+            json["success"] = True
+            json['item_icon_id'] = il.id
+        else:
+            print("ItemListForm Error: {}".format(form.errors))
+    return JsonResponse(json)
+
+
+def ajax_item_two_col_save(request):
+    json = {"success": False, }
+    if request.POST:
+        form = ItemTwoColumnForm(request.POST, request.FILES)
+        if form.is_valid():
+            itc = form.save()
+            json.update({
+                "success": True,
+                "data": {
+                    "id": itc.id,
+                    "title": itc.title,
+                    "img": itc.img.url if itc.img else "",
+                    "content": itc.content,
+                    "url": itc.url,
+                    "url_text": itc.url_text,
+                },
+            })
+        else:
+            print("ItemTwoColumnForm Error: {}".format(form.errors))
+    return JsonResponse(json)
+
+
 
 

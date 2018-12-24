@@ -2,6 +2,7 @@ env/
 qenv/
 env3.6/
 .*\.pyc
+*\.directory
 .*\.swp
 .*\.swo
 .*\.swn
