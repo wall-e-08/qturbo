@@ -215,6 +215,8 @@ class StmEnroll(models.Model):
 
     Applicant_is_Child = models.BooleanField(default=False)
 
+    Tobacco = models.CharField(null=True, blank=True, max_length=1)
+
     # TODO: Populate Question data in view
     question_data = models.TextField(
         blank=True, null=True
@@ -645,6 +647,9 @@ class Dependent(models.Model):
     Weight = models.IntegerField(blank=True, null=True)
 
     SSN = models.TextField(blank=True, null=True)
+
+    Tobacco = models.TextField(blank=True, null=True, max_length=1)
+
 
     def get_json_data(self):
         return {'vimm_enroll_id': self.vimm_enroll_id,
