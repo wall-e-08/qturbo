@@ -2,6 +2,10 @@
 {% load static %}
 {% load qturbo_post_tags %}
 
+{% block title %}
+    Info | {{ block.super }}
+{% endblock title %}
+
 {% block main_content %}
     <section id="banner">
         <div class="each-article-banner position-relative">

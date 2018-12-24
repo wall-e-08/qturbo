@@ -1,6 +1,9 @@
 'use strict';
-axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
+
+const v_cookies_keys = {
+    zip_code: "qt_zip_code",
+};
+
 const v_templates = {
     children: '<router-view></router-view>', // for children templates
     zip_code: '#zipcode-template',
@@ -68,19 +71,27 @@ const v_survey_card = {
             required: true,
             default: 21,
         },
+        inputs:{
+            type: Object,
+            default: () => ({
+                dob: '',
+                gender: '',
+                tobacco: '',
+            }),
+        },
     },
     data: function () {
         return {
             current_stage: this.prop_current_stage,
-            dob: "",
-            gender: '',
-            tobacco: '',
         }
     },
+    created: function(){
+        this.check_age();
+    },
     watch: {
-        gender: function () {
-            if (this.gender) this.current_stage = survey_card_stages[2];
-        },
+        inputs: function(val, oldVal) {
+            this.check_age();
+        }
     },
     methods: {
         txt_whos: function () {
@@ -88,39 +99,48 @@ const v_survey_card = {
             return this.survey_type === holder_types_enum.own ? "your" : "his/her";
         },
         prevent_NaN_input: function (e) {
-            if (this.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
+            if (this.inputs.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
                 // prevent user from inserting non number and no more than 10 character
                 e.preventDefault();
             }
         },
         auto_slash_insert: function () {
             this.current_stage = survey_card_stages[0];
-            if (this.dob.length === 2 || this.dob.length === 5) {
-                if (this.dob[this.dob.length - 1] !== '/') {
-                    this.dob += '/';
+            if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
+                if (this.inputs.dob[this.inputs.dob.length - 1] !== '/') {
+                    this.inputs.dob += '/';
                 }
-            } else if (this.dob.length >= 10) {
+            } else if (this.inputs.dob.length >= 10) {
                 this.check_age();
             }
         },
         check_age: function () {
             //Your age must be under 99 years old
             // Your age must be at least 21
-            var dob = new Date(this.dob);
+            var dob = new Date(this.inputs.dob);
             if (dob == 'Invalid Date') {
                 console.warn("invalid date");
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
+            console.error(age)
+            console.error("this.prop_max_age:   " + this.prop_max_age)
             if (age > this.prop_max_age) {
                 console.warn("your age must be under 99 years old !!")
             } else if (age < this.prop_min_age) {
                 console.warn("your age must be at least 21");
             } else {
                 this.current_stage = survey_card_stages[1];
-                if (this.gender) this.current_stage = survey_card_stages[2];
+                if (this.inputs.gender) this.current_stage = survey_card_stages[2];
             }
         },
+        remove_component: function (holder_type, idx) {
+            if(holder_type === this.$parent.holder_types_enum.child){
+                this.$parent.remove_dependent(idx);
+            }else if(holder_type === this.$parent.holder_types_enum.spouse) {
+                this.$parent.spouse = false;
+            }
+        }
     },
     template: v_templates.survey_card
 };
@@ -139,6 +159,13 @@ const router = new VueRouter({
                     current_marker: undefined,
                 }
             },
+            created: function(){
+                let cookie_zip = this.$cookies.get(v_cookies_keys.zip_code);
+                if(cookie_zip){
+                    this.zip_code = cookie_zip;
+                    this.is_valid_zip = true;
+                }
+            },
             methods: {
                 validate_zip: function (e) {
                     if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
@@ -146,9 +173,10 @@ const router = new VueRouter({
                 },
                 check_zipcode: function () {
                     if (this.is_valid_zip) {
+                        this.$cookies.set(v_cookies_keys.zip_code, this.zip_code, 60 * 60 * 24);
                         router.push({name: 'survey-member'});
                     } else {
-
+                        this.$cookies.remove(v_cookies_keys.zip_code);
                     }
                 }
             },
@@ -180,61 +208,139 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
-                        my_dob: '',
-                        spouse_dob: '',
+                        own_input: {
+                            dob: '',
+                            gender: '',
+                            tobacco: '',
+                        },
                         spouse: false,
+                        spouse_input: {
+                            dob: '',
+                            gender: '',
+                            tobacco: '',
+                        },
                         dependents: [],
-                        max_dependents: 5,
+                        max_dependents: 9,
                     }
                 },
                 methods: {
-                    add_spouse: function () {
-                        this.spouse = true;
-                    },
                     add_dependent: function () {
-                        this.dependents.push('baccha');
+                        this.dependents.push({
+                            dob: "",
+                            gender: '',
+                            tobacco: '',
+                        });
                     },
-                    remove_survey_card: function (holder_type, key=0) {
-                        console.log(holder_type);
-                        console.warn(key);
-                        if (holder_type === this.holder_types_enum.spouse) {
-                            this.spouse = false;
-                        } else if(holder_type === this.holder_types_enum.child){
-                            this.dependents.splice(key, 1)
-                        }
+                    remove_dependent: function(idx) {
+                        this.dependents.splice(idx, 1);
                     },
                     redirect_to_plans: function(redirect_url, csrf_token) {
-                        console.log("Welcome to the jungle!");
-                        console.log("Redirect URL is: "+ redirect_url)
-                        axios({
-                            method: 'post',
-                            url: [[redirect_url]],
-                            headers: {
-                                'X-CSRFToken': csrf_token,
-                                'Content-Type': 'application/json',
-                            },
-                            data: {
-                                'zip_code': this.zip_code,
-                                'dob': this.dob,
-                                'gender': this.gender,
-                                'tobacco': this.tobacco
-                            },
-                        })
-                        .then(function(response){
-                            console.log("Response: "+ response.status); // TODO DEBUG
-                            if (response.status === 200) {
-                                console.log("Redirecting");
-                                window.location = redirect_url;
-                            }
+                        let _t = this;
+                        let form_data = {
+                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                            Include_Spouse: this.spouse ? 'Yes': 'No',
+                            Payment_Option: '1',
+                            Ins_Type: 'lim',
+                            'child-TOTAL_FORMS': this.dependents.length,
+                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
+                            'child-MIN_NUM_FORMS': 0,
+                            'child-MAX_NUM_FORMS': this.max_dependents,
+                        };
+                        if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
+                            form_data['Applicant_DOB'] = _t.own_input.dob;
+                            form_data['Applicant_Gender'] = _t.own_input.gender;
+                            form_data['Tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';
+                            form_data['Children_Count'] = _t.dependents.length;
 
+                            var newDate = new Date();
+                            newDate.setDate(newDate.getDate() + 1);
+                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
+
+                        } else {
+                            console.error("Please insert data to see plans");
+                            return null;
+                        }
+                        if (_t.spouse) {
+                            if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
+                                form_data['Spouse_DOB'] = _t.spouse_input.dob;
+                                form_data['Spouse_Gender'] = _t.spouse_input.gender;
+                                form_data['spouse_tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
+                            } else {
+                                console.error("Please insert spouse data correctly to see plans");
+                                return null;
+                            }
+                        }
+                        if(_t.dependents.length > 0) {
+                            for(var i=0; i<_t.dependents.length; i++){
+                                if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
+
+                                    form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
+                                    form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
+                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
+
+                                } else {
+                                    console.error("Please insert child data correctly to see plans");
+                                    return null;
+                                }
+                            }
+                        }
+                        console.table(form_data);
+                        console.log("Redirect URL is: "+ redirect_url);
+                        $.ajax({
+                            url: redirect_url,
+                            method: 'post',
+                            dataType: 'json',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data: form_data,
+                            success: function (data) {
+                                console.log("Success");
+                                console.table(data);
+                                if(data.url)
+                                    location.href = data.url;
+                                else
+                                    console.error("XXXXXX")
+                            }
                         })
                     }
                 },
+                watch: {
+                    spouse_input: function () {
+                        this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
+                    },
+                },
                 created() {
-                    //check zip code
+                    let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
+                    console.log("cookies:  " + zip_code);
+                    if(!zip_code){
+                        router.push({name: 'root'});
+                    }
+                    this.own_input = {
+                        dob: '11/12/1992',
+                        gender: 'Male',
+                        tobacco: 'true',
+                    }
                 }
             },
             name: 'survey-member',
         },]
+    },{
+        path: '/dashboard',
+        component: {
+            created: function () {
+                window.location = '/dashboard/';
+            }
+        }
+    },{
+        path: '/login',
+        component: {
+            created: function () {
+                window.location = '/login/';
+            }
+        }
+    },{
+        path: '*',
+        redirect: '/'
     },]
 });

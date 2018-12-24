@@ -1,0 +1,468 @@
+{% load humanize %}
+<section class="plan-details-benefits common-section">
+    <div class="container">
+        <h2 class="heading center">Benefits &amp; Coverage</h2>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Insurance Type</p>
+                Short Term Medical
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The company that issues an insurance policy and
+                       assumes the risks associated with the insured.">
+                        Company
+                    </a>
+                </p>
+                HCC Life Insurance Company
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Plan Type</p>
+                Preferred Provider Organization
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The amount you pay before your health insurance plan begins to pay for the
+                        services you receive. Not everything you pay (such as your premium and copay) counts toward
+                         your deductible. For example, if your deductible is $1,000, your plan won't pay anything
+                         until you've met your $1,000 deductible for covered healthcare services subject to the
+                          deductible. Estimated Premium is based on a (Per Term Deductible)">
+                        Deductible
+                    </a>
+                </p>
+                Individual: ${{ plan.option|intcomma }}
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, typically after you meet your
+                       deductible and copayment charges. For example, once you meet your deductible, you might
+                        pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you
+                        have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs
+                         for covered services.">
+                        Coinsurance
+                    </a>
+                </p>
+                {{ plan.Coinsurance_Percentage }}% after deductible
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Maximum lifetime coverage">
+                        Coverage Maximum
+                    </a>
+                </p>
+                ${{ plan.coverage_max_value|intcomma }}
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="One time enrollment fee.">
+                        Enrollment Fee
+                    </a>
+                </p>
+                ${{ plan.Enrollment_Fee }}
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, including your deductible. For example,
+                        once you meet your deductible, you pay 20% up to your out of pocket maximum, then 100% of
+                        the costs for covered services are paid thereafter, up to the plan maximum of $100,000.">
+                        Max Out of Pocket
+                    </a>
+                </p>
+                ${{ plan.out_of_pocket_value|intcomma }}
+            </div>
+        </div>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Primary Doctor</p>
+                The cost of eligible expenses per office visit will be payable subject to the Deductible and Coinsurance.
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Specialist</p>
+                The cost of the office
+                visit expense will be payable subject to the Deductible and Coinsurance.
+            </div>
+        </div>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Out-of-Pocket Limit</p>
+                    Individual: ${{ plan.out_of_pocket_value|intcomma }}
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Does Out-of-Pocket Limit include deductible?</p>
+                    No
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Out-of-Network Coverage</p>
+                    Yes
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Out of Country Coverage</p>
+                    Canada Only
+                </div>
+            </div>
+        </div>
+        <h4 class="details-section-header">Physicians</h4>
+
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Primary Care Physician (PCP) Required</p>
+                No
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Specialist Referrals Required</p>
+                No
+            </div>
+        </div>
+        <h4 class="details-section-header">Preventive Care Coverage</h4>
+
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Periodic Health Exam</p>
+                    N/A
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Periodic OB-GYN Exam</p>
+                    Yes
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Well Baby Care</p>
+                    N/A
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">OB-GYN Exam Conditions</p>
+                    Covered: Mammography
+                    Screening - Coverage shall be provided for mammography screenings if prescribed by a Doctor
+                    based on the following:
+                    A) A baseline mammogram for a woman who is thirty-five (35) but less than forty (40) years
+                    of age;
+                    B) A mammogram for a woman who is forty (40) but less than fifty (50) years of age, every
+                    two years, or more frequently based on the recommendation of the woman's Doctor;
+                    C) A mammogram each year for a woman who is age fifty (50) or older.
+                </div>
+            </div>
+        </div>
+        <h4 class="details-section-header">Prescription Drug Coverage</h4>
+
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Generic Prescription Drugs</p>
+                    <span class="pre">
+                        Inpatient Drugs: 20% Coinsurance after Deductible;<br>
+                        Outpatient Drugs: N/A.<br>
+                        Prescription drug copay and discount card included at no additional cost.
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Brand Prescription Drugs</p>
+                    <span class="pre">
+                        Inpatient Drugs: 20% Coinsurance after Deductible;<br>
+                        Outpatient Drugs: Not Covered.<br>
+                        Prescription drug copay and discount card included at no additional cost.
+                    </span>
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Non-Formulary Prescription Drugs Coverage</p>
+                    <span class="pre">
+                        Inpatient Drugs: 20% Coinsurance after Deductible;<br>
+                        Outpatient Drugs: Not Covered.<br>
+                        Prescription drug copay and discount card included at no additional cost.
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Separate Prescription Drugs Deductible</p>
+                    <span class="pre">
+                        Inpatient: Medical Plan Deductible Applies;<br>
+                        Outpatient: No Coverage.<br>
+                        Prescription drug copay and discount card included at no additional cost.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <h4 class="details-section-header">Hospital Services Coverage</h4>
+
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Emergency Room</p>
+                    20% Coinsurance after Deductible;<br>
+                    Extra $250 deductible applies for Sickness visits if not admitted.
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Outpatient Lab/X-Ray</p>
+                    20% Coinsurance after Deductible
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Outpatient Surgery:</p>
+                    20% Coinsurance after Deductible
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Hospitalization</p>
+                    20% Coinsurance after Deductible
+                </div>
+            </div>
+        </div>
+        <h4 class="details-section-header">Maternity Coverage</h4>
+
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Pre &amp; Postnatal Office Visit</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Labor &amp; Delivery Hospital Stay</p>
+                Only complications of pregnancy are covered as any other illness. 20% Coinsurance after Deductible.
+            </div>
+        </div>
+        <h4 class="details-section-header">Additional Coverage</h4>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Chiropractic Coverage</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Mental Health Coverage</p>
+                N/A
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Covered Tariff</h2>
+
+        <p>
+            The following benefits are for Insured and each Covered Dependent subject to the plan Deductible,
+            Coinsurance Percentage, Coinsurance Maximum, and Lifetime Maximum of $100,000.
+        </p>
+        <p>
+            Benefits are limited to the Usual, Reasonable and Customary charge for each Covered Expense,
+            in addition to any specific limits stated in the policy.
+        </p>
+
+        <div class="row details-expenses-row">
+            <div class="col-md-6">
+                <ul>
+                    <li>Inpatient and outpatient charges made by a hospital, including inpatient prescription drugs</li>
+                    <li>Urgent Care Center - Deductible waived, $50 Co-payment, after which coinsurance applies</li>
+                    <li>Eligible charges made by a physician, surgeon, radiologist, anesthesiologist, and any other
+                        medical specialist to whom the physician has referred the case</li>
+                    <li>Charges made for dressings, sutures, casts of other supplies prescribed by the attending
+                        physicians or specialist</li>
+                    <li>Charges for diagnostic testing using radiology ultrasonographic or laboratory services</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    <li>Charges for oxygen and other gases and anesthetics and their administration</li>
+                    <li>Charges made by a licensed extended care facility upon direct transfer from an
+                        acute care hospital</li>
+                    <li>Emergency local ambulance transport in connection with a covered injury or sickness resulting
+                        in inpatient hospitalization</li>
+                    <li>Charges for physical therapy that is prescribed in advance by a physician in relation to a
+                        covered injury or sickness</li>
+                    <li class="note">Note: This is a brief description of the plan benefits, which may vary by state.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="common-section">
+    <div class="container"><h2 class="heading center">Restrictions &amp; Omissions</h2>
+
+        <p>Charges for the following treatments and/or services and/or supplies and/or conditions are excluded
+            from coverage:</p>
+
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <ol class="plan-details-li">
+                    <li>Pre-existing conditions* (including those not inquired about on the enrollment form)</li>
+                    <li>Preventive or wellness doctor visits</li>
+                    <li>Dental or optical treatments</li>
+                    <li>Routine physical exams</li>
+                    <li>Normal pregnancy or childbirth</li>
+                    <li>Well child care</li>
+                    <li>Interscholastic and intercollegiate sports injuries</li>
+                    <li>Over-the-counter medications and outpatient prescription drugs</li>
+                    <li>Expenses incurred outside the United States, its possessions or territories, or
+                        Canada.</li>
+                    <li>Varicose veins</li>
+                    <li>Substance abuse and alcoholism</li>
+                </ol>
+            </div>
+            <div class="col-md-6">
+                <ol start="12" class="plan-details-li">
+                    <li>Chronic fatigue or pain disorders, and allergies, except for emergency treatment of
+                        allergic reactions.</li>
+                    <li>Expenses during the first 6 months after the effective date are excluded for (subject to
+                        all other coverage provisions, including the pre-existing condition limitation)
+                        <ol type="a">
+                            <li>Total or partial hysterectomy, unless it is medically necessary due to a
+                                diagnosis of carcinoma
+                            </li>
+                            <li>Tonsillectomy</li>
+                            <li>Adenoidectomy</li>
+                            <li>Repair of deviated nasal septum or any type of surgery involving the sinus</li>
+                            <li>Myringotomy</li>
+                            <li>Tympanotomy</li>
+                            <li>Herniorraphy</li>
+                            <li>Cholecystectomy</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="footnotes"><p>* Pre-existing conditions refers to conditions for which you received medical
+            treatment, diagnosis, care, or advice within a specific number of months immediately preceding your
+            effective date. The "pre-ex" period will vary depending on the state in which HCC Life STM is
+            purchased. This exclusion does not apply to a newborn or newly adopted child who is added to
+            coverage.</p>
+
+            <p class="emphasize">Waiting Period</p>
+
+            <p>When coverage is purchased within 3 days of the effective date, you will only be entitled to
+                receive benefits for sicknesses that begin, by occurrence of symptoms and/or receipt of
+                treatment, at least 72 hours following the effective date. This waiting period does not affect
+                benefits for injuries.</p>
+
+            <p>This is a partial list of exclusions and limitations. Please see the certificate for detailed
+                information about these and other policy exclusions and limitations. Benefits, provisions,
+                limitations and exclusions may vary by state.</p></div>
+    </div>
+</section>
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Frequently Asked Questions</h2>
+
+        <div class="row details-faq-row">
+            <div class="col-md-6"><p class="emphasize">Does the plan require Pre-Certification?</p>
+
+                <p>This plan requires a pre-certification for hospitalizations, other Inpatient care, and
+                    Surgeries or Surgical Procedures. HCC must be contacted as soon as possible before the
+                    expense is to be incurred. If the Covered Person does not comply with the Pre-certification
+                    requirements as stated in the insurance certificate, the Eligible Medical Expenses will be
+                    reduced by 50%.</p>
+
+                <p class="emphasize">How does Usual and Customary affect my benefits?</p>
+
+                <p>We may use and subscribe to a standard industry reference source that collects data and makes
+                    it available to its member companies in order to determine the amount that should be
+                    considered as Usual and Customary for services and supplies.</p>
+
+                <p>The policy defines Usual and Customary charges as:</p>
+                <ul>
+                    <li>A usual fee is defined as the charge made for a given service by a Doctor to the
+                        majority of his or her patients; and
+                    </li>
+                    <li>A customary fee is one that is charged by the majority of Doctors within a community for
+                        the same services.
+                    </li>
+                    <li>All benefits are limited to Usual and Customary charges.</li>
+                </ul>
+                <p class="emphasize">Do I have the option to use any doctor or hospital?</p>
+
+                <p>HCC Life Short Term Medical customers have the freedom to choose doctors and hospitals
+                    without facing out-of-network penalties. However, you can access the First Health National
+                    Network providers for medical care at negotiated prices.</p>
+
+                <p class="emphasize">What if I change my mind after I purchase the STM Coverage?</p>
+
+                <p>If you are not 100% satisfied with your coverage, and you have not already used any of your
+                    insurance benefits, return the certification to us within 10 days of receipt or within 30
+                    days for members in Indiana. Coverage will be cancelled as of the effective date and your
+                    plan cost will be returned. No questions asked! Association fees will be returned in the
+                    following states: CA, CO, CT, IA, ND, NM, OH, RI, VA</p>
+
+                <p class="emphasize">What is the Pre-Existing Conditions Limitation?</p>
+
+                <p>A pre-existing condition is a condition for which medical advice, diagnosis, care, or
+                    treatment (including receiving services and supplies, consultations, diagnostic tests or
+                    prescription medicines) was recommended or received within the 60 months immediately
+                    preceding the Effective date; or that had manifested itself in such a manner that would have
+                    caused an ordinarily prudent person to seek medical advice, diagnosis, care, or treatment
+                    within the 12 months immediately preceding such person's Effective Date. (The Pre-Existing
+                    Conditions Limitation varies by state and may be less than 60 months.)</p></div>
+            <div class="col-md-6"><p class="emphasize">Who is eligible to apply for this insurance?</p>
+
+                <p>HCC Advantage is available to members and their spouses, who are between 18 and 64 years old
+                    and their dependent unmarried children under 19 years old or under 25 if a full time student
+                    in an accredited school (This may vary by jurisdiction); and can answer "No" to all of the
+                    questions in the application for insurance. Child-only coverage is available for ages two
+                    through eighteen.</p>
+
+                <p class="emphasize">When does coverage start?</p>
+
+                <p>You can select your insurance to be effective as early 12:01 a.m. the day following the
+                    transmission date of your application. However, you can choose a later effective date, but
+                    not to exceed 45 days from the date of transmission. All coverage is subject to approval of
+                    your application and receipt of your first payment.</p>
+
+                <p class="emphasize">When does the STM coverage terminate?</p>
+
+                <p>HealthForward Advance will automatically terminate on the earliest of the following dates:
+                    The Expiration date of your coverage; the date the Group Policy Terminates; the date the
+                    insurance under the Group Policy is discontinued; the due date of a payment, if it is not
+                    paid by the end of the 31 day grace period; the date you become eligible for Medicare; your
+                    dependent's coverage ends when your coverage terminates or the dependent becomes eligible
+                    for Medicare; or the dependent ceases to be eligible; the date you enter full-time active
+                    duty in the armed forces of any country or international organization; or the date we
+                    determine fraudulent statements or material misrepresentation have been made by you or with
+                    your knowledge in filing a claim for benefits.</p>
+
+                <p class="emphasize">Who is HCC Life Insurance Company?</p>
+
+                <p>HCC Life's short-term medical insurance is backed by the financial stability of its parents
+                    company, HCC Insurance Holdings, Inc. (NYSE: HCC). HCC Life holds a financial strength
+                    rating of AA (Very strong) by Standard &amp; Poor's and Fitch Ratings and A+ (Superior) by
+                    A.M. Best Company.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-variations common-section">
+    <div class="container">
+        <h2 class="headingplaner">Other HCCFlex Term Insurance products in your area</h2>
+
+        <div class="row">
+        {% for related_plan in related_plans %}
+            <div class="col-md-4"><a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}"><p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+
+                <p>Deductible - ${{ related_plan.option|intcomma }} / Coinsurance - {{ related_plan.Coinsurance_Percentage}}%</p>
+
+                <p class="emphasize">
+                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                </p>
+            </a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>

@@ -9,7 +9,6 @@
       "status": "p",
       "feature_img": "2018-12-10/Top_10_Procedures_to_Help_You_Reach_Your_Deductible-None_rgcoYSa.jpg",
       "user": 1,
-      "section": 1,
       "created_time": "2018-12-10T07:11:39.399Z"
     }
   },
@@ -23,7 +22,6 @@
       "status": "p",
       "feature_img": "2018-12-10/Medicare_vs._Medicaid_How_to_Tell_the_Difference-None.jpg",
       "user": 1,
-      "section": 2,
       "created_time": "2018-12-10T07:14:43.559Z"
     }
   },
@@ -37,7 +35,6 @@
       "status": "p",
       "feature_img": "2018-12-10/How_Can_You_Tell_if_You_Have_an_Obamacare_Plan-None.jpg",
       "user": 2,
-      "section": 2,
       "created_time": "2018-12-10T07:17:04.843Z"
     }
   },
@@ -51,7 +48,6 @@
       "status": "p",
       "feature_img": "2018-12-10/How_Does_Short-Term_Medical_Insurance_Fit_Into_Open_Enrollment_2019-None.jpg",
       "user": 2,
-      "section": 1,
       "created_time": "2018-12-10T07:17:52.308Z"
     }
   },
@@ -65,7 +61,6 @@
       "status": "p",
       "feature_img": "2018-12-10/How_to_Keep_Your_Doctor_When_Your_Health_Insurance_Changes-None.png",
       "user": 1,
-      "section": 3,
       "created_time": "2018-12-10T07:18:21.673Z"
     }
   },
@@ -79,7 +74,6 @@
       "status": "p",
       "feature_img": "2018-12-10/Back_to_Basics_What_to_Know_About_Basic_Health_Insurance-None.jpg",
       "user": 1,
-      "section": 4,
       "created_time": "2018-12-10T07:19:03.650Z"
     }
   },
@@ -93,7 +87,6 @@
       "status": "p",
       "feature_img": "2018-12-10/Does_Medicare_Cover_Cataract_Surgery-None.jpg",
       "user": 1,
-      "section": 5,
       "created_time": "2018-12-10T10:07:23.958Z"
     }
   },
@@ -107,7 +100,6 @@
       "status": "p",
       "feature_img": "",
       "user": 2,
-      "section": 3,
       "created_time": "2018-12-10T10:07:57.435Z"
     }
   }

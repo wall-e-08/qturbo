@@ -1,0 +1,103 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function, unicode_literals
+
+states = (
+    ('AL', 'Alabama'),
+    ('AK', 'Alaska'),
+    ('AZ', 'Arizona'),
+    ('AR', 'Arkansas'),
+    ('CA', 'California'),
+    ('CO', 'Colorado'),
+    ('CT', 'Connecticut'),
+    ('DE', 'Delaware'),
+    ('DC', 'District of Columbia'),
+    ('FL', 'Florida'),
+    ('GA', 'Georgia'),
+    ('HI', 'Hawaii'),
+    ('ID', 'Idaho'),
+    ('IL', 'Illinois'),
+    ('IN', 'Indiana'),
+    ('IA', 'Iowa'),
+    ('KS', 'Kansas'),
+    ('KY', 'Kentucky'),
+    ('LA', 'Louisiana'),
+    ('ME', 'Maine'),
+    ('MD', 'Maryland'),
+    ('MA', 'Massachusetts'),
+    ('MI', 'Michigan'),
+    ('MN', 'Minnesota'),
+    ('MS', 'Mississippi'),
+    ('MO', 'Missouri'),
+    ('MT', 'Montana'),
+    ('NE', 'Nebraska'),
+    ('NV', 'Nevada'),
+    ('NH', 'New Hampshire'),
+    ('NJ', 'New Jersey'),
+    ('NM', 'New Mexico'),
+    ('NY', 'New York'),
+    ('NC', 'North Carolina'),
+    ('ND', 'North Dakota'),
+    ('OH', 'Ohio'),
+    ('OK', 'Oklahoma'),
+    ('OR', 'Oregon'),
+    ('PA', 'Pennsylvania'),
+    ('RI', 'Rhode Island'),
+    ('SC', 'South Carolina'),
+    ('SD', 'South Dakota'),
+    ('TN', 'Tennessee'),
+    ('TX', 'Texas'),
+    ('UT', 'Utah'),
+    ('VT', 'Vermont'),
+    ('VA', 'Virginia'),
+    ('WA', 'Washington'),
+    ('WV', 'West Virginia'),
+    ('WI', 'Wisconsin'),
+    ('WY', 'Wyoming'),
+)
+
+
+tz = (
+    ('America/New_York', 'Eastern Time - New York'),
+    ('America/Detroit', 'Eastern Time - Michigan - most locations'),
+    ('America/Kentucky/Louisville', 'Eastern Time - Kentucky - Louisville area'),
+    ('America/Kentucky/Monticello', 'Eastern Time - Kentucky - Wayne County'),
+    ('America/Indiana/Indianapolis', 'Eastern Time - Indiana - most locations'),
+    ('America/Indiana/Vincennes', 'Eastern Time - Indiana - Daviess, Dubois, Knox & Martin Counties'),
+    ('America/Indiana/Winamac', 'Eastern Time - Indiana - Pulaski County'),
+    ('America/Indiana/Marengo', 'Eastern Time - Indiana - Crawford County'),
+    ('America/Indiana/Petersburg', 'Eastern Time - Indiana - Pike County'),
+    ('America/Indiana/Vevay', 'Eastern Time - Indiana - Switzerland County'),
+    ('America/Chicago', 'Central Time - Chicago'),
+    ('America/Indiana/Tell_City', 'Central Time - Indiana - Perry County'),
+    ('America/Indiana/Knox', 'Central Time - Indiana - Starke County'),
+    ('America/Menominee', 'Central Time - Michigan - Dickinson, Gogebic, Iron & Menominee Counties'),
+    ('America/North_Dakota/Center', 'Central Time - North Dakota - Oliver County'),
+    ('America/North_Dakota/New_Salem', 'Central Time - North Dakota - Morton County (except Mandan area)'),
+    ('America/North_Dakota/Beulah', 'Central Time - North Dakota - Mercer County'),
+    ('America/Denver', 'Mountain Time'),
+    ('America/Boise', 'Mountain Time - south Idaho & east Oregon'),
+    ('America/Phoenix', 'Mountain Standard Time - Arizona (except Navajo)'),
+    ('America/Los_Angeles', 'Pacific Time'),
+    ('America/Metlakatla', 'Metlakatla Time - Annette Island'),
+    ('America/Anchorage', 'Alaska Time'),
+    ('America/Juneau', 'Alaska Time - Alaska panhandle'),
+    ('America/Sitka', 'Alaska Time - southeast Alaska panhandle'),
+    ('America/Yakutat', 'Alaska Time - Alaska panhandle neck'),
+    ('America/Nome', 'Alaska Time - west Alaska'),
+    ('America/Adak', 'Aleutian Islands'),
+    ('Pacific/Honolulu', 'Hawaii'),
+
+    ('UTC', 'Coordinated Universal Time'),
+)
+
+states_list = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID',
+               'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO',
+               'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA',
+               'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
+
+if __name__ == "__main__":
+    l = 0
+    for st in tz.items():
+        lt = len(st[1])
+        if l < lt: l = lt
+    print(l)

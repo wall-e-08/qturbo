@@ -21,7 +21,7 @@ class Post(models.Model):
     status = models.CharField(
         max_length=1,
         choices=STATUS_CHOICES,
-        default='u'
+        default='p'
     )
 
     feature_img = models.ImageField(

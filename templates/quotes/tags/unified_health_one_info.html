@@ -1,0 +1,17 @@
+<section class="plan-details-variations common-section">
+    <div class="container">
+        <h2 class="headingplaner">Other Unified Health One Limited Insurance products in your area</h2>
+
+        <div class="row">
+        {% for related_plan in related_plans %}
+            <div class="col-md-4"><a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}"><p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+
+                <p class="emphasize">
+                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                </p>
+            </a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>

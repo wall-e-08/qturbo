@@ -1,0 +1,280 @@
+{% extends 'base_nhaquote.html' %}
+{% load i18n hp_tags %}
+{% block title %}
+    {% trans "Eligibility Questions" %} | {{ block.super }}
+{% endblock title %}
+{% block extra_css %}
+<style type="text/css">
+    body {font-size: 1.6rem;}
+    .question-col {background-color: #f1f2f4;padding: 2rem;margin-bottom: 2rem;}
+    .question-label {color: #156e95;font-size: 1.5rem;text-transform: uppercase;}
+    .question-text {line-height: 22px;}
+    .selected-ans-button {background-color: #57adef !important;color: #ffffff !important;font-weight: bold !important;}
+    .btn-default-answer {
+        background-color: #fff;
+        border-color: #ccc;
+        color: #333;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .none {display: none;}
+    .wrong_ans_none {display: none;}
+    .app-page-cta-container .heading {color: #16c060}
+    .btn-default-continue {
+        background-color: #57adef;
+        border-color: #57adef;
+        border-radius: 23px;
+        color: #fff;
+        padding: 1.2rem 2.4rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+    .btn-default-continue:hover {color: #c2e2f2}
+    .app-message-container.warning {border: 1px solid #ff6000;}
+    .app-message-container.warning .heading {color: #ff6000;}
+    .emphasize {font-weight: bold;}
+</style>
+{% endblock extra_css %}
+{% block top-menu-block %}{% endblock %}
+{% block mobile-header %}{% endblock %}
+{% block container %}
+<div id="app-page-wrapper">
+    <div data-page="underwriting" id="app-page-container">
+        <div class="container">
+            <div class="row">
+                <div id="application-body">
+                    <div class="ms-row">
+                        <div class="app-page-body-content" id="js-app-page-body-content">
+                            <div class="" id="underwritingQuestions">
+                                <div id="headingunderwritingQuestions">
+                                    <div class="ms-row">
+                                        <div class="col-md-8 col-md-offset-2">
+                                            <h3 class="reset app-page-heading color-base bold">Eligibility Questions</h3>
+
+                                            <p class="reset fw-400">Please answer for you and any of your dependents
+                                                applying for coverage. (<a data-placement="auto top"
+                                                                           data-sectiontitle="Eligibility Questions"
+                                                                           data-glossary="shortTerm.application.eligibility.learnmore"
+                                                                           data-toggle="popover" href="javascript:void(0)"
+                                                                           class="js-glossary js-glossary-tellmemore">tell
+                                                    me more</a>)</p>
+
+                                            <p class="reset"></p></div>
+
+                                    </div>
+                                    <div class="row app-section-summary"></div>
+                                </div>
+
+
+                                <div id="app-underwritingQuestions-form">
+                                    <div class="panel-body">
+
+                                        <div class="row">
+                                            <div class="col-sm-8 col-sm-offset-2">
+                                                {% csrf_token %}
+                                                <div class="app-page-underwriting">
+                                                    <div class="app-page-questions-container" id="member-P-0">
+                                                        <ul class="app-page-underwriting-questions">
+                                                            {% for stm_question in stm_questions %}
+                                                                {% pre_qus_ans_is_correct stm_question.g_order as pre_qus_ans_status %}
+                                                            <li class="row question_row js-app-page-medical-question-wrapper
+                                                                        {% if not forloop.first and not stm_question.user_answer and not pre_qus_ans_status %}none{% endif %}
+                                                                        {% wrong_answer_none stm_question %}"
+                                                                 id="qus-{{ stm_question.ID }}" data-order="{{ stm_question.g_order }}"
+                                                                 data-user_answer="{{ stm_question.user_answer|default:'' }}"
+                                                                 data-total="{{ stm_questions|length }}"
+                                                                 data-expected_answers="{{ stm_question.ExpectedAnswers }}"
+                                                                 data-correct_answer="{{ stm_question.CorrectAnswer }}"
+                                                                 data-question-id="{{ stm_question.ID }}">
+                                                                <p class="question-label">Question {{ forloop.counter }} of {{ stm_questions|length }}</p>
+                                                                <P class="question-text">{{ stm_question.Text|linebreaksbr }}</P>
+
+                                                                {# <div class="col-sm-12 question-col" data-question-id="{{ stm_question.ID }}"> #}
+
+
+                                                                    <div class="row qus-btn-row" data-qa-count="{{ stm_question.ExpectedAnswers|length }}"
+                                                                         data-question-id="{{ stm_question.ID }}">
+                                                                        {% for expected_answer in stm_question.ExpectedAnswers %}
+                                                                        <div class="col-sm-{{ stm_question.ExpectedAnswers|length|qeadcs }} qus-btn-col question-toggle-group"
+                                                                             data-question-id="{{ stm_question.ID }}">
+                                                                            <button type="button"
+                                                                                    class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button
+                                                                                    q-e-a-{{ forloop.parentloop.counter }}
+                                                                                    {% if stm_question.user_answer == expected_answer %}selected-ans-button{% endif %}"
+                                                                                    data-action="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                                                                    data-answer="{{ expected_answer }}"
+                                                                                    data-question-count="{{ forloop.parentloop.counter }}"
+                                                                                    data-question-id="{{ stm_question.ID }}" data-order="{{ stm_question.g_order }}"
+                                                                                    data-total="{{ stm_questions|length }}"
+                                                                                    data-parent_id="{{ stm_question.parent_id|default:'' }}">
+                                                                                {{ expected_answer }}
+                                                                            </button>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                {# </div> #}
+                                                            </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+
+                                                    {% any_wrong_answer as wrong_answer %}
+                                                    {% all_questions_answered as all_answered %}
+                                                    <div id="app-page-eligibile" class="row app-page-cta-container {% if not all_answered or wrong_answer %}none{% endif %}"
+                                                         style="margin-top: 30px;">
+                                                        <div class="col-sm-12">
+                                                            <p class="emphasize heading">
+                                                                {% trans "Congratulations, you have met the eligibility requirements. Please continue on to the next step of the application." %}
+                                                            </p>
+                                                            <div class="button-wrapper">
+                                                                <a class="btn btn-default-continue" data-total="{{ stm_questions|length }}"
+                                                                   id="continue_next_stage_link"
+                                                                   data-stage="{{ stage }}"
+                                                                   data-next-stage="{{ next_stage }}"
+                                                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                                                    {% trans "Continue" %}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="app-page-ineligible" class="row app-message-container warning {% if not wrong_answer %}none{% endif %}"
+                                                         style="margin-top: 30px;">
+                                                        <div class="col-sm-12">
+                                                            <p class="emphasize heading">
+                                                                {% trans "Thank you for your interest. Unfortunately, you do not meet the eligibility requirements for coverage." %}</p>
+                                                            <p>{% trans "Please speak with a licensed agent to discuss alternative options: (855) 805-6551" %}</p>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock container %}
+{% block footer-info %}{% endblock %}
+{% block hamburger %}{% endblock %}
+{% block extra_js %}
+{#<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>#}
+{#<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>#}
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>#}
+<script type="text/javascript">
+    (function($) {
+        $.fn.goTo = function() {
+            $('html, body').animate({
+                scrollTop: $(this).offset().top + 'px'
+            }, 'fast');
+            return this;
+        }
+    })(jQuery);
+
+
+    $(function() {
+        var $expected_answer_button = $(".expected_answer_button");
+
+        $expected_answer_button.click(function(e) {
+
+            e.preventDefault();
+            var $this = $(this);
+            var qus_no = $this.data('question-count');
+            var $related_ans_buttons = $('.q-e-a-' + qus_no);
+
+            var ans_form_data = {'question_request_name': 'user_answer', 'answer': $this.data('answer'),
+                'question_id': $this.data('question-id'), 'parent_id': $this.data('parent_id'),
+                'order': $this.data('order'), 'total': $this.data('total')};
+
+            $.ajax({
+                url: $this.data("action"),
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: ans_form_data, type: 'POST', dataType: 'json',
+                success: function(json) {
+                    if (json.status == 'success') {
+                        $related_ans_buttons.removeClass('selected-ans-button');
+                        $this.addClass('selected-ans-button');
+                        question_form_success_handler(json.cleaned_data);
+                    } else {
+                        location.href = json.redirect_url;
+                    }
+                },
+                error: function() {alert("Internal Error");}
+            });
+
+            function question_form_success_handler(form_data) {
+                console.log('.question_row[data-order="'+ form_data.order  +'"]');
+                var $question = $('.question_row[data-order="'+ form_data.order  +'"]');
+                $question.attr('data-user_answer', form_data.answer);
+
+                var ans_check_form = {
+                    'question_request_name': 'answer_check', 'order': form_data.order, 'total': form_data.total
+                };
+                $.ajax({
+                    url: $question.data("action"),
+                    beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                    data: ans_check_form, type: 'POST', dataType: 'json',
+                    success: function(json) {
+                        if (json.status == 'success') {
+                            if (json.cleaned_data.any_wrong_answer) {
+                                $('#app-page-eligibile').addClass('none');
+                                $('#app-page-ineligible').removeClass('none').goTo();
+                            } else if (json.cleaned_data.all_questions_answered) {
+                                $('#app-page-ineligible').addClass('none');
+                                $('#app-page-eligibile').removeClass('none').goTo();
+                            } else {
+                                $('#app-page-ineligible').addClass('none');
+                            }
+                        } else {location.href = json.redirect_url;}
+                    },
+                    error: function() {alert("Internal Error");}
+                });
+                if (form_data.is_correct_ans) {
+                    if ((form_data.order + 1) < form_data.total) {
+                        $('.question_row[data-order="' + (form_data.order + 1) + '"]').removeClass('none');
+                        $question.siblings('.question_row')
+                                .filter(function () {return $(this).data('order') > form_data.order;})
+                                .removeClass('wrong_ans_none');
+                    }
+                }
+                if (!form_data.is_correct_ans) {
+                    if ((form_data.order + 1) < form_data.total) {
+                        $question.siblings('.question_row')
+                                .filter(function(){return $(this).data('order') > form_data.order;})
+                                .addClass('wrong_ans_none');
+                    }
+                }
+            }
+        });
+    });
+
+
+    $(function() {
+        var $continue_next_stage_link = $('#continue_next_stage_link');
+        $continue_next_stage_link.on('click', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            var form_data = {'question_request_name': 'transition', 'stage': $this.data('stage'),
+                             'next_stage': $this.data('next-stage'), 'total': $this.data('total')};
+            $.ajax({
+                url: $this.data("stage-url"),
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: form_data, type: 'POST', dataType: 'json',
+                success: function(json) {location.href = json.redirect_url;},
+                error: function() {alert("Internal Error");}
+            });
+        });
+    });
+</script>
+{% endblock extra_js %}

@@ -103,7 +103,7 @@ class StmPlanTask(Task):
         :return: zero
     """
 
-    print("Inputting form data and session key into celery worker STM task")
+    print("Running STM task")
     def run(self, session_key, form_data, *args, **kwargs):
         threaded_request(copy.deepcopy(form_data), session_key)
 

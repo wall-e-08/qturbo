@@ -1,26 +1,21 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Create Blog | {{ block.super }}{% endblock title %}
+{% block title %}{{ action }} Blog | {{ block.super }}{% endblock title %}
 
-{% block head_js %}
-    {% with selector=form.content.id_for_label %}
-        {% include 'snippets/tinymc-init.html' %}
-    {% endwith %}
-{% endblock %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{% url 'dashboard:all_blogs' %}">Blog</a></li>
-    <li class="breadcrumb-item active">Create or Edit Blog</li>
+    <li class="breadcrumb-item active">{{ action }} Blog</li>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
-            <div class="col-md-7">
-                <h1>Add New Blog</h1>
-                <form method="post">
+            <div class="col-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Blog</h1>
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
 
@@ -38,12 +33,23 @@
                         {% endif %}
                     </div>
 
+                    <div class="form-group border border-secondary p-2">
+                        <label for="{{ form.feature_img.id_for_label }}">Feature Image</label>
+                        <b-form-file accept=".jpg, .png, .gif"
+                               class="form-control {% if form.feature_img.errors %}border-danger{% endif %}"
+                               name="{{ form.feature_img.name }}"
+                               id="{{ form.feature_img.id_for_label }}"
+                               value="{{ form.feature_img.value|default:'' }}"></b-form-file>
+                        {% if form.feature_img.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.feature_img.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
                     <div class="form-group p-md-3 p-2 mb-4 border border-dark">
                         <label for="{{ form.content.id_for_label }}">Page Content</label>
                         <textarea class="form-control {% if form.content.errors %}border-danger{% endif %}"
                                   name="{{ form.content.name }}"
-                                  id="{{ form.content.id_for_label }}"
-                                  value="{{ form.content.value|default:'' }}"></textarea>
+                                  id="{{ form.content.id_for_label }}">{{ form.content.value|default:'' }}</textarea>
                         {% if form.content.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
                         {% endif %}
@@ -53,7 +59,7 @@
                         <label for="{{ form.section.id_for_label }}">Sections</label>
                         <select class="form-control" id="{{ form.section.id_for_label }}" name="{{ form.section.name }}">
                             {% for val, opt in form.fields.section.choices %}
-                                <option value="{{ val }}"{% if form.fields.section.value == val %} selected{% endif %}>{{ opt }}</option>
+                                <option value="{{ val }}"{% if form.section.value == val %} selected{% endif %}>{{ opt }}</option>
                             {% endfor %}
                         </select>
 
@@ -93,6 +99,9 @@
 {% endblock %}
 
 {% block bottom_js %}
+    {% with selectors='#'|add:form.content.id_for_label %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
     <script>
         all_components['all-category'] = {
             delimiters: ['[[', ']]'],

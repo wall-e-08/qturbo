@@ -10,33 +10,169 @@
 
 {% block dashboard_content %}
     <div class="container">
-        <div class="row">
-            {% for page in pages %}
-                <div class="col-md-4">
-                    <div class="card w-100 h-100">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h4 class="d-inline-block font-wight-700">{{ page.title }}&nbsp;&nbsp;</h4>
-                                <span>id-{{ page.id }}, slug: < later ></span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title font-wight-600"></h5>
-                            <p class="card-text">{{ page.content|striptags|truncatechars:50 }}</p>
-                            <p class="small">{{ page.create_time }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{% url 'slugified_page' page.slug %}" class="btn btn-success">view</a>
-                            <a href="#" class="btn btn-dark">Edit</a>
-                            <a href="#" class="btn btn-danger">delete</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    
+        <all-pages></all-pages>
+
         <div class="my-5">
             <a href="{% url 'dashboard:create_page' %}" class="btn btn-primary btn-lg">Create Page</a>
         </div>
     </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="page-template">
+        <div>
+            <template v-if="published_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Published Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in published_pages">
+                        <div class="card w-100 h-100 border-success">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.view_url" target="_blank" class="btn btn-success">view</a>
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template v-else>No Published Page found !</template>
+            <hr class="my-5">
+            
+            <template v-if="unpublished_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Unpublished Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in unpublished_pages">
+                        <div class="card w-100 h-100 border-warning">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template v-else>No Unpublished Page found !</template>
+            <hr class="my-5">
+            
+            <template v-if="archived_pages.length > 0">
+                <h2 class="font-lg font-wight-600 mb-3" style="text-decoration: underline">Archived Pages</h2>
+                <div class="row">
+                    <div class="col-md-4" v-for="p in archived_pages">
+                        <div class="card w-100 h-100 border-danger">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="d-inline-block font-wight-700">[[ p.title ]]</h4>
+                                    <span>slug: [[ p.slug ]]</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title font-wight-600"></h5>
+                                <p class="card-text" v-html="p.content"></p>
+                                <p class="small">[[ p.created ]]</p>
+                            </div>
+                            <div class="card-footer">
+                                <a :href="p.edit_url" target="_blank" class="btn btn-dark">Edit</a>
+                                <b-btn v-b-modal.del_confirmation_modal variant="danger" @click="active_page_id = p.page_id">delete</b-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template v-else>No Archived Page found !</template>
+
+            <b-modal id="del_confirmation_modal" ref="del_confirmation_modal" centered title="Do you really want to delete?" :hide-footer="true">
+                <div class="d-flex">
+                    <b-btn variant="success" :block="true" class="m-1" @click.prevent="close_modal">No</b-btn>
+                    <b-btn variant="danger" :block="true" class="m-1" @click.prevent="confirm_delete">Yes</b-btn>
+                </div>
+            </b-modal>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['all-pages'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    pages: [
+                        {# all_categories not included in modelform, handled customly #}
+                        {% for p in pages %}{
+                            page_id: {{ p.id }},
+                            title: "{{ p.title }}",
+                            slug: "{{ p.slug }}",
+                            status: "{{ p.status }}",
+                            content: `{{ p.content|striptags|truncatechars:50 }}`, {# v-html="content" :: use this for raw html #}
+                            created: "{{ p.create_time }}",
+                            view_url: "{% url 'slugified_page' p.slug %}",
+                            edit_url: "{% url 'dashboard:edit_page' p.id %}",
+                        },{% endfor %}
+                    ],
+                    active_page_id: "",
+                }
+            },
+            computed: {
+                published_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'p';
+                    });
+                },
+                unpublished_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'u';
+                    });
+                },
+                archived_pages: function () {
+                    return this.pages.filter(function (pg) {
+                        return pg.status === 'a';
+                    });
+                },
+            },
+            methods: {
+                close_modal: function () {
+                    this.$refs.del_confirmation_modal.hide()
+                },
+                confirm_delete: function () {
+                    let _t = this;
+                    let ajax_req = new XMLHttpRequest();
+                    ajax_req.onreadystatechange = function () {
+                        if (ajax_req.readyState === 4 && ajax_req.status === 200) {
+                            let data = JSON.parse(ajax_req.responseText);
+                            if (data.success){
+                                _t.pages.splice(_t.pages.findIndex(p => p.page_id == _t.active_page_id), 1);
+                                _t.close_modal();
+                            }
+                        }
+                    };
+                    ajax_req.open("GET", "{% url 'dashboard:delete_page' %}?page_id=" + _t.active_page_id, true);
+                    ajax_req.send();
+                }
+            },
+            template: '#page-template'
+        };
+    </script>
 {% endblock %}
