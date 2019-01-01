@@ -212,6 +212,15 @@ class ApplicantInfoForm(forms.Form):
         )
     )
 
+    Spouse_Tobacco = forms.ChoiceField(
+        label=_("Spouse_Tobacco"),
+        choices=(
+            ("N", "No"),
+            ("Y", "Yes"),
+        ),
+        required=False
+    )
+
     quote_request_timestamp = forms.IntegerField(required=False)
 
     def clean_First_Name(self):
@@ -328,6 +337,14 @@ class ApplicantInfoForm(forms.Form):
                     'Spouse_Gender',
                     forms.ValidationError(_("Spouse Gender is required."), code='required')
                 )
+            spouse_tobacco = self.cleaned_data.get('Spouse_Tobacco')
+            if not spouse_tobacco:
+                self.add_error(
+                    'Spouse_Tobacco',
+                    forms.ValidationError(_("Spouse_Tobacco is required."), code='required')
+                )
+            else:
+                self.cleaned_data['Spouse_Tobacco'] = spouse_tobacco
         elif include_spouse == 'No':
             self.cleaned_data['Spouse_DOB'] = None
             self.cleaned_data['Spouse_Gender'] = ''
@@ -356,6 +373,16 @@ class ApplicantInfoForm(forms.Form):
                 )
         elif str(payment_option) == '1':
             self.cleaned_data['Coverage_Days'] = None
+
+        tobacco = self.cleaned_data.get('Tobacco')
+        if not tobacco:
+            self.add_error(
+                'Tobacco',
+                forms.ValidationError(_("Tobacco is required."), code='required')
+            )
+        else:
+            self.cleaned_data['Tobacco'] = tobacco
+
 
         self.cleaned_data['quote_request_timestamp'] = int(round(time.time(), 0))
 
@@ -708,19 +735,22 @@ class STApplicantInfoForm(forms.Form):
         self.initialize_form = initialize_form
         self.mailing_state_from_zip_code = None
         if self.initialize_form:
-            super().__init__(initial={"First_Name": self.initial_form_data.get("First_Name"),
-                                      "Last_Name": self.initial_form_data.get("Last_Name"),
-                                      "Email": self.initial_form_data.get("Email"),
-                                      "DayPhone": self.initial_form_data.get("Phone"),
-                                      "CellPhone": self.initial_form_data.get("Phone"),
-                                      "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', self.initial_form_data["Applicant_DOB"]),
-                                      "Applicant_is_Child": self.initial_form_data.get("applicant_is_child"),
-                                      "Address": self.initial_form_data.get("Address1"),
-                                      'Gender': self.initial_form_data["Applicant_Gender"],
-                                      "State": self.initial_form_data["State"],
-                                      "ZipCode": self.initial_form_data["Zip_Code"],
-                                      "Mailing_State": self.initial_form_data["State"],
-                                      "Mailing_ZipCode": self.initial_form_data["Zip_Code"]}, *args, **kwargs)
+            super().__init__(initial={
+                "First_Name": self.initial_form_data.get("First_Name"),
+                "Last_Name": self.initial_form_data.get("Last_Name"),
+                "Email": self.initial_form_data.get("Email"),
+                "DayPhone": self.initial_form_data.get("Phone"),
+                "CellPhone": self.initial_form_data.get("Phone"),
+                "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', self.initial_form_data["Applicant_DOB"]),
+                "Applicant_is_Child": self.initial_form_data.get("applicant_is_child"),
+                "Address": self.initial_form_data.get("Address1"),
+                'Gender': self.initial_form_data["Applicant_Gender"],
+                "State": self.initial_form_data["State"],
+                "ZipCode": self.initial_form_data["Zip_Code"],
+                "Mailing_State": self.initial_form_data["State"],
+                "Mailing_ZipCode": self.initial_form_data["Zip_Code"],
+                "Tobacco": self.initial_form_data["Tobacco"]
+            }, *args, **kwargs)
         else:
             super().__init__(*args, **kwargs)
 
@@ -758,6 +788,14 @@ class STApplicantInfoForm(forms.Form):
 
     Applicant_is_Child = forms.BooleanField(required=False)
 
+    Tobacco = forms.ChoiceField(
+        required=False,
+        label=_("Tobacco"),
+        choices=(
+            ("N", "No"),
+            ("Y", "Yes"),
+        )
+    )
     # only for Select STM + Cardinal Choice
     Occupation = forms.CharField(
         label=_("Occupation"),
@@ -908,6 +946,7 @@ class STApplicantInfoForm(forms.Form):
         self.cleaned_data['Age'] = self.initial_form_data['Applicant_Age']
         self.cleaned_data['Gender'] = self.initial_form_data['Applicant_Gender']
         self.cleaned_data['Applicant_is_Child'] = self.initial_form_data['applicant_is_child']
+        self.cleaned_data['Tobacco'] = self.initial_form_data['Tobacco']
         self.cleaned_data['DOB'] = QR_DATE_PATTERN.sub(r'\3-\1-\2', self.initial_form_data["Applicant_DOB"])
 
         mailing_not_as_contact = self.cleaned_data.get('mailing_not_as_contact', False)
@@ -1424,6 +1463,16 @@ class STDependentInfoForm(forms.Form):
                  ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10'), ('11', '11'))
     )
 
+    Tobacco = forms.ChoiceField(
+        required=False,
+        label=_("Tobacco"),
+        choices=(
+            ("N", "No"),
+            ("Y", "Yes"),
+        )
+    )
+
+
     Weight = forms.IntegerField(required=False, label=_("Weight"))
 
     def clean(self):
@@ -1450,6 +1499,7 @@ class BaseSTDependentFormSet(BaseFormSet):
             form.cleaned_data['Age'] = self.initial[idx]['Age']
             form.cleaned_data['Gender'] = self.initial[idx]['Gender']
             form.cleaned_data['SSN'] = self.initial[idx]['SSN']
+            form.cleaned_data['Tobacco'] = self.initial[idx]['Tobacco']
 
 
 STDependentInfoFormSet = formset_factory(STDependentInfoForm, formset=BaseSTDependentFormSet, extra=0, max_num=10)
