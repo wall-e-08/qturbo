@@ -264,7 +264,7 @@ const router = new VueRouter({
                             if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
                                 form_data['Spouse_DOB'] = _t.spouse_input.dob;
                                 form_data['Spouse_Gender'] = _t.spouse_input.gender;
-                                form_data['spouse_tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
+                                form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
                             } else {
                                 console.error("Please insert spouse data correctly to see plans");
                                 return null;
