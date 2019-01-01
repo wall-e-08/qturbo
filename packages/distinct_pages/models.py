@@ -58,11 +58,6 @@ class Page(models.Model):
         )
 
 
-class Homepage(Page):
-    # page_content = Page.page_content + []
-    pass
-
-
 class ItemList(models.Model):
     page = models.ForeignKey(
         'Page',
@@ -89,6 +84,8 @@ class ItemList(models.Model):
         null=True,
     )
 
+    create_time = models.DateTimeField(auto_now_add=True)
+
 
 class ItemIcon(models.Model):
     title = models.CharField(max_length=100)
@@ -113,6 +110,8 @@ class ItemIcon(models.Model):
         ),
         max_length=3,
     )
+
+    create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
@@ -154,6 +153,8 @@ class ItemTwoColumn(models.Model):
         null=True,
     )
 
+    create_time = models.DateTimeField(auto_now_add=True)
+
 
 class ItemGuide(models.Model):
     page = models.ForeignKey(
@@ -170,3 +171,5 @@ class ItemGuide(models.Model):
     url_text = models.CharField(
         max_length=200,
     )
+
+    create_time = models.DateTimeField(auto_now_add=True)
