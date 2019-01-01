@@ -28,6 +28,11 @@ urlpatterns = [
     path('blog/category/', login_required(views.blog_category), name='blog_category'),
     path('blog/section/', login_required(views.blog_section), name='blog_section'),
 
+    # page items
+    path('icons/', login_required(views.all_icons), name='all_icons'),
+    path('icons/create/', login_required(views.create_or_edit_icon), name='create_icon'),
+    path('icons/edit/<icon_id>/', login_required(views.create_or_edit_icon), name='edit_icon'),
+
     # ajax
     path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec'),
     # page items
