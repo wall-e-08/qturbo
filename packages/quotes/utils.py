@@ -53,7 +53,8 @@ def get_initials_for_dependents_formset(initial_form_data):
         initial.append(
             {"Relation": "Spouse", "Gender": initial_form_data["Spouse_Gender"],
              "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', initial_form_data["Spouse_DOB"]),
-             "Age": initial_form_data["Spouse_Age"]}
+             "Age": initial_form_data["Spouse_Age"],
+             "Tobacco": initial_form_data["Spouse_Tobacco"]}
         )
     if initial_form_data["Dependents"]:
         for dependent in initial_form_data["Dependents"]:
@@ -202,7 +203,7 @@ def save_applicant_info(stm_enroll_model, applicant_info, applicant_parent_info,
     :return:
     """
     stm_enroll_obj = stm_enroll_model(vimm_enroll_id=plan['vimm_enroll_id'], stm_name=plan['Name'])
-    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Applicant_is_Child',
+    for field in ['First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'DOB', 'Applicant_is_Child', 'Tobacco',
                   'Age', 'Feet', 'Inch', 'IP_Address', 'Effective_Date', 'Weight', 'Address', 'City',
                   'State', 'ZipCode', 'Email', 'DayPhone', 'CellPhone', 'Mailing_Name', 'Mailing_Address',
                   'Mailing_City', 'Mailing_State', 'Mailing_ZipCode']:
