@@ -38,6 +38,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('blog/', include('writing.urls.blog_urls')),
     path('info/', include('writing.urls.article_urls')),
+    path('about/', include('about.urls')),
     path('admin/', admin.site.urls),
     path('dj-rich-text-field/', include('djrichtextfield.urls')),
     path('<slug>/', slugified_page, name='slugified_page'),
