@@ -94,6 +94,13 @@
                             url: "{% url 'dashboard:all_pages' %}",
                             new_url: "{% url 'dashboard:create_page' %}",
                         },
+                    },{
+                        item: {
+                            name: "Icon/Image",
+                            count: "{{ data.icon.count }}",
+                            url: "{% url 'dashboard:all_icons' %}",
+                            new_url: "{% url 'dashboard:create_icon' %}",
+                        },
                     },],
                 }
             },

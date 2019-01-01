@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from distinct_pages.models import Page, ItemList, ItemTwoColumn
+from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog, save_page_items
 from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
@@ -24,6 +24,9 @@ def index(request):
         },
         "page": {
             "count": Page.objects.all().count(),
+        },
+        "icon": {
+            "count": ItemIcon.objects.all().count(),
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
@@ -56,6 +59,47 @@ def all_pages(request):
     })
 
 
+def all_icons(request):
+    all_icons = ItemIcon.objects.all()
+    return render(request, 'dashboard/all_icons.html', {
+        "icons": all_icons,
+    })
+
+
+def create_or_edit_icon(request, icon_id=None):
+    if icon_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = ItemIconForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_icons')
+            else:
+                print("create_icon form not valid. errors: {}".format(form.errors))
+            form = ItemIconForm(request.POST)
+        else:
+            form = ItemIconForm()
+    else:
+        action = "Edit"
+        try:
+            icon = ItemIcon.objects.get(id=int(icon_id))
+            if request.method == 'POST':
+                form = ItemIconForm(request.POST, instance=icon)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_icons')
+            form = ItemIconForm(instance=icon)
+        except ItemIcon.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No icon found")
+    return render(request, 'dashboard/form_icon.html', {
+        "form": form,
+        "action": action,
+    })
+
+
+
 # create START ##
 def create_or_edit_article(request, article_id=None):
     if article_id is None:
@@ -68,7 +112,9 @@ def create_or_edit_article(request, article_id=None):
                 return redirect(blog.get_absolute_url())
             else:
                 print("create_blog  Form not valid. errors: {}".format(form.errors))
-        form = ArticleForm()
+            form = ArticleForm(request.POST)
+        else:
+            form = ArticleForm()
     else:
         action = "Edit"
         try:
@@ -129,7 +175,9 @@ def create_or_edit_blog(request, blog_id=None):
                 return redirect(blog.get_absolute_url())
             else:
                 print("create_blog  Form not valid. errors: {}".format(form.errors))
-        form = BlogForm()
+            form = BlogForm(request.POST)
+        else:
+            form = BlogForm()
     else:
         action = "Edit"
         try:

@@ -1,4 +1,5 @@
 @import "../../../global_static_libs/bootstrap/scss/functions";
+@import "../../../global_static_libs/bootstrap/scss/functions";
 @import "../../../global_static_libs/bootstrap/scss/variables";
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
 @import "../../../global_static_libs/bootstrap/scss/mixins/breakpoints";
@@ -66,7 +67,14 @@ input[type="date"] {
     min-height: calc(100vh - 60px - 0px - 72px - 3rem);
 }
 
-svg {
+.no-fixed-svg {
+    svg {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+:not(.no-fixed-svg)>svg {
     width: $svg-dimension;
     height: $svg-dimension;
 }

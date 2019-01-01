@@ -1,0 +1,100 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Icon | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_icons' %}">Icon</a></li>
+    <li class="breadcrumb-item active">{{ action }} Icon</li>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Icon/Image</h1>
+                <form method="post" ref="main_form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Title</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                                name="{{ form.title.name }}"
+                                id="{{ form.title.id_for_label }}"
+                                value="{{ form.title.value|default:'' }}"
+                                placeholder="Title">
+
+                        {% if form.title.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+                    <svg-img-toggle></svg-img-toggle>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block vue_templates %}
+    <script type="text/x-template" id="svg-img-template">
+        <div>
+            <div class="form-group">
+                <b-form-group label="Icon Type">
+                    <b-form-radio-group v-model="icon_type" :options="icon_options" name="{{ form.icon_type.html_name }}"></b-form-radio-group>
+                </b-form-group>
+                {% if form.icon_type.errors %}
+                    <div class="form_field_error text-danger form-input-error">{{ form.icon_type.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group" v-if="icon_type == 'svg'">
+                <label for="{{ form.svg_icon.id_for_label }}">SVG Code</label>
+                <textarea
+                        class="form-control {% if form.svg_icon.errors %}border-danger{% endif %}"
+                        name="{{ form.svg_icon.name }}"
+                        id="{{ form.svg_icon.id_for_label }}">{{ form.svg_icon.value|default:'' }}</textarea>
+
+                {% if form.svg_icon.errors %}
+                    <div class="form_field_error text-danger form-input-error">{{ form.svg_icon.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" v-else-if="icon_type == 'img'">
+                <label for="{{ form.title.id_for_label }}">Image File</label>
+                <b-form-file accept=".jpg, .png, .gif"
+                        class="form-control {% if form.img_icon.errors %}border-danger{% endif %}"
+                        name="{{ form.img_icon.name }}"
+                        id="{{ form.img_icon.id_for_label }}"
+                        value="{{ form.img_icon.value|default:'' }}"
+                        placeholder="{{ form.img_icon.value|default:'Choose a file' }}"></b-form-file>
+
+                {% if form.img_icon.errors %}
+                    <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+{% block bottom_js %}
+    <script>
+        all_components['svg-img-toggle'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    icon_type: '{{ form.icon_type.value }}',
+                    icon_options: [
+                        { text: 'Image File', value: 'img' },
+                        { text: 'SVG Code', value: 'svg' },
+                    ]
+                }
+            },
+            template: '#svg-img-template'
+        };
+    </script>
+{% endblock %}
