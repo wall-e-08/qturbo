@@ -9,15 +9,6 @@
     <li class="breadcrumb-item active">{{ action }} Page</li>
 {% endblock %}
 
-{% block head_css %}
-    <style>
-    svg {
-        width: 50px;
-        height: 50px;
-    }
-    </style>
-{% endblock %}
-
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
@@ -63,26 +54,21 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <input type="hidden" name="all_items" :value="all_items_json"> {# saving page contents #}
-                    <button type="submit" class="btn btn-success" @click.prevent="before_submit">Save</button>
+                    {% comment %}<input type="hidden" name="all_items" :value="all_items_json"> {# saving page contents #}{% endcomment %}
+                    <button type="submit" class="btn btn-success" {% comment %}@click.prevent="before_submit"{% endcomment %}>Save</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <hr class="my-5">
+{% comment %}    <hr class="my-5">
     <page-item-list></page-item-list>
     <hr class="my-5">
-    <page-item-two-col></page-item-two-col>
+    <page-item-two-col></page-item-two-col>{% endcomment %}
 
 {% endblock %}
 
-<!--
-ItemGuide
-    url
-    url_text -->
-
-
+{% comment %}
 {% block vue_templates %}
     <script type="text/x-template" id="list-template">
         <div class="container">
@@ -184,13 +170,15 @@ ItemGuide
         </div>
     </script>
 {% endblock %}
+{% endcomment %}
 
 
 {% block bottom_js %}
-    {% with selectors='#item-list-content, #'|add:form.content.id_for_label %}
+    {% with selectors='#'|add:form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
-
+{% endblock %}
+{% comment %}
     <script src="{% static 'jquery/jquery-ajax-only.min.js' %}"></script>
 
     <script>
@@ -330,30 +318,7 @@ ItemGuide
                     });
                 },
             },
-            created: function () {
-                {% if item_data.lists %}
-                    this.item_list = [{% for il in item_data.lists %}{
-                        id: "{{ il.id }}",
-                        svg_icon: `{{ il.icon.svg_icon|safe|default:'' }}`,
-                        img_icon: "{% if il.icon.img_icon %}{{ il.icon.img_icon.url }}{% endif %}",
-                        icon_type: "{{ il.icon.icon_type }}",
-                        content: `{{ il.content|safe|default:'' }}`,
-                        url: "{{ il.url }}",
-                    },{% endfor %}];
-                {% endif %}
-            
-                {% if item_data.two_col %}
-                    this.item_two_col = [{% for il in item_data.two_col %}{
-                        id: "{{ il.id }}",
-                        title: `{{ il.title }}`,
-                        img: "{% if il.img %}{{ il.img.url }}{% endif %}",
-                        content: `{{ il.content|safe|default:'' }}`,
-                        url: "{{ il.url }}",
-                        url_text: "{{ il.url_text }}",
-                    },{% endfor %}];
-                {% endif %}
-            },
             components: all_components,
         }).$mount('#bootstrap-vue');
     </script>
-{% endblock %}
+{% endblock %}{% endcomment %}

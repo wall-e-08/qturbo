@@ -16,14 +16,8 @@ def slugified_page(request, slug):
         return each_blog(request, model_obj=data.get('model_obj'))
 
     page = data.get('model_obj')
-    item_data = {
-        "lists": ItemList.objects.filter(page=page),
-        "two_col": ItemTwoColumn.objects.filter(page=page),
-    }
-
     ctx = {
         "page": page,
-        "item_data": item_data
     }
 
     return render(request, 'distinct-pages/base.html', ctx)

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
 from writing.models import Article, Blog, Category, Categorize, Section
-from .utils import get_category_list_by_blog, save_page_items
+from .utils import get_category_list_by_blog
 from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
 
 """login_required decorator added in urls.py... So no need to add here"""
@@ -97,7 +97,6 @@ def create_or_edit_icon(request, icon_id=None):
         "form": form,
         "action": action,
     })
-
 
 
 # create START ##
@@ -221,14 +220,12 @@ def create_or_edit_blog(request, blog_id=None):
 
 
 def create_or_edit_page(request, page_id=None):
-    item_data = {}
     if page_id is None:
         action = 'Create'
         if request.method == 'POST':
             form = PageForm(request.POST)
             if form.is_valid():
                 page = form.save()
-                save_page_items(request.POST, page.id)
                 return redirect(page.get_absolute_url())
             else:
                 print("Form is not valid")
@@ -238,15 +235,10 @@ def create_or_edit_page(request, page_id=None):
         action = "Edit"
         try:
             page = Page.objects.get(id=int(page_id))
-            item_data = {
-                "lists": ItemList.objects.filter(page=page),
-                "two_col": ItemTwoColumn.objects.filter(page=page),
-            }
             if request.method == 'POST':
                 form = PageForm(request.POST, instance=page)
                 if form.is_valid():
                     page = form.save()
-                    save_page_items(request.POST, page.id)
                     return redirect(page.get_absolute_url())
             form = PageForm(instance=page)
         except Page.DoesNotExist as err:
@@ -257,7 +249,6 @@ def create_or_edit_page(request, page_id=None):
         "action": action,
         "item_list_form": ItemListForm(),
         "item_two_col_form": ItemTwoColumnForm(),
-        "item_data": item_data,
     })
 
 
@@ -376,7 +367,7 @@ def editor_media_upload(request):
     return HttpResponse()
 
 
-"""page items operations"""
+# page items operations
 def ajax_item_list_save(request):
     json = {"success": False, }
     if request.GET:
@@ -409,7 +400,7 @@ def ajax_item_icon_save(request):
             json["success"] = True
             json['item_icon_id'] = il.id
         else:
-            print("ItemListForm Error: {}".format(form.errors))
+            print("ItemIconForm Error: {}".format(form.errors))
     return JsonResponse(json)
 
 
