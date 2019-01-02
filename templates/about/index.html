@@ -3,18 +3,69 @@
 {% load static %}
 
 {% block about_content %}
-    <section id="banner" class="">
-    <div class="banner-content d-flex flex-column justify-content-center text-white text-center">
-        <h1>About quoteTorbo.com</h1>
-        <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, cum!</h4>
-    </div>
 
-    </section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                GGGGG
+    <section id="about-nav">
+        <div class="">
+            <div id="about">
+                <b-tabs end :title-link-class="''">
+                    <b-tab title="About" active>
+                        <section id="banner" class="">
+                            <div class="banner-content d-flex flex-column justify-content-center text-white text-center">
+                                <h1>About quoteTorbo.com</h1>
+                                <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, cum!</h4>
+                            </div>
+
+                        </section>
+                    </b-tab>
+                    <b-tab title="Company">
+                        <br>
+                        I'm the second tab content
+                    </b-tab>
+                    <b-tab title="Team">
+                        <br>
+                        Disabled tab!
+                    </b-tab>
+                    <b-tab title="Product">
+                        <br>
+                        I'm the first fading tab
+                    </b-tab>
+                    <b-tab title="Advertising">
+                        <br>
+                        I'm the first fading tab
+                    </b-tab>
+                    <b-tab title="Press">
+                        <br>
+                        I'm the first fading tab
+                    </b-tab>
+                    <b-tab title="Contact">
+                        <br>
+                        I'm the first fading tab
+                    </b-tab>
+                </b-tabs>
+
             </div>
         </div>
-    </div>
+    </section>
+    <section id="qt-about-thumbnail-nav" class="py-5 border-top">
+        <div class="container">
+            <div class="row">
+                {% with ''|center:'6' as range %}
+                    {% for _ in range %}
+                        <div class="col-sm-6 col-md-4 mb-4">
+                            <div class="thumbnail-content position-relative">
+                                <a href="#">
+                                    <img src="{% static 'post/img/about-index.jpeg' %}" alt="about quote TURBO">
+                                    <div class="position-absolute content-text text-white d-flex justify-content-center align-items-center">
+                                        <h4 class="font-weight-bold">Product</h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+
+        </div>
+
+    </section>
 {% endblock %}
