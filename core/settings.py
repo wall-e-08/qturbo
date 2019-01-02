@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'quotes',
     'writing',
     'distinct_pages',
+    'que_ans',
     'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
