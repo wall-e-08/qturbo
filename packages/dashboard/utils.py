@@ -38,25 +38,3 @@ def get_distinct_page_template_file_list():
     return zip(temp_list, temp_name)
 
 
-def save_page_items(req_post, page_id):
-    all_items = json.loads(req_post.get('all_items'))
-    try:
-        page = Page.objects.get(id=page_id)
-    except Page.DoesNotExist as err:
-        print("Very weird err: {}".format(err))
-        return None
-    for item_id in all_items.get('item_list', []):
-        try:
-            item = ItemList.objects.get(id=int(item_id))
-            item.page = page
-            item.save()
-        except ItemList.DoesNotExist as err:
-            print("Item List id: {}, err: {}".format(item_id, err))
-    for item_id in all_items.get('item_two_col', []):
-        try:
-            item = ItemTwoColumn.objects.get(id=int(item_id))
-            item.page = page
-            item.save()
-        except ItemTwoColumn.DoesNotExist as err:
-            print("ItemTwoColumn id: {}, err: {}".format(item_id, err))
-
