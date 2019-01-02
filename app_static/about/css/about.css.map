@@ -1,7 +1,7 @@
 {
 "version": 3,
-"mappings": "",
-"sources": [],
+"mappings": "AAAA,OAAO,CACL,UAAU,CAAE,oEAAsE,CAClF,MAAM,CAAE,IAAI,CAEd,eAAe,CACb,UAAU,CAAE,oBAAuB,CACnC,MAAM,CAAE,IAAI,CACZ,KAAK,CAAE,IAAI,CACX,WAAW,CAAE,GAAG,CAChB,WAAW,CAAE,MAAM,CACnB,qCAAK,CACH,SAAS,CAAE,KAAK",
+"sources": ["../scss/_banner.scss"],
 "names": [],
 "file": "about.css"
 }

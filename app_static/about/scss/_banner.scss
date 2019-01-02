@@ -1,0 +1,14 @@
+#banner{
+  background: url("/static/post/img/about-index.jpeg") #0053A5 center center / cover;
+  height: 75vh;
+}
+.banner-content{
+  background: rgba(9, 102, 189, 0.75);
+  height: 100%;
+  width: 100%;
+  font-weight: 800;
+  align-items: center;
+  h1,h4{
+    max-width: 900px;
+  }
+}
