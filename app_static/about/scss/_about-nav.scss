@@ -1,14 +1,18 @@
 #about .nav{
-  width: 60%;
+  width: 65%;
   margin: 0 auto;
   justify-content: space-around;
   vertical-align: middle;
-  padding: 10px 0 10px 0;
+  padding: 10px 0 0 0;
+  border-bottom: 2px solid #f2f2f2;
 }
 
-.nav-tabs .nav-link{
-  border: none;
-  transition: all .5s cubic-bezier(0.19, 1, 0.22, 1);
+.nav-tabs{
+  border-bottom: none;
+  .nav-link{
+    border: none;
+    transition: all .5s cubic-bezier(0.19, 1, 0.22, 1);
+  }
 }
 
 .nav-tabs .nav-link.active{
@@ -18,4 +22,10 @@
 }
 .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus{
   border-bottom: 4px solid #19b4fa;
+}
+
+@media (max-width: 425px) {
+  #about .nav{
+  width: 38%;
+  }
 }
