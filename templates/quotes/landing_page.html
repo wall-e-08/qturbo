@@ -818,7 +818,7 @@
                                     <input type="text" id="home-zip-code"
                                            class="font-md border-0 outline-0 w-100"
                                            :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
-                                           v-on:keypress="validate_zip($event)">
+                                           v-on:keydown="validate_zip($event)">
                                     <div class="position-absolute vertical-center" style="left:99%"
                                          v-html="current_marker"></div>
                                 </div>
@@ -852,7 +852,7 @@
                       v-if="survey_type == 'me'">?</span>
             </p>
             <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
-                   @keypress="prevent_NaN_input($event)" @keyup="auto_slash_insert"
+                   @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
                    class="font-mm border border-secondary mb-3 rounded qt-survey-input">
 
             <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
