@@ -3,10 +3,11 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
+from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog
-from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
+from .forms import (PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm,
+                    ItemIconForm, ItemTwoColumnForm, ItemGuideForm)
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -27,6 +28,15 @@ def index(request):
         },
         "icon": {
             "count": ItemIcon.objects.all().count(),
+        },
+        "list": {
+            "count": ItemList.objects.all().count(),
+        },
+        "two_col": {
+            "count": ItemTwoColumn.objects.all().count(),
+        },
+        "guide": {
+            "count": ItemGuide.objects.all().count(),
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
@@ -61,45 +71,32 @@ def all_pages(request):
 
 def all_icons(request):
     all_icons = ItemIcon.objects.all()
-    return render(request, 'dashboard/all_icons.html', {
+    return render(request, 'dashboard/all_page_item_icons.html', {
         "icons": all_icons,
     })
 
 
-def create_or_edit_icon(request, icon_id=None):
-    if icon_id is None:
-        action = 'Create'
-        if request.method == 'POST':
-            print(request.POST)
-            form = ItemIconForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('dashboard:all_icons')
-            else:
-                print("create_icon form not valid. errors: {}".format(form.errors))
-            form = ItemIconForm(request.POST)
-        else:
-            form = ItemIconForm()
-    else:
-        action = "Edit"
-        try:
-            icon = ItemIcon.objects.get(id=int(icon_id))
-            if request.method == 'POST':
-                form = ItemIconForm(request.POST, instance=icon)
-                if form.is_valid():
-                    form.save()
-                    return redirect('dashboard:all_icons')
-            form = ItemIconForm(instance=icon)
-        except ItemIcon.DoesNotExist as err:
-            print("awkward Error: {}".format(err))
-            raise Http404("No icon found")
-    return render(request, 'dashboard/form_icon.html', {
-        "form": form,
-        "action": action,
+def all_lists(request):
+    lists = ItemList.objects.all()
+    return render(request, 'dashboard/all_page_item_lists.html', {
+        "lists": lists,
     })
 
 
-# create START ##
+def all_two_cols(request):
+    two_cols = ItemTwoColumn.objects.all()
+    return render(request, 'dashboard/all_page_item_two_cols.html', {
+        "two_cols": two_cols,
+    })
+
+
+def all_guides(request):
+    guides = ItemGuide.objects.all()
+    return render(request, 'dashboard/all_page_item_guides.html', {
+        "guides": guides,
+    })
+
+
 def create_or_edit_article(request, article_id=None):
     if article_id is None:
         action = 'Create'
@@ -144,14 +141,14 @@ def create_or_edit_blog(request, blog_id=None):
             if form.is_valid():
                 print("form valid")
                 blog = form.save()
-    
+
                 # if no category found bound on that post
                 is_cat = False
                 for x in request.POST:
                     if x[:4] == cat_prefix:
                         is_cat = True
                         continue
-    
+
                 # manually managed category
                 # If you're confused, see "request.POST" values and the template file
                 if is_cat:
@@ -210,7 +207,7 @@ def create_or_edit_blog(request, blog_id=None):
         else:
             form = BlogForm(instance=blog)
             all_categories = get_category_list_by_blog(blog)
-    
+
     return render(request, 'dashboard/form_blog.html', {
         "form": form,
         "all_categories": all_categories,
@@ -247,8 +244,134 @@ def create_or_edit_page(request, page_id=None):
     return render(request, 'dashboard/form_page.html', {
         "form": form,
         "action": action,
-        "item_list_form": ItemListForm(),
-        "item_two_col_form": ItemTwoColumnForm(),
+    })
+
+
+def create_or_edit_icon(request, icon_id=None):
+    if icon_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = ItemIconForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_icons')
+            else:
+                print("create_icon form not valid. errors: {}".format(form.errors))
+            form = ItemIconForm(request.POST)
+        else:
+            form = ItemIconForm()
+    else:
+        action = "Edit"
+        try:
+            icon = ItemIcon.objects.get(id=int(icon_id))
+            if request.method == 'POST':
+                form = ItemIconForm(request.POST, instance=icon)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_icons')
+            form = ItemIconForm(instance=icon)
+        except ItemIcon.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No icon found")
+    return render(request, 'dashboard/form_page_item_icon.html', {
+        "form": form,
+        "action": action,
+    })
+
+
+def create_or_edit_list(request, list_id=None):
+    if list_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            form = ItemListForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_lists')
+            else:
+                print("Form is not valid")
+                print(form.errors)
+        form = ItemListForm()
+    else:
+        action = "Edit"
+        try:
+            item_list = ItemList.objects.get(id=int(list_id))
+            if request.method == 'POST':
+                form = ItemListForm(request.POST, instance=item_list)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_lists')
+            form = ItemListForm(instance=item_list)
+        except ItemList.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No item_list found")
+    return render(request, 'dashboard/form_page_item_list.html', {
+        "form": form,
+        "action": action,
+    })
+
+
+def create_or_edit_two_col(request, two_col_id=None):
+    if two_col_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = ItemTwoColumnForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_two_cols')
+            else:
+                print("create_blog  Form not valid. errors: {}".format(form.errors))
+            form = ItemTwoColumnForm(request.POST)
+        else:
+            form = ItemTwoColumnForm()
+    else:
+        action = "Edit"
+        try:
+            two_col = ItemTwoColumn.objects.get(id=int(two_col_id))
+            if request.method == 'POST':
+                form = ItemTwoColumnForm(request.POST, instance=two_col)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_two_cols')
+            form = ItemTwoColumnForm(instance=two_col)
+        except ItemTwoColumn.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No info found")
+    return render(request, 'dashboard/form_page_item_two_cols.html', {
+        "form": form,
+        "action": action,
+    })
+
+
+def create_or_edit_guide(request, guide_id=None):
+    if guide_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            form = ItemGuideForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_guides')
+            else:
+                print("Form is not valid")
+                print(form.errors)
+        form = ItemGuideForm()
+    else:
+        action = "Edit"
+        try:
+            item_guide = ItemGuide.objects.get(id=int(guide_id))
+            if request.method == 'POST':
+                form = ItemGuideForm(request.POST, instance=item_guide)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_guides')
+            form = ItemGuideForm(instance=item_guide)
+        except ItemGuide.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No item_guide found")
+    return render(request, 'dashboard/form_page_item_guide.html', {
+        "form": form,
+        "action": action,
     })
 
 
@@ -362,7 +485,7 @@ def editor_media_upload(request):
                 }
                 child.value = '%s';
             </script>
-            """% url)
+            """ % url)
         # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
     return HttpResponse()
 
@@ -424,7 +547,3 @@ def ajax_item_two_col_save(request):
         else:
             print("ItemTwoColumnForm Error: {}".format(form.errors))
     return JsonResponse(json)
-
-
-
-

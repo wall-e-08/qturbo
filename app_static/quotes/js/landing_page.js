@@ -100,12 +100,9 @@ const v_survey_card = {
         },
         prevent_NaN_input: function (e) {
             /* all accepted key codes:
-            * backspace: 8
-            * left arrow: 37
-            * right arrow: 39
-            * del: 46
-            * num pad: 96-105
-            * number: 48-57
+            * backspace: 8      * left arrow: 37
+            * right arrow: 39   * del: 46
+            * num pad: 96-105   * number: 48-57
             * */
             var kc = e.keyCode;  // console.log("prevent_NaN_input  " + kc)
             if (![8,37,39,46].includes(kc)) {
@@ -184,8 +181,18 @@ const router = new VueRouter({
             },
             methods: {
                 validate_zip: function (e) {
-                    if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
-                    else return true;
+                    /* all accepted key codes:
+                    * backspace: 8      * left arrow: 37
+                    * right arrow: 39   * del: 46
+                    * num pad: 96-105   * number: 48-57
+                    * */
+                    var kc = e.keyCode;
+                    if (![8,37,39,46].includes(kc)) {
+                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                            // prevent user from inserting non number
+                            e.preventDefault();
+                        }
+                    }
                 },
                 check_zipcode: function () {
                     if (this.is_valid_zip) {

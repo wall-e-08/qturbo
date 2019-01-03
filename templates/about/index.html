@@ -3,11 +3,125 @@
 {% load static %}
 
 {% block about_content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                GGGGG
-            </div>
+    <section id="banner" class="">
+        <div class="banner-content d-flex flex-column justify-content-center text-white text-center">
+            <h1 class="font-weight-bold">About quoteTorbo.com</h1>
+            <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, cum!</h4>
         </div>
-    </div>
+
+    </section>
+    <section id="about-nav">
+        <div id="about">
+            <b-tabs>
+                <b-tab title="About" active>
+                    <div id="about-content">
+                        <div class="container my-5">
+                            <div class="mission text-center">
+                                <h2 class="font-weight-bold mb-4">Our Mission</h2>
+                                <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae culpa expedita
+                                    facere iste libero quasi rerum sequi sunt voluptas voluptatum?</h5>
+                            </div>
+                            <div class="feature-img p-5">
+                                <img src="{% static 'post/img/about-index.jpeg' %}" alt="" class="rounded">
+                            </div>
+                            <div class="vision text-center">
+                                <h2 class="font-weight-bold mb-4">Our Vision</h2>
+                                <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At consectetur corporis
+                                    eaque est facere, ipsam minima obcaecati officia quasi repellendus tempore tenetur
+                                    veniam voluptatem voluptates.</h5>
+                            </div>
+                        </div>
+                    </div>
+                </b-tab>
+                <b-tab title="Company">
+                    <div id="company-content" class="">
+                        <div class="container text-center py-5">
+                            <h2 class="font-weight-bold">Who we are</h2>
+                            <h5 class="py-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam, odit.
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi, eos!</h5>
+                        </div>
+                        <div class="award border-bottom border-top">
+                            <div class="container py-5 text-center">
+                                <h2 class="font-weight-bold">Lorem ipsum dolor sit amet.</h2>
+                                <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
+                                    ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
+
+                                <div class="row">
+                                    {% with ''|center:'3' as range %}
+                                        {% for _ in range %}
+                                            <div class="col-md-4 py-4">
+                                                <div class="card">
+                                                    <img class="card-img-top"
+                                                         src="{% static 'post/img/about-index.jpeg' %}"
+                                                         alt="Card image cap">
+                                                    <div class="card-body">
+                                                        <h3 class="card-title">Card title</h3>
+                                                        <p class="card-text py-3">Some quick example text to build on the
+                                                            card title
+                                                            and make
+                                                            up the bulk of the card's content.
+                                                        <a href="#" class="">Go somewhere</a></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    <div class="history">
+                            <div class="container py-5 text-left">
+                                <h2 class="font-weight-bold">Lorem ipsum dolor.</h2>
+                                <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
+                                    ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </b-tab>
+                <b-tab title="Team">
+                    <br>
+                    Disabled tab!
+                </b-tab>
+                <b-tab title="Product">
+                    <br>
+                    I'm the first fading tab
+                </b-tab>
+                <b-tab title="Advertising">
+                    <br>
+                    I'm the first fading tab
+                </b-tab>
+                <b-tab title="Press">
+                    <br>
+                    I'm the first fading tab
+                </b-tab>
+                <b-tab title="Contact">
+                    <br>
+                    I'm the first fading tab
+                </b-tab>
+            </b-tabs>
+        </div>
+    </section>
+    <section id="qt-about-thumbnail-nav" class="py-5 border-top">
+        <div class="container">
+            <div class="row">
+                {% with ''|center:'6' as range %}
+                    {% for _ in range %}
+                        <div class="col-sm-6 col-md-4 mb-4">
+                            <div class="thumbnail-content position-relative">
+                                <a href="#">
+                                    <img src="{% static 'post/img/about-index.jpeg' %}" alt="about quote TURBO">
+                                    <div class="position-absolute content-text text-white d-flex justify-content-center align-items-center">
+                                        <h4 class="font-weight-bold">Product</h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+
+        </div>
+
+    </section>
 {% endblock %}
