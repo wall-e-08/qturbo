@@ -1,6 +1,7 @@
 import copy
 import json
 from collections import OrderedDict
+from typing import Union
 
 import requests
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,7 +19,7 @@ from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, S
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
                     ChildInfoFormSet, LeadForm)
 from .question_request import get_stm_questions
-from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data
+from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data, threaded_request
 from .redisqueue import redis_connect
 from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_askable_questions,
                     update_applicant_info, save_applicant_info, update_application_stage,
@@ -192,7 +193,7 @@ def plan_quote(request, ins_type):
 
 
 def stm_plan(request, plan_url) -> HttpResponse:
-    """Show currently selected plan to user for application.
+    """Show currently selected plan to user for application. Also select addons.
 
     :param request: Django request object
     :param plan_url: Unique url for plan that sits in plan_data
@@ -262,14 +263,27 @@ def stm_plan(request, plan_url) -> HttpResponse:
     addon_plans_redis_key = "{0}:{1}".format(redis_key, plan['plan_name_for_img'])
     addon_plans = addon_plans_from_json_data(redis_conn.lrange(addon_plans_redis_key, 0, -1))
     remaining_addon_plans = addon_plans.difference(selected_addon_plans)
+
+    # Duration coverage set literal. I shall move this to settings file or carrier model later.
+    try:
+        alternate_coverage_duration_set = {'3*1', '3*2'} - {plan['Duration_Coverage']}
+        alternate_coverage_duration = list(alternate_coverage_duration_set)[0]
+    except KeyError as k:
+        print(f'{k} - No duration coverage for {plan["Name"]}')
+        alternate_coverage_duration = None
+
     return render(request, 'quotes/stm_plan.html',
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
-                   'remaining_addon_plans': remaining_addon_plans})
+                   'remaining_addon_plans': remaining_addon_plans,
+                   'alternate_coverage_duration': alternate_coverage_duration}) # This will be changed later
+                                                                                       # This will be a list(not a str)
+                                                                                       # which will be handled by
+                                                                                       # DTL/JS.
 
 
-def stm_apply(request, plan_url):
+def stm_apply(request, plan_url) -> HttpResponse:
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -313,7 +327,7 @@ def stm_apply(request, plan_url):
 
 
 @require_POST
-def stm_plan_addon_action(request, plan_url, action):
+def stm_plan_addon_action(request, plan_url, action) -> Union[HttpResponseRedirect, JsonResponse] :
     logger.info("stm_plan_include_addon for plan {0}".format(plan_url))
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -392,7 +406,13 @@ def stm_plan_addon_action(request, plan_url, action):
     })
 
 
-def stm_application(request, plan_url):
+def stm_application(request, plan_url) -> HttpResponseRedirect:
+    """ Shows you the plan+addons selected and sends you to enrollment stage 1.
+
+    :param request: Django request object
+    :param plan_url: url created by joining app_url and vimm_enroll_id
+    :return: HttpResponseRedirect
+    """
     logger.info("starting application for plan: {0}".format(plan_url))
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -996,7 +1016,6 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     # if quote_request_form_data["Include_Spouse"] == 'Yes':
     #     print("wife/husband\n")
 
-
     end_reached = False
     # request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -1453,8 +1472,6 @@ def esign_verification_payment(request, vimm_enroll_id):
         })
 
 
-
-
 def thank_you(request, vimm_enroll_id):
     """thank_you method for showing final information to customer.
     :param: request: Django request object.
@@ -1486,8 +1503,6 @@ def thank_you(request, vimm_enroll_id):
     return render(request, 'quotes/thank_you.html',
                   {'res': formatted_enroll_response})
 
-
-
 # meta description for legal info
 legal_page_info = [
     {
@@ -1509,6 +1524,107 @@ legal_page_info = [
     },
 
 ]
+
+
+def alt_coverage_plan(request, plan_url, coverage_duration) -> HttpResponse:
+    """
+    Switch user to alternative coverage benefit plan
+
+    :param request:
+    :param plan_url:
+    :return:
+    """
+    print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    request.session['applicant_enrolled'] = False
+    request.session.modified = True
+    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+        quote_request_form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+
+    if not quote_request_form_data:
+        return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+
+    sp = []
+    redis_key = "{0}:{1}".format(request.session._get_session_key(),
+                                 quote_request_form_data['quote_store_key'])
+
+    print(f"redis_key: {redis_key}")
+
+    # Flag to check if quote for alternative coverage has been done.
+    # Created by joining redis_key and 'alt'. Value 1 or 0
+    redis_alt_flag = f'{redis_key}:alt'
+
+
+    if not redis_conn.exists(redis_key):
+        print("Redis connection does not exist for redis key")
+    else:
+        # Getting other coverage option for selected plan
+        # Checking to see if quote has already been done.
+        if not redis_conn.exists(redis_alt_flag):
+            # Setting flag and doing quote
+            redis_conn.set(redis_alt_flag, '1')
+            threaded_request(quote_request_form_data, request.session._get_session_key(), alt_cov_flag=True)
+            # We have added alternative coverage plans to the same redis key dictionary using threaded_request.
+        else:
+            print(f'Already quoted alternative plans.')
+
+    for plan in redis_conn.lrange(redis_key, 0, -1):
+        p = json_decoder.decode(plan.decode())
+        if not isinstance(p, str):
+            sp.append(p)
+
+    if not sp:
+        logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
+        raise Http404()
+
+    # We are not selecting the current plan from plan list(mp).
+    try:
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+    except StopIteration:
+        logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
+        raise Http404()
+
+    # We are selecting the alternative duration coverage
+    # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
+    # coverage_duration
+    try:
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
+                                                  mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
+                                                  mp['coverage_max_value'] == plan['coverage_max_value'] and
+                                                  mp['Duration_Coverage'] == coverage_duration, sp))
+    except StopIteration:
+        logger.warning(f'No alternative plan for {plan_url}')   # We need to handle this exception in template/js
+        raise Http404()
+
+    # Alternate plan found
+    alternative_plan_url = alternative_plan['unique_url']
+
+    print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
+    logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
+    logger.info(f'apply for plan - {alternative_plan_url}: {alternative_plan}')
+
+    # Keeping the same addons. We might need to change this.
+
+    selected_addon_plans = addon_plans_from_dict(
+        request.session.get(
+            '{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'], plan['unique_url'], "addon-plans"), [])
+    )
+
+    # Saving the currently selected addons in the session for alternative plan dictionary to avoid addon mismatch.
+    request.session['{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'],
+                                         alternative_plan['unique_url'], "addon-plans")] = [
+        addon_plan.data_as_dict() for addon_plan in selected_addon_plans
+    ]
+
+
+    logger.info(f'PLAN: {alternative_plan}')
+    logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
+    return render(request, 'quotes/stm_plan_apply.html',
+                  {'plan': alternative_plan, 'quote_request_form_data': quote_request_form_data,
+                   'selected_addon_plans': selected_addon_plans})
 
 
 def legal(request, slug):

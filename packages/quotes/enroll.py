@@ -111,7 +111,7 @@ class Enroll(object):
         print(f'\n------------------------------\n'
               f'HII_New_Business request XML :\n'
               f'------------------------------\n'
-              f' {pretty_xml}')
+              f'{pretty_xml}')
         return requests.post(self._url, data={'HII_New_Business': self.toXML().decode('iso-8859-1')})
 
     def _get_value(self, r):

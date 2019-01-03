@@ -74,13 +74,28 @@ def new_addon_plan_to_add(previous_plans, new_plans):
     return json_data
 
 
-def threaded_request(data, session_key):
+def threaded_request(data, session_key, alt_cov_flag=False) -> 0:
+    """TODO: docstring for threaded_request.
+
+    :param data: Quote request form data
+    :param session_key: session key
+    :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
+    :type alt_cov_flag: bool
+    :return: 0
+    """
     print("Creating threaded request")
     redis = redis_connect()
     redis_key = "{0}:{1}".format(session_key, data['quote_store_key'])
     print('redis_key: ', redis_key)
 
-    tasks = get_xml_requests(data)
+    # We have created a flag. We just pass around the flag and
+    # Change coverage duration.
+    if alt_cov_flag is True:
+        tasks = get_xml_requests(data, alt_cov_flag=True)
+        print(f'Creating alternative coverage threaded requests')
+    else:
+        tasks = get_xml_requests(data, alt_cov_flag=False)
+        print(f'Creating normal coverage threaded requests')
     print('--------------->>tasks: ', len(tasks))
     # import time
     # time.sleep(15)
