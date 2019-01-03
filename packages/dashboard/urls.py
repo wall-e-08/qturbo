@@ -35,15 +35,15 @@ urlpatterns = [
 
     path('list/', login_required(views.all_lists), name='all_lists'),
     path('list/create/', login_required(views.create_or_edit_list), name='create_list'),
-    path('list/edit/<icon_id>/', login_required(views.create_or_edit_list), name='edit_list'),
+    path('list/edit/<list_id>/', login_required(views.create_or_edit_list), name='edit_list'),
 
     path('two-column/', login_required(views.all_two_cols), name='all_two_cols'),
     path('two-column/create/', login_required(views.create_or_edit_two_col), name='create_two_col'),
-    path('two-column/edit/<icon_id>/', login_required(views.create_or_edit_two_col), name='edit_two_col'),
+    path('two-column/edit/<two_col_id>/', login_required(views.create_or_edit_two_col), name='edit_two_col'),
 
     path('guide/', login_required(views.all_guides), name='all_guides'),
     path('guide/create/', login_required(views.create_or_edit_guide), name='create_guide'),
-    path('guide/edit/<icon_id>/', login_required(views.create_or_edit_guide), name='edit_guide'),
+    path('guide/edit/<guide_id>/', login_required(views.create_or_edit_guide), name='edit_guide'),
 
     # ajax
     path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec'),

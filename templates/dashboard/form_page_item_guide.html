@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Page Item: Guide | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_pages' %}">Page</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_two_cols' %}">Page Item: Guide</a></li>
+    <li class="breadcrumb-item active">{{ action }} Guide</li>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Guide</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.url.id_for_label }}">Url</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.url.errors %}border-danger{% endif %}"
+                                name="{{ form.url.name }}"
+                                id="{{ form.url.id_for_label }}"
+                                value="{{ form.url.value|default:'' }}"
+                                placeholder="/url-friendly/text-only/allowed/">
+                        {% if form.url.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.url.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.url_text.id_for_label }}">Url Text</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.url_text.errors %}border-danger{% endif %}"
+                                name="{{ form.url_text.name }}"
+                                id="{{ form.url_text.id_for_label }}"
+                                value="{{ form.url_text.value|default:'' }}"
+                                placeholder="Text showed for Url">
+                        {% if form.url_text.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.url_text.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
