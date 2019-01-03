@@ -143,13 +143,6 @@ class ItemTwoColumn(models.Model):
 
 
 class ItemGuide(models.Model):
-    page = models.ForeignKey(
-        'Page',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
     url = models.CharField(
         max_length=200,
     )

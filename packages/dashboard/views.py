@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
+from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog
 from .forms import PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm, ItemIconForm, ItemTwoColumnForm
@@ -27,6 +27,15 @@ def index(request):
         },
         "icon": {
             "count": ItemIcon.objects.all().count(),
+        },
+        "list": {
+            "count": ItemList.objects.all().count(),
+        },
+        "two_col": {
+            "count": ItemTwoColumn.objects.all().count(),
+        },
+        "guide": {
+            "count": ItemGuide.objects.all().count(),
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
@@ -63,6 +72,27 @@ def all_icons(request):
     all_icons = ItemIcon.objects.all()
     return render(request, 'dashboard/all_icons.html', {
         "icons": all_icons,
+    })
+
+
+def all_lists(request):
+    lists = ItemList.objects.all()
+    return render(request, 'dashboard/all_lists.html', {
+        "lists": lists,
+    })
+
+
+def all_two_cols(request):
+    two_cols = ItemTwoColumn.objects.all()
+    return render(request, 'dashboard/all_two_cols.html', {
+        "two_cols": two_cols,
+    })
+
+
+def all_guides(request):
+    guides = ItemGuide.objects.all()
+    return render(request, 'dashboard/all_guides.html', {
+        "guides": guides,
     })
 
 
@@ -144,14 +174,14 @@ def create_or_edit_blog(request, blog_id=None):
             if form.is_valid():
                 print("form valid")
                 blog = form.save()
-    
+
                 # if no category found bound on that post
                 is_cat = False
                 for x in request.POST:
                     if x[:4] == cat_prefix:
                         is_cat = True
                         continue
-    
+
                 # manually managed category
                 # If you're confused, see "request.POST" values and the template file
                 if is_cat:
@@ -210,7 +240,7 @@ def create_or_edit_blog(request, blog_id=None):
         else:
             form = BlogForm(instance=blog)
             all_categories = get_category_list_by_blog(blog)
-    
+
     return render(request, 'dashboard/form_blog.html', {
         "form": form,
         "all_categories": all_categories,
@@ -250,6 +280,18 @@ def create_or_edit_page(request, page_id=None):
         "item_list_form": ItemListForm(),
         "item_two_col_form": ItemTwoColumnForm(),
     })
+
+
+def create_or_edit_list(request):
+    return HttpResponse("GG")
+
+
+def create_or_edit_two_col(request):
+    return HttpResponse("Asd")
+
+
+def create_or_edit_guide(request):
+    return HttpResponse("GG")
 
 
 def delete_page(request):
@@ -362,7 +404,7 @@ def editor_media_upload(request):
                 }
                 child.value = '%s';
             </script>
-            """% url)
+            """ % url)
         # return HttpResponse("<script>top.$('.mce-btn.mce-open').parent().find('.mce-textbox').val('{}');</script>" .format(url))  # for jquery
     return HttpResponse()
 
@@ -424,7 +466,3 @@ def ajax_item_two_col_save(request):
         else:
             print("ItemTwoColumnForm Error: {}".format(form.errors))
     return JsonResponse(json)
-
-
-
-
