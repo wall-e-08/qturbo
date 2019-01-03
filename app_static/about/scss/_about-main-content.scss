@@ -1,0 +1,33 @@
+
+#company-award{
+  background: #f2f2f2;
+}
+#company-number{
+  background: #143068;
+  .cn-layout{
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px;
+  }
+}
+.cn-item{
+  padding: 80px 20px;
+  background: rgba(0,0,0,.4);
+  color: #fff;
+  margin-bottom: 25px;
+  text-align: center;
+}
+.award{
+  background: #f2f2f2;
+}
+#qt-about-thumbnail-nav{
+  background-color: #f2f2f2;
+}
+
+.content-text{
+  background: rgba(17, 160, 234, 0.77);
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}

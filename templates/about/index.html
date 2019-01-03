@@ -40,27 +40,29 @@
                             <h5 class="py-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam, odit.
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi, eos!</h5>
                         </div>
-                        <div class="award border-bottom border-top">
+                        <div id="company-award" class="border-bottom border-top">
                             <div class="container py-5 text-center">
-                                <h2 class="font-weight-bold">Lorem ipsum dolor sit amet.</h2>
+                                <h2 class="font-weight-bold">Award & Lorem ipsum..</h2>
                                 <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
 
                                 <div class="row">
                                     {% with ''|center:'3' as range %}
                                         {% for _ in range %}
-                                            <div class="col-md-4 py-4">
+                                            <div class="col-sm-6 col-md-4 py-4">
                                                 <div class="card">
                                                     <img class="card-img-top"
                                                          src="{% static 'post/img/about-index.jpeg' %}"
                                                          alt="Card image cap">
                                                     <div class="card-body">
                                                         <h3 class="card-title">Card title</h3>
-                                                        <p class="card-text py-3">Some quick example text to build on the
+                                                        <p class="card-text py-3">Some quick example text to build on
+                                                            the
                                                             card title
                                                             and make
                                                             up the bulk of the card's content.
-                                                        <a href="#" class="">Go somewhere</a></p>
+                                                            <a href="#" class="">Go somewhere</a>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -69,13 +71,80 @@
                                 </div>
                             </div>
                         </div>
-                    <div class="history">
+                        <div id="company-history">
                             <div class="container py-5 text-left">
-                                <h2 class="font-weight-bold">Lorem ipsum dolor.</h2>
+                                <h2 class="font-weight-bold">Our History</h2>
                                 <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
 
                             </div>
+                            <div class="container">
+                                <div class="row">
+                                    {% with ''|center:'6' as range %}
+                                        {% for _ in range %}
+                                            <div class="col-sm-6 col-md-3">
+                                                <div class="d-flex flex-column border-right mb-5 text-left">
+                                                    <img class="mr-3" src="{% static 'post/img/about-index.jpeg' %}"
+                                                         alt="Our History" style="height: 100px;width: 100px">
+                                                    <div class="mt-3 mr-3">
+                                                        <h5 class="">
+                                                            <strong>Top-aligned media</strong>
+                                                        </h5>
+                                                        <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+                                                            scelerisque ante sollicitudin. Cras purus odio, vestibulum
+                                                            in
+                                                            vulputate at, tempus viverra turpis. Fusce condimentum
+                                                            nunc.</p>
+                                                        <h5 class="my-5">
+                                                            <strong>Dec 2018</strong>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                        <div id="company-number">
+                            <div class="cn-layout">
+                                <div class="row">
+                                    {% with ''|center:'6' as range %}
+                                        {% for _ in range %}
+                                            <div class="col-sm-6 col-md-4">
+                                                <div class="cn-item">
+                                                    <h2>1.9 Million</h2>
+                                                    <span>Lorem ipsum dolor sit.</span>
+
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endwith %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div id="company-investor">
+                            <div class="container">
+                                <div class="text-center py-5">
+                                    <h2>
+                                        <strong> Investor</strong>
+                                    </h2>
+                                    <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut,
+                                        voluptates? Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        Facere, temporibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        Adipisci architecto atque autem dolores eum
+                                        impedit labore nisi officia quis vel?</h5>
+                                </div>
+                                <div class="py-5 text-center">
+                                    <a href="#" target="_blank" class="btn btn-primary text-center px-5 py-2">quoteTURBO
+                                        Profile
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </b-tab>
