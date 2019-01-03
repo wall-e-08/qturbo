@@ -20,4 +20,4 @@ def slugified_page(request, slug):
         "page": page,
     }
 
-    return render(request, 'distinct-pages/base.html', ctx)
+    return render(request, 'distinct_pages/base.html', ctx)

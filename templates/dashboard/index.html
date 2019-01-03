@@ -94,12 +94,33 @@
                             url: "{% url 'dashboard:all_pages' %}",
                             new_url: "{% url 'dashboard:create_page' %}",
                         },
-                    },{
+                    }, {
                         item: {
                             name: "Icon/Image",
                             count: "{{ data.icon.count }}",
                             url: "{% url 'dashboard:all_icons' %}",
                             new_url: "{% url 'dashboard:create_icon' %}",
+                        },
+                    },  {
+                        item: {
+                            name: "List",
+                            count: "{{ data.list.count }}",
+                            url: "{% url 'dashboard:all_lists' %}",
+                            new_url: "{% url 'dashboard:create_list' %}",
+                        },
+                    }, {
+                        item: {
+                            name: "Two Column",
+                            count: "{{ data.two_col.count }}",
+                            url: "{% url 'dashboard:all_two_cols' %}",
+                            new_url: "{% url 'dashboard:create_two_col' %}",
+                        },
+                    }, {
+                        item: {
+                            name: "Guide",
+                            count: "{{ data.guide.count }}",
+                            url: "{% url 'dashboard:all_guides' %}",
+                            new_url: "{% url 'dashboard:create_guide' %}",
                         },
                     },],
                 }

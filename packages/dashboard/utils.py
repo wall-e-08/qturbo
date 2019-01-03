@@ -23,7 +23,7 @@ def get_category_list_by_blog(blog=None):
 
 
 def get_distinct_page_template_file_list():
-    temp_dir = os.path.join(settings.BASE_DIR, 'templates/distinct-pages')
+    temp_dir = os.path.join(settings.BASE_DIR, 'templates/distinct_pages')
     temp_list = os.listdir(temp_dir)
     try:
         temp_list.remove('base.html')
