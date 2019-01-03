@@ -78,35 +78,33 @@
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
 
                             </div>
-                            <div class="container">
-                                <div class="row">
-                                    {% with ''|center:'6' as range %}
-                                        {% for _ in range %}
-                                            <div class="col-sm-6 col-md-3">
-                                                <div class="d-flex flex-column border-right mb-5 text-left">
-                                                    <img class="mr-3" src="{% static 'post/img/about-index.jpeg' %}"
-                                                         alt="Our History" style="height: 100px;width: 100px">
-                                                    <div class="mt-3 mr-3">
-                                                        <h5 class="">
-                                                            <strong>Top-aligned media</strong>
-                                                        </h5>
-                                                        <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
-                                                            scelerisque ante sollicitudin. Cras purus odio, vestibulum
-                                                            in
-                                                            vulputate at, tempus viverra turpis. Fusce condimentum
-                                                            nunc.</p>
-                                                        <h5 class="my-5">
-                                                            <strong>Dec 2018</strong>
-                                                        </h5>
-                                                    </div>
-                                                </div>
+                            <div class="history-box">
+                                {% with ''|center:'10' as range %}
+                                    {% for _ in range %}
+                                        <div class="history-item d-flex flex-column border-right text-left">
+                                            <img class="mr-3" src="{% static 'post/img/about-index.jpeg' %}"
+                                                 alt="Our History" style="height: 100px;width: 100px">
+                                            <div class="mt-3 mr-3">
+                                                <h5 class="">
+                                                    <strong>Top-aligned media</strong>
+                                                </h5>
+                                                <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+                                                    scelerisque ante sollicitudin. Cras purus odio, vestibulum
+                                                    in
+                                                    vulputate at, tempus viverra turpis. Fusce condimentum
+                                                    nunc.</p>
+                                                <h5 class="my-5">
+                                                    <strong>Dec 2018</strong>
+                                                </h5>
                                             </div>
-                                        {% endfor %}
-                                    {% endwith %}
-                                </div>
+                                        </div>
+
+                                    {% endfor %}
+                                {% endwith %}
+
                             </div>
                         </div>
-                        <div id="company-number">
+                        <div id="company-number" class="mt-5">
                             <div class="cn-layout">
                                 <div class="row">
                                     {% with ''|center:'6' as range %}
@@ -149,8 +147,111 @@
                     </div>
                 </b-tab>
                 <b-tab title="Team">
-                    <br>
-                    Disabled tab!
+                    <div id="team-content">
+                        <div class="container my-5 text-center">
+                            <h2>
+                                <strong>We are the people behind quoteTURBO.com.</strong>
+                            </h2>
+                            <p class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque, est, fugit.
+                                Corporis eveniet inventore magni natus placeat,
+                                provident rem repellat sed voluptas. Asperiores aspernatur,
+                                dicta dolor in laboriosam libero, nesciunt nihil numquam optio pariatur quibusdam quidem
+                                quo similique tempora voluptate?</p>
+                        </div>
+
+                        <div id="gallery" class="py-5">
+                            <div class="gallery-accordian container mb-5">
+                                <div id="accordionExample" class="accordion">
+                                    <div class="card">
+                                        <div id="headingOne" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse" data-target="#collapseOne"
+                                                        aria-expanded="true" aria-controls="collapseOne"
+                                                        class="btn btn-link ">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseOne" aria-labelledby="headingOne"
+                                             data-parent="#accordionExample" class="collapse show">
+                                            <div class="card-body">
+                                                We have worked hard to establish relationships with the best data
+                                                sources around. Rates and plans come from the insurance companies
+                                                themselves,
+                                                who have approved the plan inventory we display before we publish them.
+                                                That said, you’ll need to confirm the final pricing with whichever
+                                                provider you choose to buy from. Keep in mind that the rates are
+                                                dependent on the accuracy of the quote information you provide them.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div id="headingTwo" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse" data-target="#collapseTwo"
+                                                        aria-expanded="false" aria-controls="collapseTwo"
+                                                        class="btn btn-link collapsed">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseTwo" aria-labelledby="headingTwo"
+                                             data-parent="#accordionExample" class="collapse">
+                                            <div class="card-body">
+                                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
+                                                terry richardson ad
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div id="headingThree" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse"
+                                                        data-target="#collapseThree" aria-expanded="false"
+                                                        aria-controls="collapseThree" class="btn btn-link collapsed">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseThree" aria-labelledby="headingThree"
+                                             data-parent="#accordionExample" class="collapse">
+                                            <div class="card-body">
+                                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
+                                                terry richardson ad
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-normal py-5">
+                                {% with ''|center:'10' as range %}
+                                    {% for _ in range %}
+                                        <div class="gallery-item">
+                                            <img src="{% static 'post/img/about-index.jpeg' %}" alt=""
+                                            >
+                                        </div>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div id="team-work" class="">
+                            <div class="team-work-content d-flex flex-column justify-content-center text-white text-center">
+                                <h2 class="font-weight-bold">Team Work</h2>
+                                <p class="py-4 font-weight-normal">Lorem ipsum dolor sit amet, consectetur adipisicing
+                                    elit. Beatae, cum! Lorem ipsum dolor sit amet, consectetur adipisicing
+                                    elit. Eveniet, tempora. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                    Expedita, laborum.</p>
+                                <h4>Lorem ipsum dolor sit amet, consectetur.</h4>
+                                <span class="text-center mt-5">
+                                    <a href="#" target="_blank" class="btn btn-outline-light px-5 py-2">Lorem ipsum dolor.</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </b-tab>
                 <b-tab title="Product">
                     <br>
@@ -171,7 +272,7 @@
             </b-tabs>
         </div>
     </section>
-    <section id="qt-about-thumbnail-nav" class="py-5 border-top">
+    <section id="qt-about-thumbnail-nav" class=" border-top">
         <div class="container">
             <div class="row">
                 {% with ''|center:'6' as range %}
