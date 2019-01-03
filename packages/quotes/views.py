@@ -127,7 +127,7 @@ def survey_members(request):
 
 
 def plan_quote(request, ins_type):
-    """
+    """Show a large list of plans to to the user.
 
     :param request: Django request object
     :param ins_type: stm/lim/anc

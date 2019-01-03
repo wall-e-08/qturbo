@@ -337,6 +337,11 @@ const router = new VueRouter({
                         gender: 'Male',
                         tobacco: 'true',
                     }
+                    this.spouse_input = {
+                        dob: '11/12/1993',
+                        gender: 'Female',
+                        tobacco: 'true',
+                    }
                 }
             },
             name: 'survey-member',
