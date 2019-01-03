@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, reverse
 from django.http import Http404, JsonResponse
 from writing.models import Blog, Category, Section
 from django.conf import settings
+from distinct_pages.utils.shortcodes import parse_shortcodes
+
 
 
 def all_blogs(request):
@@ -40,6 +42,7 @@ def all_blogs(request):
 
 def each_blog(request, model_obj):
     blog = model_obj
+    blog.content = parse_shortcodes(blog)
     ctx = {
         "blog": blog,
     }

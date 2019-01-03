@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Page Item: List | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_pages' %}">Page</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_lists' %}">Page Item: List</a></li>
+    <li class="breadcrumb-item active">{{ action }} List</li>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} list item</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.url.id_for_label }}">Url</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.url.errors %}border-danger{% endif %}"
+                                name="{{ form.url.name }}"
+                                id="{{ form.url.id_for_label }}"
+                                value="{{ form.url.value|default:'' }}"
+                                placeholder="/url-friendly/text-only/allowed/">
+                            {# TODO: need to make this url dropdown from pages #}
+
+                        {% if form.url.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.url.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.icon.id_for_label }}">Icon</label>
+                        <select name="{{ form.icon.html_name }}" id="{{ form.icon.id_for_label }}" class="form-control">
+                            {% for val, opt in form.fields.icon.choices %}
+                                <option value="{{ val }}" {% if form.icon.value == val %}selected{% endif %}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.content.id_for_label }}">List Content</label>
+                        <textarea
+                                class="form-control {% if form.content.errors %}border-danger{% endif %}"
+                                name="{{ form.content.name }}"
+                                id="{{ form.content.id_for_label }}">{{ form.content.value|default:'' }}</textarea>
+
+                        {% if form.content.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom_js %}
+    {% with selectors='#'|add:form.content.id_for_label %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+{% endblock %}
+

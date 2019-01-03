@@ -59,13 +59,6 @@ class Page(models.Model):
 
 
 class ItemList(models.Model):
-    page = models.ForeignKey(
-        'Page',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
     icon = models.ForeignKey(
         'ItemIcon',
         on_delete=models.SET_NULL,
@@ -119,13 +112,6 @@ class ItemIcon(models.Model):
 
 class ItemTwoColumn(models.Model):
     """items with 2 columns: image + text"""
-    page = models.ForeignKey(
-        'Page',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
     title = models.CharField(
         max_length=200,
         blank=True,
@@ -157,13 +143,6 @@ class ItemTwoColumn(models.Model):
 
 
 class ItemGuide(models.Model):
-    page = models.ForeignKey(
-        'Page',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
     url = models.CharField(
         max_length=200,
     )

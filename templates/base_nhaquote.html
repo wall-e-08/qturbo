@@ -88,7 +88,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="col-xs-12">
                         <div class="logo-container">
                             <a href="{% url 'quotes:home' %}">
-                                <img src="{% static 'nhaquote_old/images/logo.png' %}" alt="Logo"/>
+                                {% block navbar_brand %}
+                                    <b-navbar-brand href="{% url 'quotes:home' %}" class="font-weight-bold">
+                                        <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span>
+                                        quote
+                                        <i class="text-uppercase text-primary">turbo</i>
+                                    </b-navbar-brand>
+                                {% endblock %}
                             </a>
                         </div>
                         {% block top-menu-block %}
@@ -282,7 +288,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <p class="mrg-t-20">Protected by NAS cyber insurance</p>
                     </div>
                     <div class="col-xs-12 col-md-4 text-right">
-                        <img src="{% static 'quotes/images/getseal.png' %}" class="mw100" alt="Verified & Secured by Norton"/>
+                        <img src="{% static 'quotes/img/getseal.png' %}" class="mw100" alt="Verified & Secured by Norton"/>
                     </div>
                 </div>
             {% endblock footer %}
