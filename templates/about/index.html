@@ -106,24 +106,17 @@
                             </div>
                         </div>
                         <div id="company-number" class="mt-5">
-                            <div class="cn-layout">
-                                <div class="row">
+                                <div class="cn-layout container">
                                     {% with ''|center:'6' as range %}
                                         {% for _ in range %}
-                                            <div class="col-sm-6 col-md-4">
                                                 <div class="cn-item">
                                                     <h2>1.9 Million</h2>
                                                     <span>Lorem ipsum dolor sit.</span>
 
                                                 </div>
-                                            </div>
                                         {% endfor %}
                                     {% endwith %}
-
-                                </div>
-
                             </div>
-
                         </div>
                         <div id="company-investor">
                             <div class="container w-800">
@@ -341,8 +334,76 @@
                     </section>
                 </b-tab>
                 <b-tab title="Advertising">
-                    <br>
-                    I'm the first fading tab
+                    <div id="advertise" class="my-5">
+                        <div class="container w-800">
+                            <h2 class="py-4">
+                                <strong>Lorem ipsum dolor sit amet, consectetur adipisicing.</strong>
+                            </h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos et ex fugiat itaque
+                                pariatur. Dicta et nemo nobis quam qui!</p>
+                            <p class="text-center">
+                                <a href="#" class="btn  btn-primary p-3 font-weight-bold my-3"> Lorem ipsum.lorem
+                                    ipsum
+                                </a>
+                                {% comment %}<span class="mx-3">or</span>
+                            <a href="#" class="btn  btn-outline-secondary p-3 font-weight-bold disabled my-3"> Lorem ipsum.lorem ipsum</a>{% endcomment %}
+                            </p>
+                            <div class="ad-img">
+                                <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                            </div>
+                        </div>
+
+                    <div id="who" class="border-top mt-5">
+                        <div class="container py-5 text-center w-800">
+                            <h1>
+                                <strong>Who are we?</strong>
+                            </h1>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aspernatur delectus
+                                dolore incidunt magni officiis pariatur placeat quaerat quidem.</p>
+                            <div class="">
+                                <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div id="why" class="bg-primary">
+                        <div class="container py-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="text-light mt-5">
+                                        <h1>
+                                            <strong>Why we do it?</strong>
+                                        </h1>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aspernatur
+                                            delectus dolore incidunt magni officiis pariatur placeat quaerat quidem.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="">
+                                        <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="company-number" class="">
+                    <h1 class="text-white text-center pt-5"><strong> quoteTURBO.com audience</strong></h1>
+                            <div class="cn-layout container">
+                                    {% with ''|center:'5' as range %}
+                                        {% for _ in range %}
+                                                <div class="cn-item">
+                                                    <h2>1.9 Million</h2>
+                                                    <span>Lorem ipsum dolor sit.</span>
+
+                                                </div>
+                                        {% endfor %}
+                                    {% endwith %}
+                            </div>
+
+                        </div>
+                    </div>
                 </b-tab>
                 <b-tab title="Press">
                     <br>
