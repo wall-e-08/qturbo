@@ -16,7 +16,7 @@
                 <b-tab title="About" active>
                     <div id="about-content">
                         <div class="container my-5">
-                            <div class="mission text-center">
+                            <div class="mission text-center w-800">
                                 <h2 class="font-weight-bold mb-4">Our Mission</h2>
                                 <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae culpa expedita
                                     facere iste libero quasi rerum sequi sunt voluptas voluptatum?</h5>
@@ -24,7 +24,7 @@
                             <div class="feature-img p-5">
                                 <img src="{% static 'post/img/about-index.jpeg' %}" alt="" class="rounded">
                             </div>
-                            <div class="vision text-center">
+                            <div class="vision text-center w-800">
                                 <h2 class="font-weight-bold mb-4">Our Vision</h2>
                                 <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At consectetur corporis
                                     eaque est facere, ipsam minima obcaecati officia quasi repellendus tempore tenetur
@@ -35,17 +35,18 @@
                 </b-tab>
                 <b-tab title="Company">
                     <div id="company-content" class="">
-                        <div class="container text-center py-5">
+                        <div class="container text-center py-5 w-800">
                             <h2 class="font-weight-bold">Who we are</h2>
                             <h5 class="py-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam, odit.
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi, eos!</h5>
                         </div>
                         <div id="company-award" class="border-bottom border-top">
-                            <div class="container py-5 text-center">
+                            <div class="container py-5 text-center w-800">
                                 <h2 class="font-weight-bold">Award & Lorem ipsum..</h2>
                                 <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
-
+                            </div>
+                            <div class="container">
                                 <div class="row">
                                     {% with ''|center:'3' as range %}
                                         {% for _ in range %}
@@ -125,7 +126,7 @@
 
                         </div>
                         <div id="company-investor">
-                            <div class="container">
+                            <div class="container w-800">
                                 <div class="text-center py-5">
                                     <h2>
                                         <strong> Investor</strong>
@@ -148,7 +149,7 @@
                 </b-tab>
                 <b-tab title="Team">
                     <div id="team-content">
-                        <div class="container my-5 text-center">
+                        <div class="container my-5 text-center w-800">
                             <h2>
                                 <strong>We are the people behind quoteTURBO.com.</strong>
                             </h2>
@@ -254,8 +255,90 @@
                     </div>
                 </b-tab>
                 <b-tab title="Product">
-                    <br>
-                    I'm the first fading tab
+                    <div class="container text-center my-5 w-800">
+                        <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                            Architecto consequuntur fuga omnis recusandae sequi tenetur voluptates? Asperiores fuga iure
+                            numquam!</h4>
+                    </div>
+                    <section id="qt-product" class="border-top py-5">
+                        <div class="container">
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <div class="">
+                                            <a href="" class="btn btn-lg btn-primary text-white text-center px-4 mb-3">
+                                                Search for
+                                                product
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
                 </b-tab>
                 <b-tab title="Advertising">
                     <br>
