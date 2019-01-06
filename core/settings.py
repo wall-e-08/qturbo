@@ -331,6 +331,9 @@ MAIN_PLANS = (
 
 ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
 
+SHORTCODE_PREFIX = '[%'
+SHORTCODE_POSTFIX = '%]'
+
 try:
     from .local_settings import *
 except ImportError:
