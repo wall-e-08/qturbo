@@ -924,12 +924,12 @@
                         <br>
                         <div class="row text-left">
                             <div class="col-md-6 offset-md-3">
-                                <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
-                                             :prop_min_age="21" :inputs="own_input"></survey-card>
+                                <survey-card :survey_type="holder_types_enum.own" :prop_max_age={{ applicant_max_age }}
+                                             :prop_min_age={{ applicant_min_age }} :inputs="own_input"></survey-card>
 
                                 <template>
-                                    <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
-                                                 :prop_min_age="21" :inputs="spouse_input"></survey-card>
+                                    <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age={{ spouse_max_age }}
+                                                 :prop_min_age={{ spouse_min_age }} :inputs="spouse_input"></survey-card>
                                     <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
                                          v-else>
                                         <div class="d-flex align-items-center qt-survey-who">
@@ -946,7 +946,7 @@
                                 <template>
                                     <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
                                                  :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
-                                                 :prop_max_age="25" :prop_min_age="2"></survey-card>
+                                                 :prop_max_age={{ dependents_max_age }} :prop_min_age={{ dependents_min_age }}></survey-card>
                                     <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
                                          v-if="dependents.length <= max_dependents">
                                         <div class="d-flex align-items-center qt-survey-who">
