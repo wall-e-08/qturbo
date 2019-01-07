@@ -7,7 +7,7 @@
             <router-view></router-view>
         </div>
     </section>
-    <div class="container mb-4">
+    <div class="container my-4">
         <h5 class="text-secondary">We help you compare quotes from health insurance companies listed on
             <a href="#" class="text-secondary">
                 <u> HealthCare.gov</u>
@@ -676,7 +676,7 @@
                     <div class="card-header text-left" id="headingOne">
                         <h5 class="mb-0">
                             <button class="btn btn-link " type="button" data-toggle="collapse" data-target="#collapseOne"
-                                    aria-expanded="true" aria-controls="collapseOne"> <span> + -</span>
+                                    aria-expanded="true" aria-controls="collapseOne"><span> + -</span>
                                 Are the price on your site correct?
                             </button>
                         </h5>
@@ -727,44 +727,46 @@
         </div>
         <div class="container text-center mb-5">
             <h6>
-                <a href="#" target="_blank" class="font-weight-bold">Learn more About Us <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
-                                        <path fill="currentColor"
-                                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
-                                    </svg></a></h6>
+                <a href="#" target="_blank" class="font-weight-bold">Learn more About Us
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
+                        <path fill="currentColor"
+                              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+                    </svg>
+                </a></h6>
         </div>
     </section>
     <section id="blog" class="bg-white py-5">
-    <div class="text-center container"> <h2 class="font-weight-bold"> Recently Written By Our Insurance Experts</h2></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 mt-5">
-                <a href="">
-                    <div class="position-relative">
-                    <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
-                        <div class="position-absolute text-center blog-article">
-                            <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
-                            <h2 class="text-light text-center">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
-                        </div>
-                        </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <div class="blog-right">
+        <div class="text-center container"><h2 class="font-weight-bold"> Recently Written By Our Insurance Experts</h2></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mt-5">
                     <a href="">
-                    <img src="{% static 'quotes/img/blog3.jpg' %}" alt="">
-                    <h4 class=" blog-question">Q: Will the Medicare Part B Premium Cost Increase in 2018?</h4>
-                        </a>
+                        <div class="position-relative">
+                            <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
+                            <div class="position-absolute text-center blog-article">
+                                <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
+                                <h2 class="text-light text-center">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="blog-right text-secondary">
-                    <a href="">
-                    <img src="{% static 'quotes/img/blog2.jpg' %}" alt="">
-                    <h4 class=" mt-4 blog-question">4 States Are Restoring the Individual Mandate to Buy Health Insurance</h4>
+                <div class="col-md-4">
+                    <div class="blog-right">
+                        <a href="">
+                            <img src="{% static 'quotes/img/blog3.jpg' %}" alt="">
+                            <h4 class=" blog-question">Q: Will the Medicare Part B Premium Cost Increase in 2018?</h4>
                         </a>
+                    </div>
+                    <div class="blog-right text-secondary">
+                        <a href="">
+                            <img src="{% static 'quotes/img/blog2.jpg' %}" alt="">
+                            <h4 class=" mt-4 blog-question">4 States Are Restoring the Individual Mandate to Buy Health Insurance</h4>
+                        </a>
+                    </div>
                 </div>
+
             </div>
-            
         </div>
-    </div>
     </section>
 {% endblock %}
 
@@ -901,69 +903,108 @@
     <script type="text/x-template" id="survey-template">
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
-                <div>
-                    <router-link :to="{ name: 'root'}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
-                            <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
-                        </svg>
-                        Back
-                    </router-link>
-                    <div class="card text-center mt-2">
-                        <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
-                        <div class="card-body">
-                            <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
-                            <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
-                                this new coverage.</p>
-                            <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
-                                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
-                                     viewBox="0 0 24 24">
-                                    <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
-                                </svg>
-                            </a>
-                            <br>
-                            <div class="row text-left">
-                                <div class="col-md-6 offset-md-3">
-                                    <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
-                                                 :prop_min_age="21" :inputs="own_input"></survey-card>
-        
-                                    <template>
-                                        <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
-                                                     :prop_min_age="21" :inputs="spouse_input"></survey-card>
-                                        <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
-                                             v-else>
-                                            <div class="d-flex align-items-center qt-survey-who">
-                                                <div class="font-md pl-2 font-sm font-wight-600 text-primary">
-                                                    <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
-                                                        +
-                                                    </div>
-                                                    <span class="pl-2">Add a Spouse</span>
+                <router-link :to="{ name: 'root'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                        <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                    </svg>
+                    Back
+                </router-link>
+                <div class="card text-center mt-2">
+                    <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
+                    <div class="card-body">
+                        <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
+                        <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
+                            this new coverage.</p>
+                        <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                            <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
+                                 viewBox="0 0 24 24">
+                                <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+                            </svg>
+                        </a>
+                        <br>
+                        <div class="row text-left">
+                            <div class="col-md-6 offset-md-3">
+                                <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
+                                             :prop_min_age="21" :inputs="own_input"></survey-card>
+
+                                <template>
+                                    <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
+                                                 :prop_min_age="21" :inputs="spouse_input"></survey-card>
+                                    <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
+                                         v-else>
+                                        <div class="d-flex align-items-center qt-survey-who">
+                                            <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                                <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                    +
                                                 </div>
+                                                <span class="pl-2">Add a Spouse</span>
                                             </div>
                                         </div>
-                                    </template>
-        
-                                    <template>
-                                        <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
-                                                     :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
-                                                     :prop_max_age="25" :prop_min_age="2"></survey-card>
-                                        <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
-                                             v-if="dependents.length <= max_dependents">
-                                            <div class="d-flex align-items-center qt-survey-who">
-                                                <div class="font-md pl-2 font-sm font-wight-600 text-primary">
-                                                    <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
-                                                        +
-                                                    </div>
-                                                    <span class="pl-2">Add a Dependent</span>
+                                    </div>
+                                </template>
+
+                                <template>
+                                    <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                                 :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
+                                                 :prop_max_age="25" :prop_min_age="2"></survey-card>
+                                    <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
+                                         v-if="dependents.length <= max_dependents">
+                                        <div class="d-flex align-items-center qt-survey-who">
+                                            <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                                <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                    +
                                                 </div>
+                                                <span class="pl-2">Add a Dependent</span>
                                             </div>
                                         </div>
-                                    </template>
+                                    </div>
+                                </template>
+                                <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" :to="{ name: 'survey-income'}">Next</router-link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="monthly-income-template">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <router-link :to="{ name: 'survey-member'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                        <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                    </svg>
+                    Back
+                </router-link>
+
+                <div class="card text-center mt-2">
+                    <div class="card-body">
+                        <div class="row text-left">
+                            <div class="col-md-6 offset-md-3">
+                                <form>
+                                    <label for="enroll-monthly-income" class="font-mm" style="font-weight: 600;">Your Monthly Income
+                                        <span id="enroll-monthly-income-label" class="cur-p btn btn-outline-dark rounded-circle p-0 font-weight-bold font-xs"
+                                        style="width: 23px;line-height: 23px;height: 23px;">i</span>
+                                    </label>
+                                    <b-tooltip target="enroll-monthly-income-label">
+                                        Household income <br>
+                                        Enter the gross income from your 2018 (or most recent) income tax return, and adjust for changes to your income and deductions for 2019.
+                                    </b-tooltip>
+                                    <div class="input-group mb-3">
+                                        <br>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="text"v-model="income" v-on:keydown="accept_only_number"
+                                           class="form-control qt-survey-input" id="enroll-monthly-income" name="monthly-income" >
+                                    </div>
                                     <button id="submit_quote_request"
                                             class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
                                             v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
                                         Check Quote
                                     </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
