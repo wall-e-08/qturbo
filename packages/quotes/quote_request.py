@@ -4,6 +4,8 @@ import re
 import html
 import time
 import datetime
+from typing import List
+
 import requests
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
@@ -16,7 +18,7 @@ from quotes.models import Carrier
 from quotes.quote_response import (StmQuoteResponse, EverestResponse, HealtheFlexResponse,
                                         HealtheMedResponse, PremierResponse, SageResponse, SelectResponse,
                                         LimQuoteResponse, PrincipleResponse, UnifiedResponse, LifeShieldResponse,
-                                        CardinalResponse, VitalaCareResponse, HealthChoiceResponse,
+                                        AdvantHealthResponse, CardinalResponse, VitalaCareResponse, HealthChoiceResponse,
                                         LegionLimitedMedicalResponse, USADentalResponse, FoundationDentalResponse,
                                         FreedomSpiritPlusResponse, SafeguardCriticalIllnessResponse)
 from quotes.us_states import states
@@ -34,6 +36,12 @@ REQUEST_ATTRS = [
     'Include_Spouse', 'Spouse_Gender', 'Spouse_DOB', 'Children_Count', 'Plan_ID',
     'quote_request_timestamp', 'quote_store_key'
 ]
+
+COINS_DICT = {
+        '20': '80/20',
+        '50': '50/50',
+        '30': '70/30',
+        '0': '100/0'}
 
 
 class QRXmlBase(object):
@@ -124,6 +132,28 @@ class QRXmlBase(object):
     @classmethod
     def _combination_data(cls, data):
         raise NotImplemented
+
+    @classmethod
+    def set_alternative_attr(cls, state: str) -> None:
+        """
+        Set own Coinsurance Percentage, Benefit Amount and Coverage_Max
+
+        :return: None
+        """
+        # Instead of taking the duration coverage of class, we take it from settings var. The static value persists in
+        # class and causes the same quote twice.
+        current_coverage = settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[cls.Name][0]
+
+        try:
+            dur_cov_complement_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[cls.Name][state]) - {current_coverage}
+        except KeyError:
+            print(f'State not found in STATE_SPECIFIC_PLAN_DURATION dictionary')
+            return
+
+        print(f'Alternative duration coverage for {cls.Name} is {dur_cov_complement_set}')
+
+        cls._D_C = {'attr': 'Duration_Coverage', 'values': list(dur_cov_complement_set)}
+
 
     def _get_value(self, r):
         return (r.text.replace("&amp;", '&') if r.tag == 'string'
@@ -592,6 +622,9 @@ class UnifiedXml(QRXmlBase):
 
 class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                     DurationCoverageMixIn, BenefitAmountMixIn):
+    """
+    The dictinaries _Coin_P, _D_C, _B_A, _C_M has a key named 'values'. It's confusing and should be addressed.
+    """
 
     Plan_ID = 112
 
@@ -600,7 +633,7 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
     # '80/20', '50/50', '70/30', '100/0'
     _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20', '50/50', '70/30', '100/0']}
 
-    _D_C = {'attr': 'Duration_Coverage', 'values': ['3*1', '3*2']}
+    _D_C = {'attr': 'Duration_Coverage', 'values': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[Name]}
 
     # '2000', '3000', '4000', '5000'
     _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '3000', '4000', '5000']}
@@ -651,6 +684,8 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                 for cm in cls._C_M['values'] for ba in cls._B_A['values']
                 for dc in cls._D_C['values'] for cp in cls._Coin_P['values']]
 
+
+
     def _get_coverage_max(self):
         return self.Coverage_Max
 
@@ -672,6 +707,95 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                                                      self.get_plan_duration_coverage_value(),
                                                      self.Plan_ID, self.Payment_Option,
                                                      self._get_request_data_combination())
+
+
+class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
+                    DurationCoverageMixIn, BenefitAmountMixIn):
+    """
+    The dictinaries _Coin_P, _D_C, _B_A, _C_M has a key named 'values'. It's confusing and should be addressed.
+    """
+
+    Plan_ID = 209
+
+    Name = 'AdvantHealth STM'
+
+    # '80/20', '50/50', '70/30', '100/0'
+    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20']}
+
+    _D_C = {'attr': 'Duration_Coverage', 'values': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[Name]}
+
+    # '2000', '3000', '4000', '5000'
+    _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '4000']}
+
+    _C_M = {'attr': 'Coverage_Max', 'values': ['250000', '500000', '1000000']}
+
+    def name(self):
+        return self.Name
+
+    def attrs(self):
+        return REQUEST_ATTRS + ['Payment_Option', 'Duration_Coverage', 'Coinsurance_Percentage',
+                                'Benefit_Amount', 'Coverage_Max', 'Tobacco', 'Dependents']
+
+    @classmethod
+    def all(cls, data):
+        lst = []
+        data_tuple_lst = []
+
+        if int(data['Payment_Option']) == 2:
+            data['Duration_Coverage'] = data.get('Coverage_Days')
+
+        for cbn in cls._combination_data(data):
+            data.update(cbn)
+
+            # adjustment for 0% Co-Insurance Percentage
+            if data['Coinsurance_Percentage'] == '100/0':
+                data['Benefit_Amount'] = '0'
+
+            data_tuple = tuple(data.values())
+            if data_tuple in data_tuple_lst:
+                continue
+            data_tuple_lst.append(data_tuple)
+
+            lst.append(cls(**data))
+
+        print('AdvantHealth TOTAL REQUEST:', len(lst))
+        return lst
+
+    @classmethod
+    def _combination_data(cls, data):
+        if int(data['Payment_Option']) == 2:
+            return [{cls._Coin_P['attr']: cp, cls._B_A['attr']: ba, cls._C_M['attr']: cm}
+                    for cm in cls._C_M['values'] for ba in cls._B_A['values']
+                    for cp in cls._Coin_P['values']]
+
+        return [{cls._Coin_P['attr']: cp, cls._D_C['attr']: dc,
+                 cls._B_A['attr']: ba, cls._C_M['attr']: cm}
+                for cm in cls._C_M['values'] for ba in cls._B_A['values']
+                for dc in cls._D_C['values'] for cp in cls._Coin_P['values']]
+
+    def _get_coverage_max(self):
+        # print(f'0 plans found. Showing 0 plans.{self.toXML()}')
+        return self.Coverage_Max
+
+    def _get_request_data_combination(self):
+        return "{0}-{1}-{2}-{3}-{4}-{5}".format(self.quote_store_key, self.Name, self.Duration_Coverage,
+                                                self.Coinsurance_Percentage, self.Benefit_Amount,
+                                                self.Coverage_Max)
+
+    def process_response(self):
+        response = self.get_response()
+        if response is None:
+            self.formatted_response = None
+            return
+        self.formatted_response = AdvantHealthResponse(self.name(), response, self.State,
+                                                     self._get_coinsurance_percentage(),
+                                                     self._get_benefit_amount(),
+                                                     self._get_coverage_max(),
+                                                     self.quote_request_timestamp,
+                                                     self.get_plan_duration_coverage_value(),
+                                                     self.Plan_ID, self.Payment_Option,
+                                                     self._get_request_data_combination())
+
 
 
 class SelectXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
@@ -840,6 +964,7 @@ class HealthChoiceXml(QRXmlBase):
                                                      self.quote_request_timestamp,
                                                      self._get_request_data_combination())
 
+
 class LegionLimitedMedicalXml(QRXmlBase):
 
     Plan_ID = '122'
@@ -925,6 +1050,7 @@ class FoundationDentalXml(QRXmlBase):
                                                            self.applicant_data,
                                                            self.product_type)
 
+
 class FreedomSpiritPlusXml(QRXmlBase):
 
     Plan_ID = '64'
@@ -953,6 +1079,7 @@ class FreedomSpiritPlusXml(QRXmlBase):
                                                             self.quote_request_timestamp,
                                                             self.applicant_data, self.Plan_ID,
                                                             self.product_type)
+
 
 class SafeguardCriticalIllnessXml(QRXmlBase):
 
@@ -988,31 +1115,21 @@ class SafeguardCriticalIllnessXml(QRXmlBase):
 
 
 insurance_selector = {
-    'stm': [EverestXml, LifeShieldXML],
+    'stm': [EverestXml, LifeShieldXML, AdvantHealthXML],
     'lim': [CardinalChoiceXml, VitalaCareXml, HealthChoiceXml, LegionLimitedMedicalXml],
     'anc': [USADentalXml, FoundationDentalXml, FreedomSpiritPlusXml, SafeguardCriticalIllnessXml]
 }
 
-# """ Updated 28-Nov-2018 --- Need to be checked regularly. """
-# Not Necessary
-# insurance_state_dict = {
-#     LifeShieldXML : ["AL", "AZ", "CO", "DC", "DE", "FL", "GA", "IL", "IN", "KY", "LA", "MN", "MS", "MO", "NV", "NC", "OK", "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WV"],
-#     VitalaCareXml : ["CA", "DC", "FL", "IA", "LA", "SC", "TN", "WV", "WY"],
-#     HealthChoiceXml : ["AL", "AZ", "CA", "DC", "FL", "GA", "IL", "IA", "KY", "LA", "MI", "MS", "NE", "NV", "NM", "ND", "OH", "OK", "PA", "SC", "TN", "TX", "VA", "WV", "WI", "WY"],
-#     CardinalChoiceXml : ["AL", "AZ", "CA", "DC", "DE", "FL", "GA", "HI", "IL", "IN", "IA", "KY", "LA", "MI", "MS", "MO", "NE", "NV", "NM", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "TN", "TX", "UT", "VA", "WV", "WI", "WY"],
-#     # EverestXml: ["AL", "AZ", "CO", "DC", "DE", "FL", "GA", "ID", "IL", "IN", "IA", "KY", "LA", "MI", "MN", "MS", "MO", "NE", "NV", "NC", "ND", "OH", "OK", "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WV", "WI", "WY"], # Is everest active?
-#     EverestXml: []
-#
-# }
 
-
-def get_xml_requests(data:dict) -> list:
+def get_xml_requests(data: dict, alt_cov_flag: bool = False) -> List[QRXmlBase]:
     """
     This is the class that is called by celery to create initial quote
     request xml for sending.
 
     :param data: Quote request form data
-    :type data: Python dictionary object
+    :type data: Python dictionary
+    :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
+    :type alt_cov_flag: bool
     :return: list of xml objects
     """
     print("packages/quotes/quote_request.py -- Line No. 770")
@@ -1021,12 +1138,18 @@ def get_xml_requests(data:dict) -> list:
 
     app_state = data['State']
     xml_requests = []
+
+
     for xml_cls in insurance_selector[data['Ins_Type']]:
         if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
             print(f"{xml_cls.Name} is available in state: {app_state}")
+            if alt_cov_flag is True and data['Ins_Type'] == 'stm':
+                print(f'Setting alternative coverage options for {xml_cls.Name}')
+                xml_cls.set_alternative_attr(app_state)
             xml_requests += xml_cls.all(data)
         else:
-            print(f"{xml_cls.Name} is NOT available in state: {app_state}")
+            print(f'{xml_cls.Name} is NOT available in state: {app_state}')
+
 
     print("xml_request objects: ", xml_requests.__str__())
     print("Returning xml requests.")

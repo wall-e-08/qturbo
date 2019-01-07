@@ -10,6 +10,7 @@ const v_templates = {
     root: '#root-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
+    monthly_income: '#monthly-income-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -352,6 +353,33 @@ const router = new VueRouter({
                 }
             },
             name: 'survey-member',
+        },{
+            path: 'income',
+            component: {
+                template: v_templates.monthly_income,
+                data: function () {
+                    return {
+                        income: '',
+                    }
+                },
+                methods: {
+                    accept_only_number: function (e) {
+                         /* all accepted key codes:
+                    * backspace: 8      * left arrow: 37
+                    * right arrow: 39   * del: 46
+                    * num pad: 96-105   * number: 48-57
+                    * */
+                    var kc = e.keyCode;
+                    if (![8,37,39,46].includes(kc)) {
+                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                            // prevent user from inserting non number
+                            e.preventDefault();
+                        }
+                    }
+                    }
+                }
+            },
+            name: 'survey-income',
         },]
     },{
         path: '/dashboard',
@@ -371,4 +399,8 @@ const router = new VueRouter({
         path: '*',
         redirect: '/'
     },]
+});
+
+router.afterEach((to, from) => {
+    window.scrollTo(0, 0); // if url changed scroll to TOP
 });

@@ -484,6 +484,7 @@ class FreedomSpiritPlusResponse(object):
 class SafeguardCriticalIllnessResponse(AncillariesQuoteResponse):
     pass
 
+
 class UnifiedResponse(LimQuoteResponse):
     pass
 
@@ -828,7 +829,7 @@ class StmPlan(object):
         plan_name = "{0} {1}/{2}/{3}/{4}@{5}".format(self.Name, self.option, self.get_out_of_pocket(),
                                                      self.get_coverage_max(), self.Coinsurance_Percentage,
                                                      self.Duration_Coverage)
-        if self.Name in ['Everest STM', 'LifeShield STM']:
+        if self.Name in ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']:
             return plan_name + ' Plan {0}'.format(self.Plan)
         return plan_name
 
@@ -837,7 +838,7 @@ class StmPlan(object):
                                                           self.option, self.get_out_of_pocket(),
                                                           self.get_coverage_max(), self.Coinsurance_Percentage,
                                                           self.Duration_Coverage)
-        if self.Name in ['Everest STM', 'LifeShield STM']:
+        if self.Name in ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']:
             return unique_url + 'p{0}'.format(self.Plan)
         return unique_url
 
@@ -967,6 +968,32 @@ class StmPlan(object):
                                     decimal.Decimal(data.get('ChoiceValue_AdminFee', '0.00')) +
                                     decimal.Decimal(data.get('VBP_Fee', '0.00')))
 
+        if self.Name == 'AdvantHealth STM':
+            data.update({'Plan': self.Plan, 'ChoiceValueSavings_Fee': getattr(self, 'ChoiceValueSavings_Fee', '0.00'),
+                         'ChoiceValue_AdminFee': getattr(self, 'ChoiceValue_AdminFee', '0.00'),
+                         'RealValueSavings_Fee': getattr(self, 'RealValueSavings_Fee', '0.00'),
+                         'RealValueSavings_AdminFee': getattr(self, 'RealValueSavings_AdminFee', '0.00'),
+                         'Association_Fee': getattr(self, 'Association_Fee', '0.00'),
+                         'VBP_Fee': getattr(self, 'VBP_Fee', '0.00'),
+                         'TelaDoc_Fee': self.TelaDoc_Fee,
+                         'Medsense_Fee': getattr(self, 'Medsense_Fee', '0.00'),
+                         'RxAdvocacy_Fee': self.RxAdvocacy_Fee, 'Enrollment_Fee': self.Enrollment_Fee,
+                         'Payment_Option': self.Payment_Option, 'Plan_Name': 'Plan {0}'.format(self.Plan),
+                         'Coverage_Max': self.get_coverage_max(), 'Benefit_Amount': self.get_out_of_pocket(),
+                         'Deductible_Option': 'Option{0}'.format(int(self.option)),
+                         'EnrollmentFee': self.Enrollment_Fee, 'copay_2': self.copay_2,
+                         'copay_2_text': self.copay_2_text})
+            self.actual_premium += (decimal.Decimal(data['RxAdvocacy_Fee']) +
+                                    decimal.Decimal(data['Medsense_Fee']) +
+                                    decimal.Decimal(data['TelaDoc_Fee']) +
+                                    decimal.Decimal(data['Association_Fee']) +
+                                    decimal.Decimal(data.get('RealValueSavings_Fee', '0.0')) +
+                                    decimal.Decimal(data.get('RealValueSavings_AdminFee', '0.00')) +
+                                    decimal.Decimal(data.get('ChoiceValueSavings_Fee', '0.0')) +
+                                    decimal.Decimal(data.get('ChoiceValue_AdminFee', '0.00')) +
+                                    decimal.Decimal(data.get('VBP_Fee', '0.00')))
+
+
         data['actual_premium'] = str(self.actual_premium)
         return data
 
@@ -1011,6 +1038,58 @@ class LifeShieldResponse(StmQuoteResponse):
                 plan_no = plan.tag.split('_')[1]
             except IndexError as err:
                 print("LifeShield.process_month: {0}".format(err))
+            for option in plan:
+                match = MONTH_OPTION_PATTERN.match(option.tag)
+                if match:
+                    mv = match.groupdict()
+                    for prop in option:
+                        mv[prop.tag] = prop.text
+                    mv['Plan'] = plan_no
+                    options.append(mv)
+        for opt in options:
+            opt.update(attrs)
+            stm_plan = StmPlan(self.stm_name, self.State, month, **opt)
+            if stm_plan not in self.monthly:
+                self.monthly.append(stm_plan)
+
+
+class AdvantHealthResponse(StmQuoteResponse):
+
+    special_tags = ['Quote', 'Access_Token', 'PolicyNote']
+
+    def __init__(self, stm_name, xml_text, state, coinsurance_percentage, benefit_amount,
+                 coverage_max, quote_request_timestamp, Duration_Coverage, Plan_ID,
+                 Payment_Option, request_data_combination):
+        self.Coinsurance_Percentage = coinsurance_percentage
+        self.Benefit_Amount = benefit_amount
+        self.Coverage_Max = coverage_max
+        self.Duration_Coverage = Duration_Coverage
+        self.quote_request_timestamp = quote_request_timestamp
+        self.Plan_ID = Plan_ID
+        self.Payment_Option = Payment_Option
+        self.request_data_combination = request_data_combination
+        super(AdvantHealthResponse, self).__init__(stm_name, xml_text, state)
+
+    def process_month(self, month, month_tree):
+        attrs = {'Coinsurance_Percentage': self.Coinsurance_Percentage,
+                 'Benefit_Amount': self.Benefit_Amount,
+                 'Coverage_Max': self.Coverage_Max,
+                 'Quote_ID': self.Quote_ID,
+                 'Plan_ID': self.Plan_ID,
+                 'Access_Token': self.Access_Token,
+                 'Duration_Coverage': self.Duration_Coverage,
+                 'quote_request_timestamp': self.quote_request_timestamp,
+                 'Payment_Option': self.Payment_Option,
+                 'copay': '50',
+                 'copay_text': '',
+                 'copay_2': '50',
+                 'copay_2_text': ''}
+        options = []
+        for plan in month_tree:
+            try:
+                plan_no = plan.tag.split('_')[1]
+            except IndexError as err:
+                print(f'AdvantHealth.process_month: {err}')
             for option in plan:
                 match = MONTH_OPTION_PATTERN.match(option.tag)
                 if match:
