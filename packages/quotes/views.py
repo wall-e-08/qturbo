@@ -1563,8 +1563,7 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
     print(f"redis_key: {redis_key}")
 
     # Flag to check if quote for alternative coverage has been done.
-    # Created by joining redis_key, 'alt', carrier_name and coverage_duration.
-    print(f'plan_url: {plan_url}')
+    # Created by joining redis_key and 'alt'. Value 1 or 0
     redis_alt_flag = f'{redis_key}:alt'
 
     if not redis_conn.exists(redis_key):
@@ -1575,11 +1574,6 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
         if not redis_conn.exists(redis_alt_flag):
             # Setting flag and doing quote
             redis_conn.set(redis_alt_flag, '1')
-
-            # Deleting all plans from redis key connection
-            redis_conn.delete(redis_key)
-            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
-
             threaded_request(quote_request_form_data, request.session._get_session_key(), alt_cov_flag=True)
             # We have added alternative coverage plans to the same redis key dictionary using threaded_request.
         else:

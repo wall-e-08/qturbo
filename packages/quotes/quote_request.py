@@ -134,7 +134,7 @@ class QRXmlBase(object):
         raise NotImplemented
 
     @classmethod
-    def set_alternative_attr(cls, state: str, current_coverage:str) -> None:
+    def set_alternative_attr(cls, state: str) -> None:
         """
         Set own Coinsurance Percentage, Benefit Amount and Coverage_Max
 
@@ -1121,7 +1121,7 @@ insurance_selector = {
 }
 
 
-def get_xml_requests(data: dict) -> List[QRXmlBase]:
+def get_xml_requests(data: dict, alt_cov_flag: bool = False) -> List[QRXmlBase]:
     """
     This is the class that is called by celery to create initial quote
     request xml for sending.
@@ -1143,11 +1143,9 @@ def get_xml_requests(data: dict) -> List[QRXmlBase]:
     for xml_cls in insurance_selector[data['Ins_Type']]:
         if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
             print(f"{xml_cls.Name} is available in state: {app_state}")
-
             if alt_cov_flag is True and data['Ins_Type'] == 'stm':
                 print(f'Setting alternative coverage options for {xml_cls.Name}')
                 xml_cls.set_alternative_attr(app_state)
-
             xml_requests += xml_cls.all(data)
         else:
             print(f'{xml_cls.Name} is NOT available in state: {app_state}')
