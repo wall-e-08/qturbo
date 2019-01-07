@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, reverse
+from django.shortcuts import render, reverse
 from django.http import Http404, JsonResponse
 from writing.models import Blog, Category, Section
 from django.conf import settings

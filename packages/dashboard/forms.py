@@ -1,5 +1,5 @@
 from django import forms
-from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn
+from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list
@@ -38,6 +38,7 @@ class BlogForm(forms.ModelForm):
 
 
 class ItemListForm(forms.ModelForm):
+    # TODO: need to make url drop-down from pages
     content = forms.CharField(
         widget=RichTextWidget(),
         required=False,
@@ -56,7 +57,14 @@ class ItemIconForm(forms.ModelForm):
 
 
 class ItemTwoColumnForm(forms.ModelForm):
+    content = forms.CharField(widget=RichTextWidget())
+
     class Meta:
         model = ItemTwoColumn
         fields = '__all__'
 
+
+class ItemGuideForm(forms.ModelForm):
+    class Meta:
+        model = ItemGuide
+        exclude = '__all__'

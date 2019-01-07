@@ -1954,7 +1954,7 @@ color: #3f3f3f;
 }
 
 .custom-radio label.css-label {
-    background-image: url(../images/cssradiobox.png);
+    background-image: url(../img/cssradiobox.png);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -1995,7 +1995,7 @@ color: #3f3f3f;
 }
 
 .custom-check label.css-label {
-    background-image: url(../images/csscheckbox.png);
+    background-image: url(../img/csscheckbox.png);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -2041,12 +2041,12 @@ only screen and (min-device-pixel-ratio: 1.5) {
     .home-top-container{background-image: #4D7881 url("../images/home-top-2x.jpg") no-repeat center;}
     */
     .custom-check label.css-label {
-        background-image: url(../images/csscheckbox-2x.png);
+        background-image: url(../img/csscheckbox-2x.png);
         -webkit-background-size: 17px 34px;
         background-size: 17px 34px;
     }
     .custom-radio label.css-label {
-        background-image: url(../images/cssradiobox-2x.png);
+        background-image: url(../img/cssradiobox-2x.png);
         -webkit-background-size: 19px 38px;
         background-size: 19px 38px;
     }
@@ -2867,12 +2867,26 @@ hr.small-hr:before {
                 </div>
 
                 <div class="plan-apply-container">
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-primary-apply">
-                        Apply for This Plan
-                    </a>
-                </div>
+                <div class="row">
 
+                    <div class="col">
+                        <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
+                           class="btn btn-primary btn-lg {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
+                                Apply for This Plan
+                        </a>
+                    </div>
+                {% if alternate_coverage_duration %}
+                    <div class="btn btn-secondary dropdown-toggle" style="color:black;">
+                            <select id="alternative_plans_dropdown">
+                                <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
+                                {% for duration in alternate_coverage_duration %}
+                                        <option value="{% url 'quotes:alt_coverage_plan' plan.unique_url duration %}"> {{ duration }} </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                {% endif %}
+                </div>
+                </div>
                 <a class="detailsancho"
                    href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
                    target="_blank">
@@ -3196,6 +3210,13 @@ $(function() {
             }
         });
     });
+
+    $('.apply-btn-ajax').on('click', function (event) {
+        event.preventDefault();
+        var $coverage_duration_dropdown = $('#alternative_plans_dropdown') ;
+        console.log($coverage_duration_dropdown.val());
+        location.href = $coverage_duration_dropdown.val();
+    })
 });
 
 $(document).ready(function () {

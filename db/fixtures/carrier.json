@@ -148,5 +148,20 @@
         "child_allowed": true,
         "spouse_allowed": true
     }
+},
+{
+    "model": "quotes.carrier",
+    "pk": 20,
+    "fields": {
+        "plan_id": "209",
+        "ins_type": "stm",
+        "name": "AdvantHealth STM",
+        "allowed_state": "AL,AZ,AR,KY,MA,NE,NV,OK,TN,TX,VA,WI",
+        "has_question_api": true,
+        "is_active": true,
+        "created_at": "2019-01-03T11:11:15.435Z",
+        "child_allowed": true,
+        "spouse_allowed": true
+    }
 }
 ]

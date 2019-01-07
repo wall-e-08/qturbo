@@ -10,6 +10,7 @@ const v_templates = {
     root: '#root-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
+    monthly_income: '#monthly-income-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -99,14 +100,29 @@ const v_survey_card = {
             return this.survey_type === holder_types_enum.own ? "your" : "his/her";
         },
         prevent_NaN_input: function (e) {
-            if (this.inputs.dob.length >= 10 || (e.keyCode < 48 || e.keyCode > 57)) {
-                // prevent user from inserting non number and no more than 10 character
-                e.preventDefault();
-            }
+            /* all accepted key codes:
+            * backspace: 8      * left arrow: 37
+            * right arrow: 39   * del: 46
+            * num pad: 96-105   * number: 48-57
+            * */
+            var kc = e.keyCode;  // console.log("prevent_NaN_input  " + kc)
+            if (![8,37,39,46].includes(kc)) {
+                // console.log("inside IF")
+                if (this.inputs.dob.length >= 10 || !((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                    // prevent user from inserting non number and no more than 10 character
+                    // console.log("preventing")
+                    e.preventDefault();
+                }
+            } //else console.log("Else")
         },
-        auto_slash_insert: function () {
+        auto_slash_insert: function (e) {
             this.current_stage = survey_card_stages[0];
-            if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                // if "backspace" or "del" button pressed
+                if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
+                    this.inputs.dob = this.inputs.dob.slice(0, -1)
+                }
+            } else if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
                 if (this.inputs.dob[this.inputs.dob.length - 1] !== '/') {
                     this.inputs.dob += '/';
                 }
@@ -123,12 +139,10 @@ const v_survey_card = {
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
-            console.error(age)
-            console.error("this.prop_max_age:   " + this.prop_max_age)
             if (age > this.prop_max_age) {
-                console.warn("your age must be under 99 years old !!")
+                console.warn("your age must be under " + this.prop_max_age +" years old !!")
             } else if (age < this.prop_min_age) {
-                console.warn("your age must be at least 21");
+                console.warn("your age must be at least " + this.prop_min_age);
             } else {
                 this.current_stage = survey_card_stages[1];
                 if (this.inputs.gender) this.current_stage = survey_card_stages[2];
@@ -168,8 +182,18 @@ const router = new VueRouter({
             },
             methods: {
                 validate_zip: function (e) {
-                    if (e.keyCode > 31 && (e.keyCode < 48 || e.keyCode > 57)) e.preventDefault();   // prevent if not number
-                    else return true;
+                    /* all accepted key codes:
+                    * backspace: 8      * left arrow: 37
+                    * right arrow: 39   * del: 46
+                    * num pad: 96-105   * number: 48-57
+                    * */
+                    var kc = e.keyCode;
+                    if (![8,37,39,46].includes(kc)) {
+                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                            // prevent user from inserting non number
+                            e.preventDefault();
+                        }
+                    }
                 },
                 check_zipcode: function () {
                     if (this.is_valid_zip) {
@@ -321,9 +345,41 @@ const router = new VueRouter({
                         gender: 'Male',
                         tobacco: 'true',
                     }
+                    this.spouse_input = {
+                        dob: '11/12/1993',
+                        gender: 'Female',
+                        tobacco: 'true',
+                    }
                 }
             },
             name: 'survey-member',
+        },{
+            path: 'income',
+            component: {
+                template: v_templates.monthly_income,
+                data: function () {
+                    return {
+                        income: '',
+                    }
+                },
+                methods: {
+                    accept_only_number: function (e) {
+                         /* all accepted key codes:
+                    * backspace: 8      * left arrow: 37
+                    * right arrow: 39   * del: 46
+                    * num pad: 96-105   * number: 48-57
+                    * */
+                    var kc = e.keyCode;
+                    if (![8,37,39,46].includes(kc)) {
+                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                            // prevent user from inserting non number
+                            e.preventDefault();
+                        }
+                    }
+                    }
+                }
+            },
+            name: 'survey-income',
         },]
     },{
         path: '/dashboard',
@@ -343,4 +399,8 @@ const router = new VueRouter({
         path: '*',
         redirect: '/'
     },]
+});
+
+router.afterEach((to, from) => {
+    window.scrollTo(0, 0); // if url changed scroll to TOP
 });

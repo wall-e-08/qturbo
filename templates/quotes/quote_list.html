@@ -1959,7 +1959,7 @@ color: #3f3f3f;
 }
 
 .custom-radio label.css-label {
-    background-image: url(../images/cssradiobox.png);
+    background-image: url(../img/cssradiobox.png);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -2000,7 +2000,7 @@ color: #3f3f3f;
 }
 
 .custom-check label.css-label {
-    background-image: url(../images/csscheckbox.png);
+    background-image: url(../img/csscheckbox.png);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -2046,12 +2046,12 @@ only screen and (min-device-pixel-ratio: 1.5) {
     .home-top-container{background-image: #4D7881 url("../images/home-top-2x.jpg") no-repeat center;}
     */
     .custom-check label.css-label {
-        background-image: url(../images/csscheckbox-2x.png);
+        background-image: url(../img/csscheckbox-2x.png);
         -webkit-background-size: 17px 34px;
         background-size: 17px 34px;
     }
     .custom-radio label.css-label {
-        background-image: url(../images/cssradiobox-2x.png);
+        background-image: url(../img/cssradiobox-2x.png);
         -webkit-background-size: 19px 38px;
         background-size: 19px 38px;
     }
@@ -4078,7 +4078,8 @@ $(function() {
                     'copay_2': plan.copay_2, 'copay_2_text': plan.copay_2_text,
                     'note': plan.note
                 };
-                console.log(plan);
+                {#console.log(plan);#}
+                console.log(plan.actual_premium + "\t" + plan.out_of_pocket_value + "\t" + plan.option + "\t" + plan.Coinsurance_Percentage);
                 if (plan.out_of_pocket_value) {
                     var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
                 } else if(plan.Name == 'USA Dental') {

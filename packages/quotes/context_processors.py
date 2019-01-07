@@ -68,6 +68,7 @@ def hp_context(request):
             ('152', 'Health Choice'),
             ('151', 'USA Dental'),
             ('153', 'Vitala Care'),
+            ('209', 'AdvantHealth STM'),
 
             # ('97', 'Select STM'),
             # ('90', 'Unified Health One')
@@ -75,6 +76,7 @@ def hp_context(request):
         'ctx_stm_company_list': (
             ('109', 'Everest STM'),
             ('112', 'LifeShield STM'),
+            ('209', 'AdvantHealth STM'),
         ),
         'ctx_lim_company_list': (
             ('122', 'Legion Limited Medical'),
