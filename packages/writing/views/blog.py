@@ -4,7 +4,6 @@ from writing.models import Blog, Category, Section
 from django.conf import settings
 
 
-
 def all_blogs(request):
     blogs = Blog.objects.filter(status='p').order_by('-created_time')
     blogs_senior = None
