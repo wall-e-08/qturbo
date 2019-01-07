@@ -32,7 +32,7 @@
                             <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
                         {% endif %}
                     </div>
-                
+
                     <div class="form-group">
                         <label for="{{ form.content.id_for_label }}">Page Content</label>
                         <textarea
@@ -44,7 +44,7 @@
                             <div class="form_field_error text-danger form-input-error">{{ form.content.errors|join:" " }}</div>
                         {% endif %}
                     </div>
-                
+
                     <div class="form-group">
                         <label for="{{ form.template_file.id_for_label }}">Template File</label>
                         <select name="{{ form.template_file.html_name }}" id="{{ form.template_file.id_for_label }}" class="form-control">
@@ -54,123 +54,13 @@
                             {% endfor %}
                         </select>
                     </div>
-                    {% comment %}<input type="hidden" name="all_items" :value="all_items_json"> {# saving page contents #}{% endcomment %}
-                    <button type="submit" class="btn btn-success" {% comment %}@click.prevent="before_submit"{% endcomment %}>Save</button>
+                    <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
         </div>
     </div>
 
-{% comment %}    <hr class="my-5">
-    <page-item-list></page-item-list>
-    <hr class="my-5">
-    <page-item-two-col></page-item-two-col>{% endcomment %}
-
 {% endblock %}
-
-{% comment %}
-{% block vue_templates %}
-    <script type="text/x-template" id="list-template">
-        <div class="container">
-            <div id="list-item">
-                <div class="row">
-                    <div class="col-md-4 mb-5" v-for="item in $parent.item_list">
-                        <div class="card w-100">
-                            <img v-if="item.icon_type=='img'" class="card-img-top" :src="item.img_icon" alt="Card image cap">
-                            <div style="height: 50px;" class="mx-auto p-4" v-else-if="item.icon_type=='svg'" v-html="item.svg_icon"></div>
-                            <div class="card-body">
-                                <div>ID: [[ item.id ]]</div>
-                                <div>URL: [[ item.url ]]</div>
-                                <div class="card-text" v-html="item.content"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <b-btn v-b-modal.item_list_form_modal>New List</b-btn>
-                <b-modal id="item_list_form_modal" centered title="Add new List" ref="item_list_form_modal"
-                         @ok="handle_ok" {# when pressing ok button, prevent empty input #}
-                         @shown="clear_form"> {# when showing modal, clear the form #}
-                    <form class="qt-dsb-item-form" id="qt-dsb-item-list-form">
-                        <div class="form-group">
-                            <label for="{{ item_list_form.icon.id_for_label }}">Icon</label>
-                            <select name="{{ item_list_form.icon.html_name }}" id="{{ item_list_form.icon.id_for_label }}" class="form-control">
-                                {% for val, opt in item_list_form.fields.icon.choices %}
-                                    <option value="{{ val }}" {% if item_list_form.icon.value == val %}selected{% endif %}>{{ opt }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ item_list_form.url.id_for_label }}">Url</label>
-                            <b-form-input id="{{ item_list_form.url.id_for_label }}" type="text" placeholder="Enter url"
-                                          name="{{ item_list_form.url.html_name }}"></b-form-input>
-                        </div>
-                        <div class="form-group">
-                            <label for="item-list-content">Content</label>
-                            <textarea id="item-list-content" name="{{ item_list_form.content.html_name }}"></textarea>
-                        </div>
-                    </form>
-                </b-modal>
-            </div>
-        </div>
-    </script>
-
-    <script type="text/x-template" id="two-col-template">
-        <div class="container">
-            <div id="two-col-item">
-                <div class="row">
-                    <template v-for="item in $parent.item_two_col">
-                        <div class="col-md-4 mb-5">
-                            <div class="card w-100">
-                                <img class="card-img-top" :src="item.img" alt="Card image cap">
-                                <div class="card-body">
-                                    <div>ID: [[ item.id ]]</div>
-                                    <div>Title: [[ item.title ]]</div>
-                                    <div>URL: [[ item.url ]]</div>
-                                    <div>URL Text: [[ item.url_text ]]</div>
-                                    <div class="card-text" v-html="item.content"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <b-btn v-b-modal.item_two_col_form_modal>New Two Column</b-btn>
-                <b-modal id="item_two_col_form_modal" centered title="Add new Icon" ref="item_two_col_form_modal"
-                         @ok="handle_ok" {# when pressing ok button, prevent empty input #}
-                         @shown="clear_form"> {# when showing modal, clear the form #}
-                    <form class="qt-dsb-item-form" id="qt-dsb-item-two-col-form" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="{{ item_two_col_form.title.id_for_label }}">Title</label>
-                            <b-form-input id="{{ item_two_col_form.title.id_for_label }}" type="text" placeholder="Title"
-                                          name="{{ item_two_col_form.title.html_name }}"></b-form-input>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ item_two_col_form.content.id_for_label }}">Content</label>
-                            <textarea id="{{ item_two_col_form.content.id_for_label }}" class="form-control" name="{{ item_two_col_form.content.html_name }}"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ item_two_col_form.img.id_for_label }}">Image File</label>
-                            <b-form-file id="{{ item_two_col_form.img.id_for_label }}" placeholder="Insert image file"
-                                          name="{{ item_two_col_form.img.html_name }}" accept="image/*"></b-form-file>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ item_two_col_form.url.id_for_label }}">URL</label>
-                            <b-form-input id="{{ item_two_col_form.url.id_for_label }}" type="text" placeholder="URL"
-                                          name="{{ item_two_col_form.url.html_name }}"></b-form-input>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ item_two_col_form.url_text.id_for_label }}">URL Text</label>
-                            <b-form-input id="{{ item_two_col_form.url_text.id_for_label }}" type="text" placeholder="URL Text"
-                                          name="{{ item_two_col_form.url_text.html_name }}"></b-form-input>
-                        </div>
-                    </form>
-                </b-modal>
-            </div>
-        </div>
-    </script>
-{% endblock %}
-{% endcomment %}
 
 
 {% block bottom_js %}
@@ -178,147 +68,3 @@
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 {% endblock %}
-{% comment %}
-    <script src="{% static 'jquery/jquery-ajax-only.min.js' %}"></script>
-
-    <script>
-        var toJSONString = function (form) {
-            var obj = {};
-            var elements = form.querySelectorAll("input, select, textarea");
-            for (var i = 0; i < elements.length; ++i) {
-                {#console.error(elements[i].name)#}
-                var element = elements[i];
-                var name = element.name ? element.name : 'null';
-                obj[name] = element.value;
-            }
-            return obj;
-        };
-
-        all_components['page-item-list'] = {
-            delimiters: ['[[', ']]'],
-            data: function () {
-                return {
-                    form_data: {},
-                }
-            },
-            methods: {
-                handle_ok: function (e) {
-                    // Prevent modal from closing
-                    e.preventDefault();
-                    var _t = this;
-                    _t.form_data = toJSONString(document.getElementById('qt-dsb-item-list-form'));
-                    if (_t.form_data) {
-                        $.ajax({
-                            url: '/dashboard/ajax_item_list_save/',
-                            method: 'get',
-                            dataType: 'json',
-                            data: _t.form_data,
-                            success: function (data) {
-                                if(data.success){
-                                    _t.$parent.item_list.push(data.data);
-                                    _t.form_data = {};
-                                } else {
-                                    console.error("WTF ERROR!!");
-                                    _t.form_data = {};
-                                }
-                            },
-                            error: function (err) {
-                                console.error(err);
-                                _t.form_data = {};
-                            }
-                        });
-                    } else{
-                        console.error("Enter form data");
-                    }
-                    this.$refs.item_list_form_modal.hide();
-                },
-                clear_form: function () {
-                    document.getElementById('qt-dsb-item-list-form').reset()
-                }
-            },
-            template: '#list-template'
-        };
-
-        all_components['page-item-two-col'] = {
-            delimiters: ['[[', ']]'],
-            data: function () {
-                return {
-                    form_data: {},
-                }
-            },
-            methods: {
-                handle_ok: function (e) {
-                    // Prevent modal from closing
-                    e.preventDefault();
-                    var _t = this;
-                    var two_col_form = document.getElementById('qt-dsb-item-two-col-form');
-                    _t.form_data = toJSONString(two_col_form);
-                    if (_t.form_data) {
-                        $.ajax({
-                            url: '{% url 'dashboard:ajax_item_two_col_save' %}',
-                            method: 'post',
-                            processData: false,
-                            contentType: false,
-                            data: new FormData(two_col_form),
-                            enctype: 'multipart/form-data',
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-                            },
-                            success: function (json) {
-                                if(json.success){
-                                    _t.$parent.item_two_col.push(json.data);
-                                    _t.form_data = {};
-                                } else {
-                                    console.error("WTF ERROR!!");
-                                    _t.form_data = {};
-                                }
-                            },
-                            error: function (err) {
-                                console.error(err);
-                                _t.form_data = {};
-                            }
-                        });
-                    } else{
-                        console.error("Enter form data");
-                    }
-                    this.$refs.item_two_col_form_modal.hide();
-                },
-                clear_form: function () {
-                    document.getElementById('qt-dsb-item-list-form').reset()
-                }
-            },
-            template: '#two-col-template'
-        };
-    </script>
-{% endblock %}
-
-
-{% block bootstrap_vue_init %}
-    <script type="text/javascript">
-        /****************
-         * bootstrap-vue *
-         *****************/
-        // this should be initialized at last.
-        new Vue({
-            delimiters: ['[[', ']]'],
-            data: {
-                all_items_json: '',
-                item_list: [],
-                item_two_col: [],
-            },
-            methods: {
-                before_submit: function () {
-                    var json = {};
-                    json.item_list = this.item_list.map(itm => itm.id);
-                    json.item_two_col = this.item_two_col.map(itm => itm.id);
-                    this.all_items_json = JSON.stringify(json);
-                    console.log(this.all_items_json);
-                    this.$nextTick(() => {
-                        this.$refs.main_form.submit();
-                    });
-                },
-            },
-            components: all_components,
-        }).$mount('#bootstrap-vue');
-    </script>
-{% endblock %}{% endcomment %}
