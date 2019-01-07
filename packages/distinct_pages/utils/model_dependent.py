@@ -22,3 +22,4 @@ def get_model_obj_by_slug(slug):
         "model_obj": obj,
         "model_type": model_type,
     }
+
