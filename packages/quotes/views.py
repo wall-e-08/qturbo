@@ -46,12 +46,33 @@ json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
 
-def home(request) -> HttpResponse:
-    return render(request, 'quotes/landing_page.html', {})
+def home(request: WSGIRequest) -> HttpResponse:
+    # Should this be in settings file?
+    prop = {
+        'min_age': 21,
+        'max_age': 99,
+
+        'dependents_min_age': 6,
+        'dependents_max_age': 25,
 
 
-def plans(request, zip_code=None) -> HttpResponse:
+    }
+    return render(request, 'quotes/landing_page.html', {
+        'applicant_min_age': prop['min_age'],
+        'applicant_max_age': prop['max_age'],
+
+        'spouse_min_age': prop['min_age'],
+        'spouse_max_age': prop['max_age'],
+
+        'dependents_min_age': prop['dependents_min_age'],
+        'dependents_max_age': prop['dependents_max_age']
+    })
+
+
+def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.
+
+    This view is maybe not needed. 
 
     :param request: Django request object
     :return: Django HttpResponse Object
@@ -60,7 +81,7 @@ def plans(request, zip_code=None) -> HttpResponse:
 
 
 @require_POST
-def validate_quote_form(request) -> JsonResponse:
+def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     """
 
     :param request: Django request object
