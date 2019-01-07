@@ -331,8 +331,14 @@ MAIN_PLANS = (
 
 ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
 
-SHORTCODE_PREFIX = '[%'
-SHORTCODE_POSTFIX = '%]'
+SHORTCODE_PREFIX = '{{'
+SHORTCODE_POSTFIX = '}}'
+PAGE_ITEM_MODEL_TEMPLATE = {
+    'ItemList': 'distinct_pages/items/icon.html',
+    'ItemIcon': 'distinct_pages/items/icon.html',
+    'ItemTwoColumn': 'distinct_pages/items/icon.html',
+    'ItemGuide': 'distinct_pages/items/icon.html',
+}
 
 try:
     from .local_settings import *

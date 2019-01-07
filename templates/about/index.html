@@ -5,7 +5,7 @@
 {% block about_content %}
     <section id="banner" class="">
         <div class="banner-content d-flex flex-column justify-content-center text-white text-center">
-            <h1 class="font-weight-bold">About quoteTorbo.com</h1>
+            <h1 class="font-weight-bold">About quoteTURBO.com</h1>
             <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, cum!</h4>
         </div>
 
@@ -16,7 +16,7 @@
                 <b-tab title="About" active>
                     <div id="about-content">
                         <div class="container my-5">
-                            <div class="mission text-center">
+                            <div class="mission text-center w-800">
                                 <h2 class="font-weight-bold mb-4">Our Mission</h2>
                                 <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae culpa expedita
                                     facere iste libero quasi rerum sequi sunt voluptas voluptatum?</h5>
@@ -24,7 +24,7 @@
                             <div class="feature-img p-5">
                                 <img src="{% static 'post/img/about-index.jpeg' %}" alt="" class="rounded">
                             </div>
-                            <div class="vision text-center">
+                            <div class="vision text-center w-800">
                                 <h2 class="font-weight-bold mb-4">Our Vision</h2>
                                 <h5>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At consectetur corporis
                                     eaque est facere, ipsam minima obcaecati officia quasi repellendus tempore tenetur
@@ -35,32 +35,35 @@
                 </b-tab>
                 <b-tab title="Company">
                     <div id="company-content" class="">
-                        <div class="container text-center py-5">
+                        <div class="container text-center py-5 w-800">
                             <h2 class="font-weight-bold">Who we are</h2>
                             <h5 class="py-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam, odit.
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi, eos!</h5>
                         </div>
-                        <div class="award border-bottom border-top">
-                            <div class="container py-5 text-center">
-                                <h2 class="font-weight-bold">Lorem ipsum dolor sit amet.</h2>
+                        <div id="company-award" class="border-bottom border-top">
+                            <div class="container py-5 text-center w-800">
+                                <h2 class="font-weight-bold">Award & Lorem ipsum..</h2>
                                 <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
-
+                            </div>
+                            <div class="container">
                                 <div class="row">
                                     {% with ''|center:'3' as range %}
                                         {% for _ in range %}
-                                            <div class="col-md-4 py-4">
+                                            <div class="col-sm-6 col-md-4 py-4">
                                                 <div class="card">
                                                     <img class="card-img-top"
                                                          src="{% static 'post/img/about-index.jpeg' %}"
                                                          alt="Card image cap">
                                                     <div class="card-body">
                                                         <h3 class="card-title">Card title</h3>
-                                                        <p class="card-text py-3">Some quick example text to build on the
+                                                        <p class="card-text py-3">Some quick example text to build on
+                                                            the
                                                             card title
                                                             and make
                                                             up the bulk of the card's content.
-                                                        <a href="#" class="">Go somewhere</a></p>
+                                                            <a href="#" class="">Go somewhere</a>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -69,40 +72,474 @@
                                 </div>
                             </div>
                         </div>
-                    <div class="history">
+                        <div id="company-history">
                             <div class="container py-5 text-left">
-                                <h2 class="font-weight-bold">Lorem ipsum dolor.</h2>
+                                <h2 class="font-weight-bold">Our History</h2>
                                 <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus,
                                     ducimus, nostrum. Delectus ea fuga in nisi optio quas ratione tenetur.</h5>
 
                             </div>
+                            <div class="history-box">
+                                {% with ''|center:'10' as range %}
+                                    {% for _ in range %}
+                                        <div class="history-item d-flex flex-column border-right text-left">
+                                            <img class="mr-3" src="{% static 'post/img/about-index.jpeg' %}"
+                                                 alt="Our History" style="height: 100px;width: 100px">
+                                            <div class="mt-3 mr-3">
+                                                <h5 class="">
+                                                    <strong>Top-aligned media</strong>
+                                                </h5>
+                                                <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+                                                    scelerisque ante sollicitudin. Cras purus odio, vestibulum
+                                                    in
+                                                    vulputate at, tempus viverra turpis. Fusce condimentum
+                                                    nunc.</p>
+                                                <h5 class="my-5">
+                                                    <strong>Dec 2018</strong>
+                                                </h5>
+                                            </div>
+                                        </div>
+
+                                    {% endfor %}
+                                {% endwith %}
+
+                            </div>
+                        </div>
+                        <div id="company-number" class="mt-5">
+                            <div class="cn-layout container">
+                                {% with ''|center:'6' as range %}
+                                    {% for _ in range %}
+                                        <div class="cn-item">
+                                            <h2>1.9 Million</h2>
+                                            <span>Lorem ipsum dolor sit.</span>
+
+                                        </div>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div id="company-investor">
+                            <div class="container w-800">
+                                <div class="text-center py-5">
+                                    <h2>
+                                        <strong> Investor</strong>
+                                    </h2>
+                                    <h5 class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut,
+                                        voluptates? Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        Facere, temporibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        Adipisci architecto atque autem dolores eum
+                                        impedit labore nisi officia quis vel?</h5>
+                                </div>
+                                <div class="py-5 text-center">
+                                    <a href="#" target="_blank" class="btn btn-primary text-center px-5 py-2">quoteTURBO
+                                        Profile
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </b-tab>
                 <b-tab title="Team">
-                    <br>
-                    Disabled tab!
+                    <div id="team-content">
+                        <div class="container my-5 text-center w-800">
+                            <h2>
+                                <strong>We are the people behind quoteTURBO.com.</strong>
+                            </h2>
+                            <p class="mt-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque, est, fugit.
+                                Corporis eveniet inventore magni natus placeat,
+                                provident rem repellat sed voluptas. Asperiores aspernatur,
+                                dicta dolor in laboriosam libero, nesciunt nihil numquam optio pariatur quibusdam quidem
+                                quo similique tempora voluptate?</p>
+                        </div>
+
+                        <div id="gallery" class="py-5">
+                            <div class="gallery-accordian container mb-5">
+                                <div id="accordionExample" class="accordion">
+                                    <div class="card">
+                                        <div id="headingOne" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse" data-target="#collapseOne"
+                                                        aria-expanded="true" aria-controls="collapseOne"
+                                                        class="btn btn-link ">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseOne" aria-labelledby="headingOne"
+                                             data-parent="#accordionExample" class="collapse show">
+                                            <div class="card-body">
+                                                We have worked hard to establish relationships with the best data
+                                                sources around. Rates and plans come from the insurance companies
+                                                themselves,
+                                                who have approved the plan inventory we display before we publish them.
+                                                That said, you’ll need to confirm the final pricing with whichever
+                                                provider you choose to buy from. Keep in mind that the rates are
+                                                dependent on the accuracy of the quote information you provide them.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div id="headingTwo" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse" data-target="#collapseTwo"
+                                                        aria-expanded="false" aria-controls="collapseTwo"
+                                                        class="btn btn-link collapsed">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseTwo" aria-labelledby="headingTwo"
+                                             data-parent="#accordionExample" class="collapse">
+                                            <div class="card-body">
+                                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
+                                                terry richardson ad
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div id="headingThree" class="card-header text-left">
+                                            <h5 class="mb-0">
+                                                <button type="button" data-toggle="collapse"
+                                                        data-target="#collapseThree" aria-expanded="false"
+                                                        aria-controls="collapseThree" class="btn btn-link collapsed">
+                                                    <span> + -</span>
+                                                    <p class="text-center"> Why should i buy qt?</p>
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseThree" aria-labelledby="headingThree"
+                                             data-parent="#accordionExample" class="collapse">
+                                            <div class="card-body">
+                                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus
+                                                terry richardson ad
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-normal py-5">
+                                {% with ''|center:'10' as range %}
+                                    {% for _ in range %}
+                                        <div class="gallery-item">
+                                            <img src="{% static 'post/img/about-index.jpeg' %}" alt=""
+                                            >
+                                        </div>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div id="team-work" class="">
+                            <div class="team-work-content d-flex flex-column justify-content-center text-white text-center">
+                                <h2 class="font-weight-bold">Team Work</h2>
+                                <p class="py-4 font-weight-normal">Lorem ipsum dolor sit amet, consectetur adipisicing
+                                    elit. Beatae, cum! Lorem ipsum dolor sit amet, consectetur adipisicing
+                                    elit. Eveniet, tempora. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                    Expedita, laborum.</p>
+                                <h4>Lorem ipsum dolor sit amet, consectetur.</h4>
+                                <span class="text-center mt-5">
+                                    <a href="#" target="_blank" class="btn btn-outline-light px-5 py-2">Lorem ipsum dolor.</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </b-tab>
                 <b-tab title="Product">
-                    <br>
-                    I'm the first fading tab
+                    <div class="container text-center my-5 w-800">
+                        <h4>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                            Architecto consequuntur fuga omnis recusandae sequi tenetur voluptates? Asperiores fuga iure
+                            numquam!</h4>
+                    </div>
+                    <section id="qt-product" class="border-top py-5">
+                        <div class="container">
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row border-bottom mb-5">
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <div class="">
+                                            <a href="" class="btn btn-lg btn-primary text-white text-center px-4 mb-3">
+                                                Search for
+                                                product
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div>
+                                        <img src="{% static 'post/img/quote.png' %}" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <h2 class="my-4">Lorem ipsum dolor sit amet, consectetur adipiscing</h2>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa
+                                            exercitationem hic in ipsum maiores, placeat. Lorem ipsum dolor sit
+                                            amet.</p>
+                                        <a href="" class="btn btn-lg btn-primary text-white text-center px-4">Search for
+                                            product
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
                 </b-tab>
                 <b-tab title="Advertising">
-                    <br>
-                    I'm the first fading tab
-                </b-tab>
-                <b-tab title="Press">
-                    <br>
-                    I'm the first fading tab
+                    <div id="advertise" class="my-5">
+                        <div class="container w-800">
+                            <h2 class="py-4">
+                                <strong>Lorem ipsum dolor sit amet, consectetur adipisicing.</strong>
+                            </h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos et ex fugiat itaque
+                                pariatur. Dicta et nemo nobis quam qui!</p>
+                            <p class="text-center">
+                                <a href="#" class="btn  btn-primary p-3 font-weight-bold my-3"> Lorem ipsum.lorem
+                                    ipsum
+                                </a>
+                                {% comment %}<span class="mx-3">or</span>
+                            <a href="#" class="btn  btn-outline-secondary p-3 font-weight-bold disabled my-3"> Lorem ipsum.lorem ipsum</a>{% endcomment %}
+                            </p>
+                            <div class="ad-img">
+                                <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                            </div>
+                        </div>
+
+                        <div id="who" class="border-top mt-5">
+                            <div class="container py-5 text-center w-800">
+                                <h1>
+                                    <strong>Who are we?</strong>
+                                </h1>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aspernatur
+                                    delectus
+                                    dolore incidunt magni officiis pariatur placeat quaerat quidem.</p>
+                                <div class="">
+                                    <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div id="why" class="bg-primary">
+                            <div class="container py-5">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-light mt-5">
+                                            <h1>
+                                                <strong>Why we do it?</strong>
+                                            </h1>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias
+                                                aspernatur
+                                                delectus dolore incidunt magni officiis pariatur placeat quaerat
+                                                quidem.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="">
+                                            <img src="{% static 'post/img/about-index.jpeg' %}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="company-number" class="">
+                            <h1 class="text-white text-center pt-5">
+                                <strong> quoteTURBO.com audience</strong>
+                            </h1>
+                            <div class="cn-layout container">
+                                {% with ''|center:'5' as range %}
+                                    {% for _ in range %}
+                                        <div class="cn-item">
+                                            <h2>1.9 Million</h2>
+                                            <span>Lorem ipsum dolor sit.</span>
+
+                                        </div>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+
+                        </div>
+                    </div>
                 </b-tab>
                 <b-tab title="Contact">
-                    <br>
-                    I'm the first fading tab
+                    <div class="container text-left w-800 py-5 border-bottom">
+                        <h1>
+                            <strong>Hello there!</strong>
+                        </h1>
+                        <h2 class="py-4">
+                            <strong>Lorem ipsum dolor sit amet, consectetur adipisicing elit!</strong>
+                        </h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto aspernatur blanditiis
+                            deserunt dignissimos fugiat id,
+                            odit quaerat reiciendis repellendus! Amet autem dolor eaque error nemo, obcaecati
+                            repellendus tempore velit voluptatibus.</p>
+                    </div>
+                    <div class="container text-left w-800 py-5 border-bottom">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto aspernatur blanditiis
+                            deserunt dignissimos fugiat id,
+                            odit quaerat reiciendis repellendus! Amet autem dolor eaque error nemo, obcaecati
+                            repellendus tempore velit voluptatibus.</p>
+                        <h4 class="">
+                            <strong>You can talk one of our agent!</strong>
+                        </h4>
+                        <h1 class="my-4">
+                            <strong>833-5454-6563!</strong>
+                        </h1>
+                        <p>
+                            <strong>Note!</strong>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto aspernatur blanditiis
+                            deserunt dignissimos fugiat id,
+                            odit quaerat reiciendis repellendus! Amet autem dolor eaque error nemo, obcaecati
+                            repellendus tempore velit voluptatibus.
+                        </p>
+                        <h4 class="">
+                            <strong>for friquently ask question</strong>
+                        </h4>
+                        <a href="#" target="_blank">You can visit quoteTURBO.com Help Center</a>
+                    </div>
+                    <div id="support">
+                        <div class="container text-center text-white">
+                            <h4>For friquently-asked questions and support</h4>
+                            <a href="#" target="_blank" class="text-dark">You can visit quoteTURBO.com Help Center</a>
+                            <figure class="figure my-5">
+                                <img src="{% static 'post/img/Team-Page.png' %}"
+                                     class="figure-img img-fluid rounded border-bottom"
+                                     alt="Support Team">
+                                <figcaption class="figure-caption text-white">The
+                                    <a href="#" class="text-dark">quoteTURBO.com</a>
+                                    team is here to support you during working hours Sunday – Thursday (limited support
+                                    evenings and weekends).
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <div id="form" class="container text-white">
+                            <h4 class="text-center mb-4">Or Submit a support request below:</h4>
+                            <form class="">
+                                <div class="form-group">
+                                    <label for="inquery">Inquery*</label>
+                                    <select class="form-control" id="inquery">
+                                        <option>Select your inquery</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                        <option>Lorem ipsum dolor sit.</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Name*</label>
+                                    <input type="text" class="form-control" id="name"
+                                           placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="Subject">Subject*</label>
+                                    <input type="text" class="form-control" id="Subject"
+                                           placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email*</label>
+                                    <input type="email" class="form-control" id="email"
+                                           placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone*</label>
+                                    <input type="text" class="form-control" id="phone"
+                                           placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Meaasge*</label>
+                                    <textarea class="form-control" id="message"
+                                              placeholder="" rows="5" cols="30"></textarea>
+                                </div>
+                                <div class="mt-4">
+                                    <input type="submit" value="Submit" class="submit w-100 py-2 font-weight-bold">
+                                </div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                    <div id="address">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-5 mb-4">
+                                    <h1><strong>Offices</strong></h1>
+                                    <h5 class="text-primary">Dhaka</h5>
+                                    <p>23kjdk, uuhjs hkh b .huig.bhug uxgjhbj</p>
+
+                                    <h5 class="text-primary">NewYork City</h5>
+                                    <p>23kjdk, uuhjs hkh b .huig.bhug uxgjhbj</p>
+
+                                    <h5 class="text-primary">Washington City</h5>
+                                    <p>23kjdk, uuhjs hkh b .huig.bhug uxgjhbj</p>
+                                </div>
+                                <div class="col-md-7 mb-4">
+                                    <div class="map">
+                                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.3350859992443!2d90.36429385104209!3d23.806680684485933!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b221929b83%3A0xf6184d24076e8248!2sMirpur+Rd%2C+Dhaka!5e0!3m2!1sen!2sbd!4v1546844021689"
+                                                width="100%" height="300" frameborder="0" style="border:0" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </b-tab>
             </b-tabs>
         </div>
     </section>
-    <section id="qt-about-thumbnail-nav" class="py-5 border-top">
+    <section id="qt-about-thumbnail-nav" class=" border-top">
         <div class="container">
             <div class="row">
                 {% with ''|center:'6' as range %}
