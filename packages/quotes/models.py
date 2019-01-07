@@ -3,6 +3,11 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
+class PatchedMultiSelectField(MultiSelectField):
+  def value_to_string(self, obj):
+    value = self.value_from_object(obj)
+    return self.get_prep_value(value)
+
 from core import settings
 from .us_states import states, states_list
 
@@ -32,7 +37,7 @@ class Carrier(models.Model):
         db_index=True
     )
 
-    allowed_state = MultiSelectField(
+    allowed_state = PatchedMultiSelectField(
         verbose_name=_("States"),
         max_length=500,
         choices=states,
