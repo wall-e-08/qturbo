@@ -4,23 +4,7 @@
 {% block main_content %}
     <section>
         <div class="container">
-            {#<router-link :to="{ name: 'survey-member'}" class="btn btn-danger">survey-member</router-link>#}
-            <div class="row swap-div-mobile">
-                <div class="col-lg-8">
-                    <router-view></router-view>
-                </div>
-
-                <div class="col-lg-4 text-center">
-                    <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
-                    <div class="h-100 d-flex align-items-center justify-content-center">
-                        <div class="">
-                            <a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
-                            <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>
-                        </div>
-                    </div>
-                    <hr class="mb-5 d-block d-lg-none">
-                </div>
-            </div>
+            <router-view></router-view>
         </div>
     </section>
     <div class="container mb-4">
@@ -788,53 +772,69 @@
 {% block vue_templates %}
     {# REMEMBER:: no multiple tags for vue component!! #}
     <script type="text/x-template" id="root-template">
-        <div>
-            <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>
-                That’s Right for You
-            </h1>
-            <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000
-                <br>
-                Insurance Plans
-            </h2>
-            <div id="find-plans" class="mb-5">
-                <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
-                      style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
-                    <div class="row">
-                        <div class="col-md-4 border-md-right border-0 border-tertiary">
-                            <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
-                                <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking
-                                    For:
+        <div class="row swap-div-mobile">
+            <div class="col-lg-8">
+                <div>
+                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>
+                        That’s Right for You
+                    </h1>
+                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000
+                        <br>
+                        Insurance Plans
+                    </h2>
+                    <div id="find-plans" class="mb-5">
+                        <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
+                              style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
+                            <div class="row">
+                                <div class="col-md-4 border-md-right border-0 border-tertiary">
+                                    <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                        <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking
+                                            For:
+                                        </div>
+                                        <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                                    </div>
                                 </div>
-                                <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
-                                <label for="home-zip-code"
-                                       class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip
-                                    Code
-                                </label>
-                                <div class="position-relative">
-                                    <input type="text" id="home-zip-code"
-                                           class="font-md border-0 outline-0 w-100"
-                                           :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
-                                           v-on:keydown="validate_zip($event)">
-                                    <div class="position-absolute vertical-center" style="left:99%"
-                                         v-html="current_marker"></div>
+                                <div class="col-md-4">
+                                    <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                        <label for="home-zip-code"
+                                               class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip
+                                            Code
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" id="home-zip-code"
+                                                   class="font-md border-0 outline-0 w-100"
+                                                   :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
+                                                   v-on:keydown="validate_zip($event)">
+                                            <div class="position-absolute vertical-center" style="left:99%"
+                                                 v-html="current_marker"></div>
+                                        </div>
+                                        <div class="home-zc-err"></div>
+                                    </div>
                                 </div>
-                                <div class="home-zc-err"></div>
+                                <div class="col-md-4">
+                                    <div class="h-100 rounded" style="min-height: 50px;">
+                                        <button type="submit"
+                                                class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">
+                                            Find plans
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="h-100 rounded" style="min-height: 50px;">
-                                <button type="submit"
-                                        class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">
-                                    Find plans
-                                </button>
-                            </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
+                <div class="h-100 d-flex align-items-center justify-content-center">
+                    <div class="">
+                        {% comment %}<a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
+                        <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>{% endcomment %}
+                        <img src="{% static 'quotes/img/background-home.png' %}" alt="bg">
+                    </div>
+                </div>
+                <hr class="mb-5 d-block d-lg-none">
             </div>
         </div>
     </script>
@@ -853,7 +853,7 @@
             </p>
             <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
                    @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
-                   class="font-mm border border-secondary mb-3 rounded qt-survey-input">
+                   class="font-mm border border-secondary mb-3 rounded w-100 qt-survey-input">
 
             <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
                 <!--show only if current stage is gender or tobacco-->
@@ -899,68 +899,72 @@
     </script>
 
     <script type="text/x-template" id="survey-template">
-        <div>
-            <router-link :to="{ name: 'root'}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
-                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
-                </svg>
-                Back
-            </router-link>
-            <div class="card text-center mt-2">
-                <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
-                <div class="card-body">
-                    <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
-                    <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
-                        this new coverage.</p>
-                    <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
-                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
-                             viewBox="0 0 24 24">
-                            <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <div>
+                    <router-link :to="{ name: 'root'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                            <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
                         </svg>
-                    </a>
-                    <br>
-                    <div class="row text-left">
-                        <div class="col-6 offset-3">
-                            <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
-                                         :prop_min_age="21" :inputs="own_input"></survey-card>
-
-                            <template>
-                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
-                                             :prop_min_age="21" :inputs="spouse_input"></survey-card>
-                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
-                                     v-else>
-                                    <div class="d-flex align-items-center qt-survey-who">
-                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
-                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
-                                                +
+                        Back
+                    </router-link>
+                    <div class="card text-center mt-2">
+                        <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
+                        <div class="card-body">
+                            <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
+                            <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
+                                this new coverage.</p>
+                            <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
+                                     viewBox="0 0 24 24">
+                                    <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+                                </svg>
+                            </a>
+                            <br>
+                            <div class="row text-left">
+                                <div class="col-md-6 offset-md-3">
+                                    <survey-card :survey_type="holder_types_enum.own" :prop_max_age="99"
+                                                 :prop_min_age="21" :inputs="own_input"></survey-card>
+        
+                                    <template>
+                                        <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age="99"
+                                                     :prop_min_age="21" :inputs="spouse_input"></survey-card>
+                                        <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
+                                             v-else>
+                                            <div class="d-flex align-items-center qt-survey-who">
+                                                <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                                    <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                        +
+                                                    </div>
+                                                    <span class="pl-2">Add a Spouse</span>
+                                                </div>
                                             </div>
-                                            <span class="pl-2">Add a Spouse</span>
                                         </div>
-                                    </div>
-                                </div>
-                            </template>
-
-                            <template>
-                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
-                                             :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
-                                             :prop_max_age="25" :prop_min_age="2"></survey-card>
-                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
-                                     v-if="dependents.length <= max_dependents">
-                                    <div class="d-flex align-items-center qt-survey-who">
-                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
-                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
-                                                +
+                                    </template>
+        
+                                    <template>
+                                        <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                                     :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
+                                                     :prop_max_age="25" :prop_min_age="2"></survey-card>
+                                        <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
+                                             v-if="dependents.length <= max_dependents">
+                                            <div class="d-flex align-items-center qt-survey-who">
+                                                <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                                    <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                        +
+                                                    </div>
+                                                    <span class="pl-2">Add a Dependent</span>
+                                                </div>
                                             </div>
-                                            <span class="pl-2">Add a Dependent</span>
                                         </div>
-                                    </div>
+                                    </template>
+                                    <button id="submit_quote_request"
+                                            class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
+                                            v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
+                                        Check Quote
+                                    </button>
                                 </div>
-                            </template>
-                            <button id="submit_quote_request"
-                                    class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                    v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
-                                Check Quote
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
