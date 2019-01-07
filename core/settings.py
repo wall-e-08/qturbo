@@ -323,6 +323,7 @@ MAIN_PLANS = (
     ('USA Dental', 'USA Dental'),
     ('Everest STM', 'Everest STM'),
     ('LifeShield STM', 'LifeShield STM'),
+    ('AdvantHealth STM', 'AdvantHealth STM'),
     ('Cardinal Choice', 'Cardinal Choice'),
     ('Health Choice', 'Health Choice'),
     ('Vitala Care', 'Vitala Care'),
@@ -338,6 +339,52 @@ PAGE_ITEM_MODEL_TEMPLATE = {
     'ItemIcon': 'distinct_pages/items/icon.html',
     'ItemTwoColumn': 'distinct_pages/items/icon.html',
     'ItemGuide': 'distinct_pages/items/icon.html',
+}
+
+# ------------------------------------+
+#    State specific plan duration     +
+# ------------------------------------+
+
+STATE_SPECIFIC_PLAN_DURATION = {
+    'LifeShield STM': {
+        'AL': ['3*2', '12*1', '12*3'],
+        'AZ': ['3*2', '6*2'],
+        'CO': ['3*2', '6*2'],
+        'DE': ['3*2', '12*1', '12*3'],
+        'FL': ['3*2', '12*1', '12*3'],
+        'GA': ['3*2', '12*1', '12*3'],
+        'IL': ['3*2', '12*1', '12*3'],
+        'LA': ['3*2', '6*6'],
+        'MN': ['3*2', '6*2'],
+        'MS': ['3*2', '12*1', '12*3'],
+        'MO': ['3*2', '6*6'],
+        'NC': ['3*2', '12*1', '12*3'],
+        'OH': ['3*2', '12*1', '12*3'],
+        'OK': ['3*2', '6*6'],
+        'PA': ['3*2', '12*1', '12*3'],
+        'SD': ['3*2', '6*6'],
+        'TN': ['3*2', '12*1', '12*3'],
+        'TX': ['3*2', '12*1', '12*3'],
+        'VA': ['3*2', '12*1', '12*3'],
+    },
+    'AdvantHealth STM': {
+        'AL': ['6*1','6*6'],
+        'AZ': ['6*1','6*2', '6*6'],
+        "AR": ['6*1','6*6'],
+        "KY": ['6*1','6*6'],
+        'MS': ['6*1','6*6'],
+        "NE": ['6*1','6*6'],
+        "NV": ['6*1','6*6'],
+        'OK': ['6*1','6*6'],
+        'TX': ['6*1','6*6'],
+        'VA': ['6*1','6*6'],
+        "WI": ['6*1','6*6'],
+    }
+}
+
+STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
+    'LifeShield STM': ['3*2'],
+    'AdvantHealth STM': ['6*6']
 }
 
 try:

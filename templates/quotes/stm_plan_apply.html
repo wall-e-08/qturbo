@@ -3042,19 +3042,21 @@ hr.small-hr:before {
 {% block extra_js %}
 <script>
     /**
-     * Reloading page if back button was pressed using performance navigation.
-     * Documentation: https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigation.
+     * The following lines have error in them.
+     *
      */
-    $(document).ready(function($) {
-        console.log('Page loaded: /stm/apply.');
-        if (window.history && window.history.pushState) {
-            window.history.pushState('forward', null, './#forward');
-            $(window).on('popstate', function() {
-                console.log('Back button was pressed on /stm/apply.');
-                location.href = "{% url 'quotes:stm_plan' plan.unique_url %}";
-            });
-        }
-    });
+
+
+    {#$(document).ready(function($) {#}
+    {#    console.log('Page loaded: /stm/apply.');#}
+    {#    if (window.history && window.history.pushState) {#}
+    {#        window.history.pushState('forward', null, './#forward');#}
+    {#        $(window).on('popstate', function() {#}
+    {#            console.log('Back button was pressed on /stm/apply.');#}
+    {#            location.href = "{% url 'quotes:stm_plan' plan.unique_url %}";#}
+    {#        });#}
+    {#    }#}
+    {% comment %}});{% endcomment %}
     $(function(){
         $('#applyButton').click(function(e) {
             vimm_button_click_processing(

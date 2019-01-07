@@ -2867,28 +2867,26 @@ hr.small-hr:before {
                 </div>
 
                 <div class="plan-apply-container">
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-primary-apply">
-                        {% if alternate_coverage_duration %}
-                            {{ plan.Duration_Coverage }}
-                        {% else %}
-                            Apply for This Plan
-                        {% endif %}
-                    </a>
-                </div>
-                {% comment %}
-                    Created a new button for alternate coverage duration.
-                    We will have to change the UI.
-                {% endcomment %}
-                {% if alternate_coverage_duration %}
-                <div class="plan-apply-container" style="padding-top: 5px">
-                    <a href="{% url 'quotes:alt_coverage_plan' plan.unique_url alternate_coverage_duration %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-alternative-apply">
-                        {{ alternate_coverage_duration }}
-                    </a>
-                </div>
-                {% endif %}
+                <div class="row">
 
+                    <div class="col">
+                        <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
+                           class="btn btn-primary btn-lg {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
+                                Apply for This Plan
+                        </a>
+                    </div>
+                {% if alternate_coverage_duration %}
+                    <div class="btn btn-secondary dropdown-toggle" style="color:black;">
+                            <select id="alternative_plans_dropdown">
+                                <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
+                                {% for duration in alternate_coverage_duration %}
+                                        <option value="{% url 'quotes:alt_coverage_plan' plan.unique_url duration %}"> {{ duration }} </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                {% endif %}
+                </div>
+                </div>
                 <a class="detailsancho"
                    href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
                    target="_blank">
@@ -3212,6 +3210,13 @@ $(function() {
             }
         });
     });
+
+    $('.apply-btn-ajax').on('click', function (event) {
+        event.preventDefault();
+        var $coverage_duration_dropdown = $('#alternative_plans_dropdown') ;
+        console.log($coverage_duration_dropdown.val());
+        location.href = $coverage_duration_dropdown.val();
+    })
 });
 
 $(document).ready(function () {

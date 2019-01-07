@@ -410,6 +410,8 @@ class StmEnroll(models.Model):
             return self.lifeshieldstm_set.get()
         if self.stm_name == 'Premier STM':
             return self.premierstm_set.get()
+        if self.stm_name == 'AdvantHealth STM':
+            return self.advanthealthstm_set.get()
         if self.stm_name == 'Unified Health One':
             return self.unifiedlimited_set.get()
         if self.stm_name == 'Principle Advantage':
@@ -837,6 +839,108 @@ class LifeshieldStm(StmPlanBase):
         return data
 
 
+class AdvanthealthStm(StmPlanBase):
+
+    Plan = models.TextField()
+
+    Plan_Name = models.TextField(db_column='everest_plan_name')
+
+    Coinsurance_Limit = models.TextField()
+
+    ChoiceValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+    )
+
+    ChoiceValue_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+    )
+
+    RealValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    RealValueSavings_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    VBP_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    EnrollmentFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    TelaDoc_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Medsense_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    RxAdvocacy_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Association_Fee = models.DecimalField(
+        default=0,
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+
+    )
+
+    Enrollment_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Payment_Option = models.TextField()
+
+    Coverage_Max = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Benefit_Amount = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    copay_2 = models.TextField()
+
+    copay_2_text = models.TextField()
+
+    def get_json_data(self):
+        data = super().get_json_data()
+        data.update({'Plan': self.Plan,
+                     'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+                     'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+                     'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+                     'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+                     'VBP_Fee': str(self.VBP_Fee),
+                     'EnrollmentFee': str(self.EnrollmentFee),
+                     'TelaDoc_Fee': str(self.TelaDoc_Fee),
+                     'Medsense_Fee': str(self.Medsense_Fee),
+                     'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+                     'Enrollment_Fee': str(self.Enrollment_Fee),
+                     'Payment_Option': self.Payment_Option,
+                     'Plan_Name': self.Plan_Name,
+                     'Coverage_Max': str(self.Coverage_Max),
+                     'Benefit_Amount': str(self.Benefit_Amount)})
+        return data
+
+
 class LimitedBase(models.Model):
 
     stm_enroll = models.ForeignKey(
@@ -1201,6 +1305,7 @@ class AddonPlan(models.Model):
         choices=(
             ('Everest STM', 'Everest STM'),
             ('LifeShield STM', 'LifeShield STM'),
+            ('AdvantHealth STM', 'AdvantHealth STM'),
             ('HealtheFlex STM', 'HealtheFlex STM'),
             ('HealtheMed STM', 'HealtheMed STM'),
             ('Premier STM', 'Premier STM'),

@@ -26,11 +26,11 @@ urlpatterns = [
         r'-[a-z]{2}-[a-zA-Z0-9_]+(Plus)?-[0-9]+)/$',
         views.stm_plan, name='stm_plan'),
 
-    re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM|'
+    re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
         views.stm_plan, name='stm_plan'),
 
-    re_path('stm/alt_coverage_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM|'
+    re_path('stm/alt_coverage_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)_to_(?P<coverage_duration>(\d{1,2}(\*\d{1,1})?))/$',
         views.alt_coverage_plan, name='alt_coverage_plan'),
 
@@ -42,7 +42,7 @@ urlpatterns = [
         r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',
         views.stm_apply, name='stm_apply'),
 
-    re_path('stm/apply/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM|'
+    re_path('stm/apply/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
         views.stm_apply, name='stm_apply'),
 
@@ -58,7 +58,7 @@ urlpatterns = [
         r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/addon-(?P<action>(include|remove))/$',
         views.stm_plan_addon_action, name='stm_plan_addon_action'),
 
-    re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM|'
+    re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/'
         r'addon-(?P<action>(include|remove))/$',
         views.stm_plan_addon_action, name='stm_plan_addon_action'),
@@ -71,7 +71,7 @@ urlpatterns = [
         r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',
         views.stm_application, name='stm_application'),
 
-    re_path('stm/application/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM|'
+    re_path('stm/application/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
         views.stm_application, name='stm_application'),
 
@@ -87,7 +87,7 @@ urlpatterns = [
         r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+-[0-9a-zA-Z]{12})(?:/(?P<stage>[1-5]{1}))?/$',
         views.stm_enroll, name='stm_enroll'),
 
-    re_path('stm/enroll/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|Select_STM'
+    re_path('stm/enroll/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM'
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?-[0-9a-zA-Z]{12})'
         r'(?:/(?P<stage>[1-5]{1}))?/$',
         views.stm_enroll, name='stm_enroll'),

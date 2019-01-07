@@ -1058,7 +1058,7 @@ class STApplicantInfoForm(forms.Form):
                           'TelaDoc_Fee', 'Medsense_Fee', 'RxAdvocacy_Fee', 'Enrollment_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee',
                           'RealValueSavings_Fee', 'RealValueSavings_AdminFee',
-                          'VBP_Fee',]:
+                          'VBP_Fee']:
                 self.cleaned_data[field] = self.plan[field]
             self.cleaned_data['Pre_Ex_Rider'] = 'N'
             self.cleaned_data['Coinsurance_Percentage'] = "{1}/{0}".format(
@@ -1068,6 +1068,24 @@ class STApplicantInfoForm(forms.Form):
             self.cleaned_data['ESign_Send_Method'] = 'Email'
             self.cleaned_data['Estate_Flag'] = '1'
             self.cleaned_data['Estate_Detail'] = 'ESTATE'
+
+        if self.plan['Name'] == 'AdvantHealth STM':
+            for field in ['Premium', 'Deductible_Option', 'Coverage_Max', 'Plan_Name',
+                          'Duration_Coverage', 'Payment_Option', 'Benefit_Amount',
+                          'TelaDoc_Fee', 'Medsense_Fee', 'RxAdvocacy_Fee', 'Enrollment_Fee',
+                          'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee',
+                          'RealValueSavings_Fee', 'RealValueSavings_AdminFee',
+                          'VBP_Fee', 'Association_Fee']:
+                self.cleaned_data[field] = self.plan[field]
+            self.cleaned_data['Pre_Ex_Rider'] = 'N'
+            self.cleaned_data['Coinsurance_Percentage'] = "{1}/{0}".format(
+                self.plan['Coinsurance_Percentage'], 100 - int(self.plan['Coinsurance_Percentage']))
+
+            self.cleaned_data['ESign_Option'] = 'Y'
+            self.cleaned_data['ESign_Send_Method'] = 'Email'
+            self.cleaned_data['Estate_Flag'] = '1'
+            self.cleaned_data['Estate_Detail'] = 'ESTATE'
+
 
         if self.plan['Name'] == 'Unified Health One':
             soc = self.cleaned_data.get('SOC', '') or '123456789'
@@ -1795,6 +1813,8 @@ class AddonPlanForm(forms.Form):
         choices=(
             ('Everest STM', 'Everest STM'),
             ('LifeShield STM', 'LifeShield STM'),
+            ('HealtheFlex STM', 'HealtheFlex STM'),
+            ('AdvantHealth STM', 'AdvantHealth STM'),
             ('HealtheFlex STM', 'HealtheFlex STM'),
             ('HealtheMed STM', 'HealtheMed STM'),
             ('Premier STM', 'Premier STM'),

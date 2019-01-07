@@ -1,7 +1,6 @@
 import copy
 import json
 from collections import OrderedDict
-from typing import Union
 
 import requests
 from django.core.exceptions import ObjectDoesNotExist
@@ -33,6 +32,11 @@ from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVeri
 
 
 import quotes.models as qm
+
+# For type annotation
+from django.core.handlers.wsgi import WSGIRequest
+from typing import Union, List
+
 
 
 logger = VimmLogger('quote_turbo')
@@ -232,7 +236,7 @@ def stm_plan(request, plan_url) -> HttpResponse:
     # Changing/Filtering the related plans here
     # Here option means deductible
 
-    if plan['Name'] == "Everest STM" or plan['Name'] == "LifeShield STM":
+    if plan['Name'] == "Everest STM" or plan['Name'] == "LifeShield STM" or plan['Name'] == "AdvantHealth STM":
         related_plans = list(filter(
             lambda mp: mp['Name'] == plan['Name'] and\
                        mp['option'] == plan['option'] and\
@@ -265,11 +269,15 @@ def stm_plan(request, plan_url) -> HttpResponse:
     remaining_addon_plans = addon_plans.difference(selected_addon_plans)
 
     # Duration coverage set literal. I shall move this to settings file or carrier model later.
+    applicant_state_name = quote_request_form_data['State']
+    plan_name = plan['Name']
+
     try:
-        alternate_coverage_duration_set = {'3*1', '3*2'} - {plan['Duration_Coverage']}
-        alternate_coverage_duration = list(alternate_coverage_duration_set)[0]
+        alternate_coverage_duration_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]) -\
+                                      {plan['Duration_Coverage']}
+        alternate_coverage_duration = list(alternate_coverage_duration_set)
     except KeyError as k:
-        print(f'{k} - No duration coverage for {plan["Name"]}')
+        print(f'{k} - No duration coverage for {plan_name}')
         alternate_coverage_duration = None
 
     return render(request, 'quotes/stm_plan.html',
@@ -277,10 +285,10 @@ def stm_plan(request, plan_url) -> HttpResponse:
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
                    'remaining_addon_plans': remaining_addon_plans,
-                   'alternate_coverage_duration': alternate_coverage_duration}) # This will be changed later
-                                                                                       # This will be a list(not a str)
-                                                                                       # which will be handled by
-                                                                                       # DTL/JS.
+                   'alternate_coverage_duration': alternate_coverage_duration }) # This will be changed later
+                                                                                # This will be a list(not a str)
+                                                                                # which will be handled by
+                                                                                # DTL/JS.
 
 
 def stm_apply(request, plan_url) -> HttpResponse:
@@ -1526,12 +1534,13 @@ legal_page_info = [
 ]
 
 
-def alt_coverage_plan(request, plan_url, coverage_duration) -> HttpResponse:
+def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: str) -> HttpResponse:
     """
     Switch user to alternative coverage benefit plan
 
     :param request:
     :param plan_url:
+    :param coverage_duration:
     :return:
     """
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
@@ -1554,9 +1563,9 @@ def alt_coverage_plan(request, plan_url, coverage_duration) -> HttpResponse:
     print(f"redis_key: {redis_key}")
 
     # Flag to check if quote for alternative coverage has been done.
-    # Created by joining redis_key and 'alt'. Value 1 or 0
+    # Created by joining redis_key, 'alt', carrier_name and coverage_duration.
+    print(f'plan_url: {plan_url}')
     redis_alt_flag = f'{redis_key}:alt'
-
 
     if not redis_conn.exists(redis_key):
         print("Redis connection does not exist for redis key")
@@ -1566,6 +1575,11 @@ def alt_coverage_plan(request, plan_url, coverage_duration) -> HttpResponse:
         if not redis_conn.exists(redis_alt_flag):
             # Setting flag and doing quote
             redis_conn.set(redis_alt_flag, '1')
+
+            # Deleting all plans from redis key connection
+            redis_conn.delete(redis_key)
+            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+
             threaded_request(quote_request_form_data, request.session._get_session_key(), alt_cov_flag=True)
             # We have added alternative coverage plans to the same redis key dictionary using threaded_request.
         else:
