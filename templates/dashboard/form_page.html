@@ -12,7 +12,7 @@
 {% block dashboard_content %}
     <div class="container">
         <div class="row justify-content-md-center align-items-center">
-            <div class="col-12">
+            <div class="col-md-9">
                 <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} page</h1>
                 <form method="post" ref="main_form">
                     {% csrf_token %}
@@ -57,14 +57,109 @@
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
+            <div class="col-md-3">
+                <all-items></all-items>
+            </div>
         </div>
     </div>
-
 {% endblock %}
 
+
+{% block vue_templates %}
+    <script type="text/x-template" id="items-template">
+        <div>
+            <div class="card mb-4 each-item-insert" v-for="item, key in all_items">
+                <div class="card-header">
+                    <h3 class="font-weight-bold text-capitalize">Add [[ key.replace('_', ' ') ]]</h3>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <select class="form-control" v-model="item.value">
+                                <option value="">---</option>
+                                <option :value="opt.val" v-for="opt in item.options">[[ opt.display ]]</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" type="button" @click="generate_short_code(item.model, [item.value])" v-if="item.value">Insert</button>
+                        <button class="btn btn-success" disabled v-else>Insert</button>
+                        <a :href="item.add_url" target="_blank" class="btn btn-primary">+ Add new</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
 
 {% block bottom_js %}
     {% with selectors='#'|add:form.content.id_for_label %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
+
+    <script src="{% static 'jquery/jquery-ajax-only.min.js' %}"></script>
+
+    <script>
+        all_components['all-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    all_items: {
+                        icon: {
+                            model: "ItemIcon",
+                            value: "",
+                            options: [{% for item in items.ItemIcon %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
+                            add_url: "{% url 'dashboard:create_icon' %}",
+                        },
+                        list: {
+                            model: "ItemList",
+                            value: "",
+                            options: [{% for item in items.ItemList %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
+                            add_url: "{% url 'dashboard:create_list' %}",
+                        },
+                        two_column: {
+                            model: "ItemTwoColumn",
+                            value: "",
+                            options: [{% for item in items.ItemTwoColumn %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
+                            add_url: "{% url 'dashboard:create_two_col' %}",
+                        },
+                        guide: {
+                            model: "ItemGuide",
+                            value: "",
+                            options: [{% for item in items.ItemGuide %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
+                            add_url: "{% url 'dashboard:create_guide' %}",
+                        },
+                    },
+                }
+            },
+            methods: {
+                generate_short_code: function (model_name, id_array) {
+                    if (!id_array[0]){
+                        return null;
+                    }
+                    $.ajax({
+                        url: "{% url 'dashboard:generate_short_code' %}",
+                        method: 'get',
+                        dataType: 'json',
+                        data: {
+                            ajax_data: JSON.stringify({
+                                model: model_name,
+                                ids: id_array,
+                            })
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                console.log(data)
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, data.code);
+                            } else {
+                                console.error("Ajax Error !")
+                            }
+                        },
+                        error: function (request, status, error) {
+                            console.error("Ajax err: " + status.toString() + ",  " + error.toString())
+                        }
+                    })
+                }
+            },
+            template: '#items-template'
+        };
+    </script>
 {% endblock %}

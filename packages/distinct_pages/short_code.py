@@ -15,12 +15,14 @@ class Encoder:
         """
         self.id_list = id_list
         self.model = is_model_exists(model_name)
-        self.model_name = self.model.__name__
+        self.model_name = self.model.__name__ if self.model else ''
 
     def generate(self):
         """
         :return: sample return: "{{ ItemIcon__11_12_13_14 }}"
         """
+        if not self.model:
+            return None
         id_list2 = self.id_list.copy()
         for _id in id_list2:
             if not self.model.objects.filter(id=_id).exists():
@@ -45,10 +47,12 @@ class Decoder:
         self.__decoded_items = self.code.split('__')
 
         self.model = is_model_exists(self.__decoded_items[0])
-        self.model_name = self.model.__name__
+        self.model_name = self.model.__name__ if self.model else ''
         self.template_file = ''
 
     def decode(self):
+        if not self.model:
+            return
         for id in self.__decoded_items[1].split('_'):  # get the ids
             if id:
                 if self.model.objects.filter(id=id).exists():

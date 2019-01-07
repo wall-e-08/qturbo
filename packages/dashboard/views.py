@@ -1,4 +1,4 @@
-import os
+import os, json
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
@@ -8,6 +8,7 @@ from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog
 from .forms import (PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm,
                     ItemIconForm, ItemTwoColumnForm, ItemGuideForm)
+from distinct_pages.short_code import Encoder as SC_Encoder
 
 """login_required decorator added in urls.py... So no need to add here"""
 
@@ -241,9 +242,17 @@ def create_or_edit_page(request, page_id=None):
         except Page.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No page found")
+
+    items = {
+        "ItemIcon": [(x.id, x.title) for x in ItemIcon.objects.all()],
+        "ItemList": [(x.id, "Icon: ({})".format(x.icon.title)) for x in ItemList.objects.all()],
+        "ItemTwoColumn": [(x.id, x.title) for x in ItemTwoColumn.objects.all()],
+        "ItemGuide": [(x.id, x.url_text) for x in ItemGuide.objects.all()],
+    }
     return render(request, 'dashboard/form_page.html', {
         "form": form,
         "action": action,
+        "items": items,
     })
 
 
@@ -547,3 +556,22 @@ def ajax_item_two_col_save(request):
         else:
             print("ItemTwoColumnForm Error: {}".format(form.errors))
     return JsonResponse(json)
+
+
+def generate_short_code(request):
+    if request.GET:
+        data = json.loads(request.GET.get('ajax_data'))
+        model_name = data.get('model', None)
+        ids = data.get('ids', [])
+        print("Model: {},  ids: {}".format(model_name, ids))
+        if model_name and ids:
+            sce = SC_Encoder(model_name, ids)
+            short_code = sce.generate()
+            if short_code:
+                return JsonResponse({
+                    "success": True,
+                    "code": short_code
+                })
+    return JsonResponse({
+        "success": False,
+    })

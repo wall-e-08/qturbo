@@ -47,6 +47,7 @@ urlpatterns = [
 
     # ajax
     path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec'),
+    path('generate_short_code/', login_required(views.generate_short_code), name='generate_short_code'),
     # # page items
     # path('ajax_item_list_save/', login_required(views.ajax_item_list_save), name='ajax_item_list_save'),
     # path('ajax_item_icon_save/', login_required(views.ajax_item_icon_save), name='ajax_item_icon_save'),
