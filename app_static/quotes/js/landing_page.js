@@ -2,6 +2,9 @@
 
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
+    own_input: "qt_own_input",
+    spouse_input: "qt_spouse_input",
+    dependents: "qt_dependents"
 };
 
 const v_templates = {
@@ -258,6 +261,26 @@ const router = new VueRouter({
                     remove_dependent: function(idx) {
                         this.dependents.splice(idx, 1);
                     },
+                    save_to_cookie: function() {
+                        console.log("Hello there");
+                        let _t = this;
+                        _t.$cookies.set(v_cookies_keys.own_input, _t.own_input, 60 * 60 * 24);
+
+                        if (_t.spouse)
+                            _t.$cookies.set(v_cookies_keys.spouse_input, _t.spouse_input, 60 * 60 * 24);
+                        else
+                            _t.$cookies.remove(v_cookies_keys.spouse_input);
+
+                        if (_t.dependents.length > 0)
+                            // for(var i=0; i<_t.dependents.length; i++)
+                            //     _t.$cookies.set(v_cookies_keys.dependents_input[i], _t.dependents[i].input, 60 * 60 * 24);
+                            _t.$cookies.set(v_cookies_keys.dependents, JSON.stringify(_t.dependents), 60*6)
+                        else
+                            _t.$cookies.remove(v_cookies_keys.dependents);
+
+
+
+                    },
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         let _t = this;
                         let form_data = {
@@ -308,6 +331,8 @@ const router = new VueRouter({
                                 }
                             }
                         }
+
+
                         console.table(form_data);
                         console.log("Redirect URL is: "+ redirect_url);
                         $.ajax({
@@ -340,16 +365,43 @@ const router = new VueRouter({
                     if(!zip_code){
                         router.push({name: 'root'});
                     }
-                    this.own_input = {
-                        dob: '11/12/1992',
-                        gender: 'Male',
-                        tobacco: 'true',
+
+                    let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
+                    let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
+                    let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
+
+                    console.log("cookies:  " + JSON.stringify(cookie_own_input));
+                    console.log("cookies:  " + JSON.stringify(cookie_spouse_input));
+                    console.log("cookies:  " + JSON.stringify(cookie_dependents));
+
+
+                    if(cookie_own_input)
+                        this.own_input = cookie_own_input;
+
+                    if(cookie_spouse_input)
+                        this.spouse_input = cookie_spouse_input;
+
+                    if(cookie_dependents) {
+                        var cookie_dependents_input = JSON.parse(cookie_dependents);
+
+                        for (var i=0; i<cookie_dependents_input.length; i++){
+                            this.dependents.push({
+                                dob: cookie_dependents_input[i].dob,
+                                gender: cookie_dependents_input[i].gender,
+                                tobacco: cookie_dependents_input[i].tobacco
+                            })
+                        }
                     }
+/*                    this.own_input = {
+                        dob: '',
+                        gender: '',
+                        tobacco: '',
+                    };
                     this.spouse_input = {
-                        dob: '11/12/1993',
-                        gender: 'Female',
-                        tobacco: 'true',
-                    }
+                        dob: '',
+                        gender: '',
+                        tobacco: '',
+                    };*/
                 }
             },
             name: 'survey-member',
