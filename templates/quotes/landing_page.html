@@ -924,8 +924,10 @@
                         <br>
                         <div class="row text-left">
                             <div class="col-md-6 offset-md-3">
-                                <survey-card :survey_type="holder_types_enum.own" :prop_max_age={{ applicant_max_age }}
-                                             :prop_min_age={{ applicant_min_age }} :inputs="own_input"></survey-card>
+                                <survey-card :survey_type="holder_types_enum.own"
+                                             :prop_max_age= {{ applicant_max_age }}
+                                             :prop_min_age= {{ applicant_min_age }}
+                                             :inputs="own_input"></survey-card>
 
                                 <template>
                                     <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age={{ spouse_max_age }}

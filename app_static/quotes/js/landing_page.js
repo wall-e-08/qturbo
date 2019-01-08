@@ -272,87 +272,13 @@ const router = new VueRouter({
                             _t.$cookies.remove(v_cookies_keys.spouse_input);
 
                         if (_t.dependents.length > 0)
-                            // for(var i=0; i<_t.dependents.length; i++)
-                            //     _t.$cookies.set(v_cookies_keys.dependents_input[i], _t.dependents[i].input, 60 * 60 * 24);
-                            _t.$cookies.set(v_cookies_keys.dependents, JSON.stringify(_t.dependents), 60*6)
+                            _t.$cookies.set(v_cookies_keys.dependents, JSON.stringify(_t.dependents), 60 * 60 * 24)
                         else
                             _t.$cookies.remove(v_cookies_keys.dependents);
 
 
 
                     },
-                    redirect_to_plans: function(redirect_url, csrf_token) {
-                        let _t = this;
-                        let form_data = {
-                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
-                            Include_Spouse: this.spouse ? 'Yes': 'No',
-                            Payment_Option: '1',
-                            Ins_Type: 'lim',
-                            'child-TOTAL_FORMS': this.dependents.length,
-                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
-                            'child-MIN_NUM_FORMS': 0,
-                            'child-MAX_NUM_FORMS': this.max_dependents,
-                        };
-                        if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
-                            form_data['Applicant_DOB'] = _t.own_input.dob;
-                            form_data['Applicant_Gender'] = _t.own_input.gender;
-                            form_data['Tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';
-                            form_data['Children_Count'] = _t.dependents.length;
-
-                            var newDate = new Date();
-                            newDate.setDate(newDate.getDate() + 1);
-                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
-
-                        } else {
-                            console.error("Please insert data to see plans");
-                            return null;
-                        }
-                        if (_t.spouse) {
-                            if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
-                                form_data['Spouse_DOB'] = _t.spouse_input.dob;
-                                form_data['Spouse_Gender'] = _t.spouse_input.gender;
-                                form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
-                            } else {
-                                console.error("Please insert spouse data correctly to see plans");
-                                return null;
-                            }
-                        }
-                        if(_t.dependents.length > 0) {
-                            for(var i=0; i<_t.dependents.length; i++){
-                                if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
-
-                                    form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
-                                    form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
-
-                                } else {
-                                    console.error("Please insert child data correctly to see plans");
-                                    return null;
-                                }
-                            }
-                        }
-
-
-                        console.table(form_data);
-                        console.log("Redirect URL is: "+ redirect_url);
-                        $.ajax({
-                            url: redirect_url,
-                            method: 'post',
-                            dataType: 'json',
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                            },
-                            data: form_data,
-                            success: function (data) {
-                                console.log("Success");
-                                console.table(data);
-                                if(data.url)
-                                    location.href = data.url;
-                                else
-                                    console.error("XXXXXX")
-                            }
-                        })
-                    }
                 },
                 watch: {
                     spouse_input: function () {
@@ -412,22 +338,101 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         income: '',
+                        max_dependents: 9
                     }
                 },
                 methods: {
                     accept_only_number: function (e) {
-                         /* all accepted key codes:
-                    * backspace: 8      * left arrow: 37
-                    * right arrow: 39   * del: 46
-                    * num pad: 96-105   * number: 48-57
-                    * */
-                    var kc = e.keyCode;
-                    if (![8,37,39,46].includes(kc)) {
-                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
-                            // prevent user from inserting non number
-                            e.preventDefault();
+                        /* all accepted key codes:
+                   * backspace: 8      * left arrow: 37
+                   * right arrow: 39   * del: 46
+                   * num pad: 96-105   * number: 48-57
+                   * */
+                        var kc = e.keyCode;
+                        if (![8,37,39,46].includes(kc)) {
+                            if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                                // prevent user from inserting non number
+                                e.preventDefault();
+                            }
                         }
-                    }
+                    },
+
+                    redirect_to_plans: function(redirect_url, csrf_token) {
+                        let _t = this;
+                        let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
+                        let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
+                        let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
+                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null
+
+                        let form_data = {
+                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                            Include_Spouse: cookie_spouse_input ? 'Yes': 'No',
+                            Payment_Option: '1',
+                            Ins_Type: 'lim',
+                            'child-TOTAL_FORMS': cookie_dependents_input ? cookie_dependents_input.length : 0,
+                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
+                            'child-MIN_NUM_FORMS': 0,
+                            'child-MAX_NUM_FORMS': this.max_dependents,
+                        };
+                        if(Object.keys(cookie_own_input).every((k) => cookie_own_input[k])){    // checking if all data present for applicant
+                            form_data['Applicant_DOB'] = cookie_own_input.dob;
+                            form_data['Applicant_Gender'] = cookie_own_input.gender;
+                            form_data['Tobacco'] = cookie_own_input == 'true' ? 'Y' : 'N';
+                            form_data['Children_Count'] = cookie_dependents_input.length;
+
+                            var newDate = new Date();
+                            newDate.setDate(newDate.getDate() + 1);
+                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
+
+                        } else {
+                            console.error("Please insert data to see plans");
+                            return null;
+                        }
+                        if (cookie_spouse_input) {
+                            if (Object.keys(cookie_spouse_input).every((k) => cookie_spouse_input[k])) { // check spouse data
+                                form_data['Spouse_DOB'] = cookie_spouse_input.dob;
+                                form_data['Spouse_Gender'] = cookie_spouse_input.gender;
+                                form_data['Spouse_Tobacco'] = cookie_spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
+                            } else {
+                                console.error("Please insert spouse data correctly to see plans");
+                                return null;
+                            }
+                        }
+                        if(cookie_dependents_input.length > 0) {
+                            for(var i=0; i<cookie_dependents_input.length; i++){
+                                if (Object.keys(cookie_dependents_input[i]).every((k) => cookie_dependents_input[i][k])) {
+
+                                    form_data['child-' + i + '-Child_DOB'] = cookie_dependents_input[i].dob;
+                                    form_data['child-' + i + '-Child_Gender'] = cookie_dependents_input[i].gender;
+                                    form_data['child-' + i + '-Child_Tobacco'] = cookie_dependents_input[i].tobacco == 'true';
+
+                                } else {
+                                    console.error("Please insert child data correctly to see plans");
+                                    return null;
+                                }
+                            }
+                        }
+
+
+                        console.table(form_data);
+                        console.log("Redirect URL is: "+ redirect_url);
+                        $.ajax({
+                            url: redirect_url,
+                            method: 'post',
+                            dataType: 'json',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data: form_data,
+                            success: function (data) {
+                                console.log("Success");
+                                console.table(data);
+                                if(data.url)
+                                    location.href = data.url;
+                                else
+                                    console.error("XXXXXX")
+                            }
+                        })
                     }
                 }
             },

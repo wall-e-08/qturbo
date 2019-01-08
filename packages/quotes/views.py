@@ -45,19 +45,17 @@ json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
+# Should this be in settings file?
+prop = {
+    'min_age': 21,
+    'max_age': 99,
 
-def home(request: WSGIRequest) -> HttpResponse:
-    # Should this be in settings file?
-    prop = {
-        'min_age': 21,
-        'max_age': 99,
+    'dependents_min_age': 6,
+    'dependents_max_age': 25,
 
-        'dependents_min_age': 6,
-        'dependents_max_age': 25,
+}
 
-
-    }
-    return render(request, 'quotes/landing_page.html', {
+prop_context = {
         'applicant_min_age': prop['min_age'],
         'applicant_max_age': prop['max_age'],
 
@@ -66,7 +64,10 @@ def home(request: WSGIRequest) -> HttpResponse:
 
         'dependents_min_age': prop['dependents_min_age'],
         'dependents_max_age': prop['dependents_max_age']
-    })
+    }
+
+def home(request: WSGIRequest) -> HttpResponse:
+    return render(request, 'quotes/landing_page.html', prop_context)
 
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
@@ -77,7 +78,7 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     :param request: Django request object
     :return: Django HttpResponse Object
     """
-    return render(request, 'quotes/landing_page.html')
+    return render(request, 'quotes/landing_page.html', prop_context)
 
 
 @require_POST
