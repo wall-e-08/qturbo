@@ -25,7 +25,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_stm_plan, save_dependent_info, update_dependent_info,
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
-                    update_lead_vimm_enroll_id, update_leads_stm_id)
+                    update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -205,9 +205,44 @@ def plan_quote(request, ins_type):
         print("Redis connection does not exist for redis key")
         redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
 
+
+
+
+
+
+
         print(f"Insurance type is {ins_type}")
         if ins_type == 'stm':
-            StmPlanTask.delay(request.session.session_key, quote_request_form_data)
+            redis_key_done_data = f'{redis_key}:done_data'
+            # We are here setting up a dictionary in the session for future usage
+            print(f'Setting quote request preference data')
+
+            # To be refactored.
+            quote_request_preference_data = {
+                'LifeShield STM': {
+                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+                },
+
+                'AdvantHealth STM': {
+                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM']
+                }
+            }
+
+            quote_request_done_data = {
+                'LifeShield STM': {
+                    'Duration_Coverage': [],
+                },
+
+                'AdvantHealth STM': {
+                    'Duration_Coverage': []
+                }
+            }
+            request.session['quote_request_preference_data'] = quote_request_preference_data
+
+            redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+
+            StmPlanTask.delay(request.session.session_key, quote_request_form_data, quote_request_preference_data)
+
         elif ins_type == 'lim':
             LimPlanTask.delay(request.session.session_key, quote_request_form_data)
         elif ins_type == 'anc':
@@ -218,7 +253,7 @@ def plan_quote(request, ins_type):
     })
 
 
-def stm_plan(request, plan_url) -> HttpResponse:
+def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """Show currently selected plan to user for application. Also select addons.
 
     :param request: Django request object
@@ -1557,8 +1592,7 @@ legal_page_info = [
 
 
 def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: str) -> HttpResponse:
-    """
-    Switch user to alternative coverage benefit plan
+    """ Switch user to alternative coverage benefit plan
 
     :param request:
     :param plan_url:
@@ -1578,6 +1612,7 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
+
     sp = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
@@ -1586,20 +1621,44 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
 
     # Flag to check if quote for alternative coverage has been done.
     # Created by joining redis_key and 'alt'. Value 1 or 0
-    redis_alt_flag = f'{redis_key}:alt'
+    redis_done_data_flag = f'{redis_key}:done_data'
+    # Gathering preference data from session
+    quote_request_completed_data = json.loads(redis_conn.get(redis_done_data_flag))
+
+    # Here we shall create the selection data
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
+    # We need to change the preference data in this function. # TODO
+
+    # TODO: Set an expiration timer for plans in redis.
+
+    # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
+
+    if plan_url[:4].lower() == 'life':
+        stm_name = 'LifeShield STM'
+    else:
+        stm_name = 'AdvantHealth STM'
+
+
+
+
+    selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
+
 
     if not redis_conn.exists(redis_key):
         print("Redis connection does not exist for redis key")
+    elif not selection_data:
+        print(f'Already quoted alternative plans.')
     else:
         # Getting other coverage option for selected plan
         # Checking to see if quote has already been done.
-        if not redis_conn.exists(redis_alt_flag):
+        # if not redis_conn.exists(redis_alt_flag):
             # Setting flag and doing quote
-            redis_conn.set(redis_alt_flag, '1')
-            threaded_request(quote_request_form_data, request.session._get_session_key(), alt_cov_flag=True)
+            # redis_conn.set(redis_alt_flag, '1')
+        threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
             # We have added alternative coverage plans to the same redis key dictionary using threaded_request.
-        else:
-            print(f'Already quoted alternative plans.')
+        # else:
+        #     print(f'Already quoted alternative plans.')
 
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())

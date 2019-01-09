@@ -334,6 +334,7 @@ ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', '
 
 SHORTCODE_PREFIX = '{{'
 SHORTCODE_POSTFIX = '}}'
+
 PAGE_ITEM_MODEL_TEMPLATE = {
     'ItemList': 'distinct_pages/items/icon.html',
     'ItemIcon': 'distinct_pages/items/icon.html',

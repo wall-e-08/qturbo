@@ -362,7 +362,7 @@ const router = new VueRouter({
                         let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
                         let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
                         let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
-                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null
+                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null;
 
                         let form_data = {
                             Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
@@ -378,7 +378,7 @@ const router = new VueRouter({
                             form_data['Applicant_DOB'] = cookie_own_input.dob;
                             form_data['Applicant_Gender'] = cookie_own_input.gender;
                             form_data['Tobacco'] = cookie_own_input == 'true' ? 'Y' : 'N';
-                            form_data['Children_Count'] = cookie_dependents_input.length;
+                            form_data['Children_Count'] = cookie_dependents_input ? cookie_dependents_input.length : 0;
 
                             var newDate = new Date();
                             newDate.setDate(newDate.getDate() + 1);
@@ -396,9 +396,9 @@ const router = new VueRouter({
                             } else {
                                 console.error("Please insert spouse data correctly to see plans");
                                 return null;
-                            }
+                            }cookie_dependents_input ? cookie_dependents_input.length : 0;
                         }
-                        if(cookie_dependents_input.length > 0) {
+                        if(cookie_dependents_input) {
                             for(var i=0; i<cookie_dependents_input.length; i++){
                                 if (Object.keys(cookie_dependents_input[i]).every((k) => cookie_dependents_input[i][k])) {
 
