@@ -431,7 +431,13 @@
                         <a href="#" class="text-white border d-block rounded py-2 ">View Our Guide</a>
                     </div>
                 </div>
-                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    {% comment %}<div class="guide-item text-center text-white p-5 rounded bg-primary">
+                        <img src="{% static 'quotes/img/guide-icon.png' %}" alt="">
+                        <p class="font-weight-bold">How can choose medical supplement?</p>
+                        <a href="#" class="text-white border d-block rounded py-2 ">View Our Guide</a>
+                    </div>{% endcomment %}
+                </div>
                 <div class="col-md-4">
                     <div class="guide-item text-center text-white p-5 rounded bg-primary">
                         <img src="{% static 'quotes/img/guide-icon.png' %}" alt="">
@@ -521,10 +527,7 @@
         </div>
 
     </section>
-
 {% endblock %}
-
-
 
 {% block vue_templates %}
     {# REMEMBER:: no multiple tags for vue component!! #}
