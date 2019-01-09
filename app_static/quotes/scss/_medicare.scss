@@ -101,6 +101,13 @@
     margin: 2.5rem auto;
   }
 }
+.guide-item a{
+  transition: all .3s ease;
+}
+.guide-item a:hover{
+  -webkit-box-shadow: 0 5px 10px #047db3;
+  box-shadow: 0 5px 10px #047db3;
+}
 @media (min-width: 768px) {
   .guide-top{
     width: 50%;
@@ -108,6 +115,6 @@
 }
 @media (max-width: 768px) {
   .guide-item-box{
-  margin-left: 0;
+    margin-left: 0;
 }
 }
