@@ -2,7 +2,7 @@ from django import forms
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
-from .utils import get_distinct_page_template_file_list
+from .utils import get_distinct_page_template_file_list, get_all_urls
 
 
 class EditorMediaForm(forms.Form):
@@ -44,6 +44,14 @@ class ItemListForm(forms.ModelForm):
         required=False,
     )
 
+    url = forms.ChoiceField(
+        choices=get_all_urls
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ItemListForm, self).__init__(*args, **kwargs)
+        self.fields['icon'].empty_label = None
+
     class Meta:
         model = ItemList
         fields = '__all__'
@@ -59,12 +67,20 @@ class ItemIconForm(forms.ModelForm):
 class ItemTwoColumnForm(forms.ModelForm):
     content = forms.CharField(widget=RichTextWidget())
 
+    url = forms.ChoiceField(
+        choices=get_all_urls
+    )
+
     class Meta:
         model = ItemTwoColumn
         fields = '__all__'
 
 
 class ItemGuideForm(forms.ModelForm):
+    url = forms.ChoiceField(
+        choices=get_all_urls
+    )
+
     class Meta:
         model = ItemGuide
         exclude = '__all__'

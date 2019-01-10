@@ -18,16 +18,49 @@
                 <form method="post">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.title.id_for_label }}">Title</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                                name="{{ form.title.name }}"
+                                id="{{ form.title.id_for_label }}"
+                                value="{{ form.title.value|default:'' }}"
+                                placeholder="Text showed for Url">
+                        {% if form.title.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                        <label for="{{ form.small_desc.id_for_label }}">Small Description</label>
+                        <input
+                                type="text"
+                                class="form-control {% if form.small_desc.errors %}border-danger{% endif %}"
+                                name="{{ form.small_desc.name }}"
+                                id="{{ form.small_desc.id_for_label }}"
+                                value="{{ form.small_desc.value|default:'' }}"
+                                placeholder="Text showed for Url">
+                        {% if form.small_desc.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.small_desc.errors|join:" " }}</div>
+                        {% endif %}
+                    </div>
 
                     <div class="form-group p-md-3 p-2 mb-4 border border-dark">
                         <label for="{{ form.url.id_for_label }}">Url</label>
-                        <input
+                        {% comment %}<input
                                 type="text"
                                 class="form-control {% if form.url.errors %}border-danger{% endif %}"
                                 name="{{ form.url.name }}"
                                 id="{{ form.url.id_for_label }}"
                                 value="{{ form.url.value|default:'' }}"
-                                placeholder="/url-friendly/text-only/allowed/">
+                                placeholder="/url-friendly/text-only/allowed/">{% endcomment %}
+                        <select name="{{ form.url.html_name }}" id="{{ form.url.id_for_label }}" class="form-control" value="{{ form.url.value|default:'' }}">
+                            <option selected="selected" disabled="disabled">----</option>
+                            {% for val, opt in form.fields.url.choices %}
+                                <option value="{{ val }}" {% if form.url.value == val %}selected{% endif %}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
                         {% if form.url.errors %}
                             <div class="form_field_error text-danger form-input-error">{{ form.url.errors|join:" " }}</div>
                         {% endif %}

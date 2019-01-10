@@ -10,6 +10,10 @@
 <script>
     tinymce.init({
         selector: '{{ selectors }}',
+        forced_root_block : 'p',
+        forced_root_block_attrs: {
+            'class': 'container',
+        },
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,

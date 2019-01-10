@@ -4,7 +4,21 @@
     {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+{#    Font awesome not working... linking against a cdn. TODO: Fix this. #}
 <style type="text/css">
+/*--------------------------------------------
+    External Font and load CSS Files
+--------------------------------------------*/
+/*@import url(https://fonts.googleapis.com/css?family=Lato:400,300,500,400italic,700italic,700);*/
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900');
+/*@import url("animate.css");*/
+/*@import url("slick.css");*/
+@import url("nhaquote_old/css/bootstrap.min.css");
+@import url("nhaquote_old/css/font-awesome.min.css");
+@import url("nhaquote_old/css/ms-setting.css");
+@import url("nhaquote_old/css/vimm_style.css");
+
 .plan_name_h1 {
     font-size: 30px !important;
     font-weight: normal !important;
@@ -34,17 +48,7 @@ button[data-clickTarget]:active{
 	color: #5398f3;
 }
 
-/*--------------------------------------------
-    External Font and load CSS Files
---------------------------------------------*/
-/*@import url(https://fonts.googleapis.com/css?family=Lato:400,300,500,400italic,700italic,700);*/
-@import url('https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900');
-/*@import url("animate.css");*/
-/*@import url("slick.css");*/
-@import url("bootstrap.min.css");
-@import url("font-awesome.min.css");
-@import url("ms-setting.css");
-@import url("vimm_style.css");
+
 /*-------------------------------------------
     Basic Setting
 --------------------------------------------*/
@@ -975,13 +979,14 @@ h2.heading {
     margin: 2rem 0;
     text-align: center;
 }
-#applyButton {
+#plan-details-primary-apply {
     color: #fff;
     border: 2px solid transparent;
     font-size: 1.8rem;
     padding: 1rem 4.5rem;
     border-radius: 25px;
     background-color: #5398f3;
+    margin-top: 25px;
 }
 .app-page-underwriting-questions {
     list-style-type: none;
@@ -2867,25 +2872,32 @@ hr.small-hr:before {
                 </div>
 
                 <div class="plan-apply-container">
-                <div class="row">
-
-                    <div class="col">
-                        <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                           class="btn btn-primary btn-lg {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
-                                Apply for This Plan
-                        </a>
-                    </div>
                 {% if alternate_coverage_duration %}
-                    <div class="btn btn-secondary dropdown-toggle" style="color:black;">
-                            <select id="alternative_plans_dropdown">
-                                <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
-                                {% for duration in alternate_coverage_duration %}
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3>Select Coverage Duration</h3>
+                        </div>
+                        <div class="">
+
+                                <select type="button" class="btn btn-info dropdown-toggle" id="alternative_plans_dropdown">
+                                    <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
+                                    {% for duration in alternate_coverage_duration %}
                                         <option value="{% url 'quotes:alt_coverage_plan' plan.unique_url duration %}"> {{ duration }} </option>
-                                {% endfor %}
-                            </select>
+                                    {% endfor %}
+                                </select>
+
+                                </div>
                     </div>
-                {% endif %}
-                </div>
+                            {% endif %}
+                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
+                       class="btn btn-default js-apply-button vimm-nim-width-btn {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
+                        <span>
+
+                                Apply for This Plan
+                        </span>
+                    </a>
+
                 </div>
                 <a class="detailsancho"
                    href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
@@ -3114,6 +3126,12 @@ hr.small-hr:before {
 </script>
 <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
 <script>
+if(performance.navigation.type === 2) {
+            console.log("Back button detected, reloading page");
+            location.reload(true);
+}
+
+
 $(function() {
 
     Mustache.tags = ['[[', ']]'];
@@ -3304,6 +3322,21 @@ function saveData() {   {% comment %}saving the div's display state{% endcomment
 		plansDisplay[_this.attr('data-clickResult')] = _this.css('display');
 	});
 }
+
+$(function(){
+
+    $('.apply-btn-ajax').click(function(e) {
+        vimm_button_click_processing(
+            $(this),
+            ($button => false),
+            [' <span class="apply-btn-ajax">Applying for Selected Plan...</span>',
+                ' <span class="apply-btn-ajax">Applying for Selected Plan..</span>',
+                ' <span class="apply-btn-ajax">Applying for Selected Plan.</span>']
+        );
+    });
+});
+
+
 </script>
 
 {% endblock extra_js %}

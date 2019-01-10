@@ -134,7 +134,7 @@ class QRXmlBase(object):
         raise NotImplemented
 
     @classmethod
-    def set_alternative_attr(cls, state: str) -> None:
+    def set_alternative_attr(cls, state: str, attr_dict: dict) -> None:
         """
         Set own Coinsurance Percentage, Benefit Amount and Coverage_Max
 
@@ -142,17 +142,19 @@ class QRXmlBase(object):
         """
         # Instead of taking the duration coverage of class, we take it from settings var. The static value persists in
         # class and causes the same quote twice.
-        current_coverage = settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[cls.Name][0]
+        # current_coverage = settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[cls.Name][0] # TODO
 
-        try:
-            dur_cov_complement_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[cls.Name][state]) - {current_coverage}
-        except KeyError:
-            print(f'State not found in STATE_SPECIFIC_PLAN_DURATION dictionary')
-            return
+        # try:
+        #     dur_cov_complement_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[cls.Name][state]) - {current_coverage}
+        # except KeyError:
+        #     print(f'State not found in STATE_SPECIFIC_PLAN_DURATION dictionary')
+        #     return
+        #
+        # print(f'Alternative duration coverage for {cls.Name} is {dur_cov_complement_set}')
+        #
+        cls._D_C = {'attr': 'Duration_Coverage', 'values': attr_dict['Duration_Coverage']}
 
-        print(f'Alternative duration coverage for {cls.Name} is {dur_cov_complement_set}')
 
-        cls._D_C = {'attr': 'Duration_Coverage', 'values': list(dur_cov_complement_set)}
 
 
     def _get_value(self, r):
@@ -633,7 +635,7 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
     # '80/20', '50/50', '70/30', '100/0'
     _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20', '50/50', '70/30', '100/0']}
 
-    _D_C = {'attr': 'Duration_Coverage', 'values': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[Name]}
+    _D_C = {'attr': 'Duration_Coverage', 'values': []} # This value gets overwritten.
 
     # '2000', '3000', '4000', '5000'
     _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '3000', '4000', '5000']}
@@ -722,7 +724,7 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
     # '80/20', '50/50', '70/30', '100/0'
     _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20']}
 
-    _D_C = {'attr': 'Duration_Coverage', 'values': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT[Name]}
+    _D_C = {'attr': 'Duration_Coverage', 'values': []}  # Set in set_alternative_attr
 
     # '2000', '3000', '4000', '5000'
     _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '4000']}
@@ -1121,32 +1123,39 @@ insurance_selector = {
 }
 
 
-def get_xml_requests(data: dict, alt_cov_flag: bool = False) -> List[QRXmlBase]:
-    """
-    This is the class that is called by celery to create initial quote
+def get_xml_requests(form_data: dict, selection_data: dict) -> List[QRXmlBase]:
+    """ This is the class that is called by celery to create initial quote
     request xml for sending.
 
-    :param data: Quote request form data
-    :type data: Python dictionary
+    :param selection_data: Selection data from quote_thread. Set xml attributes
+    according to this.
+    :type selection_data: dict
+    :param form_data: Quote request form data
+    :type form_data: Python dictionary
     :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
     :type alt_cov_flag: bool
     :return: list of xml objects
     """
     print("packages/quotes/quote_request.py -- Line No. 770")
-    print('\n\nget_xml_class data: ', data)
-    print('\n\nins_type: ', data['Ins_Type'])
+    print('\n\nget_xml_class data: ', form_data)
+    print('\n\nins_type: ', form_data['Ins_Type'])
 
-    app_state = data['State']
-    xml_requests = []
+    app_state = form_data['State']
+    xml_requests : List = []
 
 
-    for xml_cls in insurance_selector[data['Ins_Type']]:
+    for xml_cls in insurance_selector[form_data['Ins_Type']]:
         if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
             print(f"{xml_cls.Name} is available in state: {app_state}")
-            if alt_cov_flag is True and data['Ins_Type'] == 'stm':
+            if form_data['Ins_Type'] == 'stm':
                 print(f'Setting alternative coverage options for {xml_cls.Name}')
-                xml_cls.set_alternative_attr(app_state)
-            xml_requests += xml_cls.all(data)
+
+                # What will be sel dat? Let see, there is coverage.
+
+
+
+                xml_cls.set_alternative_attr(app_state, selection_data[xml_cls.Name])
+            xml_requests += xml_cls.all(form_data)
         else:
             print(f'{xml_cls.Name} is NOT available in state: {app_state}')
 

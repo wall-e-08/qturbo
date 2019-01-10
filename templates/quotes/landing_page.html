@@ -243,7 +243,7 @@
         <div class="row mt-5">
             <div class="col-md-4 offset-md-2">
                 <div class="hi-feature ">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 align-items-sm-center">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
                     <div class=" ">
                         <h3 class="hi-title"> Guided Online Experience</h3>
                         <p class="">We know not many people are healthcare experts, so we provide explanations, product
@@ -252,7 +252,7 @@
                     </div>
                 </div>
                 <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
                     <div class="">
                         <h3 class="hi-title">Compare 13,000+ Insurance Plans and Save</h3>
                         <p>We know not many people are healthcare experts, so we provide explanations, product guides,
@@ -260,7 +260,7 @@
                     </div>
                 </div>
                 <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2">
+                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
                     <div class="">
                         <h3 class="hi-title">Personalized Recommendations</h3>
                         <p>We know not many people are healthcare experts, so we provide explanations, product guides,
@@ -677,7 +677,7 @@
                         <h5 class="mb-0">
                             <button class="btn btn-link " type="button" data-toggle="collapse" data-target="#collapseOne"
                                     aria-expanded="true" aria-controls="collapseOne"><span> + -</span>
-                                Are the price on your site correct?
+                                Are the price on ?
                             </button>
                         </h5>
                     </div>
@@ -696,7 +696,7 @@
                         <h5 class="mb-0">
                             <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
                                     data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><span> + -</span>
-                                Why should i buy from Quote Turbo?
+                                Why should i buy ?
                             </button>
                         </h5>
                     </div>
@@ -712,7 +712,7 @@
                         <h5 class="mb-0">
                             <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
                                     data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span> + -</span>
-                                Collapsible Group Item #3
+                                Collapsible #3
                             </button>
                         </h5>
                     </div>
@@ -745,7 +745,7 @@
                             <img src="{% static 'quotes/img/blog1.jpg' %}" alt="">
                             <div class="position-absolute text-center blog-article">
                                 <button class="btn btn-warning p-2 text-light"><h3>News</h3></button>
-                                <h2 class="text-light text-center">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
+                                <h2 class="text-light text-center mt-2">Turning 26: Health Insurance Guide for Those Aging Off Their Parents’ Plan</h2>
                             </div>
                         </div>
                     </a>
@@ -924,8 +924,10 @@
                         <br>
                         <div class="row text-left">
                             <div class="col-md-6 offset-md-3">
-                                <survey-card :survey_type="holder_types_enum.own" :prop_max_age={{ applicant_max_age }}
-                                             :prop_min_age={{ applicant_min_age }} :inputs="own_input"></survey-card>
+                                <survey-card :survey_type="holder_types_enum.own"
+                                             :prop_max_age= {{ applicant_max_age }}
+                                             :prop_min_age= {{ applicant_min_age }}
+                                             :inputs="own_input"></survey-card>
 
                                 <template>
                                     <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age={{ spouse_max_age }}
@@ -959,7 +961,7 @@
                                         </div>
                                     </div>
                                 </template>
-                                <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" :to="{ name: 'survey-income'}">Next</router-link>
+                                <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" :to="{ name: 'survey-income'}" @click.native="save_to_cookie">Next</router-link>
                             </div>
                         </div>
                     </div>
@@ -982,7 +984,7 @@
                     <div class="card-body">
                         <div class="row text-left">
                             <div class="col-md-6 offset-md-3">
-                                <form>
+{#                                <form>#}
                                     <label for="enroll-monthly-income" class="font-mm" style="font-weight: 600;">Your Monthly Income
                                         <span id="enroll-monthly-income-label" class="cur-p btn btn-outline-dark rounded-circle p-0 font-weight-bold font-xs"
                                         style="width: 23px;line-height: 23px;height: 23px;">i</span>
@@ -1004,7 +1006,7 @@
                                             v-on:click='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
                                         Check Quote
                                     </button>
-                                </form>
+{#                                </form>#}
                             </div>
                         </div>
                     </div>

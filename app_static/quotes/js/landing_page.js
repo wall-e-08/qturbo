@@ -2,6 +2,9 @@
 
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
+    own_input: "qt_own_input",
+    spouse_input: "qt_spouse_input",
+    dependents: "qt_dependents"
 };
 
 const v_templates = {
@@ -258,23 +261,124 @@ const router = new VueRouter({
                     remove_dependent: function(idx) {
                         this.dependents.splice(idx, 1);
                     },
+                    save_to_cookie: function() {
+                        console.log("Hello there");
+                        let _t = this;
+                        _t.$cookies.set(v_cookies_keys.own_input, _t.own_input, 60 * 60 * 24);
+
+                        if (_t.spouse)
+                            _t.$cookies.set(v_cookies_keys.spouse_input, _t.spouse_input, 60 * 60 * 24);
+                        else
+                            _t.$cookies.remove(v_cookies_keys.spouse_input);
+
+                        if (_t.dependents.length > 0)
+                            _t.$cookies.set(v_cookies_keys.dependents, JSON.stringify(_t.dependents), 60 * 60 * 24)
+                        else
+                            _t.$cookies.remove(v_cookies_keys.dependents);
+
+
+
+                    },
+                },
+                watch: {
+                    spouse_input: function () {
+                        this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
+                    },
+                },
+                created() {
+                    let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
+                    console.log("cookies:  " + zip_code);
+                    if(!zip_code){
+                        router.push({name: 'root'});
+                    }
+
+                    let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
+                    let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
+                    let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
+
+                    console.log("cookies:  " + JSON.stringify(cookie_own_input));
+                    console.log("cookies:  " + JSON.stringify(cookie_spouse_input));
+                    console.log("cookies:  " + JSON.stringify(cookie_dependents));
+
+
+                    if(cookie_own_input)
+                        this.own_input = cookie_own_input;
+
+                    if(cookie_spouse_input)
+                        this.spouse_input = cookie_spouse_input;
+
+                    if(cookie_dependents) {
+                        var cookie_dependents_input = JSON.parse(cookie_dependents);
+
+                        for (var i=0; i<cookie_dependents_input.length; i++){
+                            this.dependents.push({
+                                dob: cookie_dependents_input[i].dob,
+                                gender: cookie_dependents_input[i].gender,
+                                tobacco: cookie_dependents_input[i].tobacco
+                            })
+                        }
+                    }
+/*                    this.own_input = {
+                        dob: '',
+                        gender: '',
+                        tobacco: '',
+                    };
+                    this.spouse_input = {
+                        dob: '',
+                        gender: '',
+                        tobacco: '',
+                    };*/
+                }
+            },
+            name: 'survey-member',
+        },{
+            path: 'income',
+            component: {
+                template: v_templates.monthly_income,
+                data: function () {
+                    return {
+                        income: '',
+                        max_dependents: 9
+                    }
+                },
+                methods: {
+                    accept_only_number: function (e) {
+                        /* all accepted key codes:
+                   * backspace: 8      * left arrow: 37
+                   * right arrow: 39   * del: 46
+                   * num pad: 96-105   * number: 48-57
+                   * */
+                        var kc = e.keyCode;
+                        if (![8,37,39,46].includes(kc)) {
+                            if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
+                                // prevent user from inserting non number
+                                e.preventDefault();
+                            }
+                        }
+                    },
+
                     redirect_to_plans: function(redirect_url, csrf_token) {
                         let _t = this;
+                        let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
+                        let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
+                        let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
+                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null;
+
                         let form_data = {
                             Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
-                            Include_Spouse: this.spouse ? 'Yes': 'No',
+                            Include_Spouse: cookie_spouse_input ? 'Yes': 'No',
                             Payment_Option: '1',
                             Ins_Type: 'lim',
-                            'child-TOTAL_FORMS': this.dependents.length,
+                            'child-TOTAL_FORMS': cookie_dependents_input ? cookie_dependents_input.length : 0,
                             'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
                             'child-MIN_NUM_FORMS': 0,
                             'child-MAX_NUM_FORMS': this.max_dependents,
                         };
-                        if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
-                            form_data['Applicant_DOB'] = _t.own_input.dob;
-                            form_data['Applicant_Gender'] = _t.own_input.gender;
-                            form_data['Tobacco'] = _t.own_input.tobacco == 'true' ? 'Y' : 'N';
-                            form_data['Children_Count'] = _t.dependents.length;
+                        if(Object.keys(cookie_own_input).every((k) => cookie_own_input[k])){    // checking if all data present for applicant
+                            form_data['Applicant_DOB'] = cookie_own_input.dob;
+                            form_data['Applicant_Gender'] = cookie_own_input.gender;
+                            form_data['Tobacco'] = cookie_own_input == 'true' ? 'Y' : 'N';
+                            form_data['Children_Count'] = cookie_dependents_input ? cookie_dependents_input.length : 0;
 
                             var newDate = new Date();
                             newDate.setDate(newDate.getDate() + 1);
@@ -284,23 +388,23 @@ const router = new VueRouter({
                             console.error("Please insert data to see plans");
                             return null;
                         }
-                        if (_t.spouse) {
-                            if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
-                                form_data['Spouse_DOB'] = _t.spouse_input.dob;
-                                form_data['Spouse_Gender'] = _t.spouse_input.gender;
-                                form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
+                        if (cookie_spouse_input) {
+                            if (Object.keys(cookie_spouse_input).every((k) => cookie_spouse_input[k])) { // check spouse data
+                                form_data['Spouse_DOB'] = cookie_spouse_input.dob;
+                                form_data['Spouse_Gender'] = cookie_spouse_input.gender;
+                                form_data['Spouse_Tobacco'] = cookie_spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
                             } else {
                                 console.error("Please insert spouse data correctly to see plans");
                                 return null;
-                            }
+                            }cookie_dependents_input ? cookie_dependents_input.length : 0;
                         }
-                        if(_t.dependents.length > 0) {
-                            for(var i=0; i<_t.dependents.length; i++){
-                                if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
+                        if(cookie_dependents_input) {
+                            for(var i=0; i<cookie_dependents_input.length; i++){
+                                if (Object.keys(cookie_dependents_input[i]).every((k) => cookie_dependents_input[i][k])) {
 
-                                    form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
-                                    form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
+                                    form_data['child-' + i + '-Child_DOB'] = cookie_dependents_input[i].dob;
+                                    form_data['child-' + i + '-Child_Gender'] = cookie_dependents_input[i].gender;
+                                    form_data['child-' + i + '-Child_Tobacco'] = cookie_dependents_input[i].tobacco == 'true';
 
                                 } else {
                                     console.error("Please insert child data correctly to see plans");
@@ -308,6 +412,8 @@ const router = new VueRouter({
                                 }
                             }
                         }
+
+
                         console.table(form_data);
                         console.log("Redirect URL is: "+ redirect_url);
                         $.ajax({
@@ -321,61 +427,19 @@ const router = new VueRouter({
                             success: function (data) {
                                 console.log("Success");
                                 console.table(data);
-                                if(data.url)
+                                if(data.url) {
+                                    console.log("Navigating to "+ data.url);
                                     location.href = data.url;
+                                }
                                 else
                                     console.error("XXXXXX")
+                            },
+                            error: function(data) {
+                                console.log("Error");
+                                console.table(data);
                             }
+
                         })
-                    }
-                },
-                watch: {
-                    spouse_input: function () {
-                        this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
-                    },
-                },
-                created() {
-                    let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
-                    console.log("cookies:  " + zip_code);
-                    if(!zip_code){
-                        router.push({name: 'root'});
-                    }
-                    this.own_input = {
-                        dob: '11/12/1992',
-                        gender: 'Male',
-                        tobacco: 'true',
-                    }
-                    this.spouse_input = {
-                        dob: '11/12/1993',
-                        gender: 'Female',
-                        tobacco: 'true',
-                    }
-                }
-            },
-            name: 'survey-member',
-        },{
-            path: 'income',
-            component: {
-                template: v_templates.monthly_income,
-                data: function () {
-                    return {
-                        income: '',
-                    }
-                },
-                methods: {
-                    accept_only_number: function (e) {
-                         /* all accepted key codes:
-                    * backspace: 8      * left arrow: 37
-                    * right arrow: 39   * del: 46
-                    * num pad: 96-105   * number: 48-57
-                    * */
-                    var kc = e.keyCode;
-                    if (![8,37,39,46].includes(kc)) {
-                        if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
-                            // prevent user from inserting non number
-                            e.preventDefault();
-                        }
-                    }
                     }
                 }
             },
