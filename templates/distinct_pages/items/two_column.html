@@ -1,0 +1,20 @@
+<div class="bg-light">
+    <div class="container">
+        <div class="row border-bottom mb-5">
+            <div class="row border-bottom mb-5">
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <h2 class="my-4">{{ item.title }}</h2>
+                        <div>{{ item.content|safe }}</div>
+                        <a href="{{ item.url }}" class="btn btn-lg btn-primary text-white text-center px-4">{{ item.url_text }}</a>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div>
+                        <img src="{{ item.img.url }}" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

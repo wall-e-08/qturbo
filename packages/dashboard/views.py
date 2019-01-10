@@ -317,6 +317,7 @@ def create_or_edit_list(request, list_id=None):
     return render(request, 'dashboard/form_page_item_list.html', {
         "form": form,
         "action": action,
+        "icons": ItemIcon.objects.all(),
     })
 
 
