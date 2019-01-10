@@ -427,11 +427,18 @@ const router = new VueRouter({
                             success: function (data) {
                                 console.log("Success");
                                 console.table(data);
-                                if(data.url)
+                                if(data.url) {
+                                    console.log("Navigating to "+ data.url);
                                     location.href = data.url;
+                                }
                                 else
                                     console.error("XXXXXX")
+                            },
+                            error: function(data) {
+                                console.log("Error");
+                                console.table(data);
                             }
+
                         })
                     }
                 }
