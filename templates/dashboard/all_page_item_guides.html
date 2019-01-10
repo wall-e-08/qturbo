@@ -27,6 +27,8 @@
                             <thead>
                                 <tr class="table-black">
                                     <th class="align-middle" scope="col">#</th>
+                                    <th class="align-middle" scope="col">Title</th>
+                                    <th class="align-middle" scope="col">Small Description</th>
                                     <th class="align-middle" scope="col">Url Text</th>
                                     <th class="align-middle" scope="col">Url</th>
                                     <th class="align-middle" scope="col">Date</th>
@@ -38,6 +40,8 @@
                                 {% for item in guides %}
                                     <tr>
                                         <th class="align-middle" scope="row">{{ forloop.counter }}</th>
+                                        <td class="align-middle">{{ item.title|default:"-" }}</td>
+                                        <td class="align-middle">{{ item.small_desc|default:"-"|truncatechars:"20" }}</td>
                                         <td class="align-middle">{{ item.url_text|default:"-"|truncatechars:"20" }}</td>
                                         <td class="align-middle">{{ item.url|default:"-" }}</td>
                                         <td class="align-middle"><span class="font-sm">{{ item.create_time }}</span></td>

@@ -11,8 +11,8 @@
 
 {% block dashboard_content %}
     <div class="container">
-        <div class="row justify-content-md-center align-items-center">
-            <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-8">
                 <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} page</h1>
                 <form method="post" ref="main_form">
                     {% csrf_token %}
@@ -57,7 +57,7 @@
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <all-items></all-items>
             </div>
         </div>
@@ -75,14 +75,15 @@
                 <div class="card-body">
                     <form>
                         <div class="form-group">
-                            <select class="form-control" v-model="item.value">
-                                <option value="">---</option>
+                            <select class="form-control" v-model="item.value" multiple>
+                                {% comment %}<option value="">---</option>{% endcomment %}
                                 <option :value="opt.val" v-for="opt in item.options">[[ opt.display ]]</option>
                             </select>
+                            <div class="small d-flex align-items-center justify-content-between">Multiselect &#8593; <span style="font-size: 9px;">use ctrl to select multiple options</span></div>
                         </div>
-                        <button class="btn btn-success" type="button" @click="generate_short_code(item.model, [item.value])" v-if="item.value">Insert</button>
-                        <button class="btn btn-success" disabled v-else>Insert</button>
-                        <a :href="item.add_url" target="_blank" class="btn btn-primary">+ Add new</a>
+                        <button class="btn btn-success mb-2" type="button" @click="generate_short_code(item.model, item.value)" v-if="item.value">Insert</button>
+                        <button class="btn btn-success mb-2" disabled v-else>Insert</button>
+                        <a :href="item.add_url" target="_blank" class="btn btn-primary mb-2">+ Add new</a>
                     </form>
                 </div>
             </div>
@@ -103,27 +104,27 @@
             data: function () {
                 return {
                     all_items: {
-                        icon: {
+                        {% comment %}icon: {
                             model: "ItemIcon",
                             value: "",
                             options: [{% for item in items.ItemIcon %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
                             add_url: "{% url 'dashboard:create_icon' %}",
-                        },
+                        },{% endcomment %}
                         list: {
                             model: "ItemList",
-                            value: "",
+                            value: [],
                             options: [{% for item in items.ItemList %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
                             add_url: "{% url 'dashboard:create_list' %}",
                         },
                         two_column: {
                             model: "ItemTwoColumn",
-                            value: "",
+                            value: [],
                             options: [{% for item in items.ItemTwoColumn %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
                             add_url: "{% url 'dashboard:create_two_col' %}",
                         },
                         guide: {
                             model: "ItemGuide",
-                            value: "",
+                            value: [],
                             options: [{% for item in items.ItemGuide %}{val: "{{ item.0 }}", display: "{{ item.1 }}"},{% endfor %}],
                             add_url: "{% url 'dashboard:create_guide' %}",
                         },
@@ -132,9 +133,7 @@
             },
             methods: {
                 generate_short_code: function (model_name, id_array) {
-                    if (!id_array[0]){
-                        return null;
-                    }
+                    if (id_array === undefined || id_array.length === 0) return null;
                     $.ajax({
                         url: "{% url 'dashboard:generate_short_code' %}",
                         method: 'get',
@@ -147,7 +146,7 @@
                         },
                         success: function (data) {
                             if (data.success) {
-                                console.log(data)
+                                console.table(data);
                                 tinymce.activeEditor.execCommand('mceInsertContent', false, data.code);
                             } else {
                                 console.error("Ajax Error !")

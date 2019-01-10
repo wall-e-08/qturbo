@@ -108,6 +108,11 @@ input[type="date"] {
     @include vertical-center
 }
 
+.tick-marked-img-listed ul {
+    list-style-image: url("/static/quotes/img/l-icon.png");
+    margin-bottom: 2rem;
+}
+
 @media (max-width: map_get($grid-breakpoints, lg)) {
     body {
         padding-top: $fixed-header-body-spacing;

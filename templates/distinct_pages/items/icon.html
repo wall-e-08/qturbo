@@ -1,4 +1,6 @@
 <div>
     <h1>This is testing...</h1>
-    icon type{{ item.icon_type }}
+    {% for item in items %}
+        icon type:  {{ item.icon_type }}
+    {% endfor %}
 </div>

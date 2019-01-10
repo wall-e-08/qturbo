@@ -334,11 +334,12 @@ ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', '
 
 SHORTCODE_PREFIX = '{{'
 SHORTCODE_POSTFIX = '}}'
+
 PAGE_ITEM_MODEL_TEMPLATE = {
-    'ItemList': 'distinct_pages/items/icon.html',
+    'ItemList': 'distinct_pages/items/list.html',
     'ItemIcon': 'distinct_pages/items/icon.html',
-    'ItemTwoColumn': 'distinct_pages/items/icon.html',
-    'ItemGuide': 'distinct_pages/items/icon.html',
+    'ItemTwoColumn': 'distinct_pages/items/two_column.html',
+    'ItemGuide': 'distinct_pages/items/guide.html',
 }
 
 # ------------------------------------+

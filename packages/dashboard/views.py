@@ -45,7 +45,7 @@ def index(request):
 
 # All START ##
 def all_articles(request):
-    articles = Article.objects.all()
+    articles = Article.objects.all().order_by('-created_time')
     return render(request, 'dashboard/all_posts.html', {
         "posts": articles,
         "type": "Info",
@@ -54,7 +54,7 @@ def all_articles(request):
 
 
 def all_blogs(request):
-    blogs = Blog.objects.all()
+    blogs = Blog.objects.all().order_by('-created_time')
     return render(request, 'dashboard/all_posts.html', {
         "posts": blogs,
         "type": "Blog",
@@ -64,35 +64,35 @@ def all_blogs(request):
 
 
 def all_pages(request):
-    all_page = Page.objects.all()
+    all_page = Page.objects.all().order_by('-create_time')
     return render(request, 'dashboard/all_pages.html', {
         "pages": all_page,
     })
 
 
 def all_icons(request):
-    all_icons = ItemIcon.objects.all()
+    all_icons = ItemIcon.objects.all().order_by('-create_time')
     return render(request, 'dashboard/all_page_item_icons.html', {
         "icons": all_icons,
     })
 
 
 def all_lists(request):
-    lists = ItemList.objects.all()
+    lists = ItemList.objects.all().order_by('-create_time')
     return render(request, 'dashboard/all_page_item_lists.html', {
         "lists": lists,
     })
 
 
 def all_two_cols(request):
-    two_cols = ItemTwoColumn.objects.all()
+    two_cols = ItemTwoColumn.objects.all().order_by('-create_time')
     return render(request, 'dashboard/all_page_item_two_cols.html', {
         "two_cols": two_cols,
     })
 
 
 def all_guides(request):
-    guides = ItemGuide.objects.all()
+    guides = ItemGuide.objects.all().order_by('-create_time')
     return render(request, 'dashboard/all_page_item_guides.html', {
         "guides": guides,
     })
@@ -317,6 +317,7 @@ def create_or_edit_list(request, list_id=None):
     return render(request, 'dashboard/form_page_item_list.html', {
         "form": form,
         "action": action,
+        "icons": ItemIcon.objects.all(),
     })
 
 
