@@ -986,6 +986,7 @@ h2.heading {
     padding: 1rem 4.5rem;
     border-radius: 25px;
     background-color: #5398f3;
+    margin-top: 25px;
 }
 .app-page-underwriting-questions {
     list-style-type: none;
@@ -2871,14 +2872,15 @@ hr.small-hr:before {
                 </div>
 
                 <div class="plan-apply-container">
+                {% if alternate_coverage_duration %}
+
                     <div class="row">
                         <div class="col-md-5">
                             <h3>Select Coverage Duration</h3>
                         </div>
                         <div class="">
 
-                            {% if alternate_coverage_duration %}
-                                <select type="button" class="btn btn-danger dropdown-toggle" id="alternative_plans_dropdown">
+                                <select type="button" class="btn btn-info dropdown-toggle" id="alternative_plans_dropdown">
                                     <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
                                     {% for duration in alternate_coverage_duration %}
                                         <option value="{% url 'quotes:alt_coverage_plan' plan.unique_url duration %}"> {{ duration }} </option>
@@ -2886,8 +2888,8 @@ hr.small-hr:before {
                                 </select>
 
                                 </div>
-                            {% endif %}
                     </div>
+                            {% endif %}
                     <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
                        class="btn btn-default js-apply-button vimm-nim-width-btn {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
                         <span>
