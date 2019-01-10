@@ -1,6 +1,11 @@
 {% extends 'quotes/base.html' %}
 {% load static %}
 
+{% block head_css %}
+    <link rel="stylesheet" href="{% static 'about/css/medicare.css' %}">
+    <link rel="stylesheet" href="{% static 'about/css/page-item-guide.css' %}">
+{% endblock %}
+
 {% block main_content %}
     <section>
         <div class="container">
