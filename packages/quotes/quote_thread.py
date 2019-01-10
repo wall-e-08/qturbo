@@ -74,28 +74,27 @@ def new_addon_plan_to_add(previous_plans, new_plans):
     return json_data
 
 
-def threaded_request(data, session_key, alt_cov_flag=False) -> 0:
-    """TODO: docstring for threaded_request.
+def threaded_request(form_data, session_key, selection_data=None) -> int:
+    """For only stm plans, there will be selection data(sel_dat).
 
-    :param data: Quote request form data
+    :param selection_data: Selection data. This data will dictate, which xml requests will
+    be created and then sent. If this is None, the default will be sent. The default
+    has already been selected in quote_request.py according to settings.
+    :type selection_data: dict
+    :param form_data: Quote request form data
     :param session_key: session key
     :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
     :type alt_cov_flag: bool
     :return: 0
     """
-    print("Creating threaded request")
     redis = redis_connect()
-    redis_key = "{0}:{1}".format(session_key, data['quote_store_key'])
+    redis_key = "{0}:{1}".format(session_key, form_data['quote_store_key'])
     print('redis_key: ', redis_key)
 
-    # We have created a flag. We just pass around the flag and
-    # Change coverage duration.
-    if alt_cov_flag is True:
-        tasks = get_xml_requests(data, alt_cov_flag=True)
-        print(f'Creating alternative coverage threaded requests')
-    else:
-        tasks = get_xml_requests(data, alt_cov_flag=False)
-        print(f'Creating normal coverage threaded requests')
+    print(f'Creating threaded requests.')
+
+    print(f'Selection data is: {selection_data}.')
+    tasks = get_xml_requests(form_data, selection_data)
     print('--------------->>tasks: ', len(tasks))
     # import time
     # time.sleep(15)
@@ -112,9 +111,9 @@ def threaded_request(data, session_key, alt_cov_flag=False) -> 0:
             continue
 
         for monthly_plan in res.monthly:
-            data = monthly_plan.get_data_as_dict()
+            monthly_plan_data = monthly_plan.get_data_as_dict()
             if redis is not None:
-                redis.rpush(redis_key, *[json_encoder.encode(data)])
+                redis.rpush(redis_key, *[json_encoder.encode(monthly_plan_data)])
 
         # addon_plans += res.addon_plans
         if res.addon_plans and redis_key:
@@ -129,6 +128,19 @@ def threaded_request(data, session_key, alt_cov_flag=False) -> 0:
         results.task_done()
         num_of_tasks -= 1
         print('remaining num_of_tasks: ', num_of_tasks)
+
+
+
+    if form_data['Ins_Type'] == 'stm': # TODO: Try/Catch
+        # Here be thy roar
+        redis_key_done_data = f'{redis_key}:done_data'
+
+        done_data = json.loads(redis.get(redis_key_done_data))  # TODO: Try/Catch
+        for i in selection_data:
+            for j in done_data[i]:
+                done_data[i][j].extend(selection_data[i][j])
+
+        redis.set(redis_key_done_data, json.dumps(done_data))
 
     if redis is not None and redis.exists(redis_key):
         redis.rpush(redis_key, *[json_encoder.encode('END')])
