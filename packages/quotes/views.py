@@ -89,6 +89,8 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     :return: Django JsonResponse Object
     """
 
+
+
     print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
 
     form = ApplicantInfoForm(request.POST)
