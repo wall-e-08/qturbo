@@ -2,14 +2,15 @@
     <div class="row">
         {% for item in items %}
             <div class="col-md-4 text-center">
-                <div class="">
+                <div class="text-primary">
                     {% if item.icon.icon_type == 'img' and item.icon.img_icon %}
-                        <img width="40" src="/media/{{ item.icon.img_icon }}" alt="">
+                        <img width="90" src="/media/{{ item.icon.img_icon }}" alt="">
                     {% elif item.icon.icon_type == 'svg' %}
+                        {# TODO: SVG size have to implement #}
                         {{ item.icon.svg_icon|safe }}
                     {% endif %}
                 </div>
-                <div class="" style="font-size: 20px;">
+                <div class="p-3" style="font-size: 16px">
                     {{ item.content|safe }}
                 </div>
             </div>
