@@ -143,6 +143,19 @@ class ItemTwoColumn(models.Model):
 
 
 class ItemGuide(models.Model):
+    title = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+
+    small_desc = models.CharField(
+        verbose_name='Small Description',
+        max_length=1000,
+        blank=True,
+        null=True,
+    )
+
     url = models.CharField(
         max_length=200,
     )

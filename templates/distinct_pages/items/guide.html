@@ -1,0 +1,29 @@
+{% load static %}
+
+{% block page_item_css %}
+    <link rel="stylesheet" href="{% static 'about/css/page-item-guide.css' %}">
+{% endblock %}
+
+<section id="guide" class="my-5">
+    <div class="container">
+        <div class="guide-top p-5">
+            <h2>
+                <strong>Read our guides</strong>
+            </h2>
+            <p>Our insurance guides are written by insurance experts</p>
+        </div>
+        <div class="row guide-item-box">
+            {% for item in items %}
+                <div class="col-md-4">
+                    <div class="guide-item text-center text-white p-5 rounded">
+                        <img src="{% static 'quotes/img/guide-icon.png' %}" alt="">
+                        <p class="font-weight-bold">{{ item.title|default:"Read Our Guide" }}</p>
+                        {% if item.small_desc %}<p class="mb-0">{{ item.small_desc }}</p>{% endif %}
+                        <a href="{{ item.url }}" class="text-white border d-block rounded py-2">{{ item.url_text|default:"View Our Guide" }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</section>

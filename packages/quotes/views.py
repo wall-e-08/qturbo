@@ -66,6 +66,7 @@ prop_context = {
         'dependents_max_age': prop['dependents_max_age']
     }
 
+
 def home(request: WSGIRequest) -> HttpResponse:
     return render(request, 'quotes/landing_page.html', prop_context)
 
