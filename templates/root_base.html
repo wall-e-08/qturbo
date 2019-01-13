@@ -53,11 +53,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
-                            <b-nav-item href="#">Health Insurance</b-nav-item>
-                            <b-nav-item href="#">About</b-nav-item>
-                            <b-nav-item href="#">Medicare</b-nav-item>
-                            <b-nav-item href="{% url 'article:all_articles' %}">Learn</b-nav-item>
-                            <b-nav-item href="{% url 'blog:all_blogs' %}">Blog</b-nav-item>
+                            <b-nav-item href="/">Health Insurance</b-nav-item>
+                            {% for menu in header_menu %}
+                                <b-nav-item href="{{ menu.url }}">{{ menu.url_text }}</b-nav-item>
+                            {% endfor %}
                             {% if request.user.is_authenticated %}
                                 <b-nav-item href="{% url 'dashboard:index' %}">
                                     <span class="text-success">Dashboard</span>
