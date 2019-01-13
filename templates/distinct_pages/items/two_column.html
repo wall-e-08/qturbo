@@ -1,0 +1,31 @@
+{% for item in items %}
+    <div class="tick-marked-img-listed {% if forloop.counter|divisibleby:2 %}bg-white{% else %}bg-light{% endif %}">
+        <div class="container">
+            <div class="row mb-5">
+                {% if forloop.counter|divisibleby:2 %}
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h2 class="my-4">{{ item.title }}</h2>
+                            <div>{{ item.content|safe }}</div>
+                            <a href="{{ item.url }}" class="btn btn-lg btn-primary text-white text-center px-4">{{ item.url_text }}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{{ item.img.url }}" alt="">
+                    </div>
+                {% else %}
+                    <div class="col-md-6">
+                        <img src="{{ item.img.url }}" alt="">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h2 class="my-4">{{ item.title }}</h2>
+                            <div>{{ item.content|safe }}</div>
+                            <a href="{{ item.url }}" class="btn btn-lg btn-primary text-white text-center px-4">{{ item.url_text }}</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}

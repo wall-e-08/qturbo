@@ -103,8 +103,9 @@ class StmPlanTask(Task):
         :return: zero
     """
 
-    def run(self, session_key, form_data, *args, **kwargs):
-        threaded_request(copy.deepcopy(form_data), session_key)
+    # selection_data = {preference_data} - {completed_data}
+    def run(self, session_key, form_data, selection_data=None, *args, **kwargs):
+        threaded_request(copy.deepcopy(form_data), session_key, copy.deepcopy(selection_data))
 
 
 class LimPlanTask(Task):

@@ -82,10 +82,10 @@ class Decoder:
 
     def get_html_as_str(self):
         self.decode()
-        rendered_html = ''
-        for item in self.__instances:
-            rendered_html += render_to_string(self.template_file, {'item': item})
-        return rendered_html
+        # rendered_html = ''
+        # for item in self.__instances:
+        #     rendered_html += render_to_string(self.template_file, {'item': item})
+        return render_to_string(self.template_file, {'items': self.__instances})
 
 
 def is_model_exists(model_name):

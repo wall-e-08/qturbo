@@ -7,6 +7,7 @@ import string
 import random
 import hashlib
 import datetime
+from typing import Union
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -472,3 +473,26 @@ def parse_stm_duration(stm_duration):
     if not match and stm_duration in string.digits:
         return int(stm_duration)
     return int(match.groupdict()['duration']) * int(match.groupdict()['times'])
+
+
+def create_selection_data(completed_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
+    """ Create intermidiate quote request selection data from
+    completed data and preferred coverage duration.
+
+    :return: dict
+    """
+    quote_request_data : dict = {
+        'LifeShield STM': {
+            'Duration_Coverage': [],
+        },
+
+        'AdvantHealth STM': {
+            'Duration_Coverage': []
+        }
+    }
+
+    if duration_coverage not in completed_data[stm_name]['Duration_Coverage']:
+        quote_request_data[stm_name]['Duration_Coverage'] = [duration_coverage]
+        return quote_request_data
+    else:
+        return None

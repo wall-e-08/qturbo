@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="row">
+        {% for item in items %}
+            <div class="col-md-4 text-center">
+                <div class="">
+                    {% if item.icon.icon_type == 'img' and item.icon.img_icon %}
+                        <img width="40" src="/media/{{ item.icon.img_icon }}" alt="">
+                    {% elif item.icon.icon_type == 'svg' %}
+                        {{ item.icon.svg_icon|safe }}
+                    {% endif %}
+                </div>
+                <div class="" style="font-size: 20px;">
+                    {{ item.content|safe }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{# TODO: remove code below #}
+<div class="text-center">
+    <a class="btn btn-primary btn-lg" href="#">Learn More</a>
+</div>

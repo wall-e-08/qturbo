@@ -32,8 +32,6 @@ def slugified_page(request, slug):
         Context(context_for_rendering)
     )
 
-    print("\n================\n{}\n=======\n".format(page_content_html))
-
     ctx = {
         "page": page,
         "page_content": page_content_html,
