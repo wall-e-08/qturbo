@@ -45,6 +45,10 @@ urlpatterns = [
     path('guide/create/', login_required(views.create_or_edit_guide), name='create_guide'),
     path('guide/edit/<guide_id>/', login_required(views.create_or_edit_guide), name='edit_guide'),
 
+    path('menu/', login_required(views.all_menus), name='all_menus'),
+    path('menu/create/', login_required(views.create_or_edit_menu), name='create_menu'),
+    path('menu/edit/<menu_id>/', login_required(views.create_or_edit_menu), name='edit_menu'),
+
     # ajax
     path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec'),
     path('generate_short_code/', login_required(views.generate_short_code), name='generate_short_code'),

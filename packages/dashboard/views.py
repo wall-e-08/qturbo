@@ -3,11 +3,12 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
+from .models import Menu
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog
 from .forms import (PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm,
-                    ItemIconForm, ItemTwoColumnForm, ItemGuideForm)
+                    ItemIconForm, ItemTwoColumnForm, ItemGuideForm, MenuForm)
 from distinct_pages.short_code import Encoder as SC_Encoder
 
 """login_required decorator added in urls.py... So no need to add here"""
@@ -38,6 +39,9 @@ def index(request):
         },
         "guide": {
             "count": ItemGuide.objects.all().count(),
+        },
+        "menu": {
+            "count": Menu.objects.all().count(),
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
@@ -98,6 +102,13 @@ def all_guides(request):
     })
 
 
+def all_menus(request):
+    menus= Menu.objects.all()
+    return render(request, 'dashboard/all_menus.html', {
+        "menus": menus,
+    })
+
+
 def create_or_edit_article(request, article_id=None):
     if article_id is None:
         action = 'Create'
@@ -109,7 +120,6 @@ def create_or_edit_article(request, article_id=None):
                 return redirect(blog.get_absolute_url())
             else:
                 print("create_blog  Form not valid. errors: {}".format(form.errors))
-            form = ArticleForm(request.POST)
         else:
             form = ArticleForm()
     else:
@@ -121,7 +131,8 @@ def create_or_edit_article(request, article_id=None):
                 if form.is_valid():
                     article = form.save()
                     return redirect(article.get_absolute_url())
-            form = ArticleForm(instance=article)
+            else:
+                form = ArticleForm(instance=article)
         except Article.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No info found")
@@ -172,7 +183,6 @@ def create_or_edit_blog(request, blog_id=None):
                 return redirect(blog.get_absolute_url())
             else:
                 print("create_blog  Form not valid. errors: {}".format(form.errors))
-            form = BlogForm(request.POST)
         else:
             form = BlogForm()
     else:
@@ -228,7 +238,8 @@ def create_or_edit_page(request, page_id=None):
             else:
                 print("Form is not valid")
                 print(form.errors)
-        form = PageForm()
+        else:
+            form = PageForm()
     else:
         action = "Edit"
         try:
@@ -238,7 +249,8 @@ def create_or_edit_page(request, page_id=None):
                 if form.is_valid():
                     page = form.save()
                     return redirect(page.get_absolute_url())
-            form = PageForm(instance=page)
+            else:
+                form = PageForm(instance=page)
         except Page.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No page found")
@@ -267,7 +279,6 @@ def create_or_edit_icon(request, icon_id=None):
                 return redirect('dashboard:all_icons')
             else:
                 print("create_icon form not valid. errors: {}".format(form.errors))
-            form = ItemIconForm(request.POST)
         else:
             form = ItemIconForm()
     else:
@@ -279,7 +290,8 @@ def create_or_edit_icon(request, icon_id=None):
                 if form.is_valid():
                     form.save()
                     return redirect('dashboard:all_icons')
-            form = ItemIconForm(instance=icon)
+            else:
+                form = ItemIconForm(instance=icon)
         except ItemIcon.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No icon found")
@@ -300,7 +312,8 @@ def create_or_edit_list(request, list_id=None):
             else:
                 print("Form is not valid")
                 print(form.errors)
-        form = ItemListForm()
+        else:
+            form = ItemListForm()
     else:
         action = "Edit"
         try:
@@ -310,7 +323,8 @@ def create_or_edit_list(request, list_id=None):
                 if form.is_valid():
                     form.save()
                     return redirect('dashboard:all_lists')
-            form = ItemListForm(instance=item_list)
+            else:
+                form = ItemListForm(instance=item_list)
         except ItemList.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No item_list found")
@@ -331,8 +345,7 @@ def create_or_edit_two_col(request, two_col_id=None):
                 form.save()
                 return redirect('dashboard:all_two_cols')
             else:
-                print("create_blog  Form not valid. errors: {}".format(form.errors))
-            form = ItemTwoColumnForm(request.POST)
+                print("create_blog Form not valid. errors: {}".format(form.errors))
         else:
             form = ItemTwoColumnForm()
     else:
@@ -344,7 +357,8 @@ def create_or_edit_two_col(request, two_col_id=None):
                 if form.is_valid():
                     form.save()
                     return redirect('dashboard:all_two_cols')
-            form = ItemTwoColumnForm(instance=two_col)
+            else:
+                form = ItemTwoColumnForm(instance=two_col)
         except ItemTwoColumn.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No info found")
@@ -365,7 +379,8 @@ def create_or_edit_guide(request, guide_id=None):
             else:
                 print("Form is not valid")
                 print(form.errors)
-        form = ItemGuideForm()
+        else:
+            form = ItemGuideForm()
     else:
         action = "Edit"
         try:
@@ -375,11 +390,48 @@ def create_or_edit_guide(request, guide_id=None):
                 if form.is_valid():
                     form.save()
                     return redirect('dashboard:all_guides')
-            form = ItemGuideForm(instance=item_guide)
+            else:
+                form = ItemGuideForm(instance=item_guide)
         except ItemGuide.DoesNotExist as err:
             print("awkward Error: {}".format(err))
             raise Http404("No item_guide found")
     return render(request, 'dashboard/form_page_item_guide.html', {
+        "form": form,
+        "action": action,
+    })
+
+
+def create_or_edit_menu(request, menu_id=None):
+    if menu_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            form = MenuForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboard:all_menus')
+            else:
+                print("Form is not valid")
+                print(form.errors)
+        else:
+            form = MenuForm()
+    else:
+        action = "Edit"
+        try:
+            menu = Menu.objects.get(id=int(menu_id))
+            if request.method == 'POST':
+                form = MenuForm(request.POST, instance=menu)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboard:all_menus')
+                else:
+                    print("Form is not valid")
+                    print(form.errors)
+            else:
+                form = MenuForm(instance=menu)
+        except Menu.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No menu found")
+    return render(request, 'dashboard/form_menu.html', {
         "form": form,
         "action": action,
     })
