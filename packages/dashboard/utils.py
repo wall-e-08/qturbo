@@ -1,5 +1,5 @@
 import os
-import json
+from django.shortcuts import reverse
 from django.conf import settings
 from writing.models import Category, Categorize, Blog, Article
 from distinct_pages.models import Page, ItemTwoColumn, ItemList
@@ -41,6 +41,10 @@ def get_distinct_page_template_file_list():
 def get_all_urls():
     all_urls = [(b.get_absolute_url(), b.title) for b in Blog.objects.all()] + \
                [(a.get_absolute_url(), a.title) for a in Article.objects.all()] + \
-               [(p.get_absolute_url(), p.title) for p in Page.objects.all()]
+               [(p.get_absolute_url(), p.title) for p in Page.objects.all()] + [
+                   (reverse('blog:all_blogs'), 'All Blogs'),
+                   (reverse('article:all_articles'), 'All Info/Articles'),
+                   (reverse('about:home'), 'About'),
+               ]
     return tuple(all_urls)
 

@@ -53,6 +53,9 @@
                                 <option value="{{ val }}" {% if form.template_file.value == val %}selected{% endif %}>{{ opt }}</option>
                             {% endfor %}
                         </select>
+                        {% if form.template_file.errors %}
+                            <div class="form_field_error text-danger form-input-error">{{ form.template_file.errors|join:" " }}</div>
+                        {% endif %}
                     </div>
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
