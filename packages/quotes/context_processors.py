@@ -122,7 +122,6 @@ def menu_context(request):
             "parent": fm,
             "child": child_menu
         })
-    print("header main menu: {}".format(header_menu))
     return {
         "header_menu": header_menu,
         "footer_menu": footer_menu,

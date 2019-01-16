@@ -39,7 +39,8 @@ def get_distinct_page_template_file_list():
 
 
 def get_all_urls():
-    all_urls = [(b.get_absolute_url(), b.title) for b in Blog.objects.all()] + \
+    all_urls = [('#', '--- No link ---'),] + \
+               [(b.get_absolute_url(), b.title) for b in Blog.objects.all()] + \
                [(a.get_absolute_url(), a.title) for a in Article.objects.all()] + \
                [(p.get_absolute_url(), p.title) for p in Page.objects.all()] + [
                    (reverse('blog:all_blogs'), 'All Blogs'),
@@ -47,4 +48,15 @@ def get_all_urls():
                    (reverse('about:home'), 'About'),
                ]
     return tuple(all_urls)
+
+
+def get_image_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+
+    # the format will be /path/to/media/<post_id>/general/<post_title><file_extension>
+    return os.path.join(
+        'general',
+        str("{}-{}".format(instance.title, instance.id) + file_extension)
+    )
+
 
