@@ -54,9 +54,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
                             <b-nav-item href="/">Health Insurance</b-nav-item>
+
                             {% for menu in header_menu %}
-                                <b-nav-item href="{{ menu.url }}">{{ menu.url_text }}</b-nav-item>
+                                <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
                             {% endfor %}
+
                             {% if request.user.is_authenticated %}
                                 <b-nav-item href="{% url 'dashboard:index' %}">
                                     <span class="text-success">Dashboard</span>
@@ -79,84 +81,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     {% block footer %}
         <footer class="bg-dark text-left py-5">
             <section class="container">
-                <div id="footer-two" class="">
+                <div id="footer-two">
                     <div class="row ">
-                        <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
-                                Products </h4>
-                            <ul class="nav flex-column text-center text-md-left">
-                                <li class="nav-item ">
-                                    <a class="nav-link active text-light px-0" href="#">Healthcare</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Medicare</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Obamacare</a>
-                                </li>
-
-                            </ul>
-                        </div>
-                        <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
-                                Shop </h4>
-                            <ul class="nav flex-column text-center text-md-left">
-                                <li class="nav-item ">
-                                    <a class="nav-link active text-light px-0" href="#">By Plan type</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">By Step</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">By Insurance Company</a>
-                                </li>
-
-                            </ul>
-                        </div>
-                        <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
-                                learn </h4>
-                            <ul class="nav flex-column text-center text-md-left">
-                                <li class="nav-item ">
-                                    <a class="nav-link active text-light px-0" href="#">Health Insurance</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Ask Question</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Medical ceverage</a>
-                                </li>
-
-                            </ul>
-                        </div>
-                        <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
-                            <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
-                                Company </h4>
-                            <ul class="nav flex-column text-center text-md-left">
-                                <li class="nav-item ">
-                                    <a class="nav-link active text-light px-0" href="#">Team</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Press</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Job</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Term of Use</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Privacy Policy</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light px-0" href="#">Contact</a>
-                                </li>
-                            </ul>
-                        </div>
-
-
+                        {% for menu in footer_menu %}
+                            <div class="col-sm-6 col-md-3 col-lg-3 mb-5">
+                                <h4 class="heading font-weight-bold text-light text-uppercase mb-3 text-center text-md-left">
+                                    {% if menu.parent.url != '#' %}
+                                        <a class="link-white" href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</a>
+                                    {% else %}{{ menu.parent.url_text }}{% endif %}
+                                </h4>
+                                <ul class="nav flex-column text-center text-md-left">
+                                    {% for child_menu in menu.child %}
+                                        <li class="nav-item">
+                                            <a class="nav-link active text-light px-0" href="{{ child_menu.url }}">{{ child_menu.url_text }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endfor %}
                     </div>
-
                 </div>
                 <div id="footer-3" class="border-top">
                     <div class="row mt-4">

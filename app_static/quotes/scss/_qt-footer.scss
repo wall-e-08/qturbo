@@ -1,14 +1,10 @@
-$svg-footer-height: 25px;
-$svg-footer-width: 25px;
-$font-13: 13px;
-$font-18:18px;
-$font-22:22px;
-$font-24:24px;
+@import "qt-variables";
 
-svg{
-  height: $svg-footer-height !important;
-  width: $svg-footer-width  !important;
+svg {
+    height: $svg-footer-height !important;
+    width: $svg-footer-width !important;
 }
-.footer-font-size{
-  font-size: $font-13;
+
+.footer-font-size {
+    font-size: map_get($fonts, 'font-xs');
 }

@@ -22,7 +22,7 @@ class Menu(models.Model):
     )
 
     def __str__(self):
-        return "Menu - {}".format(self.url_text)
+        return "{} - {}".format(self.get_position_display(), self.url_text)
 
 
 
