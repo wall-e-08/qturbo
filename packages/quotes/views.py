@@ -1079,17 +1079,27 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
         print("quote_request_form_data['quote_store_key']", quote_request_form_data['quote_store_key'])
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
-        for plan in redis_conn.lrange(redis_key, 0, -1):
+        plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
+        for pdx, plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
             decoded_plan = json_decoder.decode(plan.decode())
 
-            if decoded_plan in ['START', "END"]:
+            if decoded_plan == 'START':
                 print(f'{decoded_plan} of plans in redis.')
+
+            # Have we have reached the end of the loop?
+            # There are no more plans
+            elif decoded_plan == "END":
+                if pdx == plan_list_length -1 :
+                    print(f'We have reached the end of the list. There are {pdx-1} plans.')
+                else:
+                    continue
 
             elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
                 if decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage']:
                     continue
 
             sp.append(decoded_plan)
+
     logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({
         'monthly_plans': sp,
@@ -1619,7 +1629,7 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
 
     # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
 
-    if plan_url[:4].lower() == 'life':
+    if plan_url[:4].lower() == 'life':  # Lifeshield
         stm_name = 'LifeShield STM'
     else:
         stm_name = 'AdvantHealth STM'
