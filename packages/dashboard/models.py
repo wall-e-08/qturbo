@@ -80,7 +80,10 @@ class GeneralTopic(models.Model):
         upload_to=get_image_path,
     )
     faqs = ArrayField(
-        ArrayField(models.CharField(max_length=500, blank=True)),
+        ArrayField(
+            models.CharField(max_length=500, blank=True),
+            size=2,
+        ),
     )
 
     quote_heading = models.CharField(max_length=300)

@@ -101,19 +101,7 @@
                     </div>
 
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="stats">
-                        <div class="form-group">
-                            <label for="{{ form.statistics.id_for_label }}">{{ form.statistics.label }}</label>
-                            <input type="text"
-                                   class="form-control {% if form.statistics.errors %}border-danger{% endif %}"
-                                   name="{{ form.statistics.name }}"
-                                   id="{{ form.statistics.id_for_label }}"
-                                   value="{{ form.statistics.value|default:'' }}"
-                                   placeholder="THIS IS ARRAY (will be updated later)">
-
-                            {% if form.statistics.errors %}
-                                <div class="form_field_error text-danger form-input-error">{{ form.statistics.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
+                        <statistics-items></statistics-items>
                     </div>
 
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="review">
@@ -131,19 +119,7 @@
                             {% endif %}
                         </div>
                         <hr>
-                        <div class="form-group">
-                            <label for="{{ form.review_items.id_for_label }}">{{ form.review_items.label }}</label>
-                            <input type="text"
-                                   class="form-control {% if form.review_items.errors %}border-danger{% endif %}"
-                                   name="{{ form.review_items.name }}"
-                                   id="{{ form.review_items.id_for_label }}"
-                                   value="{{ form.review_items.value|default:'' }}"
-                                   placeholder="THIS IS ARRAY (will be updated later)">
-
-                            {% if form.review_items.errors %}
-                                <div class="form_field_error text-danger form-input-error">{{ form.review_items.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
+                        <review-items></review-items>
                         <hr>
                         <div class="form-group">
                             <label for="{{ form.review_bg.id_for_label }}">{{ form.review_bg.label }}</label>
@@ -187,19 +163,7 @@
                             {% endif %}
                         </div>
                         <hr>
-                        <div class="form-group">
-                            <label for="{{ form.faqs.id_for_label }}">{{ form.faqs.label }}</label>
-                            <input type="text"
-                                   class="form-control {% if form.faqs.errors %}border-danger{% endif %}"
-                                   name="{{ form.faqs.name }}"
-                                   id="{{ form.faqs.id_for_label }}"
-                                   value="{{ form.faqs.value|default:'' }}"
-                                   placeholder="THIS IS ARRAY (will be updated later)">
-
-                            {% if form.faqs.errors %}
-                                <div class="form_field_error text-danger form-input-error">{{ form.faqs.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
+                        <faq-items></faq-items>
                     </div>
 
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="quote">
@@ -270,19 +234,7 @@
                             {% endif %}
                         </div>
                         <hr>
-                        <div class="form-group">
-                            <label for="{{ form.social_links.id_for_label }}">{{ form.social_links.label }}</label>
-                            <input type="text"
-                                   class="form-control {% if form.social_links.errors %}border-danger{% endif %}"
-                                   name="{{ form.social_links.name }}"
-                                   id="{{ form.social_links.id_for_label }}"
-                                   value="{{ form.social_links.value|default:'' }}"
-                                   placeholder="THIS IS ARRAY (will be updated later)">
-
-                            {% if form.social_links.errors %}
-                                <div class="form_field_error text-danger form-input-error">{{ form.social_links.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
+                        <social-link-items></social-link-items>
                     </div>
 
                     <button type="submit" class="btn btn-success">Save</button>
@@ -303,20 +255,22 @@
                            class="form-control {% if form.service_items.errors %}border-danger{% endif %}"
                            name="{{ form.service_items.name }}"
                            id="{{ form.service_items.id_for_label }}"
-                           v-model="generated_item"
-                           placeholder="working now">
+                           v-model="generated_item">
                     <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.service_items.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.service_items.errors|join:" " }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
                     <h4 class="fw-500">Add icons and texts</h4>
                     <div class="form-group row">
-                        <label for="" class="col-2 text-right pr-0">Text</label>
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Text</label>
                         <div class="col-10">
-                            <textarea class="form-control" placeholder="Enter Text" v-model="selected_text"></textarea>
+                            <input type="text" class="form-control" placeholder="Enter Text" v-model="selected_text"/>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="" class="col-2 text-right pr-0">Icon</label>
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Icon</label>
                         <div class="col-10">
                             <select class="form-control" v-model="selected_icon_index">
                                 <option selected="selected" value="" disabled="disabled">---</option>
@@ -324,7 +278,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <template v-if="selected_icon_index !== ''">
                         <div class="svg-container" v-if="icons[selected_icon_index].svg" v-html="icons[selected_icon_index].svg"></div>
                         <img width="120" v-else-if="icons[selected_icon_index].img" :src="icons[selected_icon_index].img">
@@ -333,16 +287,160 @@
                     <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
                 </div>
             </div>
-        
-            {% if form.service_items.errors %}
-                <div class="form_field_error text-danger form-input-error">{{ form.service_items.errors|join:" " }}</div>
-            {% endif %}
+        </div>
+    </script>
+
+    <script type="text/x-template" id="stats-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.statistics.id_for_label }}">{{ form.statistics.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.statistics.errors %}border-danger{% endif %}"
+                           name="{{ form.statistics.name }}"
+                           id="{{ form.statistics.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.statistics.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.statistics.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add count and texts</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Count</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Count" v-model="selected_count">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Text</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Text" v-model="selected_text">
+                        </div>
+                    </div>
+                    <button v-if="selected_count && selected_text" class="btn btn-primary float-right" @click.prevent="generate_stats_item_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="review-items-template">
+        <div class="form-group">
+            <div class="mb-3">
+                <label for="{{ form.review_items.id_for_label }}">{{ form.review_items.label }}</label>
+                <input type="text"
+                       class="form-control {% if form.review_items.errors %}border-danger{% endif %}"
+                       name="{{ form.review_items.name }}"
+                       id="{{ form.review_items.id_for_label }}"
+                       v-model="generated_item">
+                <small class="alert-warning">Do not edit this input, it will generate</small>
+                {% if form.review_items.errors %}
+                    <div class="form_field_error text-danger form-input-error">{{ form.review_items.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+            <h4 class="fw-500">Add Review items (max: 2, no image)</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="" class="text-right pr-0">Review 1</label>
+                    <textarea class="form-control" id="review_item_1" placeholder="Review 1"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="" class="text-right pr-0">Review 2</label>
+                    <textarea class="form-control" id="review_item_2" placeholder="Review 2"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-3" @click.prevent="generate_stats_item_array">+ Insert</button>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="faq-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.faqs.id_for_label }}">{{ form.faqs.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.faqs.errors %}border-danger{% endif %}"
+                           name="{{ form.faqs.name }}"
+                           id="{{ form.faqs.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.faqs.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.faqs.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add question and answer</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Question</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Question" v-model="selected_ques">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Answer</label>
+                        <div class="col-10">
+                            <textarea class="form-control" placeholder="Enter Answer" v-model="selected_ans"></textarea>
+                        </div>
+                    </div>
+                    <button v-if="selected_ques && selected_ans" class="btn btn-primary float-right" @click.prevent="generate_faq_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="social-links-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.social_links.id_for_label }}">{{ form.social_links.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.social_links.errors %}border-danger{% endif %}"
+                           name="{{ form.social_links.name }}"
+                           id="{{ form.social_links.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.social_links.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.social_links.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add Social Links</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">LinkedIn</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter linked-in url" v-model="linkedin">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Twitter</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter twitter url" v-model="twitter">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Facebook</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter facebook url" v-model="facebook">
+                        </div>
+                    </div>
+
+                    <button v-if="linkedin || twitter || facebook" class="btn btn-primary float-right" @click.prevent="generate_social_icons_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter any value first !</button>
+                </div>
+            </div>
         </div>
     </script>
 {% endblock %}
 
 
 {% block bottom_js %}
+    {% with selectors='#review_item_1, #review_item_2' non_container=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+
     <script>
         all_components['service-items'] = {
             delimiters: ['[[', ']]'],
@@ -358,20 +456,114 @@
                     {% endfor %}],
                     selected_icon_index: '',
                     selected_text: '',
-                    generated_item: '{{ form.service_items.value|safe|default:'[]' }}',
+                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
                 }
             },
             methods: {
                 generate_service_item_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
                     let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
                     prev_item_arr.push([
                         parseInt(this.icons[this.selected_icon_index].id),
                         this.selected_text
                     ]); // push the new item
                     this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_icon_index = '';
+                    this.selected_text = '';
                 }
             },
             template: '#service-items-template'
+        };
+        all_components['statistics-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    selected_count: '',
+                    selected_text: '',
+                    generated_item: `{{ form.statistics.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_stats_item_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        this.selected_count,
+                        this.selected_text
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_count = '';
+                    this.selected_text = '';
+                }
+            },
+            template: '#stats-template'
+        };
+        all_components['review-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_stats_item_array: function () {
+                    this.generated_item = JSON.stringify([
+                        document.getElementById('review_item_1').value,
+                        document.getElementById('review_item_2').value
+                    ]);
+                }
+            },
+            template: '#review-items-template'
+        };
+        all_components['faq-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    selected_ques: '',
+                    selected_ans: '',
+                    generated_item: `{{ form.faq.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_faq_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        this.selected_ques,
+                        this.selected_ans,
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_ques = '';
+                    this.selected_ans = '';
+                }
+            },
+            template: '#faq-template'
+        };
+        all_components['social-link-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    linkedin: '',
+                    twitter: '',
+                    facebook: '',
+                    generated_item: `{{ form.social_links.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_social_icons_array: function () {
+                    let gen_it_arr = [];
+
+                    if (this.linkedin) gen_it_arr.push([this.linkedin, '{% static 'img/linkedin.svg' %}']);
+                    if (this.twitter) gen_it_arr.push([this.twitter, '{% static 'img/twitter.svg' %}']);
+                    if (this.facebook) gen_it_arr.push([this.facebook, '{% static 'img/facebook.svg' %}']);
+
+                    this.generated_item = JSON.stringify(gen_it_arr);
+                    this.linkedin = '';
+                    this.twitter = '';
+                    this.facebook = '';
+                }
+            },
+            template: '#social-links-template'
         };
     </script>
 {% endblock %}
