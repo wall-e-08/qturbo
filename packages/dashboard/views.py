@@ -3,12 +3,13 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404, JsonResponse, HttpResponse
-from .models import Menu
+from .models import Menu, GeneralTopic
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
 from .utils import get_category_list_by_blog
 from .forms import (PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm,
-                    ItemIconForm, ItemTwoColumnForm, ItemGuideForm, MenuForm)
+                    ItemIconForm, ItemTwoColumnForm, ItemGuideForm, MenuForm,
+                    GeneralTopicForm,)
 from distinct_pages.short_code import Encoder as SC_Encoder
 
 """login_required decorator added in urls.py... So no need to add here"""
@@ -45,6 +46,20 @@ def index(request):
         },
     }
     return render(request, 'dashboard/index.html', {"data": data})
+
+
+def edit_general_topic(request):
+    gt = GeneralTopic.get_the_instance()
+
+    if request.method == 'POST':
+        # submit for editing
+        form = GeneralTopicForm(request.POST, request.FILES, instance=gt)
+        if form.is_valid():
+            form.save()
+            return reverse('quotes:home')
+    else:
+        form = GeneralTopicForm(instance=gt)
+    return render(request, 'dashboard/edit_general_topic.html', {"form": form,})
 
 
 # All START ##
@@ -103,7 +118,7 @@ def all_guides(request):
 
 
 def all_menus(request):
-    menus= Menu.objects.all()
+    menus = Menu.objects.all()
     return render(request, 'dashboard/all_menus.html', {
         "menus": menus,
     })
