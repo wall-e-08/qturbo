@@ -7,6 +7,16 @@
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
     <li class="breadcrumb-item active">Edit General Item</li>
 {% endblock %}
+
+{% block head_css %}
+    <style>
+        .svg-container svg {
+            width: 50px !important;
+            height: 50px !important;
+        }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
     <div class="container">
         <div class="row">
@@ -74,19 +84,7 @@
                             {% endif %}
                         </div>
                         <hr>
-                        <div class="form-group">
-                            <label for="{{ form.service_items.id_for_label }}">{{ form.service_items.label }}</label>
-                            <input type="text"
-                                   class="form-control {% if form.service_items.errors %}border-danger{% endif %}"
-                                   name="{{ form.service_items.name }}"
-                                   id="{{ form.service_items.id_for_label }}"
-                                   value="{{ form.service_items.value|default:'' }}"
-                                   placeholder="THIS IS ARRAY (will be updated later)">
-
-                            {% if form.service_items.errors %}
-                                <div class="form_field_error text-danger form-input-error">{{ form.service_items.errors|join:" " }}</div>
-                            {% endif %}
-                        </div>
+                        <service-items></service-items>
                         <hr>
                         <div class="form-group">
                             <label for="{{ form.service_img.id_for_label }}">{{ form.service_img.label }}</label>
@@ -292,5 +290,89 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="service-items-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.service_items.id_for_label }}">{{ form.service_items.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.service_items.errors %}border-danger{% endif %}"
+                           name="{{ form.service_items.name }}"
+                           id="{{ form.service_items.id_for_label }}"
+                           v-model="generated_item"
+                           placeholder="working now">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add icons and texts</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0">Text</label>
+                        <div class="col-10">
+                            <textarea class="form-control" placeholder="Enter Text" v-model="selected_text"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0">Icon</label>
+                        <div class="col-10">
+                            <select class="form-control" v-model="selected_icon_index">
+                                <option selected="selected" value="" disabled="disabled">---</option>
+                                <option :value="index" v-for="(ic, index) in icons">[[ ic.title ]]</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <template v-if="selected_icon_index !== ''">
+                        <div class="svg-container" v-if="icons[selected_icon_index].svg" v-html="icons[selected_icon_index].svg"></div>
+                        <img width="120" v-else-if="icons[selected_icon_index].img" :src="icons[selected_icon_index].img">
+                    </template>
+                    <button v-if="selected_text && selected_icon_index !== ''" class="btn btn-primary float-right" @click.prevent="generate_service_item_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        
+            {% if form.service_items.errors %}
+                <div class="form_field_error text-danger form-input-error">{{ form.service_items.errors|join:" " }}</div>
+            {% endif %}
+        </div>
+    </script>
+{% endblock %}
+
+
+{% block bottom_js %}
+    <script>
+        all_components['service-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    icons: [{% for ic in icons %}
+                        {
+                            id: "{{ ic.id }}",
+                            title: "{{ ic.title }}",
+                            img: "{% if ic.img_icon %}{{ ic.img_icon.url }}{% endif %}",
+                            svg: `{{ ic.svg_icon|safe|default:'' }}`,
+                        },
+                    {% endfor %}],
+                    selected_icon_index: '',
+                    selected_text: '',
+                    generated_item: '{{ form.service_items.value|safe|default:'[]' }}',
+                }
+            },
+            methods: {
+                generate_service_item_array: function () {
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        parseInt(this.icons[this.selected_icon_index].id),
+                        this.selected_text
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                }
+            },
+            template: '#service-items-template'
+        };
+    </script>
 {% endblock %}
 

@@ -59,7 +59,10 @@ def edit_general_topic(request):
             return reverse('quotes:home')
     else:
         form = GeneralTopicForm(instance=gt)
-    return render(request, 'dashboard/edit_general_topic.html', {"form": form,})
+    return render(request, 'dashboard/edit_general_topic.html', {
+        "form": form,
+        "icons": ItemIcon.objects.all(),
+    })
 
 
 # All START ##
