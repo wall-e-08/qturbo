@@ -1,4 +1,6 @@
 import os
+import string
+import random
 from django.shortcuts import reverse
 from django.conf import settings
 from writing.models import Category, Categorize, Blog, Article
@@ -56,7 +58,7 @@ def get_image_path(instance, filename):
     # the format will be /path/to/media/<post_id>/general/<post_title><file_extension>
     return os.path.join(
         'general',
-        str("{}-{}".format(instance.title, instance.id) + file_extension)
+        str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
     )
 
 

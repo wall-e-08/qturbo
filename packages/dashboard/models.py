@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from djrichtextfield.models import RichTextField
@@ -98,11 +99,24 @@ class GeneralTopic(models.Model):
         ),
     )
 
+    last_edited_time = models.DateTimeField(
+        verbose_name="Last edited on",
+        editable=False,
+        blank=True, null=True,
+    )
+
     def save(self, *args, **kwargs):
         if GeneralTopic.objects.exists() and not self.id:
             # Only one instance allowed
             raise ValidationError('Only one GeneralTopics instance allowed! Edit the remaining one, if you need to change.')
+
+        self.last_edited_time = timezone.now()  # On save, update timestamps
         return super(GeneralTopic, self).save(*args, **kwargs)
 
-    def get_the_instance(self):
-        return self.objects.all()[0]
+    @staticmethod
+    def get_the_instance():
+        try:
+            return GeneralTopic.objects.all()[0]
+        except IndexError:
+            print("GeneralTopic is not created yet.")
+        return None
