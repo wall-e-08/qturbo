@@ -85,13 +85,9 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
 @require_POST
 def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     """
-
     :param request: Django request object
     :return: Django JsonResponse Object
     """
-
-
-
     print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
 
     form = ApplicantInfoForm(request.POST)
@@ -207,12 +203,6 @@ def plan_quote(request, ins_type):
     if not redis_conn.exists(redis_key):
         print("Redis connection does not exist for redis key")
         redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
-
-
-
-
-
-
 
         print(f"Insurance type is {ins_type}")
         if ins_type == 'stm':
@@ -1081,11 +1071,9 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     sp = []
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     print(quote_request_form_data)
-    # if quote_request_form_data["Include_Spouse"] == 'Yes':
-    #     print("wife/husband\n")
 
-    end_reached = False
-    # request.session['applicant_enrolled'] = False
+    preference = request.session.get('quote_request_preference_data', {})
+
     request.session.modified = True
     if quote_request_form_data:
         print("quote_request_form_data['quote_store_key']", quote_request_form_data['quote_store_key'])
@@ -1093,16 +1081,15 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                                      quote_request_form_data['quote_store_key'])
         for plan in redis_conn.lrange(redis_key, 0, -1):
             decoded_plan = json_decoder.decode(plan.decode())
-            if decoded_plan in ['START', "END"]:
-                print(type(decoded_plan), decoded_plan)
 
-            # elif isinstance(decoded_plan, str) and decoded_plan == 'END':
-            #     end_reached = True
+            if decoded_plan in ['START', "END"]:
+                print(f'{decoded_plan} of plans in redis.')
+
+            elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
+                if decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage']:
+                    continue
 
             sp.append(decoded_plan)
-
-        if end_reached:
-            pass
     logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({
         'monthly_plans': sp,
@@ -1628,11 +1615,6 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
     # Gathering preference data from session
     quote_request_completed_data = json.loads(redis_conn.get(redis_done_data_flag))
 
-    # Here we shall create the selection data
-    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
-
-    # We need to change the preference data in this function. # TODO
-
     # TODO: Set an expiration timer for plans in redis.
 
     # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
@@ -1644,7 +1626,7 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
 
 
 
-
+    # Here we shall create the selection data
     selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
 
 
@@ -1711,6 +1693,14 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
+    # Changing the preference of the user.
+    # We need to change the preference data in this function. # TODO
+
+    # The following three lines should be changed into a function.
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration] # why not a dict of str Need to refractor.
+
+    request.session['quote_request_preference_data'] = quote_request_preference_data
 
     logger.info(f'PLAN: {alternative_plan}')
     logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
