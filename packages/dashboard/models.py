@@ -97,7 +97,7 @@ class GeneralTopic(models.Model):
     copyright_text = models.CharField(max_length=200)
     social_links = ArrayField(
         ArrayField(
-            models.CharField(max_length=10, blank=True),
+            models.CharField(max_length=200, blank=True),
             size=2,
         ),
     )

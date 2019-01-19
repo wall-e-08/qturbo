@@ -14,11 +14,20 @@
             width: 50px !important;
             height: 50px !important;
         }
+        img {
+            padding: 10px;
+            border: 1px solid #898;
+            margin-top: 16px;
+            text-align: center;
+        }
     </style>
 {% endblock %}
 
 {% block dashboard_content %}
     <div class="container">
+        {% if saved %}
+            <p class="alert alert-success border border-success">Data saved !!</p>
+        {% endif %}
         <div class="row">
             <div class="col-12">
                 <h1>Edit General Item</h1>
@@ -48,7 +57,7 @@
                                          name="{{ form.top_img.name }}"
                                          id="{{ form.top_img.id_for_label }}"
                                          value="{{ form.top_img.value|default:'' }}"></b-form-file>
-                            {% if form.top_img.value %}<img width="150" src="/media/{{ form.top_img.value }}" alt="">{% endif %}
+                            {% if form.top_img.value %}<img width="150" src="/media/{{ form.top_img.value }}" alt="No image found!">{% endif %}
                             {% if form.top_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_img.errors|join:" " }}</div>
                             {% endif %}
@@ -93,7 +102,7 @@
                                          name="{{ form.service_img.name }}"
                                          id="{{ form.service_img.id_for_label }}"
                                          value="{{ form.service_img.value|default:'' }}"></b-form-file>
-                            {% if form.service_img.value %}<img width="150" src="/media/{{ form.service_img.value }}" alt="">{% endif %}
+                            {% if form.service_img.value %}<img width="150" src="/media/{{ form.service_img.value }}" alt="No image found!">{% endif %}
                             {% if form.service_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.service_img.errors|join:" " }}</div>
                             {% endif %}
@@ -128,7 +137,7 @@
                                          name="{{ form.review_bg.name }}"
                                          id="{{ form.review_bg.id_for_label }}"
                                          value="{{ form.review_bg.value|default:'' }}"></b-form-file>
-                            {% if form.review_bg.value %}<img width="150" src="/media/{{ form.review_bg.value }}" alt="">{% endif %}
+                            {% if form.review_bg.value %}<img width="150" src="/media/{{ form.review_bg.value }}" alt="No image found!">{% endif %}
                             {% if form.review_bg.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.review_bg.errors|join:" " }}</div>
                             {% endif %}
@@ -157,7 +166,7 @@
                                          name="{{ form.faq_img.name }}"
                                          id="{{ form.faq_img.id_for_label }}"
                                          value="{{ form.faq_img.value|default:'' }}"></b-form-file>
-                            {% if form.faq_img.value %}<img width="150" src="/media/{{ form.faq_img.value }}" alt="">{% endif %}
+                            {% if form.faq_img.value %}<img width="150" src="/media/{{ form.faq_img.value }}" alt="No image found!">{% endif %}
                             {% if form.faq_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.faq_img.errors|join:" " }}</div>
                             {% endif %}
@@ -188,7 +197,7 @@
                                          name="{{ form.quote_bg.name }}"
                                          id="{{ form.quote_bg.id_for_label }}"
                                          value="{{ form.quote_bg.value|default:'' }}"></b-form-file>
-                            {% if form.quote_bg.value %}<img width="150" src="/media/{{ form.quote_bg.value }}" alt="">{% endif %}
+                            {% if form.quote_bg.value %}<img width="150" src="/media/{{ form.quote_bg.value }}" alt="No image found!">{% endif %}
                             {% if form.quote_bg.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.quote_bg.errors|join:" " }}</div>
                             {% endif %}
@@ -344,11 +353,11 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="" class="text-right pr-0">Review 1</label>
-                    <textarea class="form-control" id="review_item_1" placeholder="Review 1"></textarea>
+                    <textarea class="form-control" id="review_item_1" placeholder="Review 1">[[ review_1 ]]</textarea>
                 </div>
                 <div class="col-md-6">
                     <label for="" class="text-right pr-0">Review 2</label>
-                    <textarea class="form-control" id="review_item_2" placeholder="Review 2"></textarea>
+                    <textarea class="form-control" id="review_item_2" placeholder="Review 2">[[ review_2 ]]</textarea>
                 </div>
             </div>
             <button class="btn btn-primary mt-3" @click.prevent="generate_stats_item_array">+ Insert</button>
@@ -502,6 +511,8 @@
             delimiters: ['[[', ']]'],
             data: function () {
                 return {
+                    review_1: '',
+                    review_2: '',
                     generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
                 }
             },
@@ -512,6 +523,10 @@
                         document.getElementById('review_item_2').value
                     ]);
                 }
+            },
+            created: function () {
+                let x = JSON.parse(this.generated_item)
+                console.log(x)
             },
             template: '#review-items-template'
         };

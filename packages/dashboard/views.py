@@ -2,7 +2,7 @@ import os, json
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
-from django.http import Http404, JsonResponse, HttpResponse
+from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
 from .models import Menu, GeneralTopic
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
@@ -56,7 +56,7 @@ def edit_general_topic(request):
         form = GeneralTopicForm(request.POST, request.FILES, instance=gt)
         if form.is_valid():
             form.save()
-            return reverse('quotes:home')
+            return HttpResponseRedirect(reverse('dashboard:edit_general_topic'))
     else:
         form = GeneralTopicForm(instance=gt)
     return render(request, 'dashboard/edit_general_topic.html', {
