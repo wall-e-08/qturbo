@@ -2,7 +2,7 @@ import os, json
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect, reverse
-from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import Http404, JsonResponse, HttpResponse
 from .models import Menu, GeneralTopic
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
@@ -50,19 +50,22 @@ def index(request):
 
 def edit_general_topic(request):
     gt = GeneralTopic.get_the_instance()
-
+    ctx = {}
     if request.method == 'POST':
         # submit for editing
         form = GeneralTopicForm(request.POST, request.FILES, instance=gt)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('dashboard:edit_general_topic'))
+            ctx.update({"saved": True})
+        else:
+            ctx.update({"error": True})
     else:
         form = GeneralTopicForm(instance=gt)
-    return render(request, 'dashboard/edit_general_topic.html', {
+    ctx.update({
         "form": form,
         "icons": ItemIcon.objects.all(),
     })
+    return render(request, 'dashboard/edit_general_topic.html', context=ctx)
 
 
 # All START ##

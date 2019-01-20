@@ -11,5 +11,6 @@
 ./manage.py loaddata db/fixtures/article.json
 ./manage.py loaddata db/fixtures/blog.json
 ./manage.py loaddata db/fixtures/categorize.json
+./manage.py loaddata db/fixtures/general_topic.json
 
 ./manage.py loaddata db/fixtures/carrier.json

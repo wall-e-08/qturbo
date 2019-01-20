@@ -68,7 +68,7 @@ prop_context = {
 
 
 def home(request: WSGIRequest) -> HttpResponse:
-    return render(request, 'quotes/landing_page.html', prop_context)
+    return render(request, 'homepage.html', prop_context)
 
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
@@ -79,7 +79,7 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     :param request: Django request object
     :return: Django HttpResponse Object
     """
-    return render(request, 'quotes/landing_page.html', prop_context)
+    return render(request, 'quotes/../../templates/homepage.html', prop_context)
 
 
 @require_POST

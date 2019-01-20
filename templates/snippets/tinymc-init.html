@@ -1,4 +1,5 @@
 {# for media file upload hack #}
+{% if not multiple_instance %}
 <iframe id="form-target" name="upload_target" class="d-none"></iframe>
 <form id="media-upload-form" action="{% url 'dashboard:editor_media_upload' %}" target="upload_target" method="post" enctype="multipart/form-data" class="d-none">
     {% csrf_token %}
@@ -6,6 +7,7 @@
 </form>
 
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+{% endif %}
 
 <script>
     tinymce.init({

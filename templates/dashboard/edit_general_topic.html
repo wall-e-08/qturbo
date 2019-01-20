@@ -14,7 +14,7 @@
             width: 50px !important;
             height: 50px !important;
         }
-        img {
+        form img {
             padding: 10px;
             border: 1px solid #898;
             margin-top: 16px;
@@ -28,6 +28,10 @@
         {% if saved %}
             <p class="alert alert-success border border-success">Data saved !!</p>
         {% endif %}
+        {% if error %}
+            <p class="alert alert-danger border border-danger">Data cannot be saved! Fix error/s first !!</p>
+            <hr>
+        {% endif %}
         <div class="row">
             <div class="col-12">
                 <h1>Edit General Item</h1>
@@ -37,13 +41,39 @@
 
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="top">
                         <div class="form-group">
+                            <label for="{{ form.top_quote_heading.id_for_label }}">{{ form.top_quote_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.top_quote_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.top_quote_heading.name }}"
+                                   id="{{ form.top_quote_heading.id_for_label }}"
+                                   value="{{ form.top_quote_heading.value|default:'' }}"
+                                   placeholder="{{ form.top_quote_heading.label }}">
+
+                            {% if form.top_quote_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.top_quote_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.top_quote_sub_heading.id_for_label }}">{{ form.top_quote_sub_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.top_quote_sub_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.top_quote_sub_heading.name }}"
+                                   id="{{ form.top_quote_sub_heading.id_for_label }}"
+                                   value="{{ form.top_quote_sub_heading.value|default:'' }}"
+                                   placeholder="{{ form.top_quote_sub_heading.label }}">
+
+                            {% if form.top_quote_sub_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.top_quote_sub_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
                             <label for="{{ form.top_text.id_for_label }}">{{ form.top_text.label }}</label>
                             <input type="text"
                                    class="form-control {% if form.top_text.errors %}border-danger{% endif %}"
                                    name="{{ form.top_text.name }}"
                                    id="{{ form.top_text.id_for_label }}"
                                    value="{{ form.top_text.value|default:'' }}"
-                                   placeholder="Title">
+                                   placeholder="Top text under quote">
 
                             {% if form.top_text.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_text.errors|join:" " }}</div>
@@ -152,7 +182,7 @@
                                    name="{{ form.faq_heading.name }}"
                                    id="{{ form.faq_heading.id_for_label }}"
                                    value="{{ form.faq_heading.value|default:'' }}"
-                                   placeholder="Review Heading">
+                                   placeholder="FAQ Heading">
 
                             {% if form.faq_heading.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.faq_heading.errors|join:" " }}</div>
@@ -183,7 +213,7 @@
                                    name="{{ form.quote_heading.name }}"
                                    id="{{ form.quote_heading.id_for_label }}"
                                    value="{{ form.quote_heading.value|default:'' }}"
-                                   placeholder="Review Heading">
+                                   placeholder="{{ form.quote_heading.label }}">
 
                             {% if form.quote_heading.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.quote_heading.errors|join:" " }}</div>
@@ -236,7 +266,7 @@
                                    name="{{ form.copyright_text.name }}"
                                    id="{{ form.copyright_text.id_for_label }}"
                                    value="{{ form.copyright_text.value|default:'' }}"
-                                   placeholder="Review Heading">
+                                   placeholder="Copyright">
 
                             {% if form.copyright_text.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.copyright_text.errors|join:" " }}</div>
@@ -360,7 +390,7 @@
                     <textarea class="form-control" id="review_item_2" placeholder="Review 2">[[ review_2 ]]</textarea>
                 </div>
             </div>
-            <button class="btn btn-primary mt-3" @click.prevent="generate_stats_item_array">+ Insert</button>
+            <button class="btn btn-primary mt-3" @click.prevent="generate_review_item_array">+ Insert</button>
         </div>
     </script>
 
@@ -446,7 +476,10 @@
 
 
 {% block bottom_js %}
-    {% with selectors='#review_item_1, #review_item_2' non_container=True %}
+    {% with selectors='#review_item_1' non_container=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#review_item_2' non_container=True multiple_instance=True %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 
@@ -513,11 +546,11 @@
                 return {
                     review_1: '',
                     review_2: '',
-                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
+                    generated_item: `{{ form.review_items.value|default:'[]'|safe }}`,
                 }
             },
             methods: {
-                generate_stats_item_array: function () {
+                generate_review_item_array: function () {
                     this.generated_item = JSON.stringify([
                         document.getElementById('review_item_1').value,
                         document.getElementById('review_item_2').value
@@ -525,8 +558,11 @@
                 }
             },
             created: function () {
-                let x = JSON.parse(this.generated_item)
-                console.log(x)
+                let x = JSON.parse(this.generated_item.replace(/\n/g, ''));
+                if (x.length > 1) {
+                    this.review_1 = x[0];
+                    this.review_2 = x[1];
+                }
             },
             template: '#review-items-template'
         };

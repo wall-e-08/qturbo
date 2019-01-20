@@ -28,10 +28,20 @@ a:hover {
     color: $primary;
 }
 
+.text-no-decoration {
+    text-decoration: none !important;
+}
+
 a.link-white {
     color: $white;
     &:hover {
         color: $gray-400;
+    }
+}
+
+.img-w100-container {
+    img {
+        width: 100%;
     }
 }
 

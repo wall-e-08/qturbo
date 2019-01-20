@@ -1,0 +1,55 @@
+/* Self explanatory */
+
+.product-type-select{
+    background-color: #fe8829 ;
+    border-radius: 5px;
+}
+
+.product-type-select:hover {
+    background-color: #E96800;
+    color: #fff;
+}
+
+.quote-info-bar{
+    font-size: 2rem;
+    font-weight: 500;
+    background: #fff;
+}
+
+.quote-plan-header{
+    background: #ffd0aa;
+}
+
+.quote-plan-buy{
+    background-color: #fe8829 ;
+    border-radius: 5px;
+}
+
+.quote-plan-buy:hover{
+    background-color: #E96800;
+    color: #fff;
+}
+
+.quote-plan-info li {
+    background-color: #F8F9FA;
+}
+
+#plan-details-primary-apply {
+    color: #fff;
+    border: 2px solid transparent;
+    font-size: 1.8rem;
+    padding: 1rem 4.5rem;
+    border-radius: 25px;
+    background-color: #FF9900;
+    margin-top: 25px;
+}
+
+.logo-container{
+    float: left;
+    width: 185px;
+    padding-top: 16px;
+}
+
+.custom-check input[type=checkbox].css-checkbox + label.css-label{
+    color: #2f2f2f;
+}

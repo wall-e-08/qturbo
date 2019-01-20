@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% load static %}
+{% load static qt_tags %}
 
 <html lang="en">
 <head>
@@ -17,13 +17,15 @@
 
     <link rel="stylesheet" href="{% static 'quotes/css/qt-default.css' %}">
 
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-M5FMDMK');</script>
-    <!-- End Google Tag Manager -->
+    {% if not is_dev %}
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-M5FMDMK');</script>
+        <!-- End Google Tag Manager -->
+    {% endif %}
 
     {% block head_css %}{% endblock %}
     {% block page_item_css %}{% endblock %}
@@ -31,10 +33,12 @@
 </head>
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5FMDMK"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+{% if not is_dev %}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5FMDMK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+{% endif %}
 
 <div id="bootstrap-vue">
     {% block header %}
@@ -53,10 +57,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
-                            <b-nav-item href="/">Health Insurance</b-nav-item>
-
                             {% for menu in header_menu %}
-                                <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% if menu.child %}
+                                    <b-nav-item-dropdown text="{{ menu.parent.url_text }}"> {# TODO: href needs to be udpated #}
+                                        {% for child_menu in menu.child %}
+                                            <b-dropdown-item href="{{ child_menu.url }}">{{ child_menu.url_text }}</b-dropdown-item>
+                                        {% endfor %}
+                                    </b-nav-item-dropdown>
+                                {% else %}
+                                    <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% endif %}
                             {% endfor %}
 
                             {% if request.user.is_authenticated %}
@@ -103,44 +113,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div id="footer-3" class="border-top">
                     <div class="row mt-4">
-                        <div class=" col-sm-12 col-md-5 col-lg-5 ">
-                            <h6 class="text-light font-weight-bold text-center text-md-left">How we make money</h6>
-                            <p class="text-light footer-font-size text-center text-md-left"> HealthCare.com is an
-                                independent, advertising-supported website
-                                publisher and provides a consumer comparison service.
-                                HealthCare.com may earn revenue for leads, clicks, calls and application generated, and
-                                may be compensated by its advertisers
-                                for sponsored products and services. This compensation may impact how, where and in what
-                                order products appear. HealthCare.com does not include all companies or all available
-                                products.
-                                HealthCare.com is not a broker or agent on the sale of insurance products.</p>
+                        <div class=" col-sm-12 col-md-5 col-lg-5">
+                            <div class="text-light text-center text-md-left">{{ general_topic.footer_left|safe }}</div>
                         </div>
                         <div class=" col-sm-12 col-md-4 col-lg-4 ">
-                            <h6 class="text-light font-weight-bold text-center text-md-left">Heading</h6>
-                            <p class="text-light footer-font-size text-center text-md-left"> quoteturbo.com is an
-                                independent, advertising-supported website
-                                publisher and provides a consumer comparison service.
-                                HealthCare.com may earn revenue for leads, clicks, calls and application generated, and
-                                may be compensated by its advertisers
-                                for sponsored products and services. This compensation may impact how, </p>
+                            <div class="text-light text-center text-md-left">{{ general_topic.footer_middle|safe }}</div>
                         </div>
                         <div class=" col-sm-12 col-md-3 col-lg-3 text-center text-md-left" id="footer-social-icons">
-                            <h6 class="text-light font-weight-bold mb-4"></h6>
-                            <a href="#" class="mx-2">
-                                <span style="-webkit-mask-image: url('{% static 'img/linkedin.svg' %}');mask-image: url('{% static 'img/linkedin.svg' %}')"></span>
-                            </a>
-                            <a href="#" class="mx-2">
-                                <span style="-webkit-mask-image: url('{% static 'img/twitter.svg' %}');mask-image: url('{% static 'img/twitter.svg' %}')"></span>
-                            </a>
-                            <a href="#" class="mx-2">
-                                <span style="-webkit-mask-image: url('{% static 'img/facebook.svg' %}');mask-image: url('{% static 'img/facebook.svg' %}')"></span>
-                            </a>
+                            {{ general_topic.social_links|social_links_as_str|safe }}
                         </div>
                     </div>
                 </div>
-                <div class="text-white mt-5 text-center text-md-left">
-                    Copyright © 2018, QuoteTurbo, Inc.
-                </div>
+                <div class="text-white mt-5 text-center text-md-left">{{ general_topic.copyright_text|safe }}</div>
             </section>
         </footer>
     {% endblock %}

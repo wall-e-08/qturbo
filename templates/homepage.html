@@ -1,19 +1,14 @@
 {% extends 'quotes/base.html' %}
-{% load static %}
+{% load qt_tags static %}
 
 {% block main_content %}
-    <section>
+    <section id="main-quote">
         <div class="container">
             <router-view></router-view>
         </div>
     </section>
     <div class="container my-4">
-        <h5 class="text-secondary">We help you compare quotes from health insurance companies listed on
-            <a href="#" class="text-secondary">
-                <u> HealthCare.gov</u>
-            </a>
-            , plus many more.
-        </h5>
+        <p class="text-secondary">{{ general_topic.top_text|safe }}</p>
     </div>
     <section id="product_logo" class="d-none d-lg-block">
         <div class="container">
@@ -232,64 +227,25 @@
 
         </div>
     </section>
-    <section id="about-hi" class="container-fluid py-5">
+    <section id="about-hi" class="container py-5">
         <div class="py-3">
-            <h2 class=" text-center font-weight-bold"> It’s everything about health insurance in one place </h2>
-            <h4 class="hi-subtitle text-center">Think of
-                <span class="font-weight-bold"> HealthCare.com </span>
-                like the Kayak.com of healthcare.
-            </h4>
+            <h2 class=" text-center font-weight-bold">{{ general_topic.service_heading }}</h2>
+            <h4 class="hi-subtitle text-center">{{ general_topic.service_sub_heading|safe }}</h4>
         </div>
         <div class="row mt-5">
-            <div class="col-md-4 offset-md-2">
-                <div class="hi-feature ">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class=" ">
-                        <h3 class="hi-title"> Guided Online Experience</h3>
-                        <p class="">We know not many people are healthcare experts, so we provide explanations, product
-                            guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
-                <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class="">
-                        <h3 class="hi-title">Compare 13,000+ Insurance Plans and Save</h3>
-                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
-                <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class="">
-                        <h3 class="hi-title">Personalized Recommendations</h3>
-                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
+            <div class="col-md-5">
+                {{ general_topic.service_items|service_item_template_as_str|safe }}
             </div>
 
-            <div class="col-md-6">
-                <img src="{% static 'quotes/img/b1.png' %}" alt="" class="rounded feature-img">
+            <div class="col-md-7 img-w100-container">
+                <img src="{{ general_topic.service_img.url }}" alt="" class="rounded feature-img">
             </div>
-
         </div>
     </section>
     <section id="statistics">
         <div class="container">
             <div class="row">
-                <div class=" col-sm-6 col-md-4 py-4 text-center">
-                    <h2>3 million+</h2>
-                    <h5>People we’ve helped shop for insurance</h5>
-                </div>
-                <div class="col-sm-6 col-md-4 py-4 text-center">
-                    <h2>4,624</h2>
-                    <h5>Insurance Plans Available</h5>
-                </div>
-                <div class="col-md-4 py-4 text-center d-none d-md-block d-lg-block">
-                    <h2>3 minutes</h2>
-                    <h5>To get a quote</h5>
-                </div>
+                {{ general_topic.statistics|statistics_template_as_str|safe }}
             </div>
         </div>
     </section>
@@ -625,109 +581,33 @@
             <a href="#" target="_blank"><h4 class="font-weight-bold">See All Health Insurance resources</h4></a>
         </div>
     </section>
-    <section id="testimonial" class="mt-5">
-        <div class="container text-center text-light"><h2>We’ve helped millions shop for health insurance.</h2></div>
+    <section id="testimonial" class="mt-5" {% if general_topic.review_bg %}style="background-image: url('{{ general_topic.review_bg.url }}')"{% endif %}>
+        <div class="container text-center text-light">
+            <h2>{{ general_topic.review_heading }}</h2>
+        </div>
         <div class="testimonial_content container mx-auto mt-5 text-light">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="testimonial-1 p-5 mt-5">
-                        <h2 class="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path fill="currentColor"
-                                      d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
-                            </svg>
-                        </h2>
-                        <div class="testimonial-text text-md-left my-3 text-sm-center">...very helpful fully explaining
-                            the different plans. She was very detailed in her explanations and went the extra mile in
-                            researching the health plan that fit our medical and prescription needs.
-                        </div>
-                        <div class="testimonial-sign text-left"><h4>Anibal</h4></div>
-                        <div class="testimonial-location text-left d-none d-md-block">Florida</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="testimonial-2 p-5 d-none d-md-block">
-                        <h2 class="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path fill="currentColor"
-                                      d="M464 256h-80v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8c-88.4 0-160 71.6-160 160v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48zm-288 0H96v-64c0-35.3 28.7-64 64-64h8c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24h-8C71.6 32 0 103.6 0 192v240c0 26.5 21.5 48 48 48h128c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48z"></path>
-                            </svg>
-                        </h2>
-                        <div class="testimonial-text my-3">Barry, Marc &amp; Wayne made this experience a great one.
-                            This is something I really needed but didn't know which way to turn. These guys are awesome.
-                            Thank you HealthCare.com.
-                        </div>
-                        <div class="testimonial-sign"><h4>Sean</h4></div>
-                        <div class="testimonial-location">Kentucky</div>
-                    </div>
-                </div>
+                {{ general_topic.review_items|review_template_as_str|safe }}
             </div>
 
         </div>
     </section>
     <section id="question" class="py-5">
         <div class="container text-center">
-            <img src="{% static 'quotes/img/q.png' %}" alt="" class="question-img">
+            <img src="{{ general_topic.faq_img.url }}" alt="" class="question-img">
         </div>
-        <h2 class="text-center">Top FAQs about HealthCare.com</h2>
+        <h2 class="text-center">{{ general_topic.faq_heading|safe }}</h2>
         <div class="container text-center my-5">
-            <div class="accordion" id="accordionExample">
-                <div class="card">
-                    <div class="card-header text-left" id="headingOne">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link " type="button" data-toggle="collapse" data-target="#collapseOne"
-                                    aria-expanded="true" aria-controls="collapseOne"><span> + -</span>
-                                Are the price on ?
-                            </button>
-                        </h5>
-                    </div>
-
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
-                         data-parent="#accordionExample">
-                        <div class="card-body">
-                            We have worked hard to establish relationships with the best data sources around. Rates and plans come from the insurance companies themselves,
-                            who have approved the plan inventory we display before we publish them. That said, you’ll need to confirm the final pricing with whichever
-                            provider you choose to buy from. Keep in mind that the rates are dependent on the accuracy of the quote information you provide them.
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header text-left" id="headingTwo">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
-                                    data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><span> + -</span>
-                                Why should i buy ?
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
-
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header text-left" id="headingThree">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
-                                    data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"><span> + -</span>
-                                Collapsible #3
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
-                         data-parent="#accordionExample">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
-                        </div>
-                    </div>
+            <div class="accordion" id="qt-accordion">
+                <div role="tablist">
+                    {{ general_topic.faqs|faq_template_as_str|safe }}
                 </div>
             </div>
         </div>
         <div class="container text-center mb-5">
             <h6>
-                <a href="#" target="_blank" class="font-weight-bold">Learn more About Us
+                <a href="{% url 'about:home' %}" class="font-weight-bold">
+                    Learn more About Us
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
                         <path fill="currentColor"
                               d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
@@ -735,7 +615,7 @@
                 </a></h6>
         </div>
     </section>
-    <section id="blog" class="bg-white py-5">
+    {% comment %}<section id="blog" class="bg-white py-5">
         <div class="text-center container"><h2 class="font-weight-bold"> Recently Written By Our Insurance Experts</h2></div>
         <div class="container">
             <div class="row">
@@ -767,7 +647,7 @@
 
             </div>
         </div>
-    </section>
+    </section>{% endcomment %}
 {% endblock %}
 
 
@@ -777,13 +657,8 @@
         <div class="row swap-div-mobile">
             <div class="col-lg-8">
                 <div>
-                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>
-                        That’s Right for You
-                    </h1>
-                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000
-                        <br>
-                        Insurance Plans
-                    </h2>
+                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">{{ general_topic.top_quote_heading }}</h1>
+                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">{{ general_topic.top_quote_sub_heading }}</h2>
                     <div id="find-plans" class="mb-5">
                         <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
                               style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
@@ -833,7 +708,7 @@
                     <div class="">
                         {% comment %}<a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
                         <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>{% endcomment %}
-                        <img src="{% static 'quotes/img/background-home.png' %}" alt="bg">
+                        <img src="{{ general_topic.top_img.url }}" alt="bg">
                     </div>
                 </div>
                 <hr class="mb-5 d-block d-lg-none">

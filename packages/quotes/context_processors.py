@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # For static type checking.
 from django.http.request import HttpRequest
-from dashboard.models import Menu
+from dashboard.models import Menu, GeneralTopic
+from django.conf import settings
 
 
 def hp_context(request):
@@ -126,3 +127,13 @@ def menu_context(request):
         "header_menu": header_menu,
         "footer_menu": footer_menu,
     }
+
+
+def general_topic_context(request):
+    return {
+        "general_topic": GeneralTopic.get_the_instance(),
+        "is_dev": settings.IS_DEV,
+    }
+
+
+
