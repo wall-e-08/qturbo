@@ -53,10 +53,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
-                            <b-nav-item href="/">Health Insurance</b-nav-item>
-
                             {% for menu in header_menu %}
-                                <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% if menu.child %}
+                                    <b-nav-item-dropdown text="{{ menu.parent.url_text }}"> {# TODO: href needs to be udpated #}
+                                        {% for child_menu in menu.child %}
+                                            <b-dropdown-item href="{{ child_menu.url }}">{{ child_menu.url_text }}</b-dropdown-item>
+                                        {% endfor %}
+                                    </b-nav-item-dropdown>
+                                {% else %}
+                                    <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% endif %}
                             {% endfor %}
 
                             {% if request.user.is_authenticated %}
