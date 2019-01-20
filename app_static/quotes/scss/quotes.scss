@@ -7,6 +7,10 @@
 @import "qt-mixins";
 @import "qt-main-content";
 
+.heading-mini-slogan {
+    max-width: 325px;
+}
+
 .qt-single-icon {
     width: 16px;
     height: 16px;

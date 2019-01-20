@@ -17,13 +17,15 @@
 
     <link rel="stylesheet" href="{% static 'quotes/css/qt-default.css' %}">
 
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-M5FMDMK');</script>
-    <!-- End Google Tag Manager -->
+    {% if not is_dev %}
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-M5FMDMK');</script>
+        <!-- End Google Tag Manager -->
+    {% endif %}
 
     {% block head_css %}{% endblock %}
     {% block page_item_css %}{% endblock %}
@@ -31,10 +33,12 @@
 </head>
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5FMDMK"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+{% if not is_dev %}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5FMDMK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+{% endif %}
 
 <div id="bootstrap-vue">
     {% block header %}
@@ -53,10 +57,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                     <b-collapse is-nav id="navbar_items">
                         <b-navbar-nav class="ml-auto">
-                            <b-nav-item href="/">Health Insurance</b-nav-item>
-
                             {% for menu in header_menu %}
-                                <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% if menu.child %}
+                                    <b-nav-item-dropdown text="{{ menu.parent.url_text }}"> {# TODO: href needs to be udpated #}
+                                        {% for child_menu in menu.child %}
+                                            <b-dropdown-item href="{{ child_menu.url }}">{{ child_menu.url_text }}</b-dropdown-item>
+                                        {% endfor %}
+                                    </b-nav-item-dropdown>
+                                {% else %}
+                                    <b-nav-item href="{{ menu.parent.url }}">{{ menu.parent.url_text }}</b-nav-item>
+                                {% endif %}
                             {% endfor %}
 
                             {% if request.user.is_authenticated %}
