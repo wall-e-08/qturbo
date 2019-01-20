@@ -193,7 +193,7 @@
                                 data-action="{% url 'quotes:e_signature_enrollment' stm_enroll_obj.vimm_enroll_id %}">
                             <h4>Send E-Sign Link</h4>
                         </button>
-                        <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/images/ajax-loader-stripe-002.gif' %}" alt="">
+                        <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}" alt="">
                     </div>
                 </div>
             {% else %}
@@ -209,7 +209,7 @@
                             data-url="{% url 'quotes:esign_verification_payment' stm_enroll_obj.vimm_enroll_id %}">
                         <h4>Check Signed</h4>
                     </button>
-                    <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/images/ajax-loader-stripe-002.gif' %}" alt="">
+                    <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}" alt="">
                 </div>
                 </div>
             {% endif %}
