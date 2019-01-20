@@ -581,7 +581,7 @@
             <a href="#" target="_blank"><h4 class="font-weight-bold">See All Health Insurance resources</h4></a>
         </div>
     </section>
-    <section id="testimonial" class="mt-5">
+    <section id="testimonial" class="mt-5" {% if general_topic.review_bg %}style="background-image: url('{{ general_topic.review_bg.url }}')"{% endif %}>
         <div class="container text-center text-light">
             <h2>{{ general_topic.review_heading }}</h2>
         </div>
