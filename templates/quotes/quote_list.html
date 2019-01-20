@@ -19,34 +19,13 @@
     <div class="quote-info-bar">
         <div class="container">
             <div class="row">
-                {#                <div class="nav nav-tabs quote-info-product-nav">#}
-                <ul class="quote-tab-info-line" style="list-style-type: none; /*display: flex*/">
-                    <li class="col-xs-8 col-xs-offset-2 col-md-3 col-md-offset-0">
-                        <a class="btn product-type-select {% if form_data.Ins_Type == 'lim' %} active {% endif %}" href="{% url 'quotes:plan_quote' ins_type='lim'%}">
-                            Limited Plans
-                        </a>
-                    </li>
-                    <li class="col-xs-8 col-xs-offset-2 col-md-3 col-md-offset-0">
-                        <a class="btn product-type-select {% if form_data.Ins_Type == 'stm' %} active {% endif %}" href="{% url 'quotes:plan_quote' ins_type='stm'%}">
-                            STM plans
-                        </a>
-                    </li>
-                    <li class="col-xs-8 col-xs-offset-2 col-md-3 col-md-offset-0">
-                        <a class="btn product-type-select {% if form_data.Ins_Type == 'anc' %} active {% endif %}" href="{% url 'quotes:plan_quote' ins_type='anc'%}">
-                            Anciliary Plans
-                        </a>
-                    </li>
-                    <li class="col-xs-offset-3 col-md-offset-9">
-                        <div class="quote-info-inner" style="display: inline-grid;text-align: center">
-                            {% if form_data.Ins_Type == 'lim' %}Limited{% elif form_data.Ins_Type == 'anc' %}Ancillary{% else %}STM{% endif %}
-                            / {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
-                            &nbsp;<a title="Get Health Insurance Quotes" href="/#/health-insurance/member" class="js-change-info">(edit)</a>
-                        </div>
+                <ul class="nav nav-tabs quote-tab-info-line">
+                    <li class="{% if form_data.Ins_Type == 'lim' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='lim'%}">Limited Insurances</a></li>
+                    <li class="{% if form_data.Ins_Type == 'stm' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='stm'%}">STM Insurances</a></li>
+                    <li class="{% if form_data.Ins_Type == 'anc' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='anc'%}">Ancillary Insurances</a></li>
                 </ul>
-                </li>
             </div>
         </div>
-    </div>
     </div>
 
 
