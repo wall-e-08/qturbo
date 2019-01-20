@@ -1,5 +1,7 @@
 import os
 import re
+import random
+import string
 import string
 import datetime
 import unicodedata
@@ -34,7 +36,7 @@ def get_image_path(instance, filename):
     # the format will be /path/to/media/<post_id>/<upload_date>/<post_title><file_extension>
     return os.path.join(
         datetime.datetime.now().strftime("%Y-%m-%d"),
-        str("{}-{}".format(instance.title, instance.id) + file_extension)
+        str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
     )
 
 
