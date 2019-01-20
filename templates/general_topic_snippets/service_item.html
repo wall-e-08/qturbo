@@ -1,0 +1,11 @@
+<div class="hi-feature pb-3">
+    {% if icon.icon_type == 'img' %}
+        <img src="{{ icon.img_icon.url }}" alt="{{ icon.title }}" class="mr-2 mb-3">
+    {% elif icon.icon_type == 'svg' %}
+        {{ icon.svg_icon|safe }}
+    {% endif %}
+    <div class=" ">
+        <h3 class="hi-title font-wight-600">{{ icon.title }}</h3>
+        <p class="">{{ text }}</p>
+    </div>
+</div>

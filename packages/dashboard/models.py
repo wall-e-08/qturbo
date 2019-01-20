@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from djrichtextfield.models import RichTextField
 from .utils import get_image_path
@@ -32,61 +31,48 @@ class Menu(models.Model):
 
 class GeneralTopic(models.Model):
     # TODO: need restrictions in saving ArrayField
+    top_quote_heading = models.TextField(max_length=500)
+    top_quote_sub_heading = models.TextField(max_length=500)
     top_img = models.ImageField(
         verbose_name='Top Image',
         upload_to=get_image_path
     )
     top_text = RichTextField()
 
-    service_heading = models.CharField(
+    service_heading = models.TextField(
         verbose_name="Service Heading",
         max_length=300,
     )
-    service_sub_heading = models.CharField(
+    service_sub_heading = models.TextField(
         verbose_name="Service Sub Heading",
         max_length=300,
     )
-    service_items = ArrayField(
-        ArrayField(
-            models.CharField(max_length=200),
-            size=2,
-        )   # ["page_ItemIcon_id", "description"]
-    )
+    service_items = models.TextField()  # ["page_ItemIcon_id", "description"]
     service_img = models.ImageField(
         verbose_name='Service Image',
         upload_to=get_image_path
     )
 
-    statistics = ArrayField(
-        ArrayField(
-            models.CharField(max_length=100),
-            size=2,
-        )  # ["number of sell", "what is sold"]
-    )
+    statistics = models.TextField()  # ["number of sell", "what is sold"]
 
-    review_heading = models.CharField(max_length=500)
-    review_items = ArrayField(
-        RichTextField(),
-        size=2,
-    )
+    review_heading = models.TextField(max_length=500)
+    review_items = models.TextField()
     review_bg = models.ImageField(
         verbose_name="Review Background Image",
         upload_to=get_image_path,
     )
 
-    faq_heading = models.CharField(max_length=300)
+    faq_heading = models.TextField(max_length=300)
     faq_img = models.ImageField(
         verbose_name="FAQ Image",
         upload_to=get_image_path,
     )
-    faqs = ArrayField(
-        ArrayField(
-            models.CharField(max_length=500, blank=True),
-            size=2,
-        ),
-    )
+    faqs = models.TextField()
 
-    quote_heading = models.CharField(max_length=300)
+    quote_heading = models.TextField(
+        verbose_name="All page quote Heading",
+        max_length=300,
+    )
     quote_bg = models.ImageField(
         verbose_name="Get Quote Background Image",
         upload_to=get_image_path,
@@ -95,12 +81,7 @@ class GeneralTopic(models.Model):
     footer_left = models.TextField()
     footer_middle = models.TextField()
     copyright_text = models.CharField(max_length=200)
-    social_links = ArrayField(
-        ArrayField(
-            models.CharField(max_length=200, blank=True),
-            size=2,
-        ),
-    )
+    social_links = models.TextField()
 
     last_edited_time = models.DateTimeField(
         verbose_name="Last edited on",
