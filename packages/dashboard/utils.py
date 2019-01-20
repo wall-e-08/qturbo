@@ -58,7 +58,7 @@ def get_image_path(instance, filename):
     # the format will be /path/to/media/<post_id>/general/<post_title><file_extension>
     return os.path.join(
         'general',
-        str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
+        str("{}-{}".format('general-topic', ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
     )
 
 

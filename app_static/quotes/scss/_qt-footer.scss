@@ -8,3 +8,19 @@ svg {
 .footer-font-size {
     font-size: map_get($fonts, 'font-xs');
 }
+
+#footer-social-icons a {
+    display: inline-block;
+    & > span {
+        width: $svg-footer-width;
+        height: $svg-footer-height;
+        display: block;
+        background-color: #fff;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        -ms-mask-repeat: no-repeat;
+        -ms-mask-position: center;
+        mask-repeat: no-repeat;
+        mask-position: center;
+    }
+}
