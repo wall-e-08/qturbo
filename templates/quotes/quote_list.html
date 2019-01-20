@@ -3711,6 +3711,14 @@ if (!Array.prototype.filter) {
     return res;
   };
 }
+
+// For showing preferred plans
+if(performance.navigation.type === 2) {
+            console.log("Back button detected, reloading page");
+            location.reload(true);
+}
+
+
 </script>
 <script>
 $(function() {
@@ -3804,7 +3812,6 @@ $(function() {
 
     /* filter plan count functions start */
     function premium_count(plans) {
-        console.log("918: Filtering for premiums");
         var filtered_plans;
 
         filtered_plans = plans.filter(
@@ -3987,7 +3994,6 @@ $(function() {
     }
 
     function company_count(plans) {
-        console.log("1101: Filtering company");
         var filtered_plans;
         filtered_plans = plans.filter(
                 premium_filter_callback,
@@ -4008,7 +4014,6 @@ $(function() {
 
 
     function success_handler(json, sort_key, reverse_sort) {
-        console.log("1122: AJAX call, handling success.");
         var filtered_plans;
 
         filtered_plans = json.monthly_plans.filter(
@@ -4082,7 +4087,6 @@ $(function() {
                     'note': plan.note
                 };
                 {#console.log(plan);#}
-                console.log(plan.actual_premium + "\t" + plan.out_of_pocket_value + "\t" + plan.option + "\t" + plan.Coinsurance_Percentage);
                 if (plan.out_of_pocket_value) {
                     var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
                 } else if(plan.Name == 'USA Dental') {
@@ -4147,7 +4151,7 @@ $(function() {
 
     }
 
-
+    {# We might have to change this function. #}
     function ajax_request_for_data(action_url, method, data, success_fn, error_fn) {
         $.ajax({
             url: action_url,
@@ -4156,8 +4160,7 @@ $(function() {
             },
             data: data, type: method, dataType: 'json',
             success: function(json) {
-                console.log("1251:\nAjax Request for data: success");
-                console.log('json: ');
+                console.log("\nAjax : success");
                 if (json.featured_stm_plan_quote) {
                     console.log("Feature: " + json.featured_stm_plan_quote);
                 }
@@ -4168,7 +4171,7 @@ $(function() {
                 } else if (json.monthly_plans[0] == undefined) {
                     window.location = '/plans/';
                 } else {
-                    console.log("1061:There are no more plans");
+                    console.log("There are no more plans");
 
                     $('#stm_plan_template').attr('data-plans', JSON.stringify(json));
                     $('#plan_sorting_options').attr('data-status', 'done');     // Is not being used at the moment.
