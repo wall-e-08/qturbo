@@ -1,5 +1,5 @@
 {% extends 'quotes/base.html' %}
-{% load static %}
+{% load qt_tags static %}
 
 {% block main_content %}
     <section>
@@ -8,12 +8,7 @@
         </div>
     </section>
     <div class="container my-4">
-        <h5 class="text-secondary">We help you compare quotes from health insurance companies listed on
-            <a href="#" class="text-secondary">
-                <u> HealthCare.gov</u>
-            </a>
-            , plus many more.
-        </h5>
+        <p class="text-secondary">{{ general_topic.top_text }}</p>
     </div>
     <section id="product_logo" class="d-none d-lg-block">
         <div class="container">
@@ -234,43 +229,16 @@
     </section>
     <section id="about-hi" class="container-fluid py-5">
         <div class="py-3">
-            <h2 class=" text-center font-weight-bold"> It’s everything about health insurance in one place </h2>
-            <h4 class="hi-subtitle text-center">Think of
-                <span class="font-weight-bold"> HealthCare.com </span>
-                like the Kayak.com of healthcare.
-            </h4>
+            <h2 class=" text-center font-weight-bold">{{ general_topic.service_heading }}</h2>
+            <h4 class="hi-subtitle text-center">{{ general_topic.service_sub_heading|safe }}</h4>
         </div>
         <div class="row mt-5">
             <div class="col-md-4 offset-md-2">
-                <div class="hi-feature ">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class=" ">
-                        <h3 class="hi-title"> Guided Online Experience</h3>
-                        <p class="">We know not many people are healthcare experts, so we provide explanations, product
-                            guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
-                <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class="">
-                        <h3 class="hi-title">Compare 13,000+ Insurance Plans and Save</h3>
-                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
-                <div class="hi-feature pt-3">
-                    <img src="{% static 'quotes/img/heart.png' %}" alt="" class="mr-2 mb-3">
-                    <div class="">
-                        <h3 class="hi-title">Personalized Recommendations</h3>
-                        <p>We know not many people are healthcare experts, so we provide explanations, product guides,
-                            and advice along the way.</p>
-                    </div>
-                </div>
+                {{ general_topic.service_items|service_item_template_as_str|safe }}
             </div>
 
-            <div class="col-md-6">
-                <img src="{% static 'quotes/img/b1.png' %}" alt="" class="rounded feature-img">
+            <div class="col-md-6 img-w100-container">
+                <img src="{{ general_topic.service_img.url }}" alt="" class="rounded feature-img">
             </div>
 
         </div>
@@ -777,13 +745,8 @@
         <div class="row swap-div-mobile">
             <div class="col-lg-8">
                 <div>
-                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">Find Affordable Health quotes&nbsp;<br>
-                        That’s Right for You
-                    </h1>
-                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">Instantly Compare Over 4,000
-                        <br>
-                        Insurance Plans
-                    </h2>
+                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">{{ general_topic.top_quote_heading }}</h1>
+                    <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">{{ general_topic.top_quote_sub_heading }}</h2>
                     <div id="find-plans" class="mb-5">
                         <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
                               style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
@@ -833,7 +796,7 @@
                     <div class="">
                         {% comment %}<a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
                         <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>{% endcomment %}
-                        <img src="{% static 'quotes/img/background-home.png' %}" alt="bg">
+                        <img src="{{ general_topic.top_img.url }}" alt="bg">
                     </div>
                 </div>
                 <hr class="mb-5 d-block d-lg-none">

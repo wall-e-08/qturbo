@@ -27,6 +27,8 @@ DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = ['*']
 
+IS_DEV = False
+
 
 # Application definition
 
@@ -77,6 +79,7 @@ TEMPLATES = [
 
                 'quotes.context_processors.hp_context',
                 'quotes.context_processors.menu_context',
+                'quotes.context_processors.general_topic_context',
             ],
         },
     },
