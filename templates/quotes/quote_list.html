@@ -19,11 +19,26 @@
     <div class="quote-info-bar">
         <div class="container">
             <div class="row">
+{#            <div class="">#}
+
                 <ul class="nav nav-tabs quote-tab-info-line">
                     <li class="{% if form_data.Ins_Type == 'lim' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='lim'%}">Limited Insurances</a></li>
                     <li class="{% if form_data.Ins_Type == 'stm' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='stm'%}">STM Insurances</a></li>
                     <li class="{% if form_data.Ins_Type == 'anc' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='anc'%}">Ancillary Insurances</a></li>
+
+                    <li class="{% comment %}col-xs-offset-3{% endcomment %}" style="float:right;">
+                        <div class="quote-info-inner" style="{% comment %}display: inline-grid;text-align: center{% endcomment %}">
+                            {% if form_data.Ins_Type == 'lim' %}Limited{% elif form_data.Ins_Type == 'anc' %}Ancillary{% else %}STM{% endif %}
+                            / {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                            &nbsp;<a title="Get Health Insurance Quotes" href="/#/health-insurance/member" class="js-change-info">(edit)</a>
+                        </div>
                 </ul>
+{#            </div>#}
+{#            <div class="col-xs-4 ">#}
+
+
+
+{#            </div>#}
             </div>
         </div>
     </div>
