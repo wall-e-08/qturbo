@@ -28,6 +28,10 @@
         {% if saved %}
             <p class="alert alert-success border border-success">Data saved !!</p>
         {% endif %}
+        {% if error %}
+            <p class="alert alert-danger border border-danger">Data cannot be saved! Fix error/s first !!</p>
+            <hr>
+        {% endif %}
         <div class="row">
             <div class="col-12">
                 <h1>Edit General Item</h1>
@@ -386,7 +390,7 @@
                     <textarea class="form-control" id="review_item_2" placeholder="Review 2">[[ review_2 ]]</textarea>
                 </div>
             </div>
-            <button class="btn btn-primary mt-3" @click.prevent="generate_stats_item_array">+ Insert</button>
+            <button class="btn btn-primary mt-3" @click.prevent="generate_review_item_array">+ Insert</button>
         </div>
     </script>
 
@@ -472,7 +476,10 @@
 
 
 {% block bottom_js %}
-    {% with selectors='#review_item_1, #review_item_2' non_container=True %}
+    {% with selectors='#review_item_1' non_container=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#review_item_2' non_container=True multiple_instance=True %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 
@@ -539,11 +546,11 @@
                 return {
                     review_1: '',
                     review_2: '',
-                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
+                    generated_item: `{{ form.review_items.value|default:'[]'|safe }}`,
                 }
             },
             methods: {
-                generate_stats_item_array: function () {
+                generate_review_item_array: function () {
                     this.generated_item = JSON.stringify([
                         document.getElementById('review_item_1').value,
                         document.getElementById('review_item_2').value
@@ -551,8 +558,11 @@
                 }
             },
             created: function () {
-                let x = JSON.parse(this.generated_item)
-                console.log(x)
+                let x = JSON.parse(this.generated_item.replace(/\n/g, ''));
+                if (x.length > 1) {
+                    this.review_1 = x[0];
+                    this.review_2 = x[1];
+                }
             },
             template: '#review-items-template'
         };

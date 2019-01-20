@@ -28,6 +28,10 @@ a:hover {
     color: $primary;
 }
 
+.text-no-decoration {
+    text-decoration: none !important;
+}
+
 a.link-white {
     color: $white;
     &:hover {

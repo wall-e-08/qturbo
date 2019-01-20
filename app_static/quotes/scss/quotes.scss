@@ -52,6 +52,39 @@ input.controlled-by-label:checked + label {
     line-height: 1;
 }
 
+.faq-toggle-icon {
+    $faq-size: 30px;
+    $faq-ln-ht: 0.8;
+    font-size: $faq-size;
+    line-height: $faq-ln-ht;
+    width: $faq-size*$faq-ln-ht;
+    height: $faq-size*$faq-ln-ht;
+    text-align: center;
+    border-radius: 3px;
+    &.qt-accordion-minus{
+        font-size: $faq-size - 4;
+    }
+}
+
+#qt-accordion header {
+    a:not(.collapsed) {
+        .qt-accordion-minus {
+            display: inline-block !important;
+        }
+        .qt-accordion-plus {
+            display: none !important;
+        }
+    }
+    a.collapsed {
+        .qt-accordion-plus {
+            display: inline-block !important;
+        }
+        .qt-accordion-minus {
+            display: none !important;
+        }
+    }
+}
+
 @media (max-width: map_get($grid-breakpoints, lg)) {
     .swap-div-mobile {
         -webkit-box-direction: reverse;
