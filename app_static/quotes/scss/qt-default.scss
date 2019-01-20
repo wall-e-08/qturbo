@@ -1,11 +1,11 @@
 @import "../../../global_static_libs/bootstrap/scss/functions";
-@import "../../../global_static_libs/bootstrap/scss/functions";
 @import "../../../global_static_libs/bootstrap/scss/variables";
 @import "../../../global_static_libs/bootstrap/scss/mixins/transition";
 @import "../../../global_static_libs/bootstrap/scss/mixins/breakpoints";
 @import "../../../global_static_libs/bootstrap/scss/mixins/box-shadow";
 @import "qt-variables";
 @import "qt-mixins";
+@import "qt-footer";
 
 @each $cls, $size in $fonts {
     .#{$cls} {
@@ -25,6 +25,14 @@ img {
 
 a:hover {
     text-decoration: none;
+    color: $primary;
+}
+
+a.link-white {
+    color: $white;
+    &:hover {
+        color: $gray-400;
+    }
 }
 
 .line-height-1 {
@@ -105,7 +113,7 @@ input[type="date"] {
 }
 
 .vertical-center {
-    @include vertical-center
+    @include vertical-center;
 }
 
 .tick-marked-img-listed ul {

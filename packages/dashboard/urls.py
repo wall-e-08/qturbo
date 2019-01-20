@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('upload_media_file/', login_required(views.editor_media_upload), name='editor_media_upload'),
 
+    path('edit-general-topic/', login_required(views.edit_general_topic), name='edit_general_topic'),
+
     # pages | currently not active in website
     path('page/', login_required(views.all_pages), name='all_pages'),
     path('page/create/', login_required(views.create_or_edit_page), name='create_page'),
@@ -44,6 +46,10 @@ urlpatterns = [
     path('guide/', login_required(views.all_guides), name='all_guides'),
     path('guide/create/', login_required(views.create_or_edit_guide), name='create_guide'),
     path('guide/edit/<guide_id>/', login_required(views.create_or_edit_guide), name='edit_guide'),
+
+    path('menu/', login_required(views.all_menus), name='all_menus'),
+    path('menu/create/', login_required(views.create_or_edit_menu), name='create_menu'),
+    path('menu/edit/<menu_id>/', login_required(views.create_or_edit_menu), name='edit_menu'),
 
     # ajax
     path('ajax_add_new_cat_or_sec/', login_required(views.ajax_add_new_cat_or_sec), name='ajax_add_new_cat_or_sec'),

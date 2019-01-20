@@ -3,6 +3,13 @@ from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemG
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list, get_all_urls
+from .models import Menu, GeneralTopic
+
+
+class GeneralTopicForm(forms.ModelForm):
+    class Meta:
+        model = GeneralTopic
+        fields = '__all__'
 
 
 class EditorMediaForm(forms.Form):
@@ -84,3 +91,27 @@ class ItemGuideForm(forms.ModelForm):
     class Meta:
         model = ItemGuide
         exclude = '__all__'
+
+
+class MenuForm(forms.ModelForm):
+    parent_menu = forms.ModelChoiceField(
+        queryset=Menu.objects.all(),
+        empty_label=None,
+        required=False,
+    )
+
+    url = forms.ChoiceField(
+        choices=get_all_urls
+    )
+
+    position = forms.ChoiceField(
+        choices=(
+            ('top', 'Header'),
+            ('btm', 'Footer'),
+        ),
+    )
+
+    class Meta:
+        model = Menu
+        exclude = '__all__'
+

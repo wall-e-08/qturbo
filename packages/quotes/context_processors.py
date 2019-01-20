@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # For static type checking.
 from django.http.request import HttpRequest
+from dashboard.models import Menu
 
 
 def hp_context(request):
@@ -103,41 +104,25 @@ def hp_context(request):
                                     '750000', '1000000', '1500000', '2000000'),
     }
 
-# def hp_ongoing_app_exists(request: HttpRequest) -> dict:
-#     """Here are creating a context processor which returns a dictionary
-#     If session contains the key, value pair of 'ctx_app_url_exists': True, and,
-#     if there is a 'ongoing_session_plan_url' in session and also,
-#     if quote_request_form_data is valid.
-#
-#     :param request: Django HttpRequest object
-#     :return: bool
-#     :returns: true if application exist
-#     """
-#     try:
-#         if request.session['ongoing_session_plan_url']:
-#             plan_url = request.session['ongoing_session_plan_url']
-#             vimm_enroll_id = plan_url.rsplit('-', 1)[-1]
-#             esign_has_been_sent = False
-#             try:
-#                 stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
-#                 esign_has_been_sent = stm_enroll_obj.esign_verification_starts or\
-#                                       stm_enroll_obj.esign_verification_pending
-#             except (ObjectDoesNotExist, AttributeError) as err:
-#                 print("Context processor - obj does not exist in database.", err)
-#             # session = request.session.get(plan_url)
-#             stage = request.session['ongoing_session_stage']
-#             quote_request_form_data = request.session.get('{0}_form_data'.format(plan_url), {})
-#             if form_data_is_valid(quote_request_form_data) and not esign_has_been_sent:
-#                 return {
-#                     'ctx_app_url': plan_url,
-#                     'ctx_unique_url_stage': reverse('healthplans:stm_enroll', args=[plan_url, stage]),
-#                     'ctx_app_url_exists': True,
-#                     # 'ctx_app_stage': stage
-#                 }
-#     except KeyError as k:
-#         print("Context processor, no saved plan URL", k)
-#
-#
-#     return {
-#         'ctx_app_url_exists': False
-#     }
+
+def menu_context(request):
+    header_main_menu = Menu.objects.filter(parent_menu=None, position='top').order_by('id')
+    footer_main_menu = Menu.objects.filter(parent_menu=None, position='btm').order_by('id')
+    header_menu = []
+    footer_menu = []
+    for hm in header_main_menu:
+        child_menu = Menu.objects.filter(parent_menu=hm)
+        header_menu.append({
+            "parent": hm,
+            "child": child_menu
+        })
+    for fm in footer_main_menu:
+        child_menu = Menu.objects.filter(parent_menu=fm)
+        footer_menu.append({
+            "parent": fm,
+            "child": child_menu
+        })
+    return {
+        "header_menu": header_menu,
+        "footer_menu": footer_menu,
+    }

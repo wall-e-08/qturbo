@@ -1,8 +1,14 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
+{% block title %}
+Home | {{ block.super }}
+{% endblock %}
+
 {% block dashboard_content %}
     <div class="container">
+        <h2>Edit General Item <a class="btn btn-success" href="{% url 'dashboard:edit_general_topic' %}">Here</a></h2>
+        <hr>
         <dsb-card-items></dsb-card-items>
     </div>
 {% endblock %}
@@ -22,7 +28,7 @@
                         <div class="d-flex flex-column">
                             <div class="d-flex justify-content-between">
                                 <h5 class="card-title font-wight-600">
-                                    Total [[ dsb_item.item.name ]]s
+                                    Total [[ dsb_item.item.name ]]
                                     <span class="badge badge-dark">[[ dsb_item.item.count ]]</span>
                                 </h5>
                                 <a :href="dsb_item.item.url" class="btn btn-outline-primary">All [[ dsb_item.item.name ]]s</a>
@@ -121,6 +127,13 @@
                             count: "{{ data.guide.count }}",
                             url: "{% url 'dashboard:all_guides' %}",
                             new_url: "{% url 'dashboard:create_guide' %}",
+                        },
+                    },{
+                        item: {
+                            name: "Menu",
+                            count: "{{ data.menu.count }}",
+                            url: "{% url 'dashboard:all_menus' %}",
+                            new_url: "{% url 'dashboard:create_menu' %}",
                         },
                     },],
                 }
