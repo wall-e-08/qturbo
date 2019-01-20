@@ -2,13 +2,13 @@
 {% load qt_tags static %}
 
 {% block main_content %}
-    <section>
+    <section id="main-quote">
         <div class="container">
             <router-view></router-view>
         </div>
     </section>
     <div class="container my-4">
-        <p class="text-secondary">{{ general_topic.top_text }}</p>
+        <p class="text-secondary">{{ general_topic.top_text|safe }}</p>
     </div>
     <section id="product_logo" class="d-none d-lg-block">
         <div class="container">
@@ -227,37 +227,25 @@
 
         </div>
     </section>
-    <section id="about-hi" class="container-fluid py-5">
+    <section id="about-hi" class="container py-5">
         <div class="py-3">
             <h2 class=" text-center font-weight-bold">{{ general_topic.service_heading }}</h2>
             <h4 class="hi-subtitle text-center">{{ general_topic.service_sub_heading|safe }}</h4>
         </div>
         <div class="row mt-5">
-            <div class="col-md-4 offset-md-2">
+            <div class="col-md-5">
                 {{ general_topic.service_items|service_item_template_as_str|safe }}
             </div>
 
-            <div class="col-md-6 img-w100-container">
+            <div class="col-md-7 img-w100-container">
                 <img src="{{ general_topic.service_img.url }}" alt="" class="rounded feature-img">
             </div>
-
         </div>
     </section>
     <section id="statistics">
         <div class="container">
             <div class="row">
-                <div class=" col-sm-6 col-md-4 py-4 text-center">
-                    <h2>3 million+</h2>
-                    <h5>People we’ve helped shop for insurance</h5>
-                </div>
-                <div class="col-sm-6 col-md-4 py-4 text-center">
-                    <h2>4,624</h2>
-                    <h5>Insurance Plans Available</h5>
-                </div>
-                <div class="col-md-4 py-4 text-center d-none d-md-block d-lg-block">
-                    <h2>3 minutes</h2>
-                    <h5>To get a quote</h5>
-                </div>
+                {{ general_topic.statistics|statistics_template_as_str|safe }}
             </div>
         </div>
     </section>

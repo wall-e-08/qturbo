@@ -48,18 +48,13 @@ class GeneralTopic(models.Model):
         verbose_name="Service Sub Heading",
         max_length=300,
     )
-    service_items = models.TextField(max_length=1000)  # ["page_ItemIcon_id", "description"]
+    service_items = models.TextField()  # ["page_ItemIcon_id", "description"]
     service_img = models.ImageField(
         verbose_name='Service Image',
         upload_to=get_image_path
     )
 
-    statistics = ArrayField(
-        ArrayField(
-            models.CharField(max_length=100),
-            size=2,
-        )  # ["number of sell", "what is sold"]
-    )
+    statistics = models.TextField()  # ["number of sell", "what is sold"]
 
     review_heading = models.TextField(max_length=500)
     review_items = ArrayField(
