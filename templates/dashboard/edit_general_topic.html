@@ -1,0 +1,585 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Edit General Item | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Edit General Item</li>
+{% endblock %}
+
+{% block head_css %}
+    <style>
+        .svg-container svg {
+            width: 50px !important;
+            height: 50px !important;
+        }
+        img {
+            padding: 10px;
+            border: 1px solid #898;
+            margin-top: 16px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        {% if saved %}
+            <p class="alert alert-success border border-success">Data saved !!</p>
+        {% endif %}
+        <div class="row">
+            <div class="col-12">
+                <h1>Edit General Item</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="top">
+                        <div class="form-group">
+                            <label for="{{ form.top_text.id_for_label }}">{{ form.top_text.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.top_text.errors %}border-danger{% endif %}"
+                                   name="{{ form.top_text.name }}"
+                                   id="{{ form.top_text.id_for_label }}"
+                                   value="{{ form.top_text.value|default:'' }}"
+                                   placeholder="Title">
+
+                            {% if form.top_text.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.top_text.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.top_img.id_for_label }}">{{ form.top_img.label }}</label>
+                            <b-form-file accept=".jpg, .png, .gif"
+                                         class="form-control {% if form.top_img.errors %}border-danger{% endif %}"
+                                         name="{{ form.top_img.name }}"
+                                         id="{{ form.top_img.id_for_label }}"
+                                         value="{{ form.top_img.value|default:'' }}"></b-form-file>
+                            {% if form.top_img.value %}<img width="150" src="/media/{{ form.top_img.value }}" alt="No image found!">{% endif %}
+                            {% if form.top_img.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.top_img.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="service">
+                        <div class="form-group">
+                            <label for="{{ form.service_heading.id_for_label }}">{{ form.service_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.service_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.service_heading.name }}"
+                                   id="{{ form.service_heading.id_for_label }}"
+                                   value="{{ form.service_heading.value|default:'' }}"
+                                   placeholder="Service Heading">
+
+                            {% if form.service_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.service_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.service_sub_heading.id_for_label }}">{{ form.service_sub_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.service_sub_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.service_sub_heading.name }}"
+                                   id="{{ form.service_sub_heading.id_for_label }}"
+                                   value="{{ form.service_sub_heading.value|default:'' }}"
+                                   placeholder="Service sub-heading">
+
+                            {% if form.service_sub_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.service_sub_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <service-items></service-items>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.service_img.id_for_label }}">{{ form.service_img.label }}</label>
+                            <b-form-file accept=".jpg, .png, .gif"
+                                         class="form-control {% if form.service_img.errors %}border-danger{% endif %}"
+                                         name="{{ form.service_img.name }}"
+                                         id="{{ form.service_img.id_for_label }}"
+                                         value="{{ form.service_img.value|default:'' }}"></b-form-file>
+                            {% if form.service_img.value %}<img width="150" src="/media/{{ form.service_img.value }}" alt="No image found!">{% endif %}
+                            {% if form.service_img.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.service_img.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="stats">
+                        <statistics-items></statistics-items>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="review">
+                        <div class="form-group">
+                            <label for="{{ form.review_heading.id_for_label }}">{{ form.review_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.review_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.review_heading.name }}"
+                                   id="{{ form.review_heading.id_for_label }}"
+                                   value="{{ form.review_heading.value|default:'' }}"
+                                   placeholder="Review Heading">
+
+                            {% if form.review_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.review_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <review-items></review-items>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.review_bg.id_for_label }}">{{ form.review_bg.label }}</label>
+                            <b-form-file accept=".jpg, .png, .gif"
+                                         class="form-control {% if form.review_bg.errors %}border-danger{% endif %}"
+                                         name="{{ form.review_bg.name }}"
+                                         id="{{ form.review_bg.id_for_label }}"
+                                         value="{{ form.review_bg.value|default:'' }}"></b-form-file>
+                            {% if form.review_bg.value %}<img width="150" src="/media/{{ form.review_bg.value }}" alt="No image found!">{% endif %}
+                            {% if form.review_bg.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.review_bg.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="faq">
+                        <div class="form-group">
+                            <label for="{{ form.faq_heading.id_for_label }}">{{ form.faq_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.faq_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.faq_heading.name }}"
+                                   id="{{ form.faq_heading.id_for_label }}"
+                                   value="{{ form.faq_heading.value|default:'' }}"
+                                   placeholder="Review Heading">
+
+                            {% if form.faq_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.faq_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.faq_img.id_for_label }}">{{ form.faq_img.label }}</label>
+                            <b-form-file accept=".jpg, .png, .gif"
+                                         class="form-control {% if form.faq_img.errors %}border-danger{% endif %}"
+                                         name="{{ form.faq_img.name }}"
+                                         id="{{ form.faq_img.id_for_label }}"
+                                         value="{{ form.faq_img.value|default:'' }}"></b-form-file>
+                            {% if form.faq_img.value %}<img width="150" src="/media/{{ form.faq_img.value }}" alt="No image found!">{% endif %}
+                            {% if form.faq_img.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.faq_img.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <faq-items></faq-items>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="quote">
+                        <div class="form-group">
+                            <label for="{{ form.quote_heading.id_for_label }}">{{ form.quote_heading.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.quote_heading.errors %}border-danger{% endif %}"
+                                   name="{{ form.quote_heading.name }}"
+                                   id="{{ form.quote_heading.id_for_label }}"
+                                   value="{{ form.quote_heading.value|default:'' }}"
+                                   placeholder="Review Heading">
+
+                            {% if form.quote_heading.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.quote_heading.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.quote_bg.id_for_label }}">{{ form.quote_bg.label }}</label>
+                            <b-form-file accept=".jpg, .png, .gif"
+                                         class="form-control {% if form.quote_bg.errors %}border-danger{% endif %}"
+                                         name="{{ form.quote_bg.name }}"
+                                         id="{{ form.quote_bg.id_for_label }}"
+                                         value="{{ form.quote_bg.value|default:'' }}"></b-form-file>
+                            {% if form.quote_bg.value %}<img width="150" src="/media/{{ form.quote_bg.value }}" alt="No image found!">{% endif %}
+                            {% if form.quote_bg.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.quote_bg.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="footer">
+                        <div class="form-group">
+                            <label for="{{ form.footer_left.id_for_label }}">Texts(including heading) at footer (left)</label>
+                            <textarea
+                                    class="form-control {% if form.footer_left.errors %}border-danger{% endif %}"
+                                    name="{{ form.footer_left.name }}"
+                                    id="{{ form.footer_left.id_for_label }}">{{ form.footer_left.value|default:'' }}</textarea>
+
+                            {% if form.footer_left.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.footer_left.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.footer_middle.id_for_label }}">Texts at footer (middle)</label>
+                            <textarea
+                                    class="form-control {% if form.footer_middle.errors %}border-danger{% endif %}"
+                                    name="{{ form.footer_middle.name }}"
+                                    id="{{ form.footer_middle.id_for_label }}">{{ form.footer_middle.value|default:'' }}</textarea>
+
+                            {% if form.footer_middle.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.footer_middle.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="{{ form.copyright_text.id_for_label }}">{{ form.copyright_text.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.copyright_text.errors %}border-danger{% endif %}"
+                                   name="{{ form.copyright_text.name }}"
+                                   id="{{ form.copyright_text.id_for_label }}"
+                                   value="{{ form.copyright_text.value|default:'' }}"
+                                   placeholder="Review Heading">
+
+                            {% if form.copyright_text.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.copyright_text.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <social-link-items></social-link-items>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="service-items-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.service_items.id_for_label }}">{{ form.service_items.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.service_items.errors %}border-danger{% endif %}"
+                           name="{{ form.service_items.name }}"
+                           id="{{ form.service_items.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.service_items.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.service_items.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add icons and texts</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Text</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Text" v-model="selected_text"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Icon</label>
+                        <div class="col-10">
+                            <select class="form-control" v-model="selected_icon_index">
+                                <option selected="selected" value="" disabled="disabled">---</option>
+                                <option :value="index" v-for="(ic, index) in icons">[[ ic.title ]]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <template v-if="selected_icon_index !== ''">
+                        <div class="svg-container" v-if="icons[selected_icon_index].svg" v-html="icons[selected_icon_index].svg"></div>
+                        <img width="120" v-else-if="icons[selected_icon_index].img" :src="icons[selected_icon_index].img">
+                    </template>
+                    <button v-if="selected_text && selected_icon_index !== ''" class="btn btn-primary float-right" @click.prevent="generate_service_item_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="stats-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.statistics.id_for_label }}">{{ form.statistics.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.statistics.errors %}border-danger{% endif %}"
+                           name="{{ form.statistics.name }}"
+                           id="{{ form.statistics.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.statistics.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.statistics.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add count and texts</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Count</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Count" v-model="selected_count">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Text</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Text" v-model="selected_text">
+                        </div>
+                    </div>
+                    <button v-if="selected_count && selected_text" class="btn btn-primary float-right" @click.prevent="generate_stats_item_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="review-items-template">
+        <div class="form-group">
+            <div class="mb-3">
+                <label for="{{ form.review_items.id_for_label }}">{{ form.review_items.label }}</label>
+                <input type="text"
+                       class="form-control {% if form.review_items.errors %}border-danger{% endif %}"
+                       name="{{ form.review_items.name }}"
+                       id="{{ form.review_items.id_for_label }}"
+                       v-model="generated_item">
+                <small class="alert-warning">Do not edit this input, it will generate</small>
+                {% if form.review_items.errors %}
+                    <div class="form_field_error text-danger form-input-error">{{ form.review_items.errors|join:" " }}</div>
+                {% endif %}
+            </div>
+            <h4 class="fw-500">Add Review items (max: 2, no image)</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="" class="text-right pr-0">Review 1</label>
+                    <textarea class="form-control" id="review_item_1" placeholder="Review 1">[[ review_1 ]]</textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="" class="text-right pr-0">Review 2</label>
+                    <textarea class="form-control" id="review_item_2" placeholder="Review 2">[[ review_2 ]]</textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-3" @click.prevent="generate_stats_item_array">+ Insert</button>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="faq-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.faqs.id_for_label }}">{{ form.faqs.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.faqs.errors %}border-danger{% endif %}"
+                           name="{{ form.faqs.name }}"
+                           id="{{ form.faqs.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.faqs.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.faqs.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add question and answer</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Question</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter Question" v-model="selected_ques">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Answer</label>
+                        <div class="col-10">
+                            <textarea class="form-control" placeholder="Enter Answer" v-model="selected_ans"></textarea>
+                        </div>
+                    </div>
+                    <button v-if="selected_ques && selected_ans" class="btn btn-primary float-right" @click.prevent="generate_faq_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter Value first</button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="social-links-template">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-7">
+                    <label for="{{ form.social_links.id_for_label }}">{{ form.social_links.label }}</label>
+                    <input type="text"
+                           class="form-control {% if form.social_links.errors %}border-danger{% endif %}"
+                           name="{{ form.social_links.name }}"
+                           id="{{ form.social_links.id_for_label }}"
+                           v-model="generated_item">
+                    <small class="alert-warning">Do not edit this input, it will generate</small>
+                    {% if form.social_links.errors %}
+                        <div class="form_field_error text-danger form-input-error">{{ form.social_links.errors|join:" " }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 border-md-left border-right-0 border-bottom-0 border-top-0">
+                    <h4 class="fw-500">Add Social Links</h4>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">LinkedIn</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter linked-in url" v-model="linkedin">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Twitter</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter twitter url" v-model="twitter">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="" class="col-2 text-right pr-0 col-form-label">Facebook</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Enter facebook url" v-model="facebook">
+                        </div>
+                    </div>
+
+                    <button v-if="linkedin || twitter || facebook" class="btn btn-primary float-right" @click.prevent="generate_social_icons_array">+ Insert</button>
+                    <button v-else disabled class="btn btn-danger float-right">Enter any value first !</button>
+                </div>
+            </div>
+        </div>
+    </script>
+{% endblock %}
+
+
+{% block bottom_js %}
+    {% with selectors='#review_item_1, #review_item_2' non_container=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+
+    <script>
+        all_components['service-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    icons: [{% for ic in icons %}
+                        {
+                            id: "{{ ic.id }}",
+                            title: "{{ ic.title }}",
+                            img: "{% if ic.img_icon %}{{ ic.img_icon.url }}{% endif %}",
+                            svg: `{{ ic.svg_icon|safe|default:'' }}`,
+                        },
+                    {% endfor %}],
+                    selected_icon_index: '',
+                    selected_text: '',
+                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_service_item_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        parseInt(this.icons[this.selected_icon_index].id),
+                        this.selected_text
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_icon_index = '';
+                    this.selected_text = '';
+                }
+            },
+            template: '#service-items-template'
+        };
+        all_components['statistics-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    selected_count: '',
+                    selected_text: '',
+                    generated_item: `{{ form.statistics.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_stats_item_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        this.selected_count,
+                        this.selected_text
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_count = '';
+                    this.selected_text = '';
+                }
+            },
+            template: '#stats-template'
+        };
+        all_components['review-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    review_1: '',
+                    review_2: '',
+                    generated_item: `{{ form.service_items.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_stats_item_array: function () {
+                    this.generated_item = JSON.stringify([
+                        document.getElementById('review_item_1').value,
+                        document.getElementById('review_item_2').value
+                    ]);
+                }
+            },
+            created: function () {
+                let x = JSON.parse(this.generated_item)
+                console.log(x)
+            },
+            template: '#review-items-template'
+        };
+        all_components['faq-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    selected_ques: '',
+                    selected_ans: '',
+                    generated_item: `{{ form.faq.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_faq_array: function () {
+                    this.generated_item = this.generated_item === '' ? '[]' : this.generated_item;
+                    let prev_item_arr = JSON.parse(this.generated_item);    // parse from str to array
+                    prev_item_arr.push([
+                        this.selected_ques,
+                        this.selected_ans,
+                    ]); // push the new item
+                    this.generated_item = JSON.stringify(prev_item_arr);    // save it to the original field
+                    this.selected_ques = '';
+                    this.selected_ans = '';
+                }
+            },
+            template: '#faq-template'
+        };
+        all_components['social-link-items'] = {
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    linkedin: '',
+                    twitter: '',
+                    facebook: '',
+                    generated_item: `{{ form.social_links.value|default:'[]'|safe }}`,
+                }
+            },
+            methods: {
+                generate_social_icons_array: function () {
+                    let gen_it_arr = [];
+
+                    if (this.linkedin) gen_it_arr.push([this.linkedin, '{% static 'img/linkedin.svg' %}']);
+                    if (this.twitter) gen_it_arr.push([this.twitter, '{% static 'img/twitter.svg' %}']);
+                    if (this.facebook) gen_it_arr.push([this.facebook, '{% static 'img/facebook.svg' %}']);
+
+                    this.generated_item = JSON.stringify(gen_it_arr);
+                    this.linkedin = '';
+                    this.twitter = '';
+                    this.facebook = '';
+                }
+            },
+            template: '#social-links-template'
+        };
+    </script>
+{% endblock %}
+

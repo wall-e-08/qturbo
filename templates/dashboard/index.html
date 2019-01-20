@@ -7,6 +7,8 @@ Home | {{ block.super }}
 
 {% block dashboard_content %}
     <div class="container">
+        <h2>Edit General Item <a class="btn btn-success" href="{% url 'dashboard:edit_general_topic' %}">Here</a></h2>
+        <hr>
         <dsb-card-items></dsb-card-items>
     </div>
 {% endblock %}

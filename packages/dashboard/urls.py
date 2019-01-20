@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('upload_media_file/', login_required(views.editor_media_upload), name='editor_media_upload'),
 
+    path('edit-general-topic/', login_required(views.edit_general_topic), name='edit_general_topic'),
+
     # pages | currently not active in website
     path('page/', login_required(views.all_pages), name='all_pages'),
     path('page/create/', login_required(views.create_or_edit_page), name='create_page'),

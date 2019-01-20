@@ -106,7 +106,23 @@ def hp_context(request):
 
 
 def menu_context(request):
+    header_main_menu = Menu.objects.filter(parent_menu=None, position='top').order_by('id')
+    footer_main_menu = Menu.objects.filter(parent_menu=None, position='btm').order_by('id')
+    header_menu = []
+    footer_menu = []
+    for hm in header_main_menu:
+        child_menu = Menu.objects.filter(parent_menu=hm)
+        header_menu.append({
+            "parent": hm,
+            "child": child_menu
+        })
+    for fm in footer_main_menu:
+        child_menu = Menu.objects.filter(parent_menu=fm)
+        footer_menu.append({
+            "parent": fm,
+            "child": child_menu
+        })
     return {
-        "header_menu": Menu.objects.filter(parent_menu=None, position='top').order_by('id'),
-        "footer_menu": Menu.objects.filter(parent_menu=None, position='btm').order_by('id'),
+        "header_menu": header_menu,
+        "footer_menu": footer_menu,
     }

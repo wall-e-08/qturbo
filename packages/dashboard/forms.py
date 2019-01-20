@@ -3,7 +3,13 @@ from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemG
 from writing.models import Article, Blog
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list, get_all_urls
-from .models import Menu
+from .models import Menu, GeneralTopic
+
+
+class GeneralTopicForm(forms.ModelForm):
+    class Meta:
+        model = GeneralTopic
+        fields = '__all__'
 
 
 class EditorMediaForm(forms.Form):

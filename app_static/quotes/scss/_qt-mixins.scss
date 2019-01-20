@@ -4,7 +4,7 @@
         -moz-#{$prop}: $val;
         -ms-#{$prop}: $val;
         -o-#{$prop}: $val;
-        $prop: $val;
+        #{$prop}: $val;
     }
 }
 
