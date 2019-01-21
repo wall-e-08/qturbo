@@ -21,7 +21,7 @@
 body{
     font-size: 15px;
     background-color: #ffffff;
-   font-family: 'Raleway', sans-serif;
+   font-family: -apple-system,BlinkMacSystemFont,"Open Sans","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 400;
     color: #746C6C;
 }
@@ -43,6 +43,15 @@ h1,h2,h3,h4,h5,h6{
 }
 h1, h2{font-weight: 700}
 
+.text-heading{
+    color:#5398fa;
+}
+.text-sub-heading{
+    color:#fe8829;
+}
+.mt-30{
+    margin-top: 30px;
+}
 /*-----------------------------------------
   Home page
 -------------------------------------------*/
