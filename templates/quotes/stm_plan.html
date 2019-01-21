@@ -4,175 +4,228 @@
     {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-<style type="text/css">
-</style>
+    <style type="text/css">
+    </style>
 {% endblock extra_css %}
 
 {% block container %}
-<div class="blue-section plane-single-top">
-    <div class="container">
-        <div class="row">
-            <div id="msbreadCrumb">
-                <div class="col-sm-10 col-xs-9" style="color:#000">
-                    &nbsp;«&nbsp;
-                    <a class="fw-300" href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}">back to plans</a>
+    <div class="blue-section plane-single-top">
+        <div class="container">
+            <div class="row">
+                <div id="msbreadCrumb">
+                    <div class="col-sm-10 col-xs-9" style="color:#000">
+                        &nbsp;«&nbsp;
+                        <a class="fw-300" href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}">back to plans</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-md-8">
-                <div class="plan-details-planName-wrapper">
-                    <h1 class="planerh1 fw-300 plan_name_h1">{{ plan.plan_name }}</h1>
-                </div>
-                <h3>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</h3>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="plan-details-planName-wrapper">
+                        <h1 class="planerh1 fw-300 plan_name_h1">{{ plan.plan_name }}</h1>
+                    </div>
+                    <h3>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</h3>
 
-                <div class="plan-details-price js-price-breakdown">
-                    ${% plan_actual_premium plan %} {% comment %} {{ plan.Premium }} {% endcomment %}
-                    {% if plan.Payment_Option != '2' %}/mo{% endif %}
-                    <span class="fees">+ fees</span>
-                </div>
+                    <div class="plan-details-price js-price-breakdown">
+                        ${% plan_actual_premium plan %} {% comment %} {{ plan.Premium }} {% endcomment %}
+                        {% if plan.Payment_Option != '2' %}/mo{% endif %}
+                        <span class="fees">+ fees</span>
+                    </div>
 
-                <div class="plan-apply-container">
-                {% if alternate_coverage_duration %}
+                    <div class="plan-apply-container">
+                        {% if alternate_coverage_duration %}
+                            {% if alternate_coverage_duration %}
+                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">
+                                {% csrf_token %}
+                            {% endif %}
 
-                    <div class="row">
-                        <div class="col-md-5">
-                            <h3>Select Coverage Duration</h3>
-                        </div>
-                        <div class="">
 
-                                <select type="button" class="btn btn-info dropdown-toggle" id="alternative_plans_dropdown">
-                                    <option value="{% url 'quotes:stm_apply' plan.unique_url %}"> {{ plan.Duration_Coverage }} </option>
-                                    {% for duration in alternate_coverage_duration %}
-                                        <option value="{% url 'quotes:alt_coverage_plan' plan.unique_url duration %}"> {{ duration }} </option>
-                                    {% endfor %}
-                                </select>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Coverage Duration</h3>
+                                </div>
+                                <div class="">
+
+                                    <select type="button" class="btn btn-info dropdown-toggle" id="duration_coverage_dropdown" name="duration_coverage_dropdown">
+                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>
+                                        {% for duration in alternate_coverage_duration %}
+                                            <option value="{{ duration }}"> {{ duration }} </option>
+                                        {% endfor %}
+                                    </select>
 
                                 </div>
-                    </div>
-                            {% endif %}
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-default js-apply-button vimm-nim-width-btn {% if alternate_coverage_duration %}apply-btn-ajax {% else %} apply-btn {% endif %}" id="plan-details-primary-apply">
-                        <span>
+                            </div>
+                        {% endif %}
 
+                        {% if alternate_benefit_amount %}
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h3>Select Max Out Of Pocket</h3>
+
+                                    <div class="">
+
+                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternative_benefit_amount_dropdown" name = "alternative_benefit_amount_dropdown">
+                                            {% for benefit in alternate_benefit_amount %}
+                                                <option value="{{ benefit }}"> {{ benefit }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if alternate_coinsurace_percentage %}
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h3>Select Co-Insurance Percentage</h3>
+
+                                    <div class="">
+
+                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternate_coinsurace_percentage" name="alternate_coinsurace_percentage">
+                                            {% for percentage in alternate_coinsurace_percentage %}
+                                                <option value="{{ percentage }}"> {{ percentage }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if not alternate_coverage_duration %}
+                            <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
+                               class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
+                                    <span>
+
+                                        Apply for This Plan
+                                    </span>
+                            </a>
+                        {% else %}
+                            <button type="submit" class="btn btn-default vimm-nim-width-btn ">
+
+                        <span>
                                 Apply for This Plan
                         </span>
+                            </button>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                    <a class="detailsancho"
+                       href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
+                       target="_blank">
+                        <span class="fa fa-file-pdf-o"></span> View Plan Brochure
                     </a>
-
                 </div>
-                <a class="detailsancho"
-                   href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
-                   target="_blank">
-                    <span class="fa fa-file-pdf-o"></span> View Plan Brochure
-                </a>
-            </div>
-            <div class="col-xs-12 col-md-4">
-                <img alt="HCC Advantage" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="mw100 mrg-t-20">
+                <div class="col-xs-12 col-md-4">
+                    <img alt="HCC Advantage" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="mw100 mrg-t-20">
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-{# addon section - commenetd #}
+    {# addon section - commenetd #}
 
-<section class="add-on-section">
-    <div class="container" style="margin-top: 20px;" id="add-on-plan-container">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm-12 addon_plan_action_message"></div>
+    <section class="add-on-section">
+        <div class="container" style="margin-top: 20px;" id="add-on-plan-container">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12 addon_plan_action_message"></div>
 
-            {% if quote_request_form_data.Ins_Type != 'anc' %}
-            <div class="col-sm-6 col-sm-push-6" id="selected-add-on">
-                <div class="panel panel-default ms-panel-adon">
-                    <div class="panel-heading">
-                        <h3 class="panel-title bold">Selected Add-on Plans</h3>
-                    </div>
-                    <div class="panel-body addon_plans_panel addon_plans_panel_selected" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
-                        {% for addon_plan in selected_addon_plans %}
-                            <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;
+                {% if quote_request_form_data.Ins_Type != 'anc' %}
+                    <div class="col-sm-6 col-sm-push-6" id="selected-add-on">
+                        <div class="panel panel-default ms-panel-adon">
+                            <div class="panel-heading">
+                                <h3 class="panel-title bold">Selected Add-on Plans</h3>
+                            </div>
+                            <div class="panel-body addon_plans_panel addon_plans_panel_selected" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
+                                {% for addon_plan in selected_addon_plans %}
+                                    <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;
                             margin-top: 5px; padding: 5px; display: flex;">
-                                <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                    <h4>{{ addon_plan.Name }}</h4>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            Premium: ${{ addon_plan.actual_premium }} / mo
+                                        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                            <h4>{{ addon_plan.Name }}</h4>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    Premium: ${{ addon_plan.actual_premium }} / mo
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <a class="add_on_plan_brochure"
+                                                       href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                       target="_blank">
+                                                        <span class="fa fa-file-pdf-o"></span> Brochure
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <a class="add_on_plan_brochure"
-                                               href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                               target="_blank">
-                                                <span class="fa fa-file-pdf-o"></span> Brochure
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3 text-right" style="flex: 1;">
-                                    <img width="35px" style="top: 25%; position: relative;" class="none"
-                                         src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                    <button class="btn btn-warning action_addon_plan_button" type="button"
-                                            style="top: 25%; position: relative;"
-                                            data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
-                                            data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                        <span class="fa fa-remove"> Remove</span>
-                                    </button>
-                                </div>
-                            </div>
-                        {% empty %}
-                            <h4>No Add-on Plan</h4>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-sm-pull-6" id="available-add-on">
-                <div class="panel panel-default ms-panel-adon">
-                    <div class="panel-heading">
-                        <h3 class="panel-title bold">Available Add-on plans</h3>
-                    </div>
-                    <div class="panel-body addon_plans_panel addon_plans_panel_available" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
-                        {% for addon_plan in remaining_addon_plans %}
-                            <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
-                                <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                    <h4>{{ addon_plan.Name }}</h4>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            Premium: ${{ addon_plan.actual_premium }} / mo
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <a class="add_on_plan_brochure"
-                                               href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                               target="_blank">
-                                                <span class="fa fa-file-pdf-o"></span> Brochure
-                                            </a>
+                                        <div class="col-sm-3 text-right" style="flex: 1;">
+                                            <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                 src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                            <button class="btn btn-warning action_addon_plan_button" type="button"
+                                                    style="top: 25%; position: relative;"
+                                                    data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
+                                                    data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                <span class="fa fa-remove"> Remove</span>
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-3 text-right" style="flex: 1;">
-                                    <img width="35px" style="top: 25%; position: relative;" class="none"
-                                         src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                    <button class="btn btn-success action_addon_plan_button" type="button"
-                                            style="top: 25%; position: relative;"
-                                            data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
-                                            data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                        <span class="fa fa-plus"></span> Add
-                                    </button>
-                                </div>
+                                {% empty %}
+                                    <h4>No Add-on Plan</h4>
+                                {% endfor %}
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-                </div>
-            </div>
-            {% endif %}
+                    <div class="col-sm-6 col-sm-pull-6" id="available-add-on">
+                        <div class="panel panel-default ms-panel-adon">
+                            <div class="panel-heading">
+                                <h3 class="panel-title bold">Available Add-on plans</h3>
+                            </div>
+                            <div class="panel-body addon_plans_panel addon_plans_panel_available" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
+                                {% for addon_plan in remaining_addon_plans %}
+                                    <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
+                                        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                            <h4>{{ addon_plan.Name }}</h4>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    Premium: ${{ addon_plan.actual_premium }} / mo
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <a class="add_on_plan_brochure"
+                                                       href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                       target="_blank">
+                                                        <span class="fa fa-file-pdf-o"></span> Brochure
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 text-right" style="flex: 1;">
+                                            <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                 src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                            <button class="btn btn-success action_addon_plan_button" type="button"
+                                                    style="top: 25%; position: relative;"
+                                                    data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
+                                                    data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                <span class="fa fa-plus"></span> Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
 
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<div class="plan-details-section">
-    <div class="container">
-        <div class="row">
-            {% stm_plan_feature plan.Name %}
+    <div class="plan-details-section">
+        <div class="container">
+            <div class="row">
+                {% stm_plan_feature plan.Name %}
+            </div>
         </div>
     </div>
 </div>
@@ -181,8 +234,8 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-                <h2>USA+ Dental Authorizations and Acknowledgments</h2>
-                <h3 class="text-center">Fraud Notice:</h3>
+                <h2 class="text-center text-heading mt-30 ">USA+ Dental Authorizations and Acknowledgments</h2>
+                <h3 class="text-sub-heading">Fraud Notice:</h3>
                 <p>In several states, we are required to advise you of the following: Any person who knowingly and with
                     intent to defraud provides false, incomplete or misleading information in an application for insurance,
                     or who knowingly presents a false or fraudulent claim f or payment of a loss or benefit, is guilty
@@ -191,7 +244,7 @@
                     to a claim.</p>
 
 
-                <h3 class="text-center">Membership Agreement:</h3>
+                <h3 class="text-sub-heading">Membership Agreement:</h3>
                 <p>I understand and agree that membership is subject to the terms and conditions of the Membership Agreement.
                     We reserve the right to accept or decline any membership application in accordance with the by -laws
                     that govern our association. In order to ensure that I am able to utilize the benefits, it may be
@@ -199,7 +252,7 @@
                     products and services to me. I have 30 day s to evaluate the membership and request a full refund.</p>
 
 
-                <h3 class="text-center">Payment Acknowledgement:</h3>
+                <h3 class="text-sub-heading">Payment Acknowledgement:</h3>
                 <p>As a convenience to me, I hereby request and authorize you to pay and charge to my account, checks or
                     electronic debits drawn on my account by and pay able to the order of United Service Association For
                     Health Care, provided there are sufficient collected funds in said account to pay the same upon
@@ -213,21 +266,20 @@
             </div>
         </div>
     </div>
-</div>
 
-{% stm_plan_info plan %}
+    {% stm_plan_info plan %}
 
 
-{% if ctx_app_url_exists %}
-{% include 'quotes/info-popup.html' %}
-{% endif %}
+    {% if ctx_app_url_exists %}
+        {% include 'quotes/info-popup.html' %}
+    {% endif %}
 
 
 {% endblock container %}
 
 
 {% block extra_js %}
-<script id="addon_plan_template_available" type="x-tmpl-mustache">
+    <script id="addon_plan_template_available" type="x-tmpl-mustache">
     <div data-carrier_name="[[ carrier_name ]]" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
         <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
             <h4>[[Name]]</h4>
@@ -257,7 +309,7 @@
     </div>
 </script>
 
-<script id="addon_plan_template_selected" type="x-tmpl-mustache">
+    <script id="addon_plan_template_selected" type="x-tmpl-mustache">
     <div class="row" style="border: 1px solid #dddddd; border-radius: 5px; margin-top: 5px; padding: 5px; display: flex;">
         <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
             <h4>[[Name]]</h4>
@@ -286,219 +338,223 @@
         </div>
     </div>
 </script>
-<script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
-<script>
-if(performance.navigation.type === 2) {
+    <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
+    <script>
+        if(performance.navigation.type === 2) {
             console.log("Back button detected, reloading page");
             location.reload(true);
-}
-
-
-$(function() {
-
-    Mustache.tags = ['[[', ']]'];
-    var replace_re = RegExp(/ /g);
-    var addon_plan_template_available = $('#addon_plan_template_available').html();
-    var addon_plan_template_selected = $('#addon_plan_template_selected').html();
-    Mustache.parse(addon_plan_template_available);
-    Mustache.parse(addon_plan_template_selected);
-
-    var $addon_plans_panel_available = $('.addon_plans_panel_available');
-    var refresh_available_addon_plans = function(remaining_addon_plans, include_action) {
-        $addon_plans_panel_available.empty();
-        var addon_plan, rendered;
-        for (var i=0; i < remaining_addon_plans.length; i++) {
-            addon_plan = remaining_addon_plans[i];
-            addon_plan['data_as_json'] = JSON.stringify(addon_plan);
-            addon_plan['include_action'] = include_action;
-            addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
-            rendered = Mustache.to_html(addon_plan_template_available, addon_plan);
-            $addon_plans_panel_available.append(rendered);
         }
-        Grouping();
-        executeData();
-    };
 
-    var $addon_plans_panel_selected = $('.addon_plans_panel_selected');
-    var refresh_selected_addon_plans = function(selected_addon_plans, remove_action) {
-        $addon_plans_panel_selected.empty();
-        var addon_plan, rendered;
-        for (var i=0; i < selected_addon_plans.length; i++) {
-            addon_plan = selected_addon_plans[i];
-            addon_plan['data_as_json'] = JSON.stringify(addon_plan);
-            addon_plan['remove_action'] = remove_action;
-            addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
-            rendered = Mustache.to_html(addon_plan_template_selected, addon_plan);
-            $addon_plans_panel_selected.append(rendered);
-        }
-        Grouping();
-    };
 
-    var $addon_plan_action_message = $('.addon_plan_action_message');
-    var echo_addon_plan_action_message = function(json) {
-        var msg;
-        if (json.status === 'success') {
-            msg = '<div class="alert alert-success alert-dismissible" role="alert">' +
-                          '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                          '<span aria-hidden="true">&times;</span></button>' +
-                          '<strong>Done! </strong> ' +
-                          " addon plan " + '"' + json.related_addon.Name + '"' +
-                          (json.action === 'include'? " added": " removed") +
-                      '</div>';
-        } else {
-            var all_errors = [];
-            for (var i = 0; i < json.error_keys.length; i++) {
-                all_errors = all_errors.concat(json.errors[json.error_keys[i]]);
-            }
-            msg = '<div class="alert alert-warning alert-dismissible" role="alert">' +
-                          '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                          '<span aria-hidden="true">&times;</span></button>' +
-                          '<strong>Warning! </strong> ' +
-                          " failed to " + (json.action === 'include'? "add": "remove") + " addon plan " +
-                          '"' + json.related_addon.Name + '"' + '<br>' + all_errors.join(' ') +
-                      '</div>';
-        }
-        $addon_plan_action_message.html(msg);
-    };
+        $(function() {
 
-    $('.addon_plans_panel').on('click', '.action_addon_plan_button', function(e) {
-        var $that_button = $(this);
-        e.preventDefault();
-        saveData();
-        var $that_img = $that_button.siblings('img');
-        $that_img.removeClass('none');
-        $that_button.addClass("none");
+            Mustache.tags = ['[[', ']]'];
+            var replace_re = RegExp(/ /g);
+            var addon_plan_template_available = $('#addon_plan_template_available').html();
+            var addon_plan_template_selected = $('#addon_plan_template_selected').html();
+            Mustache.parse(addon_plan_template_available);
+            Mustache.parse(addon_plan_template_selected);
 
-        var csrftoken = $.cookie('csrftoken');
-        $.ajax({
-            url: $that_button.attr("data-action"),
-            beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", csrftoken);},
-            data: JSON.parse($that_button.attr('data-addon-plan')), type: 'POST', dataType: 'json',
-            success: function(json) {
-                $that_img.addClass('none');
-                $that_button.removeClass("none");
-                echo_addon_plan_action_message(json);
-                if (json.status === 'success') {
-                    refresh_available_addon_plans(json.remaining_addon_plans, json.include_action);
-                    refresh_selected_addon_plans(json.selected_addon_plans, json.remove_action);
+            var $addon_plans_panel_available = $('.addon_plans_panel_available');
+            var refresh_available_addon_plans = function(remaining_addon_plans, include_action) {
+                $addon_plans_panel_available.empty();
+                var addon_plan, rendered;
+                for (var i=0; i < remaining_addon_plans.length; i++) {
+                    addon_plan = remaining_addon_plans[i];
+                    addon_plan['data_as_json'] = JSON.stringify(addon_plan);
+                    addon_plan['include_action'] = include_action;
+                    addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
+                    rendered = Mustache.to_html(addon_plan_template_available, addon_plan);
+                    $addon_plans_panel_available.append(rendered);
                 }
-            },
-            error: function() {
-                $that_img.addClass('none');
-                $that_button.removeClass("none");
-                alert("Something Went wrong, please try again after some time.");
+                Grouping();
+                executeData();
+            };
+
+            var $addon_plans_panel_selected = $('.addon_plans_panel_selected');
+            var refresh_selected_addon_plans = function(selected_addon_plans, remove_action) {
+                $addon_plans_panel_selected.empty();
+                var addon_plan, rendered;
+                for (var i=0; i < selected_addon_plans.length; i++) {
+                    addon_plan = selected_addon_plans[i];
+                    addon_plan['data_as_json'] = JSON.stringify(addon_plan);
+                    addon_plan['remove_action'] = remove_action;
+                    addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
+                    rendered = Mustache.to_html(addon_plan_template_selected, addon_plan);
+                    $addon_plans_panel_selected.append(rendered);
+                }
+                Grouping();
+            };
+
+            var $addon_plan_action_message = $('.addon_plan_action_message');
+            var echo_addon_plan_action_message = function(json) {
+                var msg;
+                if (json.status === 'success') {
+                    msg = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<strong>Done! </strong> ' +
+                        " addon plan " + '"' + json.related_addon.Name + '"' +
+                        (json.action === 'include'? " added": " removed") +
+                        '</div>';
+                } else {
+                    var all_errors = [];
+                    for (var i = 0; i < json.error_keys.length; i++) {
+                        all_errors = all_errors.concat(json.errors[json.error_keys[i]]);
+                    }
+                    msg = '<div class="alert alert-warning alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<strong>Warning! </strong> ' +
+                        " failed to " + (json.action === 'include'? "add": "remove") + " addon plan " +
+                        '"' + json.related_addon.Name + '"' + '<br>' + all_errors.join(' ') +
+                        '</div>';
+                }
+                $addon_plan_action_message.html(msg);
+            };
+
+            $('.addon_plans_panel').on('click', '.action_addon_plan_button', function(e) {
+                var $that_button = $(this);
+                e.preventDefault();
+                saveData();
+                var $that_img = $that_button.siblings('img');
+                $that_img.removeClass('none');
+                $that_button.addClass("none");
+
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: $that_button.attr("data-action"),
+                    beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", csrftoken);},
+                    data: JSON.parse($that_button.attr('data-addon-plan')), type: 'POST', dataType: 'json',
+                    success: function(json) {
+                        $that_img.addClass('none');
+                        $that_button.removeClass("none");
+                        echo_addon_plan_action_message(json);
+                        if (json.status === 'success') {
+                            refresh_available_addon_plans(json.remaining_addon_plans, json.include_action);
+                            refresh_selected_addon_plans(json.selected_addon_plans, json.remove_action);
+                        }
+                    },
+                    error: function() {
+                        $that_img.addClass('none');
+                        $that_button.removeClass("none");
+                        alert("Something Went wrong, please try again after some time.");
+                    }
+                });
+            });
+
+            $('.apply-btn-ajax').on('click', function (event) {
+                event.preventDefault();
+                var $coverage_duration_dropdown = $('#alternative_plans_dropdown') ;
+                var $alternative_benefit_amount_dropdown = $('#alternative_benefit_amount_dropdown') ;
+                var $alternate_coinsurace_percentage = $('#alternate_coinsurace_percentage') ;
+                console.log($coverage_duration_dropdown.val());
+                console.log($alternative_benefit_amount_dropdown.val());
+                console.log($alternate_coinsurace_percentage.val());
+                {#location.href = $coverage_duration_dropdown.val();#}
+            })
+        });
+
+        $(document).ready(function () {
+            Grouping ();
+            $('[data-clickResult]').hide();
+
+
+            //making same height in available or selected add on plans
+            if($(window).width() > 767)
+            {
+                var s_plan = $('#selected-add-on');
+                var a_plan = $('#available-add-on');
+                if (s_plan.height() > a_plan.height())  a_plan.find('.ms-panel-adon').css('min-height', s_plan.height() - 15);
+                else  s_plan.find('.ms-panel-adon').css('min-height', a_plan.height() - 15);    //20 reduced for margin-bottom & padding bottom
             }
         });
-    });
 
-    $('.apply-btn-ajax').on('click', function (event) {
-        event.preventDefault();
-        var $coverage_duration_dropdown = $('#alternative_plans_dropdown') ;
-        console.log($coverage_duration_dropdown.val());
-        location.href = $coverage_duration_dropdown.val();
-    })
-});
+        var plansDisplay = [];
+        function Grouping ()
+        {
+            var addonParent = $('.addon_plans_panel_available');
+            var carriers = [];
+            var group_carrier = [];
+            $('[data-carrier_name]').each(function () {
+                var _this =  $(this);
+                carriers.push(_this);   {# saving all elements #}
+                group_carrier.push(_this.attr('data-carrier_name'));    {# saving "carrier_name" value which is coming by python #}
+                _this.remove(); {# removing the element after saving #}
+            });
 
-$(document).ready(function () {
-	Grouping ();
-	$('[data-clickResult]').hide();
-	
-	
-	//making same height in available or selected add on plans
-	if($(window).width() > 767)
-	{
-		var s_plan = $('#selected-add-on');
-		var a_plan = $('#available-add-on');
-		if (s_plan.height() > a_plan.height())  a_plan.find('.ms-panel-adon').css('min-height', s_plan.height() - 15);
-		else  s_plan.find('.ms-panel-adon').css('min-height', a_plan.height() - 15);    //20 reduced for margin-bottom & padding bottom
-	}
-});
+            // group_carrier = jQuery.unique( group_carrier );
+            var uniqueCarrier = Array.from(new Set(group_carrier));
+            group_carrier = uniqueCarrier;
+            group_carrier.sort();
 
-var plansDisplay = [];
-function Grouping ()
-{
-	var addonParent = $('.addon_plans_panel_available');
-	var carriers = [];
-	var group_carrier = [];
-	$('[data-carrier_name]').each(function () {
-		var _this =  $(this);
-		carriers.push(_this);   {# saving all elements #}
-		group_carrier.push(_this.attr('data-carrier_name'));    {# saving "carrier_name" value which is coming by python #}
-		_this.remove(); {# removing the element after saving #}
-	});
+            for(var i =0; i<group_carrier.length; i++)
+            {
+                var carrier_html = '';
+                for(var j =0; j<carriers.length; j++)
+                {
+                    if(carriers[j].attr('data-carrier_name') === group_carrier[i])
+                    {
+                        carrier_html+=
+                            ('<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">'+
+                                carriers[j].html()+
+                                '</div>');
+                    }
+                }
+                var html =
+                    '<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px;">'+
+                    '<div class="col-xs-12">'+
+                    '<div class="row">'+
+                    '<div class="col-xs-9">'+
+                    '<h3 style="margin-top:10px;margin-left:10px">' + group_carrier[i] + '</h3>'+
+                    '</div>'+
+                    '<div class="col-xs-3">'+
+                    '<button style="margin-left:auto;float:right;margin-top:6px" class="btn" data-clickTarget=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + '><i class="fa fa-chevron-down"></i></button>'+ //button for navigate group's child
+                    '</div>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div data-clickResult=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + ' class="col-xs-12">'+
+                    carrier_html+
+                    '</div>'+
+                    '</div>';
+                addonParent.append(html);
+            }
 
-	// group_carrier = jQuery.unique( group_carrier );
-    var uniqueCarrier = Array.from(new Set(group_carrier));
-    group_carrier = uniqueCarrier;
-	group_carrier.sort();
+            $('[data-clickTarget]').off().click(function (e) {
+                e.preventDefault();
+                var _this = $(this);
+                var _val = _this.attr('data-clickTarget');
+                $('[data-clickResult='+ _val + ']').slideToggle();
+            });
+        }
+        function executeData() {    {% comment %}set the div's display state{% endcomment %}
+            $('[data-clickResult]').each(function () {
+                var _this = $(this);
+                var _temp = plansDisplay[_this.attr('data-clickResult')];
+                _this.css('display', _temp === undefined ? 'none' : _temp);
+            });
+        }
+        function saveData() {   {% comment %}saving the div's display state{% endcomment %}
+            $('[data-clickResult]').each(function () {
+                var _this = $(this);
+                plansDisplay[_this.attr('data-clickResult')] = _this.css('display');
+            });
+        }
 
-	for(var i =0; i<group_carrier.length; i++)
-	{
-		var carrier_html = '';
-		for(var j =0; j<carriers.length; j++)
-		{
-			if(carriers[j].attr('data-carrier_name') === group_carrier[i])
-			{
-				carrier_html+=
-					('<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">'+
-						carriers[j].html()+
-					'</div>');
-			}
-		}
-		var html =
-			'<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px;">'+
-				'<div class="col-xs-12">'+
-					'<div class="row">'+
-						'<div class="col-xs-9">'+
-	                        '<h3 style="margin-top:10px;margin-left:10px">' + group_carrier[i] + '</h3>'+
-						'</div>'+
-						'<div class="col-xs-3">'+
-                            '<button style="margin-left:auto;float:right;margin-top:6px" class="btn" data-clickTarget=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + '><i class="fa fa-chevron-down"></i></button>'+ //button for navigate group's child
-						'</div>'+
-					'</div>'+
-				'</div>'+
-				'<div data-clickResult=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + ' class="col-xs-12">'+
-					carrier_html+
-				'</div>'+
-			'</div>';
-		addonParent.append(html);
-	}
-	
-	$('[data-clickTarget]').off().click(function (e) {
-		e.preventDefault();
-		var _this = $(this);
-		var _val = _this.attr('data-clickTarget');
-		$('[data-clickResult='+ _val + ']').slideToggle();
-	});
-}
-function executeData() {    {% comment %}set the div's display state{% endcomment %}
-	$('[data-clickResult]').each(function () {
-		var _this = $(this);
-		var _temp = plansDisplay[_this.attr('data-clickResult')];
-		_this.css('display', _temp === undefined ? 'none' : _temp);
-	});
-}
-function saveData() {   {% comment %}saving the div's display state{% endcomment %}
-	$('[data-clickResult]').each(function () {
-		var _this = $(this);
-		plansDisplay[_this.attr('data-clickResult')] = _this.css('display');
-	});
-}
+        $(function(){
 
-$(function(){
-
-    $('.apply-btn-ajax').click(function(e) {
-        vimm_button_click_processing(
-            $(this),
-            ($button => false),
-            [' <span class="apply-btn-ajax">Applying for Selected Plan...</span>',
-                ' <span class="apply-btn-ajax">Applying for Selected Plan..</span>',
-                ' <span class="apply-btn-ajax">Applying for Selected Plan.</span>']
-        );
-    });
-});
+            $('.apply-btn-ajax').click(function(e) {
+                vimm_button_click_processing(
+                    $(this),
+                    ($button => false),
+                    [' <span class="apply-btn-ajax">Applying for Selected Plan...</span>',
+                        ' <span class="apply-btn-ajax">Applying for Selected Plan..</span>',
+                        ' <span class="apply-btn-ajax">Applying for Selected Plan.</span>']
+                );
+            });
+        });
 
 
-</script>
+    </script>
 
 {% endblock extra_js %}
