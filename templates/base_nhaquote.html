@@ -70,6 +70,23 @@
     {% endblock css %}
 
     {% block extra_css %}{% endblock extra_css %}
+    <style>
+        #mainmenu li{
+            padding-top: 15px;
+        }
+        #mainmenu li a{
+            text-decoration: none !important;
+            color: #19B4FA !important;
+        }
+        .qt-text-primary {
+            color: #19B4FA !important;
+        }
+        .mobile-right-link {
+            font-size: 22px;
+            line-height: 46px;
+            font-weight: bold;
+        }
+    </style>
 
 </head>
 
@@ -101,7 +118,7 @@
                                 <!--li><a href="">Short-Term Health Insurance</a></li>
                                 <li><a href="">Dental Insurance</a></li>
                                 <li><a href="">Customer Login</a></li-->
-                                <li><a href="{% url 'quotes:plans' %}">Health Quote</a></li>
+                                <li><a href="/#/health-insurance/member/">Edit Info</a></li>
 
                                 {#                                <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}">Everest</a></li> {# TODO #}
                                 {#                                <li><a href="{% url 'thi:stm_carrier' 'lifeshield-stm' %}">LifeShield</a></li> {# TODO #}
@@ -124,9 +141,10 @@
                         <span class="phone-number">(877) 593-3736</span>
                         <span class="phone-number-slogan">Agents Standing By</span>
                         {% block hamburger %}
-                            <div id="mobileNavToggle">
+                            {% comment %}<div id="mobileNavToggle">
                                 <span class="fa fa-bars"></span>
-                            </div>
+                            </div>{% endcomment %}
+                            <a class="qt-text-primary mobile-right-link" href="/#/health-insurance/member/">Edit Info</a>
                         {% endblock %}
                     </div>
                 </div>
