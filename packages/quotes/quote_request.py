@@ -633,12 +633,12 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
     Name = 'LifeShield STM'
 
     # '80/20', '50/50', '70/30', '100/0'
-    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20', '50/50', '70/30', '100/0']}
+    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE[Name]}
 
     _D_C = {'attr': 'Duration_Coverage', 'values': []} # This value gets overwritten.
 
     # '2000', '3000', '4000', '5000'
-    _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '3000', '4000', '5000']}
+    _B_A = {'attr': 'Benefit_Amount', 'values': settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[Name]}
 
     _C_M = {'attr': 'Coverage_Max', 'values': ['250000', '750000', '1000000', '1500000']}
 
@@ -722,12 +722,12 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
     Name = 'AdvantHealth STM'
 
     # '80/20', '50/50', '70/30', '100/0'
-    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': ['80/20']}
+    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE[Name]}
 
     _D_C = {'attr': 'Duration_Coverage', 'values': []}  # Set in set_alternative_attr
 
     # '2000', '3000', '4000', '5000'
-    _B_A = {'attr': 'Benefit_Amount', 'values': ['2000', '4000']}
+    _B_A = {'attr': 'Benefit_Amount', 'values': settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[Name]}
 
     _C_M = {'attr': 'Coverage_Max', 'values': ['250000', '500000', '1000000']}
 

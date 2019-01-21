@@ -401,6 +401,16 @@ class ApplicantInfoForm(forms.Form):
             dob = datetime.datetime.strptime(dob, '%m-%d-%Y').date()
         return age(dob)
 
+class AlternateSelectionForm(forms.Form):
+    Coverage_Duration = forms.ChoiceField()
+    Benefit_Amount = forms.CharField()
+    Coinsurance_Percentage = forms.CharField()
+
+    def clean(self):
+        super().clean()
+        return self.cleaned_data
+
+
 
 class ChildInfoForm(forms.Form):
 
