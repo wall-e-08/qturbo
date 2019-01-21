@@ -281,7 +281,7 @@ def plan_quote(request, ins_type):
         elif ins_type == 'anc':
             AncPlanTask.delay(request.session.session_key, quote_request_form_data)
 
-    return render(request, 'quotes/quote_list.html', {
+    return render(request, 'quotes/quote_list_d.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
