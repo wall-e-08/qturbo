@@ -387,8 +387,9 @@ STATE_SPECIFIC_PLAN_DURATION = {
     }
 }
 
+# 3*2 is not working right now 01/21/19
 STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
-    'LifeShield STM': ['3*2'],
+    'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
 }
 

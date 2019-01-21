@@ -334,6 +334,7 @@ const router = new VueRouter({
         },{
             path: 'income',
             component: {
+                // TODO: Make this annual income
                 template: v_templates.monthly_income,
                 data: function () {
                     return {
@@ -373,6 +374,8 @@ const router = new VueRouter({
                             'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
                             'child-MIN_NUM_FORMS': 0,
                             'child-MAX_NUM_FORMS': this.max_dependents,
+                            Annual_Income: this.income
+
                         };
                         if(Object.keys(cookie_own_input).every((k) => cookie_own_input[k])){    // checking if all data present for applicant
                             form_data['Applicant_DOB'] = cookie_own_input.dob;
@@ -426,13 +429,15 @@ const router = new VueRouter({
                             data: form_data,
                             success: function (data) {
                                 console.log("Success");
-                                console.table(data);
+                                // console.table(data);
                                 if(data.url) {
                                     console.log("Navigating to "+ data.url);
                                     location.href = data.url;
                                 }
-                                else
-                                    console.error("XXXXXX")
+                                else {
+                                    // console.error("XXXXXX");
+                                    router.push({name: 'survey-member'});
+                                }
                             },
                             error: function(data) {
                                 console.log("Error");

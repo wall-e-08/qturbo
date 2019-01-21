@@ -3,5 +3,5 @@ from quotes import views
 
 
 urlpatterns = [
-    path('members', views.survey_members, name='survey_members'),
+    # path('members', views.survey_members, name='survey_members'),
 ]
