@@ -10,6 +10,25 @@
     color: #fff;
 }
 
+.quote-tab-info-line li a{
+    color: #4A4A4A;
+}
+
+.quote-tab-info-line li.active a{
+    border: 0;
+    border-bottom: 4px solid;
+    border-color: #19B4FA;
+
+}
+
+.quote-tab-info-line li.active a:hover{
+    border: 0;
+    border-bottom: 4px solid;
+    border-color: #19B4FA;
+
+}
+
+
 .quote-info-bar{
     font-size: 2rem;
     font-weight: 500;
