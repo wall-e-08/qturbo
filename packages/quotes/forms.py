@@ -221,6 +221,12 @@ class ApplicantInfoForm(forms.Form):
         required=False
     )
 
+    Annual_Income = forms.CharField(
+        label=_("Annual Income"),
+        error_messages={'required': _("Annual Income is Required")},
+        required=True
+    )
+
     quote_request_timestamp = forms.IntegerField(required=False)
 
     def clean_First_Name(self):
@@ -385,6 +391,8 @@ class ApplicantInfoForm(forms.Form):
 
 
         self.cleaned_data['quote_request_timestamp'] = int(round(time.time(), 0))
+
+        self.cleaned_data['Annual_Income'] = self.cleaned_data.get('Annual_Income', None)
 
         return self.cleaned_data
 
