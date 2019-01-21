@@ -152,6 +152,41 @@ def survey_members(request):
     return render(request, 'quotes/survey/members.html', {})
 
 
+def policy_max_from_income(income: int, plan_name: str) -> str:
+    """
+    We shall take these dictionary to settings file.
+
+    :param income: Annual Income
+    :return: Coverage/Policy Maximum
+    """
+    policy_max_dict = {
+            'LifeShield STM' : {
+            'low': '250000',
+            'medium': '750000',
+            'high': '1000000'
+        },
+
+        'AdvantHealth STM' : {
+            'low': '250000',
+            'medium': '500000',
+            'high': '1000000'
+        }
+    }
+
+
+    income_low_point = 100000
+    income_high_point = 300000
+
+    if income_low_point >= income :
+        return policy_max_dict[plan_name]['low']
+
+    elif income_high_point > income > income_low_point:
+        return policy_max_dict[plan_name]['medium']
+
+    elif income >= income_high_point:
+        return policy_max_dict[plan_name]['high']
+
+
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
 
@@ -211,13 +246,18 @@ def plan_quote(request, ins_type):
             print(f'Setting quote request preference data')
 
             # To be refactored.
+            # We should move this back to validate_quote_form()
+            # This only runs at the first of the quote
             quote_request_preference_data = {
                 'LifeShield STM': {
                     'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'LifeShield STM')
                 },
 
                 'AdvantHealth STM': {
-                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM']
+                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'AdvantHealth STM')
+
                 }
             }
 
@@ -241,7 +281,7 @@ def plan_quote(request, ins_type):
         elif ins_type == 'anc':
             AncPlanTask.delay(request.session.session_key, quote_request_form_data)
 
-    return render(request, 'quotes/quote_list.html', {
+    return render(request, 'quotes/quote_list_d.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
@@ -1095,8 +1135,10 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                     continue
 
             elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
-                if decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage']:
+                if decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or\
+                                    decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max']:
                     continue
+
 
             sp.append(decoded_plan)
 
