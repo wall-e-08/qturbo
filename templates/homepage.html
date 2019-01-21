@@ -690,7 +690,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="h-100 rounded" style="min-height: 50px;">
-                                        <button type="submit"
+                                        <button type="submit" :disabled="!is_valid_zip"
                                                 class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">
                                             Find plans
                                         </button>
@@ -802,7 +802,7 @@
                                 <survey-card :survey_type="holder_types_enum.own"
                                              :prop_max_age= {{ applicant_max_age }}
                                              :prop_min_age= {{ applicant_min_age }}
-                                             :inputs="own_input"></survey-card>
+                                             :inputs="own_input" ref="own_input_ref"></survey-card>
 
                                 <template>
                                     <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age={{ spouse_max_age }}
@@ -836,7 +836,10 @@
                                         </div>
                                     </div>
                                 </template>
-                                <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" :to="{ name: 'survey-income'}" @click.native="save_to_cookie">Next</router-link>
+                                <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
+                                             v-if="own_input.dob && own_input.gender && own_input.tobacco"
+                                             :to="{ name: 'survey-income'}" @click.native="save_to_cookie">Next</router-link>
+                                <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
                             </div>
                         </div>
                     </div>

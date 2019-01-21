@@ -426,13 +426,15 @@ const router = new VueRouter({
                             data: form_data,
                             success: function (data) {
                                 console.log("Success");
-                                console.table(data);
+                                // console.table(data);
                                 if(data.url) {
                                     console.log("Navigating to "+ data.url);
                                     location.href = data.url;
                                 }
-                                else
-                                    console.error("XXXXXX")
+                                else {
+                                    // console.error("XXXXXX");
+                                    router.push({name: 'survey-member'});
+                                }
                             },
                             error: function(data) {
                                 console.log("Error");
