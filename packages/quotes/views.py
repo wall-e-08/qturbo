@@ -16,7 +16,7 @@ from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
-                    ChildInfoFormSet, LeadForm)
+                    ChildInfoFormSet, LeadForm, AlternateSelectionForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data, threaded_request
 from .redisqueue import redis_connect
@@ -369,19 +369,29 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_coverage_duration_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]) -\
                                       {plan['Duration_Coverage']}
         alternate_coverage_duration = list(alternate_coverage_duration_set)
+
+        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
+        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE[plan_name]
+
     except KeyError as k:
         print(f'{k} - No duration coverage for {plan_name}')
         alternate_coverage_duration = None
+        alternate_benefit_amount = None
+        alternate_coinsurace_percentage = None
 
     return render(request, 'quotes/stm_plan.html',
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
                    'remaining_addon_plans': remaining_addon_plans,
-                   'alternate_coverage_duration': alternate_coverage_duration }) # This will be changed later
-                                                                                # This will be a list(not a str)
-                                                                                # which will be handled by
-                                                                                # DTL/JS.
+                   'alternate_coverage_duration': alternate_coverage_duration,
+                   'alternate_benefit_amount': alternate_benefit_amount,
+                   'alternate_coinsurace_percentage': alternate_coinsurace_percentage,
+                   # 'alternate_selection_form': AlternateSelectionForm
+                   }) # This will be changed later
+                                                                                    # This will be a list(not a str)
+                                                                                    # which will be handled by
+                                                                                    # DTL/JS.
 
 
 def stm_apply(request, plan_url) -> HttpResponse:
@@ -1640,15 +1650,26 @@ legal_page_info = [
 ]
 
 
-def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: str) -> HttpResponse:
+def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """ Switch user to alternative coverage benefit plan
 
+    Note: Benefit amount and max out of pocket are the same thing.
     :param request:
     :param plan_url:
     :param coverage_duration:
     :return:
     """
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+
+
+    # form = AlternateSelectionForm(request.POST)
+    # if form.is_valid():
+    #     pass
+
+    coverage_duration = request.POST['duration_coverage_dropdown'] or None
+    benefit_amount = request.POST['alternative_benefit_amount_dropdown'] or None
+    coins_percentage = request.POST['alternate_coinsurace_percentage'] or None
+
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -1724,8 +1745,8 @@ def alt_coverage_plan(request: WSGIRequest, plan_url: str, coverage_duration: st
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
-                                                  mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == coins_percentage[3:] and  # I am ashamed
+                                                  mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['coverage_max_value'] == plan['coverage_max_value'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))
     except StopIteration:

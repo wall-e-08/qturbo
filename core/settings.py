@@ -350,6 +350,7 @@ PAGE_ITEM_MODEL_TEMPLATE = {
 #    State specific plan duration     +
 # ------------------------------------+
 
+# All these things will go to Database
 STATE_SPECIFIC_PLAN_DURATION = {
     'LifeShield STM': {
         'AL': ['12*1', '12*3'],
@@ -392,6 +393,18 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
 }
+
+# TODO: Quote request should use these values
+CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
+    'LifeShield STM': ['2000', '3000', '4000', '5000'],
+    'AdvantHealth STM': ['2000', '4000']
+}
+
+CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE = {
+    'LifeShield STM': ['80/20', '50/50', '70/30', '100/0'],
+    'AdvantHealth STM': ['80/20']
+}
+
 
 try:
     from .local_settings import *
