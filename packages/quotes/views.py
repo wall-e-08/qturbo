@@ -1659,6 +1659,8 @@ def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param coverage_duration:
     :return:
     """
+
+
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
 
