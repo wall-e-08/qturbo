@@ -77,10 +77,9 @@
 
 .quote-container{
     border: 1px solid #d0caca;
-    padding: 15px 15px;
     border-radius: 4px;
-    margin-bottom: 20px;
-    background: aliceblue;
+    margin-bottom: 30px;
+    background: #e0f0ff;
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.4);
     transition: all .5s ease-in-out;
 }
@@ -90,30 +89,39 @@
 .qt-plan-logo{
     width: 100%;
     height: auto;
+    text-align: center;
+}
+.qt-plan-logo hr{
+    border-top: 2px solid #cabbbb;
 }
 .qt-plan-logo img{
-    width: 100%;
+    width: 80%;
     height: auto;
+    padding: 20px 15px;
 }
 .plan-single-info{
-    margin: 10px 0px;
+    margin: 15px auto;
     background: #fff;
     text-align: center;
+    border-radius: 5px;
+    width: 90%;
 }
 .fee{
     text-align: center;
     font-size: 28px;
     font-weight: bold;
-    padding: 8px 0;
+    padding: 15px 0;
 }
 .plan-select-btn{
     text-align: center;
     padding: 10px 5px;
-    background: #18;
-    background: #fe8829;
+    background: #28a745;
     border-radius: 28px;
     font-weight: bold;
+    width: 55%;
+    margin: 10px auto;
 }
+
 .plan-select-btn a{
     color: #fff;
 }
@@ -121,17 +129,20 @@
     padding: 15px 10px;
 }
 .deductible{
-    padding: 10px 10px 0 10px;
-    margin-bottom: 3px;
+    padding: 15px 10px 0 10px;
+    margin-bottom: 0px;
     font-weight: bold;
 }
 .policy-max{
     font-size: 12px;
-    padding-bottom: 10px;
+    padding: 5px 10px 0 10px;
+    margin-bottom: 0;
 }
 .info-icon{
     color: #5398f3;
     cursor: pointer;
+    font-size: 18px;
+    margin-right: 4px;
 }
 
 #month_plan_list {

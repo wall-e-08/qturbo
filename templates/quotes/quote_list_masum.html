@@ -783,11 +783,13 @@
 <script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
     <div class="col-md-4{% comment %}ms-row{% endcomment %}" id="[[#featured_plan]]featured-premium-plan[[/featured_plan]]">
         <div class={% comment %}row{% endcomment %}>
-            <div class="">
-                <div class="quote-container">
+            <div class="quote-container">
+                <div class="">
+
                     <div class="qt-plan-logo">
                         <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
                              class="carrier-logo-image">
+                             <hr>
                     </div>
                     <div class="plan-single-info">
                         <div class="fee">
@@ -798,21 +800,18 @@
                             [[/upfront]]
                         </div>
                     </div>
-                    <div class="plan-select-btn">
-                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
-                    </div>
                     <div class="plan-single-info">
-                        <h5 class="quote-plan-details">
+                        <h4 class="quote-plan-details">
                             <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
                                 [[plan_name]]
                             </a>
-                            </h3>
+                            </h4>
                     </div>
-                    <div class="plan-single-info">
+                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
                         <p class="deductible">Deductible: $[[option]]
                             <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
-                                  data-original-title="" title=""> <i class="fa fa-info-circle"
+                                  data-original-title="" title=""><i class="fa fa-info-circle"
                                                                       aria-hidden="true"></i></span>
                         </p>
                         <p class="policy-max">
@@ -823,8 +822,8 @@
                             </a>
                         </p>
 
-                    </div>
-                    <div class="plan-single-info">
+
+                    <div class="">
                         <p class="deductible">Coinsurance: [[Coinsurance_Percentage]]%
                             <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
@@ -835,7 +834,7 @@
                             <a class="js-glossary" href="javascript:void(0)">$[[copay]] [[copay_text]]</a>
                         </p>
                     </div>
-                    <div class="plan-single-info">
+                    <div class="">
                         <p class="deductible">Max Out of Pocket: $[[out_of_pocket_value]]
                             <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
@@ -846,7 +845,10 @@
                             <a class="js-glossary" href="javascript:void(0)">$[[copay_2]] [[copay_2_text]]</a>
                         </p>
                     </div>
-
+                    </div>
+                    <div class="plan-select-btn">
+                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                    </div>
                 </div>
             </div>
         </div>
