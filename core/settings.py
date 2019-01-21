@@ -350,27 +350,28 @@ PAGE_ITEM_MODEL_TEMPLATE = {
 #    State specific plan duration     +
 # ------------------------------------+
 
+# All these things will go to Database
 STATE_SPECIFIC_PLAN_DURATION = {
     'LifeShield STM': {
-        'AL': ['3*2', '12*1', '12*3'],
-        'AZ': ['3*2', '6*2'],
-        'CO': ['3*2', '6*2'],
-        'DE': ['3*2', '12*1', '12*3'],
-        'FL': ['3*2', '12*1', '12*3'],
-        'GA': ['3*2', '12*1', '12*3'],
-        'IL': ['3*2', '12*1', '12*3'],
-        'LA': ['3*2', '6*6'],
-        'MN': ['3*2', '6*2'],
-        'MS': ['3*2', '12*1', '12*3'],
-        'MO': ['3*2', '6*6'],
-        'NC': ['3*2', '12*1', '12*3'],
-        'OH': ['3*2', '12*1', '12*3'],
-        'OK': ['3*2', '6*6'],
-        'PA': ['3*2', '12*1', '12*3'],
-        'SD': ['3*2', '6*6'],
-        'TN': ['3*2', '12*1', '12*3'],
-        'TX': ['3*2', '12*1', '12*3'],
-        'VA': ['3*2', '12*1', '12*3'],
+        'AL': ['12*1', '12*3'],
+        'AZ': ['6*2'],
+        'CO': ['6*2'],
+        'DE': ['12*1', '12*3'],
+        'FL': ['12*1', '12*3'],
+        'GA': ['12*1', '12*3'],
+        'IL': ['12*1', '12*3'],
+        'LA': ['6*6'],
+        'MN': ['6*2'],
+        'MS': ['12*1', '12*3'],
+        'MO': ['6*6'],
+        'NC': ['12*1', '12*3'],
+        'OH': ['12*1', '12*3'],
+        'OK': ['6*6'],
+        'PA': ['12*1', '12*3'],
+        'SD': ['6*6'],
+        'TN': ['12*1', '12*3'],
+        'TX': ['12*1', '12*3'],
+        'VA': ['12*1', '12*3'],
     },
     'AdvantHealth STM': {
         'AL': ['6*1','6*6'],
@@ -392,6 +393,18 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
 }
+
+# TODO: Quote request should use these values
+CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
+    'LifeShield STM': ['2000', '3000', '4000', '5000'],
+    'AdvantHealth STM': ['2000', '4000']
+}
+
+CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE = {
+    'LifeShield STM': ['80/20', '50/50', '70/30', '100/0'],
+    'AdvantHealth STM': ['80/20']
+}
+
 
 try:
     from .local_settings import *
