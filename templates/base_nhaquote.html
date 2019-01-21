@@ -236,7 +236,6 @@
                     {% endcomment %}
 
 
-
                 <div class="col-xs-12 col-sm-4 col-md-3">
                     {#       TODO             <h3><a class="fs-15 bold" href="{% url 'hilc:learning_center' %}">Knowledge Center</a></h3>#}
                     {#       TODO           <h3 style="margin-top: 0"><a class="fs-15 bold" href="{% url 'articleList:home' %}">Articles</a></h3>#}
@@ -277,20 +276,21 @@
             </div>
         {% endblock %}
     {% block footer %}
-        <div class="row">
-            <div class="col-md-8 col-xs-12" style="font-weight: 400">
-                <p class="mrg-t-40">&copy; 2016 {{ request.site.title }}. Read our
-                    <a href="{% url 'quotes:legal' 'privacy' %}">Privacy Policy</a>,
-                    <a href="{% url 'quotes:legal' 'terms-of-use' %}">Terms of Use</a>  and
-                    <a href="{% url 'quotes:legal' 'licensing' %}">Licensing Info</a> </p>
-                <p class="mrg-t-20">Protected by NAS cyber insurance</p>
-            </div>
-            <div class="col-xs-12 col-md-4 text-right">
-                <img src="{% static 'quotes/img/getseal.png' %}" class="mw100" alt="Verified & Secured by Norton"/>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-xs-12" style="font-weight: 400">
+                    <p class="mrg-t-40">&copy; 2016 {{ request.site.title }}. Read our
+                        <a href="{% url 'quotes:legal' 'privacy' %}">Privacy Policy</a>,
+                        <a href="{% url 'quotes:legal' 'terms-of-use' %}">Terms of Use</a> and
+                        <a href="{% url 'quotes:legal' 'licensing' %}">Licensing Info</a></p>
+                    <p class="mrg-t-20">Protected by NAS cyber insurance</p>
+                </div>
+                <div class="col-xs-12 col-md-4 text-right">
+                    <img src="{% static 'quotes/img/getseal.png' %}" class="mw100" alt="Verified & Secured by Norton"/>
+                </div>
             </div>
         </div>
     {% endblock footer %}
-</div>
 </div>
 
 
