@@ -171,7 +171,7 @@
     </nav>
 {% endblock header %}
 {% block mobile-header %}
-    <nav class="global-side-nav js-global-side-nav">
+    {% comment %}<nav class="global-side-nav js-global-side-nav">
         <button class="navclosebtn"><span class="fa fa-close"></span></button>
         <a title="Get Health Insurance Quotes" href="{% url 'quotes:plans' %}" class="global-side-nav-quote">Get a Quote</a>
 
@@ -181,18 +181,16 @@
             </li>
             <li>
                 <ul class="global-side-nav-list">
-                    {% comment %}
-                        <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}"> Everest</a></li>
+                                            <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}"> Everest</a></li>
                         <li><a href="{% url 'thi:stm_carrier' 'lifeshield-stm' %}">LifeShield</a></li>
                         <li><a href="{% url 'lhi:limited_carrier' 'cardinal-choice' %}">Cardinal</a></li>
-                        {% endcomment %}
-                    {% comment %}
-                        <li><a href="{% url 'thi:stm_carrier' 'sage-stm' %}">Sage</a></li>
+                        
+                                            <li><a href="{% url 'thi:stm_carrier' 'sage-stm' %}">Sage</a></li>
                         <li><a href="{% url 'thi:stm_carrier' 'healthemed-stm' %}">HealtheMed</a></li>
                         <li><a href="{% url 'thi:stm_carrier' 'healtheflex-stm' %}"> HealtheFlex</a></li>
                         <li><a href="{% url 'thi:stm_carrier' 'premier-stm' %}">Premier</a></li>
                         <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}"> Everest</a></li>
-                        {% endcomment %}
+                        
                 </ul>
             </li>
             <li class="global-side-nav-header"><a href="javascript:void(0);">Dental Insurance</a></li>
@@ -210,7 +208,7 @@
                 <a href="javascript:void(0);" class="global-side-nav-login"><i class="fa fa-lock login-lock"></i> Login</a>
             </li>
         </ul>
-    </nav>
+    </nav>{% endcomment %}
 {% endblock mobile-header %}
 {% block container %}
     <div class="common-section">
