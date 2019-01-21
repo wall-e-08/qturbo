@@ -251,13 +251,16 @@ def plan_quote(request, ins_type):
             quote_request_preference_data = {
                 'LifeShield STM': {
                     'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
-                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'LifeShield STM')
+                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'LifeShield STM'),
+                    'Coinsurance_Percentage': '80/20',
+                    'Benefit_Amount': '2000'
                 },
 
                 'AdvantHealth STM': {
                     'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
-                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'AdvantHealth STM')
-
+                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'AdvantHealth STM'),
+                    'Coinsurance_Percentage': '80/20',
+                    'Benefit_Amount': '2000'
                 }
             }
 
@@ -1135,8 +1138,12 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                     continue
 
             elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
-                if decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or\
-                                    decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max']:
+                if (
+                        decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or
+                        decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max'] or
+                        decoded_plan['Coinsurance_Percentage'] not in preference[decoded_plan['Name']]['Coinsurance_Percentage'] or
+                        decoded_plan['Benefit_Amount'] not in preference[decoded_plan['Name']]['Benefit_Amount']
+                ):
                     continue
 
 
