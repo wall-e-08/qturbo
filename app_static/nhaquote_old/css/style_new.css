@@ -75,7 +75,7 @@
 
 /*masum*/
 
-#quote-container{
+.quote-container{
     border: 1px solid #d0caca;
     padding: 15px 15px;
     border-radius: 4px;
@@ -84,7 +84,7 @@
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.4);
     transition: all .5s ease-in-out;
 }
-#quote-container:hover{
+.quote-container:hover{
     box-shadow: none;
 }
 .qt-plan-logo{
@@ -132,4 +132,17 @@
 .info-icon{
     color: #5398f3;
     cursor: pointer;
+}
+
+#month_plan_list {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#month_plan_list > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
 }

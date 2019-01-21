@@ -71,6 +71,24 @@
 
     {% block extra_css %}{% endblock extra_css %}
     <style>
+        .qt-text-primary {
+            color: #19B4FA !important;
+        }
+        .qt-btn-primary {
+            color: #fff;
+            background-color: #19b4fa;
+            border-color: #19b4fa;
+        }
+        .qt-btn-primary:hover,
+        .qt-btn-primary:active,
+        .qt-btn-primary:focus {
+            color: #fff;
+            background-color: #05a1e8;
+            border-color: #0599db;
+        }
+        .cur-p{
+            cursor: pointer !important;
+        }
         #mainmenu li{
             padding-top: 15px;
         }
@@ -78,9 +96,6 @@
             text-decoration: none !important;
             color: #19B4FA !important;
             font-weight: bold;
-        }
-        .qt-text-primary {
-            color: #19B4FA !important;
         }
         .mobile-right-link {
             font-size: 22px;
