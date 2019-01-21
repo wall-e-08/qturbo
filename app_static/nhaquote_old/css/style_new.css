@@ -72,3 +72,77 @@
 .custom-check input[type=checkbox].css-checkbox + label.css-label{
     color: #2f2f2f;
 }
+
+/*masum*/
+
+.quote-container{
+    border: 1px solid #d0caca;
+    padding: 15px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background: aliceblue;
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.4);
+    transition: all .5s ease-in-out;
+}
+.quote-container:hover{
+    box-shadow: none;
+}
+.qt-plan-logo{
+    width: 100%;
+    height: auto;
+}
+.qt-plan-logo img{
+    width: 100%;
+    height: auto;
+}
+.plan-single-info{
+    margin: 10px 0px;
+    background: #fff;
+    text-align: center;
+}
+.fee{
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 8px 0;
+}
+.plan-select-btn{
+    text-align: center;
+    padding: 10px 5px;
+    background: #18;
+    background: #fe8829;
+    border-radius: 28px;
+    font-weight: bold;
+}
+.plan-select-btn a{
+    color: #fff;
+}
+.quote-plan-details{
+    padding: 15px 10px;
+}
+.deductible{
+    padding: 10px 10px 0 10px;
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+.policy-max{
+    font-size: 12px;
+    padding-bottom: 10px;
+}
+.info-icon{
+    color: #5398f3;
+    cursor: pointer;
+}
+
+#month_plan_list {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#month_plan_list > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
