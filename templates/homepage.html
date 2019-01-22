@@ -725,8 +725,8 @@
                 <span class="font-md pl-2 font-md font-wight-600 text-capitalize">[[ survey_type ]]</span>
             </div>
             <p>What’s [[ txt_whos() ]] date of birth?
-                <span class="border border-secondary rounded-circle cur-p qt-tooltip"
-                      v-if="survey_type == 'me'">?</span>
+               {% comment %} <span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                      v-if="survey_type == 'me'">?</span>{% endcomment %}
             </p>
             <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
                    @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
@@ -735,8 +735,8 @@
             <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
                 <!--show only if current stage is gender or tobacco-->
                 <p>What’s [[ txt_whos() ]] gender?
-                    <span class="border border-secondary rounded-circle cur-p qt-tooltip"
-                          v-if="survey_type == 'me'">?</span>
+                    {% comment %}<span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                          v-if="survey_type == 'me'">?</span>{% endcomment %}
                 </p>
                 <div class="btn-group w-100" role="group">
                     <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="Male"
@@ -755,8 +755,8 @@
                     <span v-if="survey_type == 'me'">Do you</span>
                     <span v-else>Does your [[ survey_type ]]</span>
                     use tobacco products?
-                    <span class="border border-secondary rounded-circle cur-p qt-tooltip"
-                          v-if="survey_type == 'me'">?</span>
+                    {% comment %}<span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                          v-if="survey_type == 'me'">?</span>{% endcomment %}
                 </p>
                 <div class="btn-group w-100" role="group">
                     <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
