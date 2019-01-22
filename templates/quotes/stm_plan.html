@@ -62,7 +62,7 @@
                         {% endif %}{% endcomment %}
 
 
-                        {% if alternate_benefit_amount %}
+                        {% if alternate_benefit_amount and plan.Coinsurance_Percentage != '0' %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Max Out Of Pocket</h3>
@@ -86,7 +86,7 @@
                             </div>
                         {% endif %}
 
-                        {% if alternate_coinsurace_percentage %}
+                        {% if alternate_coinsurace_percentage and plan.Benefit_Amount != '0' %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Co-Insurance Percentage</h3>
@@ -590,7 +590,8 @@
                 },
                 error: function() {
                     {#$ajax_loader_provider.addClass('none');#}
-                    location.reload();
+                    $that.prop('selectedIndex', 0);
+                    {#location.reload();#}
                 }
             });
 
@@ -626,7 +627,7 @@
                 },
                 error: function() {
                     {#$ajax_loader_provider.addClass('none');#}
-                    location.reload();
+                    $that.prop('selectedIndex', 0);
                 }
             });
 
