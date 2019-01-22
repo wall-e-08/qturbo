@@ -101,7 +101,8 @@
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
                                                 id="alternate_coinsurace_percentage"
-                                                name="alternate_coinsurace_percentage">
+                                                name="Coinsurance_Percentage">
+{#                                                data-benefit_amount_validation_url="{% url '{% comment %}quotes:coinsurance_percentage_change{% endcomment %}' plan.unique_url %}">#}
 
 
                                             {% for percentage in alternate_coinsurace_percentage %}
@@ -581,9 +582,9 @@
         $benefit_amount_form_field.on('change', function (e) {
 
             var $that = $(this);
-            var $benefit_amaount_error = $('#alternative_benefit_amount_dropdown_error'); {% comment %}TODO: Put it in HTML{% endcomment %}
-            var $provider = $('select[name="provider"]'); {% comment %}Will get other attr{% endcomment %}
+            <!--var $co_insurance_percentage = $('select[name="provider"]'); {% comment %}Will get other attr{% endcomment %}-->
 
+            var $benefit_amaount_error = $('#alternative_benefit_amount_dropdown_error'); {% comment %}TODO: Put it in HTML{% endcomment %}
 
             var benefit_amaount_validation_url = $that.attr('data-benefit_amount_validation_url');
 
@@ -594,57 +595,14 @@
             $.ajax({
                 url: benefit_amaount_validation_url,
                 beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
-                data: {'amount': $that.val(), {% comment %}'provider': $provider.val(){% endcomment %}},
+                data: {
+                    'benefit_amount': $that.val(),
+                },
                 type: 'POST', dataType: 'json',
                 success: function(json) {
                     {#$ajax_loader_provider.addClass('none');#}
-                    $that.prop('disabled', false).trigger("chosen:updated");
+                    location.href = json.url;
 
-                    $.each(json.errors, function (idx, error) {
-                        $benefit_amaount_error.append(error);
-                    });
-
-                    $( "option", $provider ).each(function( index ) {
-                        var value = $(this).val();
-                        console.log( index + ": " + value );
-
-                        if (value &&  $.inArray(value, json.providers) == -1 ) {
-                            $(this).prop({'disabled': true, 'selected': false});
-                            console.log("Disabling " + $(this).val());
-                        } else if (value) {
-                            $(this).prop('disabled', false);
-                            console.log("Enabling " + $(this).val());
-                        }
-                    });
-
-                    {#if the selected provider is LifeShield STM then the plan duration is updated with the selected state#}
-                    {#specific plan duration data get from json response. if there is no selected state all the plan durations#}
-                    {#will be shown on the list#}
-                    if ($provider.val() && ($provider.val() === 'LifeShield STM' || $provider.val() === 'AdvantHealth STM') ){
-
-                        var $plan_duration = $('select[name="Plan_Duration"]');
-                        $( "option", $plan_duration ).each(function( index ) {
-                            var value = $(this).val();
-                            console.log( index + ": " + value );
-                            if (json.state_filtered_plan_duration){
-                                if (value &&  $.inArray(value, json.state_filtered_plan_duration) === -1 ) {
-                                    $(this).prop({'disabled': true, 'selected': false});
-                                    $(this).addClass('none');
-                                    console.log("Removing " + $(this).val());
-                                } else if (value) {
-                                    $(this).prop('disabled', false);
-                                    $(this).removeClass('none');
-                                    console.log("Keeping " + $(this).val());
-                                }
-                            }
-                            else {
-                                $(this).prop('disabled', false);
-                                $(this).removeClass('none');
-                            }
-
-                        });
-
-                    }
                 },
                 error: function() {
                     {#$ajax_loader_provider.addClass('none');#}
