@@ -372,8 +372,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                                       {plan['Duration_Coverage']}
         alternate_coverage_duration = list(alternate_coverage_duration_set)
 
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
-        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE[plan_name]
+        alternate_benefit_amount_set = set(settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name] )-\
+                                       {plan['Benefit_Amount']}
+        alternate_benefit_amount = list(alternate_benefit_amount_set)
+
+
+        alternate_coinsurace_percentage_set = set(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE[plan_name]) -\
+                                              {plan['Coinsurance_Percentage']}
+        alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
     except KeyError as k:
         print(f'{k} - No duration coverage for {plan_name}')

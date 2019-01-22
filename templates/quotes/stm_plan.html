@@ -38,12 +38,7 @@
 
 
 
-                        {% if alternate_coverage_duration %}
-                            {% if alternate_coverage_duration %}
-                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">
-                                {% csrf_token %}
-                            {% endif %}
-
+{% comment %}                        {% if alternate_coverage_duration %}
 
                             <div class="row">
                                 <div class="col-md-5">
@@ -64,7 +59,7 @@
 
                                 </div>
                             </div>
-                        {% endif %}
+                        {% endif %}{% endcomment %}
 
 
                         {% if alternate_benefit_amount %}
@@ -80,7 +75,7 @@
                                                 name = "Benefit_Amount"
                                                 data-benefit_amount_validation_url="{% url 'quotes:benefit_amount_change' plan.unique_url %}">
 
-
+                                                <option value="{{ plan.Benefit_Amount }}">{{ plan.Benefit_Amount }}</option>
                                             {% for benefit in alternate_benefit_amount %}
                                                 <option value="{{ benefit }}"> {{ benefit }} </option>
                                             {% endfor %}
@@ -115,7 +110,6 @@
                             </div>
                         {% endif %}
 
-                        {% if not alternate_coverage_duration %}
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
                                class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
                                     <span>
@@ -123,15 +117,6 @@
                                         Apply for This Plan
                                     </span>
                             </a>
-                        {% else %}
-                            <button type="submit" class="btn btn-default vimm-nim-width-btn ">
-
-                        <span>
-                                Apply for This Plan
-                        </span>
-                            </button>
-                            </form>
-                        {% endif %}
 
                     </div>
                     <a class="detailsancho"
