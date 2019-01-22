@@ -186,6 +186,8 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
     elif income >= income_high_point:
         return policy_max_dict[plan_name]['high']
 
+    # TODO: Return a None and handle it.
+
 
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
@@ -1649,6 +1651,54 @@ legal_page_info = [
 
 ]
 
+def available_benefit_amount(request: WSGIRequest, plan_url: str):
+    """
+    This is executed on ajax request from the stm_plan page.
+
+    request post data dict:
+        {
+            state: 'required_state_name',
+            provider: 'optional_provider_name'
+        }
+
+    response json data dict:
+        1.
+            {
+                'errors': ['list of error messages']
+            }
+
+        2.
+            {
+                'providers': ['required list of filtered providers']
+                'state_filtered_plan_duration': ['optional list of plan durations']
+            }
+
+    :param request:
+    :return: json data
+    """
+    response = {
+        'errors': [],
+        'providers': []
+    }
+    state = request.POST.get('state')
+    provider = request.POST.get('provider')
+
+    if not state:
+        response['errors'].append("Provide a valid State")
+
+    if not response['errors'] and state not in list(states_dict.keys()):
+        response['errors'].append('{0} is not a valid state'.format(state))
+
+    if not response['errors']:
+        carriers = Carrier.objects.filter(allowed_state__contains=state)
+        if not carriers:
+            response['errors'].append("No provider is available for the state {0}".format(states_dict[state]))
+        response['providers'] = [carrier.name for carrier in carriers]
+        if provider in ['LifeShield STM', 'AdvantHealth STM']:
+            response['state_filtered_plan_duration'] = SATE_SPECIFIC_PLAN_DURATION[provider].get(
+                state, SATE_SPECIFIC_PLAN_DURATION_DEFAULT.get(provider))
+    return JsonResponse(response)
+
 
 def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """ Switch user to alternative coverage benefit plan
@@ -1659,9 +1709,12 @@ def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param coverage_duration:
     :return:
     """
-
-
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+
+    def format_coins(coins):
+        if coins == '100/0':
+            return '0'
+        return coins[3:]
 
 
     # form = AlternateSelectionForm(request.POST)
@@ -1746,8 +1799,12 @@ def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     # We are selecting the alternative duration coverage
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
+    for i in sp:
+        if i['Coinsurance_Percentage'] == format_coins(coins_percentage):
+            print(f'{i["out_of_pocket_value"]} {benefit_amount}')
+            print(f'{i["coverage_max_value"]} {plan["coverage_max_value"]}')
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == coins_percentage[3:] and  # I am ashamed
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == format_coins(coins_percentage) and
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['coverage_max_value'] == plan['coverage_max_value'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))

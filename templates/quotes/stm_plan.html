@@ -34,65 +34,85 @@
                     </div>
 
                     <div class="plan-apply-container">
+
+
+
+
                         {% if alternate_coverage_duration %}
                             {% if alternate_coverage_duration %}
-{#                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">#}
+                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">
                                 {% csrf_token %}
                             {% endif %}
 
 
-{#                            <div class="row">#}
-{#                                <div class="col-md-5">#}
-{#                                    <h3>Select Coverage Duration</h3>#}
-{#                                </div>#}
-{#                                <div class="">#}
-{##}
-{#                                    <select type="button" class="btn btn-info dropdown-toggle" id="duration_coverage_dropdown" name="duration_coverage_dropdown">#}
-{#                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>#}
-{#                                        {% for duration in alternate_coverage_duration %}#}
-{#                                            <option value="{{ duration }}"> {{ duration }} </option>#}
-{#                                        {% endfor %}#}
-{#                                    </select>#}
-{##}
-{#                                </div>#}
-{#                            </div>#}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Coverage Duration</h3>
+                                </div>
+                                <div class="">
+
+                                    <select type="button"
+                                            class="btn btn-info dropdown-toggle form-control"
+                                            id="duration_coverage_dropdown"
+                                            name="Duration_Coverage">
+
+                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>
+                                        {% for duration in alternate_coverage_duration %}
+                                            <option value="{{ duration }}"> {{ duration }} </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                            </div>
                         {% endif %}
 
-                        {% comment %}{% if alternate_benefit_amount %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Max Out Of Pocket</h3>
+
+                        {% if alternate_benefit_amount %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Max Out Of Pocket</h3>
 
                                     <div class="">
 
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternative_benefit_amount_dropdown" name = "alternative_benefit_amount_dropdown">
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="alternative_benefit_amount_dropdown"
+                                                name = "Benefit_Amount"
+                                                data-provider_validation_url="{% url 'quotes:available_benefit_amount' %}">
+
+
                                             {% for benefit in alternate_benefit_amount %}
                                                 <option value="{{ benefit }}"> {{ benefit }} </option>
                                             {% endfor %}
                                         </select>
 
                                     </div>
+                                </div>
                             </div>
-                        </div>
                         {% endif %}
 
                         {% if alternate_coinsurace_percentage %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Co-Insurance Percentage</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Co-Insurance Percentage</h3>
 
                                     <div class="">
 
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternate_coinsurace_percentage" name="alternate_coinsurace_percentage">
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="alternate_coinsurace_percentage"
+                                                name="alternate_coinsurace_percentage">
+
+
                                             {% for percentage in alternate_coinsurace_percentage %}
                                                 <option value="{{ percentage }}"> {{ percentage }} </option>
                                             {% endfor %}
                                         </select>
 
                                     </div>
+                                </div>
                             </div>
-                        </div>
-                        {% endif %}{% endcomment %}
+                        {% endif %}
 
                         {% if not alternate_coverage_duration %}
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
@@ -103,12 +123,13 @@
                                     </span>
                             </a>
                         {% else %}
-                            <div class="plan-apply-container">
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-primary-apply">
-                        Apply for This Plan
-                    </a>
-                </div>
+                            <button type="submit" class="btn btn-default vimm-nim-width-btn ">
+
+                        <span>
+                                Apply for This Plan
+                        </span>
+                            </button>
+                            </form>
                         {% endif %}
 
                     </div>
