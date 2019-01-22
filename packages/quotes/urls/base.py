@@ -36,9 +36,11 @@ urlpatterns = [
             r'(\*\d{1,1})?p?\d?)/$',
             views.alternate_plan, name='alternate_plan'),
 
-    re_path(r'^available_benefit_amount/$',
-        views.available_benefit_amount,
-        name='available_benefit_amount'),
+
+    re_path('stm/benefit_amount_change/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+            r'(\*\d{1,1})?p?\d?)/$',
+            views.benefit_amount_change, name='benefit_amount_change'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
             r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',

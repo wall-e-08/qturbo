@@ -1651,7 +1651,8 @@ legal_page_info = [
 
 ]
 
-def available_benefit_amount(request: WSGIRequest, plan_url: str):
+@require_POST
+def benefit_amount_change(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """
     This is executed on ajax request from the stm_plan page.
 
@@ -1676,6 +1677,8 @@ def available_benefit_amount(request: WSGIRequest, plan_url: str):
     :param request:
     :return: json data
     """
+
+    print("Test")
     response = {
         'errors': [],
         'providers': []
@@ -1698,7 +1701,6 @@ def available_benefit_amount(request: WSGIRequest, plan_url: str):
             response['state_filtered_plan_duration'] = SATE_SPECIFIC_PLAN_DURATION[provider].get(
                 state, SATE_SPECIFIC_PLAN_DURATION_DEFAULT.get(provider))
     return JsonResponse(response)
-
 
 def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """ Switch user to alternative coverage benefit plan

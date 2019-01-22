@@ -78,7 +78,7 @@
                                                 class="btn btn-info dropdown-toggle"
                                                 id="alternative_benefit_amount_dropdown"
                                                 name = "Benefit_Amount"
-                                                data-provider_validation_url="{% url 'quotes:available_benefit_amount' %}">
+                                                data-benefit_amount_validation_url="{% url 'quotes:benefit_amount_change' plan.unique_url %}">
 
 
                                             {% for benefit in alternate_benefit_amount %}
@@ -471,7 +471,7 @@
                 console.log($coverage_duration_dropdown.val());
                 console.log($alternative_benefit_amount_dropdown.val());
                 console.log($alternate_coinsurace_percentage.val());
-                {#location.href = $coverage_duration_dropdown.val();#}
+                location.href = $coverage_duration_dropdown.val();
             })
         });
 
@@ -573,6 +573,94 @@
                 );
             });
         });
+
+        {% comment %}Dev_torsho edit start{% endcomment %}
+
+        var $benefit_amount_form_field = $('select[name="Benefit_Amount"]');
+
+        $benefit_amount_form_field.on('change', function (e) {
+
+            var $that = $(this);
+            var $benefit_amaount_error = $('#alternative_benefit_amount_dropdown_error'); {% comment %}TODO: Put it in HTML{% endcomment %}
+            var $provider = $('select[name="provider"]'); {% comment %}Will get other attr{% endcomment %}
+
+
+            var benefit_amaount_validation_url = $that.attr('data-benefit_amount_validation_url');
+
+            console.log('Benefit amaount update: ' + $that.val());
+
+            {#$ajax_loader_provider.removeClass('none');{% comment %}TODO PUT a loader{% endcomment %}#}
+
+            $.ajax({
+                url: benefit_amaount_validation_url,
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: {'amount': $that.val(), {% comment %}'provider': $provider.val(){% endcomment %}},
+                type: 'POST', dataType: 'json',
+                success: function(json) {
+                    {#$ajax_loader_provider.addClass('none');#}
+                    $that.prop('disabled', false).trigger("chosen:updated");
+
+                    $.each(json.errors, function (idx, error) {
+                        $benefit_amaount_error.append(error);
+                    });
+
+                    $( "option", $provider ).each(function( index ) {
+                        var value = $(this).val();
+                        console.log( index + ": " + value );
+
+                        if (value &&  $.inArray(value, json.providers) == -1 ) {
+                            $(this).prop({'disabled': true, 'selected': false});
+                            console.log("Disabling " + $(this).val());
+                        } else if (value) {
+                            $(this).prop('disabled', false);
+                            console.log("Enabling " + $(this).val());
+                        }
+                    });
+
+                    {#if the selected provider is LifeShield STM then the plan duration is updated with the selected state#}
+                    {#specific plan duration data get from json response. if there is no selected state all the plan durations#}
+                    {#will be shown on the list#}
+                    if ($provider.val() && ($provider.val() === 'LifeShield STM' || $provider.val() === 'AdvantHealth STM') ){
+
+                        var $plan_duration = $('select[name="Plan_Duration"]');
+                        $( "option", $plan_duration ).each(function( index ) {
+                            var value = $(this).val();
+                            console.log( index + ": " + value );
+                            if (json.state_filtered_plan_duration){
+                                if (value &&  $.inArray(value, json.state_filtered_plan_duration) === -1 ) {
+                                    $(this).prop({'disabled': true, 'selected': false});
+                                    $(this).addClass('none');
+                                    console.log("Removing " + $(this).val());
+                                } else if (value) {
+                                    $(this).prop('disabled', false);
+                                    $(this).removeClass('none');
+                                    console.log("Keeping " + $(this).val());
+                                }
+                            }
+                            else {
+                                $(this).prop('disabled', false);
+                                $(this).removeClass('none');
+                            }
+
+                        });
+
+                    }
+                },
+                error: function() {
+                    {#$ajax_loader_provider.addClass('none');#}
+                    $that.prop('disabled', false).trigger("chosen:updated");
+                    {#$submit_button.prop('disabled', false);#}
+                    {#$provider.prop('disabled', false);#}
+
+                    {#$add_sender_form_error_messages.append(#}
+                    {#    '<span class="internal_error">Something unexpected happened. Please try again after some time.</span>'#}
+                    {#);#}
+                }
+            });
+
+
+        });
+        {% comment %}dev_torsho edit end{% endcomment %}
 
 
     </script>
