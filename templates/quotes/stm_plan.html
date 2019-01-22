@@ -86,7 +86,7 @@
                             </div>
                         {% endif %}
 
-{% comment %}                        {% if alternate_coinsurace_percentage %}
+                        {% if alternate_coinsurace_percentage %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Co-Insurance Percentage</h3>
@@ -95,10 +95,10 @@
 
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
-                                                id="alternate_coinsurace_percentage"
-                                                name="Coinsurance_Percentage">
-                                                data-benefit_amount_validation_url="{% url 'quotes:coinsurance_percentage_change' plan.unique_url %}">
-
+                                                id="alternate_coinsurace_percentage_dropdown"
+                                                name="Coinsurance_Percentage"
+                                                data-coinsurance_percentage_validation_url="{% url 'quotes:coinsurance_percentage_change' plan.unique_url %}">
+                                            <option value="{{ plan.Coinsurance_Percentage }}">{{ plan.Coinsurance_Percentage }}</option>
 
                                             {% for percentage in alternate_coinsurace_percentage %}
                                                 <option value="{{ percentage }}"> {{ percentage }} </option>
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                        {% endif %}{% endcomment %}
+                        {% endif %}
 
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
                                class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
@@ -567,7 +567,6 @@
         $benefit_amount_form_field.on('change', function (e) {
 
             var $that = $(this);
-            <!--var $co_insurance_percentage = $('select[name="provider"]'); {% comment %}Will get other attr{% endcomment %}-->
 
             var $benefit_amaount_error = $('#alternative_benefit_amount_dropdown_error'); {% comment %}TODO: Put it in HTML{% endcomment %}
 
@@ -582,6 +581,41 @@
                 beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
                 data: {
                     'benefit_amount': $that.val(),
+                },
+                type: 'POST', dataType: 'json',
+                success: function(json) {
+                    {#$ajax_loader_provider.addClass('none');#}
+                    location.href = json.url;
+
+                },
+                error: function() {
+                    {#$ajax_loader_provider.addClass('none');#}
+                }
+            });
+
+
+        });
+
+
+        var $coinsurance_percentage_form_field = $('select[name="Coinsurance_Percentage"]');
+
+        $coinsurance_percentage_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            var $coinsurance_percentage_error = $('#alternate_coinsurace_percentage_dropdown'); {% comment %}TODO: Put it in HTML{% endcomment %}
+
+            var coinsurance_percentage_validation_url = $that.attr('data-coinsurance_percentage_validation_url');
+
+            console.log('Coinsurance_Percentage update: ' + $that.val());
+
+            {#$ajax_loader_provider.removeClass('none');{% comment %}TODO PUT a loader{% endcomment %}#}
+
+            $.ajax({
+                url: coinsurance_percentage_validation_url,
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: {
+                    'coinsurance_percentage': $that.val(),
                 },
                 type: 'POST', dataType: 'json',
                 success: function(json) {
