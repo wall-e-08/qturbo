@@ -880,7 +880,7 @@
                                         <input type="text"v-model="income" v-on:keydown="accept_only_number"
                                            class="form-control qt-survey-input" id="enroll-monthly-income" name="monthly-income" >
                                     </div>
-                                    <button id="submit_quote_request"
+                                    <button id="submit_quote_request" :disabled="income == ''"
                                             class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
                                             v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
                                         Check Quote

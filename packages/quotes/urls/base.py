@@ -30,9 +30,16 @@ urlpatterns = [
         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
         views.stm_plan, name='stm_plan'),
 
-    re_path('stm/alt_coverage_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-        r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)_to_(?P<coverage_duration>(\d{1,2}(\*\d{1,1})?))/$',
-        views.alt_coverage_plan, name='alt_coverage_plan'),
+    # re_path('stm/alternate_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+    #     r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+    #         r'(\*\d{1,1})?p?\d?)_to_(?P<coverage_duration>(\d{1,2}(\*\d{1,1})?))_(?P<benefit_amount>(\d{4}))_'
+    #         r'(?P<coinsurance_percentage>(\d{2}/\d{2}))/$',
+    #         views.alternate_plan, name='alternate_plan'),
+
+    re_path('stm/alternate_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+            r'(\*\d{1,1})?p?\d?)/$',
+            views.alternate_plan, name='alternate_plan'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
         r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',
