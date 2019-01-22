@@ -138,25 +138,6 @@
             left: 0;
             box-shadow: 0 0 20px 6px rgba(0, 0, 0, 0.48);
         }
-        .qt-quote-loading-icon {
-            text-align: center;
-            margin-top: 50px;
-            width: 100%;
-        }
-        #month_plan_list {
-            min-height: calc(100vh - 634px);
-            margin-left: -15px;
-            margin-right: -15px;
-        }
-        .no-coverage-error-wrapper {
-            margin: 0 15px;
-            padding-top: 30px;
-            padding-bottom: 30px;
-            display: inline-table;
-        }
-        .no-coverage-error {
-            margin: 0;
-        }
     </style>
 {% endblock extra_css %}
 
@@ -566,10 +547,118 @@
                                 <img src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}">
                             </div>
                             <div id="featured_plan_container"></div>
-                            <div class="plan-list" id="month_plan_list">
-                                <div class="qt-quote-loading-icon">
-                                    <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                </div>
+                            <div class="plan-list" id="month_plan_list" style="margin-left: -15px; margin-right: -15px;">
+                                {% comment %}{% for mp in xml_res.monthly_plans %}
+                                <li class="ms-row">
+
+                                    <div class="ms-col">
+                                        <div class="quote-plan">
+                                            <div class="quote-plan-header">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <div class="quote-plan-logo">
+                                                            <div class="carrierLogo">
+                                                                <img alt="{{ mp.Name }}" src="/static/quotes/img/stm/{{ mp.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="quote-plan-price-container js-price-breakdown col-sm-4">
+                                                        <div class="quote-plan-price">
+                                                            ${% plan_actual_premium mp %}
+                                                        {% if mp.Payment_Option != '2' %}
+                                                            <span class="quote-plan-per-month">/mo</span>
+                                                        {% endif %}
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <div class="fees">+ fees</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <a class="btn quote-plan-buy" href="{% url 'quotes:stm_plan' mp.unique_url %}">
+                                                            Select This Plan
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="quote-plan-body">
+                                                <div class="quote-plan-carrier">
+                                                    <h3 class="quote-plan-name">
+
+                                                        <a class="js-view-details1"  href="{% url 'quotes:stm_plan' mp.unique_url %}">
+                                                            {{ mp.plan_name }}
+                                                        </a>
+                                                        <a href="{% url 'quotes:stm_plan' mp.unique_url %}" class="secondary-link js-view-details"> (see details)</a>
+
+                                                    </h3>
+                                                </div>
+                                                <ul class="quote-plan-info">
+                                                    <li>
+
+                                                        <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
+                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+
+                                                        <span class="plan-info-label">Deductible</span>
+                                                        <span class="plan-info-value"> ${{ mp.option|intcomma }}</span>
+                                                    </li>
+                                                    <li>
+                                                        <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
+                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+                                                        <span class="plan-info-label">Coinsurance</span>
+                                                        <span class="plan-info-value">{{ mp.Coinsurance_Percentage }}%</span>
+                                                    </li>
+                                                    <li>
+                                                        <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
+                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+                                                        <span class="plan-info-label">Max Out of Pocket</span>
+                                                        <span class="plan-info-value">${{ mp.out_of_pocket_value|intcomma }}</span>
+                                                    </li>
+                                                </ul>
+                                                <div class="quote-plan-bundle">
+                                                    <ul class="quote-bundle-list">
+                                                        <li>
+                                                            <a data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
+                                                               class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover" data-placement="top" data-container="body">
+                                                                ${{ mp.coverage_max_value|intcomma }} Policy Max
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay }} {{ mp.copay_text }}</a>
+                                                        </li>
+                                                        {% if mp.copay_2 %}
+                                                        <li>
+                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay_2 }} {{ mp.copay_2_text }}</a>
+                                                        <li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                                                                                <div class="text-right mrg-t-15">
+                                                    <ul class="custom-check text-right">
+                                                        <li>
+                                                            <input type="checkbox" name="checkboxG9" id="checkboxG9" class="css-checkbox"/>
+                                                            <label for="checkboxG9" class="css-label bold text-uppercase">Compare <span class="quote-filter-count">(2)</span></label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </li>
+                                {% empty %}
+
+
+
+                                    {# commented for maintenance #}
+                                    <li style="text-align: center; margin-top: 50px;">
+                                        <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                    </li>
+
+
+                                {% endfor %}{% endcomment %}
                             </div>
                         </div>
                     </div>
@@ -593,16 +682,132 @@
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
+    {% comment %}<li class="ms-row">
+        <div class="ms-col">
+            <div class="quote-plan">
+                <div class="quote-plan-header">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="quote-plan-logo">
+                                <div class="carrierLogo">
+                                    <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png"
+                                    class="carrier-logo-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quote-plan-price-container js-price-breakdown col-sm-4">
+                            <div class="quote-plan-price">
+                                $[[actual_premium]]
+                                [[^upfront]]
+                                <span class="quote-plan-per-month">/mo</span>
+                                [[/upfront]]
+                            </div>
+                            <div class="text-right">
+                                <div class="fees">+ fees</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
+                                Select This Plan
+                            </a>
+                        </div>
+                    </div>
+                                    <div class="quote-plan-logo">
+                        <div class="carrierLogo">
+                            <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png" class="carrier-logo-image">
+                        </div>
+                    </div>
+                    <div class="quote-plan-price-container js-price-breakdown">
+                        <div class="quote-plan-price">
+                            $[[actual_premium]]
+                            [[^upfront]]
+                            <span class="quote-plan-per-month">/mo</span>
+                            [[/upfront]]
+                        </div>
+                        <div class="text-right">
+                            <div class="fees">+ fees</div>
+                        </div>
+                    </div>
+                    <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
+                        Select This Plan
+                    </a>
+
+                </div>
+                <div class="quote-plan-body">
+                    <div class="quote-plan-carrier">
+                        <h3 class="quote-plan-name">
+
+                            <a class="js-view-details1"  href="/stm/plan/[[unique_url]]">
+                                [[plan_name]]
+                            </a>
+                            <a href="/stm/plan/[[unique_url]]" class="secondary-link js-view-details"> (see details)</a>
+
+                        </h3>
+                    </div>
+                    <ul class="quote-plan-info">
+                        <li>
+                                                        <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
+                                  data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+
+                            <span class="plan-info-label">Premium</span>
+                            <span class="plan-info-value"> $[[actual_premium]]</span>
+                        </li>
+                        <li>
+                                                        <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
+                                data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+
+                            <span class="plan-info-label">Enrollment Fee</span>
+                            <span class="plan-info-value">$[[Enrollment_Fee]]</span>
+                        </li>
+                        [[^TelaDoc_Fee]]
+                        <li>
+                                                        <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
+                                  data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
+
+                                                        [[#TelaDoc_Fee]]
+                            <span class="plan-info-label">TelaDoc Fee</span>
+                            <span class="plan-info-value">$[[TelaDoc_Fee]]</span>
+                            [[/TelaDoc_Fee]]
+
+
+                            <span class="plan-info-label">Administrative Fee</span>
+                            <span class="plan-info-value">$[[Administrative_Fee]]</span>
+
+                        </li>
+                        [[/TelaDoc_Fee]]
+                    </ul>
+                                        <div class="quote-plan-bundle">
+                        <ul class="quote-bundle-list">
+                            <li>
+                                <a data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
+                                   class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover" data-placement="top" data-container="body">
+                                    $[[coverage_max_value]] Policy Max
+                                </a>
+                            </li>
+                            <li>
+                                <a class="js-glossary" href="javascript:void(0)">$[[copay]] [[copay_text]]</a>
+                            </li>
+                            [[#copay_2]]
+                            <li>
+                                <a class="js-glossary" href="javascript:void(0)">$[[copay_2]] [[copay_2_text]]</a>
+                            <li>
+                            [[/copay_2]]
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </li>{% endcomment %}
     <div class="col-md-4{% comment %}ms-row{% endcomment %}">
-    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+    <div class={% comment %}row{% endcomment %}>
         <div class="quote-container">
             <div class="">
                 <div class="qt-plan-logo">
                     <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
                                 class="carrier-logo-image">
-
+                         <hr>
                 </div>
-                 <hr>
                 <div class="plan-single-info">
                     <div class="fee">
                         $[[actual_premium]]
@@ -624,15 +829,11 @@
                 <div class="">
                     <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
                 </div>
-                <div class="deductible">
                 [[^TelaDoc_Fee]]
-                </div>
                 <div class="">
                     <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
                 </div>
-                <div class="deductible">
                 [[/TelaDoc_Fee]]
-                </div>
                 </div>
                 <div class="plan-select-btn">
                     <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
@@ -643,16 +844,82 @@
 </div>
 </script>
 <script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
+    {% comment %}<li class="ms-row">
+        <div class="ms-col">
+            <div class="quote-plan">
+                <div class="quote-plan-header">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="quote-plan-logo">
+                                <div class="carrierLogo">
+                                    <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png"
+                                    class="carrier-logo-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quote-plan-price-container js-price-breakdown col-sm-4">
+                            <div class="quote-plan-price">
+                                $[[actual_premium]]
+                                [[^upfront]]
+                                <span class="quote-plan-per-month">/mo</span>
+                                [[/upfront]]
+                            </div>
+                            <div class="text-right">
+                                <div class="fees">+ fees</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
+                                Select This Plan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="quote-plan-body">
+                    <div class="quote-plan-carrier">
+                        <h3 class="quote-plan-name">
+
+                            <a class="js-view-details1"  href="/stm/plan/[[unique_url]]">
+                                [[plan_name]]
+                            </a>
+                            <a href="/stm/plan/[[unique_url]]" class="secondary-link js-view-details"> (see details)</a>
+
+                        </h3>
+                    </div>
+                    <ul class="quote-plan-info">
+                        <li>
+                            <span class="plan-info-label">Premium</span>
+                            <span class="plan-info-value"> $[[actual_premium]]</span>
+{#                            <span class="info-icn"  data-container="body" data-placement="top"#}
+{#                                      data-content="This includes administrative fee."[[note]]#}
+{#                                      data-toggle="popover">#}
+{##}
+{#                            </span>#}
+                        </li>
+                        <li>
+                            <span class="plan-info-label">Enrollment Fee</span>
+                            <span class="plan-info-value">$[[Enrollment_Fee]]</span>
+                        </li>
+                        <li>
+{#                            <span class="plan-info-label">Note</span>#}
+                            <span>Note: [[note]] </span>
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </li>{% endcomment %}
     <div class="col-md-4{% comment %}ms-row{% endcomment %}">
-    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+    <div class={% comment %}row{% endcomment %}>
         <div class="quote-container">
             <div class="">
                 <div class="qt-plan-logo">
                     <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
-                            class="carrier-logo-image">
-
+                                class="carrier-logo-image">
+                         <hr>
                 </div>
-                <hr>
                 <div class="plan-single-info">
                     <div class="fee">
                         $[[actual_premium]]
@@ -667,23 +934,16 @@
                         <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
                             [[plan_name]]
                         </a>
-                    </h4>
+                        </h4>
                 </div>
                 <div class="plan-single-info" style="margin-top: 10px; text-align: left">
                     <p class="deductible">Premium: $[[actual_premium]]</p>
-                    <div class="">
-                        <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
-                    </div>
-                    [[#Administrative_Fee]]
-                     <div class="">
-                        <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
-                    </div>
-                    [[/Administrative_Fee]]
-                    [[#note]]
-                    <div class="">
-                        <p class="deductible">Note: [[note]]</p>
-                    </div>
-                    [[/note]]
+                <div class="">
+                    <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
+                </div>
+                <div class="">
+                    <p class="deductible">Note: [[note]]</p>
+                </div>
                 </div>
                 <div class="plan-select-btn">
                     <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
@@ -694,18 +954,18 @@
 </div>
 </script>
 
+
 <script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
     <div class="col-md-4 col-sm-6 qt-each-plan{% comment %}ms-row{% endcomment %}" id="[[#featured_plan]]featured-premium-plan[[/featured_plan]]">
-        <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+        <div class={% comment %}row{% endcomment %}>
             <div class="quote-container">
                 <div class="">
 
                     <div class="qt-plan-logo">
                         <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
                              class="carrier-logo-image">
-
+                             <hr>
                     </div>
-                     <hr>
                     <div class="plan-single-info">
                         <div class="fee">
                             $[[actual_premium]]
@@ -1181,8 +1441,7 @@ $(function() {
                 {#console.log(plan);#}
                 if (plan.out_of_pocket_value) {
                     var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
-                } else if(plan.Name == 'USA Dental' || plan.Name == 'Freedom Spirit Plus' ||
-                    plan.Name == 'Safeguard Critical Illness') { {# TODO: for torsho: need plan type here #}
+                } else if(plan.Name == 'USA Dental') {
                     var rendered = Mustache.to_html(anc_plan_template_usa_dental, data);
                 } else {
                     var rendered = Mustache.to_html(stm_plan_template, data);
@@ -1203,9 +1462,7 @@ $(function() {
             $total_plan_count.text(json.monthly_plans.length - 2);
             if (json.monthly_plans.length == 2 && filtered_plans.length == 0) {
                 $("#month_plan_list").html(
-                        `<div class="alert alert-warning w100 text-center no-coverage-error-wrapper">
-                            <h3 class="no-coverage-error"><i class="fa fa-info-circle" style="padding-right: 12px"></i>Sorry, We do not currently have any health insurance plans in your area.</h3>
-                        </div>`
+                        '<h3 class="no-coverage-error">We do not currently have any health insurance plans in your area.</h3>'
                 );
             }
         } else if (json.monthly_plans.length >= 1) {
