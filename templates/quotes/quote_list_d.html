@@ -138,6 +138,25 @@
             left: 0;
             box-shadow: 0 0 20px 6px rgba(0, 0, 0, 0.48);
         }
+        .qt-quote-loading-icon {
+            text-align: center;
+            margin-top: 50px;
+            width: 100%;
+        }
+        #month_plan_list {
+            min-height: calc(100vh - 634px);
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .no-coverage-error-wrapper {
+            margin: 0 15px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            display: inline-table;
+        }
+        .no-coverage-error {
+            margin: 0;
+        }
     </style>
 {% endblock extra_css %}
 
@@ -547,118 +566,10 @@
                                 <img src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}">
                             </div>
                             <div id="featured_plan_container"></div>
-                            <div class="plan-list" id="month_plan_list" style="margin-left: -15px; margin-right: -15px;">
-                                {% comment %}{% for mp in xml_res.monthly_plans %}
-                                <li class="ms-row">
-
-                                    <div class="ms-col">
-                                        <div class="quote-plan">
-                                            <div class="quote-plan-header">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <div class="quote-plan-logo">
-                                                            <div class="carrierLogo">
-                                                                <img alt="{{ mp.Name }}" src="/static/quotes/img/stm/{{ mp.Name|plan_name_for_img }}.png" class="carrier-logo-image">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="quote-plan-price-container js-price-breakdown col-sm-4">
-                                                        <div class="quote-plan-price">
-                                                            ${% plan_actual_premium mp %}
-                                                        {% if mp.Payment_Option != '2' %}
-                                                            <span class="quote-plan-per-month">/mo</span>
-                                                        {% endif %}
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <div class="fees">+ fees</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-4">
-                                                        <a class="btn quote-plan-buy" href="{% url 'quotes:stm_plan' mp.unique_url %}">
-                                                            Select This Plan
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="quote-plan-body">
-                                                <div class="quote-plan-carrier">
-                                                    <h3 class="quote-plan-name">
-
-                                                        <a class="js-view-details1"  href="{% url 'quotes:stm_plan' mp.unique_url %}">
-                                                            {{ mp.plan_name }}
-                                                        </a>
-                                                        <a href="{% url 'quotes:stm_plan' mp.unique_url %}" class="secondary-link js-view-details"> (see details)</a>
-
-                                                    </h3>
-                                                </div>
-                                                <ul class="quote-plan-info">
-                                                    <li>
-
-                                                        <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-
-                                                        <span class="plan-info-label">Deductible</span>
-                                                        <span class="plan-info-value"> ${{ mp.option|intcomma }}</span>
-                                                    </li>
-                                                    <li>
-                                                        <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                                                        <span class="plan-info-label">Coinsurance</span>
-                                                        <span class="plan-info-value">{{ mp.Coinsurance_Percentage }}%</span>
-                                                    </li>
-                                                    <li>
-                                                        <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                                                        <span class="plan-info-label">Max Out of Pocket</span>
-                                                        <span class="plan-info-value">${{ mp.out_of_pocket_value|intcomma }}</span>
-                                                    </li>
-                                                </ul>
-                                                <div class="quote-plan-bundle">
-                                                    <ul class="quote-bundle-list">
-                                                        <li>
-                                                            <a data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
-                                                               class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover" data-placement="top" data-container="body">
-                                                                ${{ mp.coverage_max_value|intcomma }} Policy Max
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay }} {{ mp.copay_text }}</a>
-                                                        </li>
-                                                        {% if mp.copay_2 %}
-                                                        <li>
-                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay_2 }} {{ mp.copay_2_text }}</a>
-                                                        <li>
-                                                        {% endif %}
-                                                    </ul>
-                                                </div>
-                                                                                                <div class="text-right mrg-t-15">
-                                                    <ul class="custom-check text-right">
-                                                        <li>
-                                                            <input type="checkbox" name="checkboxG9" id="checkboxG9" class="css-checkbox"/>
-                                                            <label for="checkboxG9" class="css-label bold text-uppercase">Compare <span class="quote-filter-count">(2)</span></label>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-
-                                </li>
-                                {% empty %}
-
-
-
-                                    {# commented for maintenance #}
-                                    <li style="text-align: center; margin-top: 50px;">
-                                        <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                    </li>
-
-
-                                {% endfor %}{% endcomment %}
+                            <div class="plan-list" id="month_plan_list">
+                                <div class="qt-quote-loading-icon">
+                                    <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1384,7 +1295,9 @@ $(function() {
             $total_plan_count.text(json.monthly_plans.length - 2);
             if (json.monthly_plans.length == 2 && filtered_plans.length == 0) {
                 $("#month_plan_list").html(
-                        '<h3 class="no-coverage-error">We do not currently have any health insurance plans in your area.</h3>'
+                        `<div class="alert alert-warning w100 text-center no-coverage-error-wrapper">
+                            <h3 class="no-coverage-error"><i class="fa fa-info-circle" style="padding-right: 12px"></i>Sorry, We do not currently have any health insurance plans in your area.</h3>
+                        </div>`
                 );
             }
         } else if (json.monthly_plans.length >= 1) {

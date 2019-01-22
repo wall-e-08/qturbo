@@ -157,3 +157,47 @@
     display: flex;
     flex-direction: column;
 }
+
+.qt-text-primary {
+    color: #19B4FA !important;
+}
+
+.qt-btn-primary {
+    color: #fff;
+    background-color: #19b4fa;
+    border-color: #19b4fa;
+}
+
+.qt-btn-primary:hover,
+.qt-btn-primary:active,
+.qt-btn-primary:focus {
+    color: #fff;
+    background-color: #05a1e8;
+    border-color: #0599db;
+}
+
+.cur-p {
+    cursor: pointer !important;
+}
+
+#mainmenu li {
+    padding-top: 15px;
+}
+
+#mainmenu li a {
+    text-decoration: none !important;
+    color: #19B4FA !important;
+    font-weight: bold;
+}
+
+.mobile-right-link {
+    font-size: 16px;
+    line-height: 46px;
+    font-weight: bold;
+}
+
+@media (min-width: 991px) {
+    .mobile-right-link {
+        display: none;
+    }
+}
