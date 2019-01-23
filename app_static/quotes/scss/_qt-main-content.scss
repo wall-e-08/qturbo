@@ -112,18 +112,16 @@
   flex-direction: row;
   margin: 0 auto;
   a{
-    background: $product-logo-bgc;
+    background: #f8f8f8;
     border-radius: 5px;
     width: $home-nav-single-item-width;
-    //height: $home-nav-single-item-height;
+    height: $home-nav-single-item-height;
     box-shadow: rgba(0,0,0,0.09804) 0 1px 2px, rgba(0,0,0,0.04706) 0 5px 15px;
     transition: all .4s ease-in-out;
-  }
-  .home-nav-single-item-content{
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 70px 20px;
+    text-align: center;
   }
 }
 .home-nav-single-item:hover{
@@ -131,6 +129,7 @@
   }
 .home-nav-single-item-content-smd{
   display: flex;
+  align-items: center;
   background: $product-logo-bgc;
   padding: 8px;
   margin-bottom: 20px;
