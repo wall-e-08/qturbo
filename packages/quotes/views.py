@@ -369,7 +369,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
 
-    get_dict_for_available_alternate_plans(sp, plan)
+    available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
 
 
     try:
@@ -377,18 +377,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                                       {plan['Duration_Coverage']}
         alternate_coverage_duration = list(alternate_coverage_duration_set)
 
-        alternate_benefit_amount_set = set(settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name] )-\
-                                       {plan['Benefit_Amount']}
+        alternate_benefit_amount_set = available_alternatives_as_set['alternate_benefit_amount'] - {plan['Benefit_Amount']}
         alternate_benefit_amount = list(alternate_benefit_amount_set)
 
 
-        alternate_coinsurace_percentage_set = set(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]) - \
-                                              {plan['Coinsurance_Percentage']}
+        alternate_coinsurace_percentage_set = available_alternatives_as_set['alternate_coinsurace_percentage'] - {plan['Coinsurance_Percentage']}
         alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
 
-        alternate_coverage_max_set = set(settings.CARRIER_SPECIFIC_PLAN_COVERAGE_MAX[plan_name]) - \
-                                              {plan['Coverage_Max']}
+        alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
         alternate_coverage_max = list(alternate_coverage_max_set)
 
 
@@ -396,8 +393,9 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     except KeyError as k:
         print(f'{k} - No duration coverage for {plan_name}')
         alternate_coverage_duration = None
-        alternate_benefit_amount = None
-        alternate_coinsurace_percentage = None
+        # alternate_benefit_amount = None
+        # alternate_coinsurace_percentage = None
+        # alternate_coverage_max = None
 
     return render(request, 'quotes/stm_plan.html',
                   {'plan': plan, 'related_plans': related_plans,
@@ -1712,16 +1710,6 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
-    form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
-
-    if form.is_valid():
-        print(f'Form is valid.')
-        benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
-        coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
-        coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
-
-
-
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -1773,6 +1761,24 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
         raise Http404()
 
 
+    form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
+
+    if form.is_valid():
+        print(f'Form is valid.')
+        benefit_amount = form.cleaned_data.get('Benefit_Amount', )
+        if benefit_amount == '' or None:
+            benefit_amount = plan['out_of_pocket_value']
+
+        coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
+        if coinsurance_percentage == '' or None:
+            coinsurance_percentage = plan['Coinsurance_Percentage']
+
+        coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
+        if coverage_maximum == '' or None:
+            coverage_maximum = plan['Coverage_Max']
+
+
+
     # Let the coverage duration be the current plan coverage duration.
     coverage_duration = plan['Duration_Coverage']
 
@@ -1802,6 +1808,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
 
     # Temporary measure for testing
     # Filter is faster than forloop
+    """DELETE"""
     for other_plan in sp:
         if (other_plan["out_of_pocket_value"] == plan['out_of_pocket_value'] and
                 other_plan['Coinsurance_Percentage'] == plan['Coinsurance_Percentage']) and\
@@ -1814,6 +1821,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
                   f' Duration_Coverage: {other_plan["Duration_Coverage"]},'
                   f' Coverage_Max: {other_plan["Coverage_Max"]}'
                   f' plan_name: {other_plan["plan_name"]}')
+    """DELETE"""
 
 
     try:
