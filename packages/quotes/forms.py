@@ -401,14 +401,125 @@ class ApplicantInfoForm(forms.Form):
             dob = datetime.datetime.strptime(dob, '%m-%d-%Y').date()
         return age(dob)
 
+
 class AlternateSelectionForm(forms.Form):
     Coverage_Duration = forms.ChoiceField()
     Benefit_Amount = forms.CharField()
     Coinsurance_Percentage = forms.CharField()
 
+class Alt_Benefit_Amount_Coinsurance_Form(forms.Form):
+
+
+    Benefit_Amount = forms.ChoiceField(
+        label=_("Select Max Out Of Pocket"),
+        choices=(),
+        error_messages={"required": _("Max out of pocket is required.")},
+        required=False
+    )
+
+
+    Coinsurance_Percentage = forms.ChoiceField(
+        label=_("Select Co-Insurance Percentage"),
+        choices=(),
+        error_messages={"required": _("Co-Insurance Percentage required.")},
+        required=False
+    )
+
+
+    # def get_benefit_amount_choices(self):
+
+
+
+
     def clean(self):
         super().clean()
+
+        zip_code = self.cleaned_data.get('Zip_Code', None)
+        if zip_code is not None:
+            self.cleaned_data['Zip_Code'] = zip_code.zip
+            self.cleaned_data['State'] = zip_code.state
+
+        applicant_dob = self.cleaned_data.get('Applicant_DOB', None)
+        if applicant_dob:
+            self.cleaned_data['Applicant_Age'] = self._process_dob_for_age(applicant_dob)
+            if self.cleaned_data['Applicant_Age'] < 18:
+                self.cleaned_data['applicant_is_child'] = True
+                self.cleaned_data['Include_Spouse'] = 'No'
+                self.cleaned_data['Children_Count'] = 0
+
+        include_spouse = self.cleaned_data.get('Include_Spouse', None)
+        if include_spouse == 'Yes':
+            spouse_dob = self.cleaned_data.get('Spouse_DOB', None)
+            if not spouse_dob:
+                self.add_error(
+                    'Spouse_DOB',
+                    forms.ValidationError(_("Spouse Date of Birth is required."), code='required')
+                )
+            else:
+                self.cleaned_data['Spouse_Age'] = self._process_dob_for_age(spouse_dob)
+            spouse_gender = self.cleaned_data.get('Spouse_Gender', None)
+            if not spouse_gender:
+                self.add_error(
+                    'Spouse_Gender',
+                    forms.ValidationError(_("Spouse Gender is required."), code='required')
+                )
+            spouse_tobacco = self.cleaned_data.get('Spouse_Tobacco')
+            if not spouse_tobacco:
+                self.add_error(
+                    'Spouse_Tobacco',
+                    forms.ValidationError(_("Spouse_Tobacco is required."), code='required')
+                )
+            else:
+                self.cleaned_data['Spouse_Tobacco'] = spouse_tobacco
+        elif include_spouse == 'No':
+            self.cleaned_data['Spouse_DOB'] = None
+            self.cleaned_data['Spouse_Gender'] = ''
+
+        payment_option = self.cleaned_data.get('Payment_Option', None)
+        if str(payment_option) == '2':
+            coverage_end = self.cleaned_data.get('Coverage_Days', None)
+            effective_date = self.cleaned_data.get('Effective_Date', None)
+            if coverage_end and isinstance(coverage_end, str):
+                coverage_end = datetime.datetime.strptime(coverage_end, '%m-%d-%Y').date()
+            if effective_date and isinstance(effective_date, str):
+                effective_date = datetime.datetime.strptime(effective_date, '%m-%d-%Y').date()
+            if effective_date and coverage_end:
+                if not self.MIN_COVERAGE_DAYS <= (coverage_end - effective_date).days <= self.MAX_COVERAGE_DAYS:
+                    self.add_error(
+                        'Coverage_Days',
+                        forms.ValidationError("Coverage Days must be between {0} to {1} days".format(
+                            self.MIN_COVERAGE_DAYS,
+                            self.MAX_COVERAGE_DAYS
+                        ), code='limit')
+                    )
+            if not coverage_end:
+                self.add_error(
+                    'Coverage_Days',
+                    forms.ValidationError(_("Coverage End is required"), code='required')
+                )
+        elif str(payment_option) == '1':
+            self.cleaned_data['Coverage_Days'] = None
+
+        tobacco = self.cleaned_data.get('Tobacco')
+        if not tobacco:
+            self.add_error(
+                'Tobacco',
+                forms.ValidationError(_("Tobacco is required."), code='required')
+            )
+        else:
+            self.cleaned_data['Tobacco'] = tobacco
+
+
+        self.cleaned_data['quote_request_timestamp'] = int(round(time.time(), 0))
+
+        self.cleaned_data['Annual_Income'] = self.cleaned_data.get('Annual_Income', None)
+
         return self.cleaned_data
+
+    def _process_dob_for_age(self, dob):
+        if isinstance(dob, str):
+            dob = datetime.datetime.strptime(dob, '%m-%d-%Y').date()
+        return age(dob)
 
 
 
