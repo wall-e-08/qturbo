@@ -30,6 +30,7 @@
 
 
 .quote-info-bar{
+    font-size: 32px;
     font-size: 2rem;
     font-weight: 500;
     background: #fff;
@@ -56,7 +57,9 @@
 #plan-details-primary-apply {
     color: #fff;
     border: 2px solid transparent;
+    font-size: 28.8px;
     font-size: 1.8rem;
+    padding: 16px 72px;
     padding: 1rem 4.5rem;
     border-radius: 25px;
     background-color: #FF9900;
@@ -74,13 +77,22 @@
 }
 
 /*masum*/
-
+.h-100{
+    height: 100%;
+}
+.w-100{
+    width: 100%;
+}
+.mb-30{
+    margin-bottom: 30px;
+}
 .quote-container{
     border: 1px solid #d0caca;
     border-radius: 4px;
-    margin-bottom: 30px;
+    height: 100%;
     background: #e0f0ff;
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.4);
+    -webkit-transition: all .5s ease-in-out;
     transition: all .5s ease-in-out;
 }
 .quote-container:hover{
@@ -88,16 +100,27 @@
 }
 .qt-plan-logo{
     width: 100%;
-    height: auto;
+    height: 90px;
     text-align: center;
+    padding: 21px 15px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
-.qt-plan-logo hr{
-    border-top: 2px solid #cabbbb;
+.qt-plan-logo ~ hr{
+    border-color: #cabbbb;
+    margin-top: 0;
 }
 .qt-plan-logo img{
-    width: 80%;
-    height: auto;
-    padding: 20px 15px;
+    max-width: 80%;
+    max-height: 100%;
+
 }
 .plan-single-info{
     margin: 15px auto;
@@ -129,8 +152,8 @@
     padding: 15px 10px;
 }
 .deductible{
-    padding: 15px 10px 0 10px;
-    margin-bottom: 0px;
+    padding: 5px 10px;
+    margin-bottom: 0;
     font-weight: bold;
 }
 .policy-max{
@@ -147,14 +170,19 @@
 
 #month_plan_list {
     display: -webkit-box;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 }
 
 #month_plan_list > [class*='col-'] {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
 }
 
