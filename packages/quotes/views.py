@@ -384,10 +384,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                                        {plan['Benefit_Amount']}
         alternate_benefit_amount = list(alternate_benefit_amount_set)
 
+
         # All of them
         alternate_coinsurace_percentage_set = set(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]) - \
                                        {plan['Coinsurance_Percentage']}
         alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
+
+        # Edge case 50 percent coinsurance for plan type 2
+        if plan['Plan'] == '1' and '50' in alternate_coinsurace_percentage:
+            alternate_coinsurace_percentage.remove('50')
 
         alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
         alternate_coverage_max = list(alternate_coverage_max_set)
@@ -1812,6 +1817,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
         threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
 
     available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+
     if coinsurance_percentage not in available_alternatives_as_set['alternate_coinsurace_percentage']:
         l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
         if benefit_amount in l and len(l) > 1:
