@@ -74,8 +74,8 @@
 
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
-                                                id="alternative_benefit_amount_dropdown {{ benifit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
-                                                name = "{{ benifit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}">
+                                                id="alternative_benefit_amount_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}">
 
                                                 <option value="{{ plan.Benefit_Amount }}">{{ plan.Benefit_Amount }}</option>
                                             {% for benefit in alternate_benefit_amount %}
@@ -97,8 +97,8 @@
 
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
-                                                id="alternate_coinsurace_percentage_dropdown {{ benifit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
-                                                name="{{ benifit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}">
+                                                id="alternate_coinsurace_percentage_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
+                                                name="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}">
                                             <option value="{{ plan.Coinsurance_Percentage }}">{{ plan.Coinsurance_Percentage }}</option>
 
                                             {% for percentage in alternate_coinsurace_percentage %}
@@ -110,6 +110,30 @@
                                 </div>
                             </div>
                         {% endif %}
+
+                        {% if alternate_coverage_max %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Maximum Coverage</h3>
+
+                                    <div class="">
+
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="coverage_max_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}">
+
+                                                <option value="{{ plan.coverage_max_value }}">{{ plan.coverage_max_value }}</option>
+                                            {% for coverage in alternate_coverage_max %}
+                                                <option value="{{ coverage }}"> {{ coverage }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
                         </form>
 
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
@@ -629,6 +653,17 @@
         var $coinsurance_percentage_form_field = $('select[name="Coinsurance_Percentage"]');
 
         $coinsurance_percentage_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
+
+        var $coverage_max_form_field = $('select[name="Coverage_Max"]');
+
+        $coverage_max_form_field.on('change', function (e) {
 
             var $that = $(this);
 

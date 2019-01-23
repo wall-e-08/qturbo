@@ -425,8 +425,11 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
         required=False
     )
 
-    # TODO Coverage Maximum
-
+    Coverage_Max = forms.CharField(
+        label=_("Select Maximum Amount of Coverage"),
+        error_messages={"required": _("Coverage_Maximum is required.")},
+        required=False
+    )
 
     def clean(self):
         super().clean()
@@ -438,6 +441,10 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
         coinsurance_percentage = self.cleaned_data.get('Coinsurance_Percentage', None)
         if coinsurance_percentage is not None:
             self.cleaned_data['Coinsurance_Percentage'] = coinsurance_percentage
+
+        coverage_max = self.cleaned_data.get('Coverage_Max', None)
+        if coverage_max is not None:
+            self.cleaned_data['Coverage_Maximum'] = coverage_max
 
         return self.cleaned_data
 

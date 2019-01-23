@@ -496,3 +496,51 @@ def create_selection_data(completed_data: dict, stm_name: str, duration_coverage
         return quote_request_data
     else:
         return None
+
+
+def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> dict:
+    # plan_list = plan_list.remove(selected_plan)
+    return_dict ={}
+    coins_set = set()
+
+
+    print("Finding out alternative coinsurance.")
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+            plan['plan_name'] == selected_plan['plan_name'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan != selected_plan):
+            print("Test")
+            print(plan)
+
+    print("Finding out alternative max_out_of_pocket.")
+    for plan in plan_list:
+
+        if (plan["Coinsurance_Percentage"] == selected_plan['Coinsurance_Percentage'] and
+            plan['plan_name'] == selected_plan['plan_name'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan != selected_plan):
+
+            print("Test")
+            print(plan)
+
+
+
+    print("Finding out alternative maximum coverage.")
+
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+            plan['plan_name'] == selected_plan['plan_name'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coinsurance_Percentage'] == selected_plan['Coinsurance_Percentage'] and
+            plan != selected_plan):
+
+            print("Test")
+            print(plan)
+
+
+
