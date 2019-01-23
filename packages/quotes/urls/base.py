@@ -8,7 +8,7 @@ urlpatterns = [
     path('health-insurance/', include('quotes.urls.survey')),
     path('get_plan_quote_data_ajax/', views.get_plan_quote_data_ajax, name='get_plan_quote_data_ajax'),
 
-    re_path('health-insurance/quote(?:/(?P<zip_code>\d{5}))?/$', views.plans, name='plans'),  # TODO
+    re_path('health-insurance/quote(?:/(?P<zip_code>\d{5}))?/$', views.plans, name='plans'),  # TODO zip code from url
 
     re_path('health-insurance/quotes/(?P<ins_type>(stm|lim|anc))/$', views.plan_quote, name='plan_quote'),
 
@@ -31,21 +31,16 @@ urlpatterns = [
             views.stm_plan, name='stm_plan'),
 
 
-    re_path('stm/alternate_plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+    re_path('stm/alternate_duration_coverage/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
             r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
             r'(\*\d{1,1})?p?\d?)/$',
-            views.alternate_plan, name='alternate_plan'),
+            views.alternate_duration_coverage, name='alternate_duration_coverage'),
 
 
     re_path('stm/ben_amount_coins_policy_max_change_action/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
             r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
             r'(\*\d{1,1})?p?\d?)/$',
             views.ben_amount_coins_policy_max_change_action, name='ben_amount_coins_policy_max_change_action'),
-
-    # re_path('stm/coinsurance_percentage_change/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-    #         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
-    #         r'(\*\d{1,1})?p?\d?)/$',
-    #         views.coinsurance_percentage_change, name='coinsurance_percentage_change'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
             r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',

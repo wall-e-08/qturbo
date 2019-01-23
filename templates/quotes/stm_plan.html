@@ -36,18 +36,23 @@
                     <div class="plan-apply-container">
 
 
-{% comment %}                        {% if alternate_coverage_duration %}
+
+
+                        {% if alternate_coverage_duration %}
+                        <form action="{% url 'quotes:alternate_duration_coverage' plan.unique_url %}"
+                              method="POST"
+                              id="duration_coverage_form">
+                        {% csrf_token %} {% comment %}IS it needed?{% endcomment %}
 
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Coverage Duration</h3>
-                                </div>
                                 <div class="">
 
                                     <select type="button"
-                                            class="btn btn-info dropdown-toggle form-control"
-                                            id="duration_coverage_dropdown"
-                                            name="Duration_Coverage">
+                                            class="btn btn-info dropdown-toggle"
+                                            id="duration_coverage_dropdown {{ duration_coverage_form.Duration_Coverage.id_for_label }}"
+                                            name="{{ duration_coverage_form.Duration_Coverage.html_name }}">
 
                                         <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>
                                         {% for duration in alternate_coverage_duration %}
@@ -57,7 +62,9 @@
 
                                 </div>
                             </div>
-                        {% endif %}{% endcomment %}
+                                </div>
+                        </form>
+                        {% endif %}
                     {% if quote_request_form_data.Ins_Type == 'stm' %}
                         <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}"
                               id="benifit_amount_coins_policy_max_form">
@@ -589,13 +596,59 @@
         });
 
         {% comment %}Dev_torsho edit start{% endcomment %}
+
+        var $duration_coverage_form = $('#duration_coverage_form')
+
+        $duration_coverage_form.submit(function (e) {
+
+            console.log('Test');
+
+            e.preventDefault();
+
+            var csrftoken = $.cookie('csrftoken');
+
+            var $that = $(this);
+
+            $.ajax({
+                url: $duration_coverage_form.attr("action"),
+
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+
+                data: $that.serialize(), type: 'POST', dataType: 'json',
+
+                success: function (json) {
+
+                    console.log("json: " + json);
+
+                    if (json.status == 'success') {
+
+                        location.href = json.url;
+
+                    } else {
+
+                        {#    TODO HANDLE THIS#}
+                    }
+                },
+
+                error: function () {
+
+                    location.reload();
+
+                    {#TODO HANDLE#}
+                }
+
+            });
+
+
+        });
+
         var $benifit_amount_coins_policy_max_form = $('#benifit_amount_coins_policy_max_form');
 
         $benifit_amount_coins_policy_max_form.submit(function(e) {
 
             e.preventDefault();
-
-            console.log("Test");
 
             var csrftoken = $.cookie('csrftoken');
 
@@ -639,6 +692,17 @@
 
             });
         });
+
+        var $duration_coverage_form_field = $('select[name="Duration_Coverage"]');
+
+        $duration_coverage_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $duration_coverage_form.submit();
+
+        });
+
 
 
         var $benefit_amount_form_field = $('select[name="Benefit_Amount"]');

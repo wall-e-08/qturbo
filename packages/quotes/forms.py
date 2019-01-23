@@ -403,12 +403,22 @@ class ApplicantInfoForm(forms.Form):
 
 
 class Duration_Coverage_Form(forms.Form):
-    Duration_Coverage = forms.ChoiceField(
+    Duration_Coverage = forms.CharField(
         label=_("Select Minimum"),
-        choices=(),
-        error_messages={"required": _("Max out of pocket is required.")},
+        error_messages={"required": _("Duration Coverage is required.")},
         required=False
     )
+
+    def clean(self):
+        super().clean()
+
+        duration_coverage = self.cleaned_data.get('Duration_Coverage', None)
+        if duration_coverage is not None:
+            self.cleaned_data['Duration_Coverage'] = duration_coverage
+
+
+        return self.cleaned_data
+
 
 class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
 
