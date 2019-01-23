@@ -26,8 +26,8 @@
     font-size: 23px;
     margin-bottom: 20px;
     color: #ff9900;
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.82);
     line-height: 1.3;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .qt-plan-info-wrapper {
@@ -62,9 +62,9 @@
 }
 
 .qt-plan-price-value {
-    font-size: 58px;
+    font-size: 50px;
     font-weight: 700;
-    line-height: 46px;
+    line-height: 45px;
 }
 
 .qt-plan-price-subscript {
