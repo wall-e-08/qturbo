@@ -36,8 +36,6 @@
                     <div class="plan-apply-container">
 
 
-
-
 {% comment %}                        {% if alternate_coverage_duration %}
 
                             <div class="row">
@@ -60,6 +58,11 @@
                                 </div>
                             </div>
                         {% endif %}{% endcomment %}
+                        <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}"
+                              id="benifit_amount_coins_policy_max_form">
+                        {% csrf_token %} <!-- Maybe not needed -->
+
+
 
 
                         {% if alternate_benefit_amount and plan.Coinsurance_Percentage != '0' %}
@@ -71,9 +74,8 @@
 
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
-                                                id="alternative_benefit_amount_dropdown"
-                                                name = "Benefit_Amount"
-                                                data-benefit_amount_validation_url="{% url 'quotes:benefit_amount_change' plan.unique_url %}">
+                                                id="alternative_benefit_amount_dropdown {{ benifit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
+                                                name = "{{ benifit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}">
 
                                                 <option value="{{ plan.Benefit_Amount }}">{{ plan.Benefit_Amount }}</option>
                                             {% for benefit in alternate_benefit_amount %}
@@ -95,9 +97,8 @@
 
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
-                                                id="alternate_coinsurace_percentage_dropdown"
-                                                name="Coinsurance_Percentage"
-                                                data-coinsurance_percentage_validation_url="{% url 'quotes:coinsurance_percentage_change' plan.unique_url %}">
+                                                id="alternate_coinsurace_percentage_dropdown {{ benifit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
+                                                name="{{ benifit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}">
                                             <option value="{{ plan.Coinsurance_Percentage }}">{{ plan.Coinsurance_Percentage }}</option>
 
                                             {% for percentage in alternate_coinsurace_percentage %}
@@ -109,6 +110,7 @@
                                 </div>
                             </div>
                         {% endif %}
+                        </form>
 
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
                                class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
@@ -561,6 +563,57 @@
         });
 
         {% comment %}Dev_torsho edit start{% endcomment %}
+        var $benifit_amount_coins_policy_max_form = $('#benifit_amount_coins_policy_max_form');
+
+        $benifit_amount_coins_policy_max_form.submit(function(e) {
+
+            e.preventDefault();
+
+            console.log("Test");
+
+            var csrftoken = $.cookie('csrftoken');
+
+            var $that = $(this);
+
+            $.ajax({
+                url: $benifit_amount_coins_policy_max_form.attr("action"),
+
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+
+                data: $that.serialize(), type: 'POST', dataType: 'json',
+
+                success: function (json) {
+
+                    console.log("json: " + json);
+
+                    if (json.status == 'success') {
+
+                        location.href = json.url;
+
+                    } else {
+
+                        {#    TODO HANDLE THIS#}
+                    }
+                },
+
+                error: function () {
+                    //$quote_request_info_form_submit.html('Compare Health Insurance');
+                    //$quote_request_info_form_submit.prop('disabled', false);
+                    {#$quote_request_info_form_submit.show();#}
+                    {#$quote_submit_ajax_loader.hide();#}
+                    {#$add_sender_form_error_messages.append(#}
+                    {#    '<span class="internal_error">Something unexpected happened. Please try again after some time.</span>'#}
+                    {#);#}
+                    location.reload();
+
+                    {#TODO HANDLE#}
+                }
+
+            });
+        });
+
 
         var $benefit_amount_form_field = $('select[name="Benefit_Amount"]');
 
@@ -568,33 +621,7 @@
 
             var $that = $(this);
 
-            var $benefit_amaount_error = $('#alternative_benefit_amount_dropdown_error'); {% comment %}TODO: Put it in HTML{% endcomment %}
-
-            var benefit_amaount_validation_url = $that.attr('data-benefit_amount_validation_url');
-
-            console.log('Benefit amaount update: ' + $that.val());
-
-            {#$ajax_loader_provider.removeClass('none');{% comment %}TODO PUT a loader{% endcomment %}#}
-
-            $.ajax({
-                url: benefit_amaount_validation_url,
-                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
-                data: {
-                    'benefit_amount': $that.val(),
-                },
-                type: 'POST', dataType: 'json',
-                success: function(json) {
-                    {#$ajax_loader_provider.addClass('none');#}
-                    location.href = json.url;
-
-                },
-                error: function() {
-                    {#$ajax_loader_provider.addClass('none');#}
-                    $that.prop('selectedIndex', 0);
-                    {#location.reload();#}
-                }
-            });
-
+            $benifit_amount_coins_policy_max_form.submit();
 
         });
 
@@ -605,34 +632,11 @@
 
             var $that = $(this);
 
-            var $coinsurance_percentage_error = $('#alternate_coinsurace_percentage_dropdown'); {% comment %}TODO: Put it in HTML{% endcomment %}
-
-            var coinsurance_percentage_validation_url = $that.attr('data-coinsurance_percentage_validation_url');
-
-            console.log('Coinsurance_Percentage update: ' + $that.val());
-
-            {#$ajax_loader_provider.removeClass('none');{% comment %}TODO PUT a loader{% endcomment %}#}
-
-            $.ajax({
-                url: coinsurance_percentage_validation_url,
-                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
-                data: {
-                    'coinsurance_percentage': $that.val(),
-                },
-                type: 'POST', dataType: 'json',
-                success: function(json) {
-                    {#$ajax_loader_provider.addClass('none');#}
-                    location.href = json.url;
-
-                },
-                error: function() {
-                    {#$ajax_loader_provider.addClass('none');#}
-                    $that.prop('selectedIndex', 0);
-                }
-            });
-
+            $benifit_amount_coins_policy_max_form.submit();
 
         });
+
+
         {% comment %}dev_torsho edit end{% endcomment %}
 
 

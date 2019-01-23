@@ -16,7 +16,8 @@ from core import settings
 
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
-                    ChildInfoFormSet, LeadForm, AlternateSelectionForm)
+                    ChildInfoFormSet, LeadForm, Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
+                    Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data, threaded_request
 from .redisqueue import redis_connect
@@ -395,7 +396,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_coverage_duration': alternate_coverage_duration,
                    'alternate_benefit_amount': alternate_benefit_amount,
                    'alternate_coinsurace_percentage': alternate_coinsurace_percentage,
-                   # 'alternate_selection_form': AlternateSelectionForm
+                   'benifit_amount_coinsurance_coverage_max_form':Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form
                    }) # This will be changed later
                                                                                     # This will be a list(not a str)
                                                                                     # which will be handled by
@@ -1657,8 +1658,9 @@ legal_page_info = [
 
 ]
 
+
 @require_POST
-def benefit_amount_change(request: WSGIRequest, plan_url: str) -> JsonResponse:
+def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: str) -> JsonResponse:
     """
     This is executed on ajax request from the stm_plan page.
 
@@ -1698,12 +1700,13 @@ def benefit_amount_change(request: WSGIRequest, plan_url: str) -> JsonResponse:
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
-    benefit_amount = request.POST.get('benefit_amount', None)
+    form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
 
+    if form.is_valid():
+        print(f'Form is valid.')
+        benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
+        coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
 
-    # form = AlternateSelectionForm(request.POST)
-    # if form.is_valid():
-    #     pass
 
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
@@ -1784,10 +1787,11 @@ def benefit_amount_change(request: WSGIRequest, plan_url: str) -> JsonResponse:
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == coinsurance_percentage and
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['coverage_max_value'] == plan['coverage_max_value'] and
-                                                  mp['Duration_Coverage'] == coverage_duration, sp))
+                                                  mp['Duration_Coverage'] == coverage_duration and
+                                                  mp['plan_name'] == plan['plan_name'], sp))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')   # We need to handle this exception in template/js
         raise Http404()
@@ -1835,7 +1839,6 @@ def benefit_amount_change(request: WSGIRequest, plan_url: str) -> JsonResponse:
         )
 
 
-
 @require_POST
 def coinsurance_percentage_change(request: WSGIRequest, plan_url: str) -> JsonResponse:
     """
@@ -1863,7 +1866,6 @@ def coinsurance_percentage_change(request: WSGIRequest, plan_url: str) -> JsonRe
     :return: json data
     """
 
-    print("Test")
     response = {
         'errors': [],
         'providers': []
@@ -1876,6 +1878,10 @@ def coinsurance_percentage_change(request: WSGIRequest, plan_url: str) -> JsonRe
     """
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+
+    alt_form = Alt_Benefit_Amount_Coinsurance_Form(request.POST)
+    if alt_form.is_valid():
+        print(alt_form.cleaned_data)
 
     coinsurance_percentage = request.POST.get('coinsurance_percentage', None)
 
@@ -2009,6 +2015,7 @@ def coinsurance_percentage_change(request: WSGIRequest, plan_url: str) -> JsonRe
             'url': reverse('quotes:stm_plan', kwargs={'plan_url': alternative_plan_url})
         }
     )
+
 
 def alternate_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """ Switch user to alternative coverage benefit plan

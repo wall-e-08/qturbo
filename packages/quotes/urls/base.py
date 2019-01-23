@@ -37,15 +37,15 @@ urlpatterns = [
             views.alternate_plan, name='alternate_plan'),
 
 
-    re_path('stm/benefit_amount_change/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+    re_path('stm/ben_amount_coins_policy_max_change_action/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
             r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
             r'(\*\d{1,1})?p?\d?)/$',
-            views.benefit_amount_change, name='benefit_amount_change'),
+            views.ben_amount_coins_policy_max_change_action, name='ben_amount_coins_policy_max_change_action'),
 
-    re_path('stm/coinsurance_percentage_change/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
-            r'(\*\d{1,1})?p?\d?)/$',
-            views.coinsurance_percentage_change, name='coinsurance_percentage_change'),
+    # re_path('stm/coinsurance_percentage_change/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+    #         r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+    #         r'(\*\d{1,1})?p?\d?)/$',
+    #         views.coinsurance_percentage_change, name='coinsurance_percentage_change'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
             r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',
