@@ -504,6 +504,7 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
     coins_set = set()
     out_of_pocket_set = set()
     coverage_max_set = set()
+    plan_set = set()
 
 
     print("Finding out alternative coinsurance.")
@@ -544,10 +545,23 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
             plan != selected_plan):
                 coverage_max_set.add(plan['Coverage_Max'])
 
+    print("Finding out alternative plan type.")
+
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+                plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+                plan['Coinsurance_Percentage'] == selected_plan['Coinsurance_Percentage'] and
+                plan["Name"] == selected_plan["Name"] and
+                plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+                plan != selected_plan):
+            plan_set.add(plan['Plan'])
+
     return {
         'alternate_benefit_amount': out_of_pocket_set,
         'alternate_coinsurace_percentage': coins_set,
         'alternate_coverage_max': coverage_max_set,
+        'alternate_plan': plan_set,
     }
 
 

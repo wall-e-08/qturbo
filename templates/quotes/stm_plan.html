@@ -142,6 +142,29 @@
                             </div>
                         {% endif %}
 
+                        {% if alternate_plan %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select alternate Plan</h3>
+
+                                    <div class="">
+
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="plan_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Plan.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Plan.html_name }}">
+
+                                                <option value="{{ plan.Plan }}">{{ plan.Plan }}</option>
+                                            {% for plan in alternate_plan %}
+                                                <option value="{{ plan }}"> {{ plan }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
                         </form>
                     {% endif %}
 
@@ -736,6 +759,17 @@
             $benifit_amount_coins_policy_max_form.submit();
 
         });
+
+        var $plan_form_field = $('select[name="Plan"]');
+
+        $plan_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
 
 
         {% comment %}dev_torsho edit end{% endcomment %}

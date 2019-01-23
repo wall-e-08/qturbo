@@ -428,7 +428,6 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
         required=False
     )
 
-
     Coinsurance_Percentage = forms.CharField(
         label=_("Select Co-Insurance Percentage"),
         error_messages={"required": _("Co-Insurance Percentage required.")},
@@ -438,6 +437,12 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
     Coverage_Max = forms.CharField(
         label=_("Select Maximum Amount of Coverage"),
         error_messages={"required": _("Coverage_Maximum is required.")},
+        required=False
+    )
+
+    Plan = forms.CharField(
+        label=_("Select plan Name"),
+        error_messages={"required": _("Plan name is required.")},
         required=False
     )
 
@@ -455,6 +460,10 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
         coverage_max = self.cleaned_data.get('Coverage_Max', None)
         if coverage_max is not None:
             self.cleaned_data['Coverage_Maximum'] = coverage_max
+
+        plan = self.cleaned_data.get('Plan', None)
+        if plan is not None:
+            self.cleaned_data['Plan'] = plan
 
         return self.cleaned_data
 

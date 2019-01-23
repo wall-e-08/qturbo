@@ -389,6 +389,9 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
         alternate_coverage_max = list(alternate_coverage_max_set)
 
+        alternate_plan_set = available_alternatives_as_set['alternate_plan'] - {plan['Plan']}
+        alternate_plan = list(alternate_plan_set)
+
 
 
     except KeyError as k:
@@ -397,6 +400,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_benefit_amount = None
         alternate_coinsurace_percentage = None
         alternate_coverage_max = None
+        alternate_plan = None
 
     return render(request, 'quotes/stm_plan.html',
                   {'plan': plan, 'related_plans': related_plans,
@@ -407,6 +411,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_benefit_amount': alternate_benefit_amount,
                    'alternate_coinsurace_percentage': alternate_coinsurace_percentage,
                    'alternate_coverage_max': alternate_coverage_max,
+                   'alternate_plan': alternate_plan,
                    'benefit_amount_coinsurance_coverage_max_form':Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
                    'duration_coverage_form': Duration_Coverage_Form
                    }) # This will be changed later
@@ -1764,7 +1769,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
 
     if form.is_valid():
         print(f'Form is valid.')
-        benefit_amount = form.cleaned_data.get('Benefit_Amount', )
+        benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
         if benefit_amount == '' or None:
             benefit_amount = plan['out_of_pocket_value']
 
@@ -1775,6 +1780,10 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
         coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
         if coverage_maximum == '' or None:
             coverage_maximum = plan['Coverage_Max']
+
+        plan_type = form.cleaned_data.get('Plan', None)
+        if plan_type == '' or None:
+            plan_type = plan['Plan']
 
 
 
@@ -1807,20 +1816,6 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
 
     # Temporary measure for testing
     # Filter is faster than forloop
-    """pls DELETE"""
-    for other_plan in sp:
-        if (other_plan["out_of_pocket_value"] == plan['out_of_pocket_value'] and
-                other_plan['Coinsurance_Percentage'] == plan['Coinsurance_Percentage']) and\
-                other_plan['plan_name'] == plan['plan_name'] and\
-                other_plan['Duration_Coverage'] == plan['Duration_Coverage']:
-
-            print(f'Coinsurance_Percentage: {other_plan["Coinsurance_Percentage"]},'
-                  f' "out_of_pocket_value": {other_plan["out_of_pocket_value"]},'
-                  f' coverage_max_value: {other_plan["coverage_max_value"]},'
-                  f' Duration_Coverage: {other_plan["Duration_Coverage"]},'
-                  f' Coverage_Max: {other_plan["Coverage_Max"]}'
-                  f' plan_name: {other_plan["plan_name"]}')
-    """DELETE"""
 
 
     try:
@@ -1828,7 +1823,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['Coverage_Max'] == coverage_maximum and
                                                   mp['Duration_Coverage'] == coverage_duration and
-                                                  mp['Plan'] == plan['Plan'], sp))
+                                                  mp['Plan'] == plan_type, sp))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')   # We need to handle this exception in template/js
         raise Http404()
