@@ -73,7 +73,7 @@
 
 
 
-                        {% if alternate_benefit_amount  %}
+                        {% if alternate_benefit_amount %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Max Out Of Pocket</h3>
@@ -142,7 +142,6 @@
                             </div>
                         {% endif %}
 
-                        {% if alternate_plan %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select alternate Plan</h3>
@@ -152,7 +151,9 @@
                                         <select type="button"
                                                 class="btn btn-info dropdown-toggle"
                                                 id="plan_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Plan.id_for_label }}"
-                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Plan.html_name }}">
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Plan.html_name }}"
+                                                {% if not alternate_plan %} disabled {% endif %}
+>
 
                                                 <option value="{{ plan.Plan }}">{{ plan.Plan }}</option>
                                             {% for plan in alternate_plan %}
@@ -163,8 +164,6 @@
                                     </div>
                                 </div>
                             </div>
-                        {% endif %}
-
                         </form>
                     {% endif %}
 
@@ -634,6 +633,8 @@
 
             $.ajax({
                 url: $duration_coverage_form.attr("action"),
+
+                async : false,
 
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
