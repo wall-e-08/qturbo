@@ -27,7 +27,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_add_on_info, get_initials_for_dependents_formset, save_applicant_payment_info, log_user_info,
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
-                    get_dict_for_available_alternate_plans)
+                    get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
+                    get_available_benefit_against_coins)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -378,13 +379,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                                       {plan['Duration_Coverage']}
         alternate_coverage_duration = list(alternate_coverage_duration_set)
 
-        alternate_benefit_amount_set = available_alternatives_as_set['alternate_benefit_amount'] - {plan['Benefit_Amount']}
+        # All of them
+        alternate_benefit_amount_set = set(settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]) - \
+                                       {plan['Benefit_Amount']}
         alternate_benefit_amount = list(alternate_benefit_amount_set)
 
-
-        alternate_coinsurace_percentage_set = available_alternatives_as_set['alternate_coinsurace_percentage'] - {plan['Coinsurance_Percentage']}
+        # All of them
+        alternate_coinsurace_percentage_set = set(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]) - \
+                                       {plan['Coinsurance_Percentage']}
         alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
-
 
         alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
         alternate_coverage_max = list(alternate_coverage_max_set)
@@ -1806,23 +1809,20 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
     elif not selection_data:
         print(f'Already quoted alternative plans.')
     else:
-        # Getting other coverage option for selected plan
-        # Checking to see if quote has already been done.
-        # if not redis_conn.exists(redis_alt_flag):
-            # Setting flag and doing quote
-            # redis_conn.set(redis_alt_flag, '1')
         threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
-            # We have added alternative coverage plans to the same redis key dictionary using threaded_request.
-        # else:
-        #     print(f'Already quoted alternative plans.')
 
+    available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+    if coinsurance_percentage not in available_alternatives_as_set['alternate_coinsurace_percentage']:
+        l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
+        if benefit_amount in l and len(l) > 1:
+            l.remove(benefit_amount)
+        benefit_amount = min(l)
 
-    # We are selecting the alternative duration coverage
-    # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
-    # coverage_duration
-
-    # Temporary measure for testing
-    # Filter is faster than forloop
+    if benefit_amount not in available_alternatives_as_set['alternate_benefit_amount']:
+        l = get_available_coins_against_benefit(sp, benefit_amount, plan)
+        if coinsurance_percentage in l and len(l) > 1:
+            l.remove(coinsurance_percentage)
+        coinsurance_percentage = min(l)
 
 
     try:
@@ -2004,7 +2004,6 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
                 'url': reverse('quotes:stm_plan', kwargs={'plan_url': alternative_plan_url})
             }
         )
-
 
 
 def legal(request, slug):

@@ -565,3 +565,45 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
     }
 
 
+def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, selected_plan: dict) -> dict:
+
+    coins_set = set()
+
+
+    print(f"Finding out alternative coinsurance for {benefit_amount}.")
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == benefit_amount and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+                coins_set.add(plan['Coinsurance_Percentage'])
+
+    return list(coins_set)
+
+
+def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> dict:
+
+    out_of_pocket_set = set()
+
+
+    print(f"Finding out alternative benefit amount for {coinsurance}.")
+    for plan in plan_list:
+
+        if (plan["Coinsurance_Percentage"] == coinsurance and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+
+                out_of_pocket_set.add(plan['Benefit_Amount'])
+
+    return list(out_of_pocket_set)
+
+
+

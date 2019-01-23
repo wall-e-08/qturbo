@@ -73,7 +73,7 @@
 
 
 
-                        {% if alternate_benefit_amount and plan.Coinsurance_Percentage != '0' %}
+                        {% if alternate_benefit_amount  %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Max Out Of Pocket</h3>
@@ -96,7 +96,7 @@
                             </div>
                         {% endif %}
 
-                        {% if alternate_coinsurace_percentage and plan.Benefit_Amount != '0' %}
+                        {% if alternate_coinsurace_percentage %}
                             <div class="row">
                                 <div class="col-md-5">
                                     <h3>Select Co-Insurance Percentage</h3>
