@@ -21,29 +21,19 @@
                                 <h2 class="card-title qt-plan-name">{{ plan.Name }}-Plan {{ plan.Plan }}</h2>
                             </div>
                             <div class="qt-plan-info-wrapper">
-                                <div class="qt-plan-info">
+                                {% block qt_plan_info %}
+                                    {% comment %}<div class="qt-plan-info">
                                     <h5 class="mrg-b-0">$3,000</h5>
                                     <p class="small">Deductible</p>
-                                </div>
-                                <div class="qt-plan-info">
-                                    <h5 class="mrg-b-0">$3,000</h5>
-                                    <p class="small">Deductible</p>
-                                </div>
-                                <div class="qt-plan-info">
-                                    <h5 class="mrg-b-0">$3,000</h5>
-                                    <p class="small">Deductible</p>
-                                </div>
-                                <div class="qt-plan-info">
-                                    <h5 class="mrg-b-0">$3,000</h5>
-                                    <p class="small">Deductible</p>
-                                </div>
+                                </div>{% endcomment %}
+                                {% endblock %}
                             </div>
                             
                             <div class="qt-plan-details-price">
                                 <div class="qt-d-inline-block">
                                     <span class="qt-d-inline-block qt-plan-price-superscript">$</span>
-                                    <span class="qt-plan-price-value">250</span>
-                                    <span class="qt-d-inline-block qt-plan-price-subscript">/mo +fees</span>
+                                    <span class="qt-plan-price-value">{% plan_actual_premium plan %}</span>
+                                    <span class="qt-d-inline-block qt-plan-price-subscript">{% if plan.Payment_Option != '2' %}/mo{% endif %} <span class="small">+fees</span></span>
                                     <hr>
                                 </div>
                                 
@@ -60,6 +50,32 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                {% if benefit_coverage %}
+                    <div id="benefits-n-coverage">
+                        <h3>Benefits and Coverage</h3>
+                        {% for bc in benefit_coverage %}
+                            <div>
+                                <h4>{{ bc.get_instance.title }}</h4>
+                                <div>{{ bc.get_instance.description|safe }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if restrictions_omissions %}
+                    <div id="restrictions-n-omissions">
+                        <h3>Restrictions and Omissions</h3>
+                        {% for bc in restrictions_omissions %}
+                            <div>
+                                <h4>{{ bc.get_instance.title }}</h4>
+                                <div>{{ bc.get_instance.description|safe }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    </div>
+                {% endif %}
+        
             <div class="col-md-6 none">
                 
     
@@ -69,7 +85,6 @@
             
             
             
-{% comment %}
     <div class="blue-section plane-single-top">
         <div class="container">
             <div class="row">
@@ -184,7 +199,7 @@
             </div>
         </div>
     </div>
-{% endcomment %}
+
 
     {# addon section - commenetd #}
 

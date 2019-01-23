@@ -387,7 +387,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_benefit_amount = None
         alternate_coinsurace_percentage = None
 
-    return render(request, 'quotes/stm_plan.html',
+    carrier = None
+    try:
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as er:
+        print("Very weird error: {}".format(er))
+
+    return render(request,
+                  # 'quotes/stm_plan.html',
+                  'quotes/plans/{0}_info.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
@@ -395,6 +403,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_coverage_duration': alternate_coverage_duration,
                    'alternate_benefit_amount': alternate_benefit_amount,
                    'alternate_coinsurace_percentage': alternate_coinsurace_percentage,
+                   'benefit_coverage': qm.BenefitsAndCoverage.objects.filter(plan=carrier),
+                   'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier),
                    # 'alternate_selection_form': AlternateSelectionForm
                    }) # This will be changed later
                                                                                     # This will be a list(not a str)

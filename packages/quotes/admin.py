@@ -4,7 +4,11 @@ from django.contrib import admin
 
 from .models import (StmEnroll, Dependent, #EverestStm, PremierStm, HealtheflexStm, HealthemedStm, SageStm,
                                 #PrincipleAdvantage, UnifiedHealthOne, Lead,
-                                AddonPlan, Carrier)
+                                AddonPlan, Carrier, BenefitsAndCoverage, RestrictionsAndOmissions)
+
+
+admin.site.register(BenefitsAndCoverage)
+admin.site.register(RestrictionsAndOmissions)
 
 
 class DependentInline(admin.StackedInline):
