@@ -348,6 +348,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                 related_plans_dict[i['Coinsurance_Percentage']].append(i)
 
         related_plans = OrderedDict(sorted(related_plans_dict.items()))
+        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
@@ -369,7 +370,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
 
-    available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+
 
 
     try:
@@ -393,9 +394,9 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     except KeyError as k:
         print(f'{k} - No duration coverage for {plan_name}')
         alternate_coverage_duration = None
-        # alternate_benefit_amount = None
-        # alternate_coinsurace_percentage = None
-        # alternate_coverage_max = None
+        alternate_benefit_amount = None
+        alternate_coinsurace_percentage = None
+        alternate_coverage_max = None
 
     return render(request, 'quotes/stm_plan.html',
                   {'plan': plan, 'related_plans': related_plans,
