@@ -288,7 +288,7 @@ def plan_quote(request, ins_type):
         elif ins_type == 'anc':
             AncPlanTask.delay(request.session.session_key, quote_request_form_data)
 
-    return render(request, 'quotes/quote_list.html', {
+    return render(request, 'quotes/quote_list_d.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
@@ -402,7 +402,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_coverage_max = None
         alternate_plan = None
 
-    return render(request, 'quotes/stm_plan.html',
+    carrier = None
+    try:
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as er:
+        print("Very weird error: {}".format(er))
+
+    return render(request,
+                  'quotes/stm_plan.html',
+                  # 'quotes/plans/{0}_info.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
@@ -413,11 +421,10 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_coverage_max': alternate_coverage_max,
                    'alternate_plan': alternate_plan,
                    'benefit_amount_coinsurance_coverage_max_form':Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
-                   'duration_coverage_form': Duration_Coverage_Form
-                   }) # This will be changed later
-                                                                                    # This will be a list(not a str)
-                                                                                    # which will be handled by
-                                                                                    # DTL/JS.
+                   'duration_coverage_form': Duration_Coverage_Form,
+                   'benefit_coverage': qm.BenefitsAndCoverage.objects.filter(plan=carrier),
+                   'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier),
+                   })
 
 
 def stm_apply(request, plan_url) -> HttpResponse:

@@ -25,29 +25,29 @@
 
     {% block google_tag_manager %}
 
-        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        {% comment %}<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-PM8CJTJ');</script>
+        })(window,document,'script','dataLayer','GTM-PM8CJTJ');</script>{% endcomment %}
 
     {% endblock google_tag_manager %}
 
     {% block google_web_master %}
-        <meta name="google-site-verification" content="J078FpyDCCHy-Lc0dmmMVRmWTveK6jmcQvi9dB2vWUk" />
+        {% comment %}<meta name="google-site-verification" content="J078FpyDCCHy-Lc0dmmMVRmWTveK6jmcQvi9dB2vWUk" />{% endcomment %}
     {% endblock google_web_master %}
 
     {# call from website #}
     {% block google_call_from_website %}
-        <script type="text/javascript">
+        {% comment %}<script type="text/javascript">
             (function(a,e,c,f,g,h,b,d){var k={ak:"863950144",cl:"gcKnCLbPim0QwKr7mwM",autoreplace:"(877) 593-3736"};a[c]=a[c]||function(){(a[c].q=a[c].q||[]).push(arguments)};a[g]||(a[g]=k.ak);b=e.createElement(h);b.async=1;b.src="//www.gstatic.com/wcm/loader.js";d=e.getElementsByTagName(h)[0];d.parentNode.insertBefore(b,d);a[f]=function(b,d,e){a[c](2,b,k,d,null,new Date,e)};a[f]()})(window,document,"_googWcmImpl","_googWcmGet","_googWcmAk","script");
-        </script>
+        </script>{% endcomment %}
     {% endblock google_call_from_website %}
 
     {% block bing_ads %}
-        <script>
+        {% comment %}<script>
             (function(w,d,t,r,u){var f,n,i;w[u]=w[u]||[],f=function(){var o={ti:"5566400"};o.q=w[u],w[u]=new UET(o),w[u].push("pageLoad")},n=d.createElement(t),n.src=r,n.async=1,n.onload=n.onreadystatechange=function(){var s=this.readyState;s&&s!=="loaded"&&s!=="complete"||(f(),n.onload=n.onreadystatechange=null)},i=d.getElementsByTagName(t)[0],i.parentNode.insertBefore(n,i)})(window,document,"script","//bat.bing.com/bat.js","uetq");</script><noscript>
-        <img src="//bat.bing.com/action/0?ti=5566400&Ver=2" height="0" width="0" style="display:none; visibility: hidden;" /></noscript>
+        <img src="//bat.bing.com/action/0?ti=5566400&Ver=2" height="0" width="0" style="display:none; visibility: hidden;" /></noscript>{% endcomment %}
     {% endblock bing_ads %}
 
 
@@ -66,56 +66,17 @@
     {% block css %}
         <link href="{% static 'nhaquote_old/css/style.css' %}" rel="stylesheet">
         <link href="{% static 'nhaquote_old/css/style_new.css' %}" rel="stylesheet">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     {% endblock css %}
 
     {% block extra_css %}{% endblock extra_css %}
-    <style>
-        .qt-text-primary {
-            color: #19B4FA !important;
-        }
-        .qt-btn-primary {
-            color: #fff;
-            background-color: #19b4fa;
-            border-color: #19b4fa;
-        }
-        .qt-btn-primary:hover,
-        .qt-btn-primary:active,
-        .qt-btn-primary:focus {
-            color: #fff;
-            background-color: #05a1e8;
-            border-color: #0599db;
-        }
-        .cur-p{
-            cursor: pointer !important;
-        }
-        #mainmenu li{
-            padding-top: 15px;
-        }
-        #mainmenu li a{
-            text-decoration: none !important;
-            color: #19B4FA !important;
-            font-weight: bold;
-        }
-        .mobile-right-link {
-            font-size: 22px;
-            line-height: 46px;
-            font-weight: bold;
-        }
-        @media (min-width: 991px) {
-            .mobile-right-link{
-                display: none;
-            }
-        }
-    </style>
 
 </head>
 
 <body class="{% block body_class %}{% endblock body_class %}"
       onload="_googWcmGet('phone-number', '(877) 593-3736')">
 {% block google_tag_manager_noscript %}
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PM8CJTJ"
-                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {% comment %}<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PM8CJTJ"
+                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>{% endcomment %}
 {% endblock google_tag_manager_noscript %}
 
 {% block google_conversion_tracking %}{% endblock google_conversion_tracking %}

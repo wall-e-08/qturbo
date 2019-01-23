@@ -65,6 +65,98 @@
                 justify-content: space-between
             }
         }
+        .row-eq-height, .row-eq-height > [class*='col-'] {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+        .row-eq-height {
+            flex-wrap: wrap;
+        }
+        .row-eq-height > [class*='col-'] {
+            flex-direction: column;
+        }
+        #filter-sort {
+            position: absolute;
+            background: #fff;
+            width: calc(100% + 2px);
+            z-index: 15;
+            left: 0;
+            top: 55px;
+            border: 1px solid #e7e7e7;
+            border-top: 0;
+            padding-bottom: 20px;
+            -webkit-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
+        }
+        .quote-sort-bar {
+            position: relative;
+        }
+        @media (max-width: 775px) {
+            #filter-sort .row-eq-height .col-md-3 {
+                width: 100%;
+            }
+        }
+        .qt-each-plan{
+            margin-left:auto;
+            margin-right:auto;
+        }
+        #filter-sort .row-eq-height .custom-check-holder {
+            border: 1px solid #fe8829;
+            border-radius: 5px;
+            margin: 0 3px 20px;
+        }
+        .quote-filter-title {
+            border: 0;
+            background: #fe8829;
+            color: #fff;
+            padding: 15px 20px;
+        }
+        .custom-check-holder {
+            padding-top: 0;
+        }
+        .quote-filter-title span.info-icn {
+            right: 10px;
+            color: #fe8829;
+            border: none;
+            font-size: 19px;
+            box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.55);
+        }
+        ul.custom-radio, ul.custom-check {
+            padding: 0 16px;
+        }
+        i.fa.fa-caret-down {
+            display: none;
+        }
+        .qt-sticky {
+            position: fixed;
+            top: 0;
+            z-index: 20;
+            width: 100%;
+            left: 0;
+            box-shadow: 0 0 20px 6px rgba(0, 0, 0, 0.48);
+        }
+        .qt-quote-loading-icon {
+            text-align: center;
+            margin-top: 50px;
+            width: 100%;
+        }
+        #month_plan_list {
+            min-height: calc(100vh - 634px);
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .no-coverage-error-wrapper {
+            margin: 0 15px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            display: inline-table;
+        }
+        .no-coverage-error {
+            margin: 0;
+        }
     </style>
 {% endblock extra_css %}
 
@@ -115,7 +207,7 @@
             <div class="row">
 
                 {% comment %}<div class="sidebar-col ms-col" id="filtering_mobile">
-                
+
                     {# FILTER BUTTON FOR MOBILE #}
                     <div id="filter-btn-wrapper">
                         <button class="btn" id="btn-filter">
@@ -123,7 +215,7 @@
                             <span> <i class="fa fa-caret-down"></i></span>
                         </button>
                     </div>
-                
+
                     <div class="sidebar-col-holder">
                         <h2 class="quote-filter-header">Narrow Your Results</h2>
 
@@ -142,7 +234,7 @@
                                 </li>
                             </ul>
                         </div>
-                        
+
                     </div>
                 </div>{% endcomment %}
 
@@ -152,280 +244,303 @@
                             <div class="quote-sort-bar ms-row">
                                 <div id="narrow-quotes" style="z-index: 20">
                                     <div class="" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <p class="mrg-b-0" style="font-weight: bold;"><span id="plan_display_count">0</span> plans</p>
                                         <div id="narrow-toggler-btn" style="">
                                             <button class="btn qt-btn-primary">Filter & Sort</button>
                                         </div>
-                                         <p class="" style="font-weight: bold;"><span id="plan_display_count">0</span> plans</p>
                                     </div>
-                                        <div id="filter-sort" style="display: none;z-index: 15;">
-                                            <div style="background-color: #787878;position: relative;">
-                                                <div id="close-fs" class="cur-p" style="color: #fff; font-size: 20px; font-weight: bold;">x</div>
+                                    <div id="filter-sort" style="display: none;z-index: 15;">
+                                        <div style="position: relative;">
+                                            <div id="close-fs" class="cur-p" style="color: #fff; font-size: 20px; font-weight: bold;">x</div>
 
+                                            <div class="row-eq-height">
+                                                <div class="col-md-3">
 
-                                                {# COMPANY START #}
-                                                <div class="custom-check-holder">
-                                                    <h3 class="quote-filter-title">Company
-                                                        <span class="info-icn" data-container="body" data-toggle="popover"
-                                                              data-placement="top" data-content="The company that issues an insurance policy and assumes the risks associated with the insured."></span>
-                                                    </h3>
-                                                    <ul class="custom-check" id="plan_carrier_list_ul" data-status="loading">
-                                                        {% for company in ctx_company_list %}
-                                                            {% if form_data.Ins_Type == 'lim' and company in ctx_lim_company_list or form_data.Ins_Type == 'stm' and company in ctx_stm_company_list or form_data.Ins_Type == 'anc' and company in ctx_anc_company_list %}
-                                                                <li class="plan_carrier">
-                                                                <input type="checkbox" name="carrier"
-                                                                       id="carrier-{{ company.0 }}"
-                                                                       class="filter_input css-checkbox company_filter_value_input"
+                                                    {# COMPANY START #}
+                                                    <div class="custom-check-holder">
+                                                        <h3 class="quote-filter-title">Company
+                                                            <span class="info-icn" data-container="body" data-toggle="popover"
+                                                                  data-placement="top"
+                                                                  data-content="The company that issues an insurance policy and assumes the risks associated with the insured."></span>
+                                                        </h3>
+                                                        <ul class="custom-check" id="plan_carrier_list_ul" data-status="loading">
+                                                            {% for company in ctx_company_list %}
+                                                                {% if form_data.Ins_Type == 'lim' and company in ctx_lim_company_list or form_data.Ins_Type == 'stm' and company in ctx_stm_company_list or form_data.Ins_Type == 'anc' and company in ctx_anc_company_list %}
+                                                                    <li class="plan_carrier">
+                                                                    <input type="checkbox" name="carrier"
+                                                                           id="carrier-{{ company.0 }}"
+                                                                           class="filter_input css-checkbox company_filter_value_input"
 
-                                                                       data-status="loading"
-                                                                       data-value="{{ company.0 }}" disabled>
-                                                                <label for="carrier-{{ company.0 }}" class="css-label">
-                                                                {{ company.1 }}
-                                                                <span class="quote-filter-count">(<span id="company_total_plan_count_{{ company.0 }}">0</span>)</span>
-                                                            {% endif %}
-                                                        </label>
-                                                        </li>
-                                                        {% endfor %}
-                                                    </ul>
+                                                                           data-status="loading"
+                                                                           data-value="{{ company.0 }}" disabled>
+                                                                    <label for="carrier-{{ company.0 }}" class="css-label">
+                                                                    {{ company.1 }}
+                                                                    <span class="quote-filter-count">(<span id="company_total_plan_count_{{ company.0 }}">0</span>)</span>
+                                                                {% endif %}
+                                                            </label>
+                                                            </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    {# COMPANY END #}
                                                 </div>
-                                                {# COMPANY END #}
 
 
-                                                {# PREMIUM START #}
-                                                <div class="custom-check-holder">
-                                                    <h3 class="quote-filter-title">
-                                                        {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
-                                                        <span class="info-icn" data-container="body" data-placement="top"
-                                                              data-content="Also known as 'Premium', it is the fixed amount you pay to have health insurance. You pay your premium even if you don't receive any medical care. If you have selected the monthly payment option, this is the amount that you must pay monthly. If you have selected the single up-front payment option, this is the total amount of the policy."
-                                                              data-toggle="popover"></span>
-                                                    </h3>
-                                                    <ul class="custom-radio">
-                                                        {% for premium in ctx_monthly_premium_list %}
+                                                <div class="col-md-3">
+                                                    {# PREMIUM START #}
+                                                    <div class="custom-check-holder">
+                                                        <h3 class="quote-filter-title">
+                                                            {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
+                                                            <span class="info-icn" data-container="body" data-placement="top"
+                                                                  data-content="Also known as 'Premium', it is the fixed amount you pay to have health insurance. You pay your premium even if you don't receive any medical care. If you have selected the monthly payment option, this is the amount that you must pay monthly. If you have selected the single up-front payment option, this is the total amount of the policy."
+                                                                  data-toggle="popover"></span>
+                                                        </h3>
+                                                        <ul class="custom-radio">
+                                                            {% for premium in ctx_monthly_premium_list %}
+                                                                <li>
+                                                                    <input type="radio" name="priceRange"
+                                                                           id="priceRange-{{ premium.0 }}-{{ premium.1 }}"
+                                                                           data-filter0="{{ premium.0 }}"
+                                                                           data-filter1="{{ premium.1 }}"
+                                                                           data-status="loading"
+                                                                           class="filter_input css-checkbox premium_filter_range_input"
+                                                                            {% if premium.0 == '100' %}{#checked#}{% endif %} disabled>
+
+                                                                    <label for="priceRange-{{ premium.0 }}-{{ premium.1 }}"
+                                                                           class="css-label radGroup2">
+                                                                        {% if not forloop.first and not forloop.last %}
+                                                                            ${{ premium.0|intcomma }} to ${{ premium.1|intcomma }}
+                                                                        {% elif forloop.first %}
+                                                                            Under ${{ premium.1|intcomma }}
+                                                                        {% elif forloop.last %}
+                                                                            Above ${{ premium.0|intcomma }}
+                                                                        {% endif %}
+                                                                        <span class="quote-filter-count">(<span id="premium_total_plan_count_{{ premium.0 }}_{{ premium.1 }}">0</span>)</span>
+                                                                    </label>
+                                                                </li>
+                                                            {% endfor %}
                                                             <li>
-                                                                <input type="radio" name="priceRange"
-                                                                       id="priceRange-{{ premium.0 }}-{{ premium.1 }}"
-                                                                       data-filter0="{{ premium.0 }}"
-                                                                       data-filter1="{{ premium.1 }}"
+                                                                <input type="radio" name="priceRange" id="priceRange-all"
+                                                                       class="css-checkbox filter_input"
                                                                        data-status="loading"
-                                                                       class="filter_input css-checkbox premium_filter_range_input"
-                                                                        {% if premium.0 == '100' %}{#checked#}{% endif %} disabled>
-
-                                                                <label for="priceRange-{{ premium.0 }}-{{ premium.1 }}"
-                                                                       class="css-label radGroup2">
-                                                                    {% if not forloop.first and not forloop.last %}
-                                                                        ${{ premium.0|intcomma }} to ${{ premium.1|intcomma }}
-                                                                    {% elif forloop.first %}
-                                                                        Under ${{ premium.1|intcomma }}
-                                                                    {% elif forloop.last %}
-                                                                        Above ${{ premium.0|intcomma }}
-                                                                    {% endif %}
-                                                                    <span class="quote-filter-count">(<span id="premium_total_plan_count_{{ premium.0 }}_{{ premium.1 }}">0</span>)</span>
+                                                                       data-filter0=""
+                                                                       data-filter1="" checked>
+                                                                <label for="priceRange-all" class="css-label radGroup2">
+                                                                    All {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
+                                                                    <span class="quote-filter-count">(<span id="premium_total_plan_count">0</span>)</span>
                                                                 </label>
                                                             </li>
-                                                        {% endfor %}
-                                                        <li>
-                                                            <input type="radio" name="priceRange" id="priceRange-all"
-                                                                   class="css-checkbox filter_input"
-                                                                   data-status="loading"
-                                                                   data-filter0=""
-                                                                   data-filter1="" checked>
-                                                            <label for="priceRange-all" class="css-label radGroup2">
-                                                                All {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
-                                                                <span class="quote-filter-count">(<span id="premium_total_plan_count">0</span>)</span>
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                        </ul>
+                                                    </div>
+                                                    {# PREMIUM END #}
                                                 </div>
-                                                {# PREMIUM END #}
 
 
-                                                {# DEDUCTIBLE START #}
-                                                <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %} >
-                                                    <h3 class="quote-filter-title">
-                                                        Deductible
-                                                        <span class="info-icn" data-container="body" data-toggle="popover" data-placement="top"
-                                                              data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"></span>
-                                                    </h3>
-                                                    <ul class="custom-radio" data-status="loading">
-                                                        {% for deductible in ctx_deductible_option_list %}
+                                                <div class="col-md-3">
+                                                    {# DEDUCTIBLE START #}
+                                                    <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %} >
+                                                        <h3 class="quote-filter-title">
+                                                            Deductible
+                                                            <span class="info-icn" data-container="body" data-toggle="popover" data-placement="top"
+                                                                  data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"></span>
+                                                        </h3>
+                                                        <ul class="custom-radio" data-status="loading">
+                                                            {% for deductible in ctx_deductible_option_list %}
+                                                                <li>
+                                                                    <input type="radio" name="planDeductibleRange"
+                                                                           id="planDeductibleRange-{{ deductible }}"
+                                                                           class="filter_input css-checkbox deductible_filter_value_input"
+                                                                           data-status="loading"
+                                                                           data-value="{{ deductible }}"
+                                                                           disabled {% if deductible == '1000' %}{#checked#}{% endif %}>
+                                                                    <label for="planDeductibleRange-{{ deductible }}" class="css-label radGroup2">
+                                                                        ${{ deductible|intcomma }}
+                                                                        <span class="quote-filter-count">(<span id="deductible_total_plan_count_{{ deductible }}">0</span>)</span>
+                                                                    </label>
+                                                                </li>
+                                                            {% endfor %}
                                                             <li>
                                                                 <input type="radio" name="planDeductibleRange"
-                                                                       id="planDeductibleRange-{{ deductible }}"
-                                                                       class="filter_input css-checkbox deductible_filter_value_input"
+                                                                       id="planDeductibleRange-all"
+                                                                       class="filter_input css-checkbox"
                                                                        data-status="loading"
-                                                                       data-value="{{ deductible }}"
-                                                                       disabled {% if deductible == '1000' %}{#checked#}{% endif %}>
-                                                                <label for="planDeductibleRange-{{ deductible }}" class="css-label radGroup2">
-                                                                    ${{ deductible|intcomma }}
-                                                                    <span class="quote-filter-count">(<span id="deductible_total_plan_count_{{ deductible }}">0</span>)</span>
+                                                                       data-value="" checked>
+                                                                <label for="planDeductibleRange-all" class="css-label radGroup2">
+                                                                    All Deductibles
+                                                                    <span class="quote-filter-count">(<span id="deductible_total_plan_count">0</span>)</span>
                                                                 </label>
                                                             </li>
-                                                        {% endfor %}
-                                                        <li>
-                                                            <input type="radio" name="planDeductibleRange"
-                                                                   id="planDeductibleRange-all"
-                                                                   class="filter_input css-checkbox"
-                                                                   data-status="loading"
-                                                                   data-value="" checked>
-                                                            <label for="planDeductibleRange-all" class="css-label radGroup2">
-                                                                All Deductibles
-                                                                <span class="quote-filter-count">(<span id="deductible_total_plan_count">0</span>)</span>
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                        </ul>
+                                                    </div>
+                                                    {# DEDUCTIBLE END #}
                                                 </div>
-                                                {# DEDUCTIBLE END #}
 
 
-                                                {# COINSURANCE START #}
-                                                <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %} >
-                                                    <h3 class="quote-filter-title">
-                                                        Coinsurance
-                                                        <span class="info-icn" data-container="body" data-placement="top"
-                                                              data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
-                                                              data-toggle="popover"></span>
-                                                    </h3>
-                                                    <ul class="custom-radio" data-status="loading">
-                                                        {% for coinsurance in ctx_coinsurance_limit_list %}
-                                                            <li>
-                                                                <input type="radio" name="planCoinsurance"
-                                                                       id="planCoinsurance-{{ coinsurance }}"
-                                                                       class="filter_input css-checkbox coinsurance_filter_value_input"
-                                                                       data-status="loading"
-                                                                       data-value="{{ coinsurance }}"
-                                                                       disabled {% if coinsurance == '20' %}{#checked#}{% endif %}>
-                                                                <label for="planCoinsurance-{{ coinsurance }}" class="css-label radGroup2">
-                                                                    {{ coinsurance }}%
-                                                                    <span class="quote-filter-count">(<span id="coinsurance_total_plan_count_{{ coinsurance }}">0</span>)</span>
-                                                                </label>
-                                                            </li>
-                                                        {% endfor %}
+
+                                                <div class="col-md-3" style="display: none;">
+                                            {# COINSURANCE START #}
+                                            <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %} >
+                                                <h3 class="quote-filter-title">
+                                                    Coinsurance
+                                                    <span class="info-icn" data-container="body" data-placement="top"
+                                                          data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
+                                                          data-toggle="popover"></span>
+                                                </h3>
+                                                <ul class="custom-radio" data-status="loading">
+                                                    {% for coinsurance in ctx_coinsurance_limit_list %}
                                                         <li>
                                                             <input type="radio" name="planCoinsurance"
-                                                                   id="planCoinsurance-all"
-                                                                   class="filter_input css-checkbox"
+                                                                   id="planCoinsurance-{{ coinsurance }}"
+                                                                   class="filter_input css-checkbox coinsurance_filter_value_input"
                                                                    data-status="loading"
-                                                                   data-value="all" checked>
-                                                            <label for="planCoinsurance-all" class="css-label radGroup2">
-                                                                All Coinsurance
-                                                                <span class="quote-filter-count">(<span id="coinsurance_total_plan_count">0</span>)</span>
+                                                                   data-value="{{ coinsurance }}"
+                                                                   disabled {% if coinsurance == '20' %}{#checked#}{% endif %}>
+                                                            <label for="planCoinsurance-{{ coinsurance }}" class="css-label radGroup2">
+                                                                {{ coinsurance }}%
+                                                                <span class="quote-filter-count">(<span id="coinsurance_total_plan_count_{{ coinsurance }}">0</span>)</span>
                                                             </label>
                                                         </li>
-                                                    </ul>
+                                                    {% endfor %}
+                                                    <li>
+                                                        <input type="radio" name="planCoinsurance"
+                                                               id="planCoinsurance-all"
+                                                               class="filter_input css-checkbox"
+                                                               data-status="loading"
+                                                               data-value="all" checked>
+                                                        <label for="planCoinsurance-all" class="css-label radGroup2">
+                                                            All Coinsurance
+                                                            <span class="quote-filter-count">(<span id="coinsurance_total_plan_count">0</span>)</span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {# COINSURANCE END #}
                                                 </div>
-                                                {# COINSURANCE END #}
 
 
-                                                {# OOP START #}
-                                                <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %}>
-                                                    <h3 class="quote-filter-title">
-                                                        Max Out of Pocket
-                                                        <span class="info-icn" data-container="body" data-placement="top"
-                                                              data-content="The money you pay out of your own pocket when you get medical care.
-                                                    Out-of-pocket costs include deductibles, coinsurance, and co-payments.
-                                                    Most health insurance plans have a cap on the total out-of-pocket costs you pay during your coverage period.
-                                                    This is often called your Max Out-of-Pocket or Out-of-Pocket Max."
-                                                              data-toggle="popover"></span>
-                                                    </h3>
-                                                    <ul class="custom-radio" data-status="loading">
-                                                        {% for oop in ctx_max_out_of_pocket_list %}
-                                                            <li>
-                                                                <input type="radio" name="oopMaxRange"
-                                                                       id="oopMaxRange-{{ oop.0 }}-{{ oop.1 }}"
-                                                                       class="filter_input css-checkbox oop_filter_range_input"
-                                                                       data-filter0="{{ oop.0 }}"
-                                                                       data-filter1="{{ oop.1 }}"
-                                                                       data-status="loading"
-                                                                       disabled {% if oop.0 == '3500' %}{#checked#}{% endif %}>
-                                                                <label for="oopMaxRange-{{ oop.0 }}-{{ oop.1 }}" class="css-label radGroup2">
-                                                                    {% if not forloop.first and not forloop.last %}
-                                                                        ${{ oop.0|intcomma }} to ${{ oop.1|intcomma }}
-                                                                    {% elif forloop.first %}
-                                                                        Under ${{ oop.1|intcomma }}
-                                                                    {% elif forloop.last %}
-                                                                        Above ${{ oop.0|intcomma }}
-                                                                    {% endif %}
-                                                                    <span class="quote-filter-count">(<span id="oop_total_plan_count_{{ oop.0 }}_{{ oop.1 }}">0</span>)</span>
-                                                                </label>
-                                                            </li>
-                                                        {% endfor %}
+                                                <div class="col-md-3" style="display: none;">
+                                            {# OOP START #}
+                                            <div class="custom-check-holder" {% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %}>
+                                                <h3 class="quote-filter-title">
+                                                    Max Out of Pocket
+                                                    <span class="info-icn" data-container="body" data-placement="top"
+                                                          data-content="The money you pay out of your own pocket when you get medical care.
+                                                Out-of-pocket costs include deductibles, coinsurance, and co-payments.
+                                                Most health insurance plans have a cap on the total out-of-pocket costs you pay during your coverage period.
+                                                This is often called your Max Out-of-Pocket or Out-of-Pocket Max."
+                                                          data-toggle="popover"></span>
+                                                </h3>
+                                                <ul class="custom-radio" data-status="loading">
+                                                    {% for oop in ctx_max_out_of_pocket_list %}
                                                         <li>
                                                             <input type="radio" name="oopMaxRange"
-                                                                   id="oopMaxRange-all"
-                                                                   class="filter_input css-checkbox"
-                                                                   data-filter0=""
-                                                                   data-filter1=""
-                                                                   data-status="loading" checked>
-                                                            <label for="oopMaxRange-all" class="css-label radGroup2">
-                                                                All Max Out of Pocket
-                                                                <span class="quote-filter-count">(<span id="oop_total_plan_count">0</span>)</span>
+                                                                   id="oopMaxRange-{{ oop.0 }}-{{ oop.1 }}"
+                                                                   class="filter_input css-checkbox oop_filter_range_input"
+                                                                   data-filter0="{{ oop.0 }}"
+                                                                   data-filter1="{{ oop.1 }}"
+                                                                   data-status="loading"
+                                                                   disabled {% if oop.0 == '3500' %}{#checked#}{% endif %}>
+                                                            <label for="oopMaxRange-{{ oop.0 }}-{{ oop.1 }}" class="css-label radGroup2">
+                                                                {% if not forloop.first and not forloop.last %}
+                                                                    ${{ oop.0|intcomma }} to ${{ oop.1|intcomma }}
+                                                                {% elif forloop.first %}
+                                                                    Under ${{ oop.1|intcomma }}
+                                                                {% elif forloop.last %}
+                                                                    Above ${{ oop.0|intcomma }}
+                                                                {% endif %}
+                                                                <span class="quote-filter-count">(<span id="oop_total_plan_count_{{ oop.0 }}_{{ oop.1 }}">0</span>)</span>
                                                             </label>
                                                         </li>
-                                                    </ul>
+                                                    {% endfor %}
+                                                    <li>
+                                                        <input type="radio" name="oopMaxRange"
+                                                               id="oopMaxRange-all"
+                                                               class="filter_input css-checkbox"
+                                                               data-filter0=""
+                                                               data-filter1=""
+                                                               data-status="loading" checked>
+                                                        <label for="oopMaxRange-all" class="css-label radGroup2">
+                                                            All Max Out of Pocket
+                                                            <span class="quote-filter-count">(<span id="oop_total_plan_count">0</span>)</span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {# OOP END #}
                                                 </div>
-                                                {# OOP END #}
 
 
-                                                {# POLICY_MAX START #}
-                                                <div class="custom-check-holder"{% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %}>
-                                                    <h3 class="quote-filter-title">
-                                                        Policy Maximum
-                                                        <span class="info-icn" data-container="body" data-placement="top"
-                                                              data-content="The maximum dollar amount that a health insurance company
-                                                                  agrees to pay on behalf of a member for covered services
-                                                                  during the course of the coverage period."
-                                                              data-toggle="popover"></span>
-                                                    </h3>
-                                                    <ul class="custom-radio" data-status="loading">
-                                                        {% for policy_max in ctx_policy_maximum_list %}
-                                                            <li>
-                                                                <input type="radio" name="planCoverageMax"
-                                                                       id="planCoverageMax-{{ policy_max }}"
-                                                                       class="filter_input css-checkbox policy_max_filter_value_input"
-                                                                       data-status="loading"
-                                                                       data-value="{{ policy_max }}" disabled>
-                                                                <label for="planCoverageMax-{{ policy_max }}" class="css-label radGroup2">
-                                                                    ${{ policy_max }}
-                                                                    <span class="quote-filter-count">(<span id="policy_max_total_plan_count_{{ policy_max }}">0</span>)</span>
-                                                                </label>
-                                                            </li>
-                                                        {% endfor %}
+                                                <div class="col-md-3" style="display: none;">
+                                            {# POLICY_MAX START #}
+                                            <div class="custom-check-holder"{% if form_data.Ins_Type == 'lim' or form_data.Ins_Type == 'anc' %} hidden="hidden" {% endif %}>
+                                                <h3 class="quote-filter-title">
+                                                    Policy Maximum
+                                                    <span class="info-icn" data-container="body" data-placement="top"
+                                                          data-content="The maximum dollar amount that a health insurance company
+                                                              agrees to pay on behalf of a member for covered services
+                                                              during the course of the coverage period."
+                                                          data-toggle="popover"></span>
+                                                </h3>
+                                                <ul class="custom-radio" data-status="loading">
+                                                    {% for policy_max in ctx_policy_maximum_list %}
                                                         <li>
                                                             <input type="radio" name="planCoverageMax"
-                                                                   id="planCoverageMax-all"
-                                                                   class="filter_input css-checkbox"
+                                                                   id="planCoverageMax-{{ policy_max }}"
+                                                                   class="filter_input css-checkbox policy_max_filter_value_input"
                                                                    data-status="loading"
-                                                                   data-value=""
-                                                                   checked>
-                                                            <label for="planCoverageMax-all" class="css-label radGroup2">
-                                                                All Policy Maximum
-                                                                <span class="quote-filter-count">(<span id="policy_max_total_plan_count">0</span>)</span>
+                                                                   data-value="{{ policy_max }}" disabled>
+                                                            <label for="planCoverageMax-{{ policy_max }}" class="css-label radGroup2">
+                                                                ${{ policy_max }}
+                                                                <span class="quote-filter-count">(<span id="policy_max_total_plan_count_{{ policy_max }}">0</span>)</span>
                                                             </label>
                                                         </li>
-                                                    </ul>
+                                                    {% endfor %}
+                                                    <li>
+                                                        <input type="radio" name="planCoverageMax"
+                                                               id="planCoverageMax-all"
+                                                               class="filter_input css-checkbox"
+                                                               data-status="loading"
+                                                               data-value=""
+                                                               checked>
+                                                        <label for="planCoverageMax-all" class="css-label radGroup2">
+                                                            All Policy Maximum
+                                                            <span class="quote-filter-count">(<span id="policy_max_total_plan_count">0</span>)</span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {# POLICY_MAX END #}
                                                 </div>
-                                                {# POLICY_MAX END #}
+
 
 
                                                 {% if form_data.Ins_Type == 'stm' %}
-                                                    <div class="sort-by">
-                                                        Sort by
+                                                    <div class="col-md-3">
+                                                        <div class="custom-check-holder">
+                                                            <h3 class="quote-filter-title">
+                                                                Sort By
+                                                                <span class="info-icn" data-container="body" data-toggle="popover" data-placement="top"
+                                                                      data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"></span>
+                                                            </h3>
+                                                            <div class="{% comment %}sort-by{% endcomment %}">
+                                                                {% comment %}Sort by
                                                         <span class="custom-drop-down">
                                                             <span class="drop-text">{% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium</span>
                                                             <i class="fa fa-angle-down"></i>
-                                                        </span>
-                                                        <ul class="sort-drop-down" id="plan_sorting_options" data-status="loading">
-                                                            {% comment %}<li class="sorting_option selected" data-key="month" data-reverse="true">
+                                                        </span>{% endcomment %}
+                                                                <ul class="custom-radio" id="plan_sorting_options" data-status="loading">
+                                                                    {% comment %}<li class="sorting_option selected" data-key="month" data-reverse="true">
                                                                 <a href="javascript:void(0);">Plan Duration</a>
                                                             </li>{% endcomment %}
-                                                            <li class="sorting_option selected" data-key="Premium">
-                                                                <a href="javascript:void(0);">
-                                                                    {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
-                                                                </a>
-                                                            </li>
-                                                            <li class="sorting_option" data-key="option">
-                                                                <a href="javascript:void(0);">Deductible</a>
-                                                            </li>
-                                                            <li class="sorting_option" data-key="Coinsurance_Percentage">
+                                                                    <li class="sorting_option" data-key="Premium">
+                                                                        <a href="javascript:void(0);">
+                                                                            {% if form_data.Payment_Option == '1' %}Monthly{% endif %} Premium
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="sorting_option" data-key="option">
+                                                                        <a href="javascript:void(0);">Deductible</a>
+                                                                    </li>
+                                                                    {% comment %}<li class="sorting_option" data-key="Coinsurance_Percentage">
                                                                 <a href="javascript:void(0);">Coinsurance</a>
                                                             </li>
                                                             <li class="sorting_option" data-key="out_of_pocket_value">
@@ -433,136 +548,29 @@
                                                             </li>
                                                             <li class="sorting_option" data-key="coverage_max_value">
                                                                 <a href="javascript:void(0);">Policy Maximum</a>
-                                                            </li>
-                                                        </ul>
+                                                            </li>{% endcomment %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 {% endif %}
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
                                 </div>
-                            </div>
                         </div>
-
 
                         <div class="col-xs-12">
                             <div id="quote_plans-loading" style="display:none;text-align: center;margin-bottom: 30px">
                                 <img src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}">
                             </div>
                             <div id="featured_plan_container"></div>
-                            <ul class="plan-list" id="month_plan_list">
-                                {% for mp in xml_res.monthly_plans %}
-                                <li class="ms-row">
-
-                                    <div class="ms-col">
-                                        <div class="quote-plan">
-                                            <div class="quote-plan-header">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <div class="quote-plan-logo">
-                                                            <div class="carrierLogo">
-                                                                <img alt="{{ mp.Name }}" src="/static/quotes/img/stm/{{ mp.Name|plan_name_for_img }}.png" class="carrier-logo-image">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="quote-plan-price-container js-price-breakdown col-sm-4">
-                                                        <div class="quote-plan-price">
-                                                            ${% plan_actual_premium mp %}
-                                                        {% if mp.Payment_Option != '2' %}
-                                                            <span class="quote-plan-per-month">/mo</span>
-                                                        {% endif %}
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <div class="fees">+ fees</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-4">
-                                                        <a class="btn quote-plan-buy" href="{% url 'quotes:stm_plan' mp.unique_url %}">
-                                                            Select This Plan
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="quote-plan-body">
-                                                <div class="quote-plan-carrier">
-                                                    <h3 class="quote-plan-name">
-
-                                                        <a class="js-view-details1"  href="{% url 'quotes:stm_plan' mp.unique_url %}">
-                                                            {{ mp.plan_name }}
-                                                        </a>
-                                                        <a href="{% url 'quotes:stm_plan' mp.unique_url %}" class="secondary-link js-view-details"> (see details)</a>
-
-                                                    </h3>
-                                                </div>
-                                                <ul class="quote-plan-info">
-                                                    <li>
-
-                                                        <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-
-                                                        <span class="plan-info-label">Deductible</span>
-                                                        <span class="plan-info-value"> ${{ mp.option|intcomma }}</span>
-                                                    </li>
-                                                    <li>
-                                                        <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                                                        <span class="plan-info-label">Coinsurance</span>
-                                                        <span class="plan-info-value">{{ mp.Coinsurance_Percentage }}%</span>
-                                                    </li>
-                                                    <li>
-                                                        <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
-                                                              data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                                                        <span class="plan-info-label">Max Out of Pocket</span>
-                                                        <span class="plan-info-value">${{ mp.out_of_pocket_value|intcomma }}</span>
-                                                    </li>
-                                                </ul>
-                                                <div class="quote-plan-bundle">
-                                                    <ul class="quote-bundle-list">
-                                                        <li>
-                                                            <a data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
-                                                               class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover" data-placement="top" data-container="body">
-                                                                ${{ mp.coverage_max_value|intcomma }} Policy Max
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay }} {{ mp.copay_text }}</a>
-                                                        </li>
-                                                        {% if mp.copay_2 %}
-                                                        <li>
-                                                            <a class="js-glossary" href="javascript:void(0)">${{ mp.copay_2 }} {{ mp.copay_2_text }}</a>
-                                                        <li>
-                                                        {% endif %}
-                                                    </ul>
-                                                </div>
-                                                {% comment %}
-                                                <div class="text-right mrg-t-15">
-                                                    <ul class="custom-check text-right">
-                                                        <li>
-                                                            <input type="checkbox" name="checkboxG9" id="checkboxG9" class="css-checkbox"/>
-                                                            <label for="checkboxG9" class="css-label bold text-uppercase">Compare <span class="quote-filter-count">(2)</span></label>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                {% endcomment %}
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-
-                                </li>
-                                {% empty %}
-
-
-
-                                    {# commented for maintenance #}
-                                    <li style="text-align: center; margin-top: 50px;">
-                                        <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                    </li>
-
-
-                                {% endfor %}
-                            </ul>
+                            <div class="plan-list" id="month_plan_list">
+                                <div class="qt-quote-loading-icon">
+                                    <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -585,210 +593,119 @@
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
-    <li class="ms-row">
-        <div class="ms-col">
-            <div class="quote-plan">
-                <div class="quote-plan-header">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="quote-plan-logo">
-                                <div class="carrierLogo">
-                                    <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png"
-                                    class="carrier-logo-image">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="quote-plan-price-container js-price-breakdown col-sm-4">
-                            <div class="quote-plan-price">
-                                $[[actual_premium]]
-                                [[^upfront]]
-                                <span class="quote-plan-per-month">/mo</span>
-                                [[/upfront]]
-                            </div>
-                            <div class="text-right">
-                                <div class="fees">+ fees</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
-                                Select This Plan
-                            </a>
-                        </div>
-                    </div>
-                {% comment %}
-                    <div class="quote-plan-logo">
-                        <div class="carrierLogo">
-                            <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png" class="carrier-logo-image">
-                        </div>
-                    </div>
-                    <div class="quote-plan-price-container js-price-breakdown">
-                        <div class="quote-plan-price">
-                            $[[actual_premium]]
-                            [[^upfront]]
-                            <span class="quote-plan-per-month">/mo</span>
-                            [[/upfront]]
-                        </div>
-                        <div class="text-right">
-                            <div class="fees">+ fees</div>
-                        </div>
-                    </div>
-                    <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
-                        Select This Plan
-                    </a>
-                    {% endcomment %}
+    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}">
+    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+        <div class="quote-container">
+            <div class="">
+                <div class="qt-plan-logo">
+                    <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
+                                class="carrier-logo-image">
+
                 </div>
-                <div class="quote-plan-body">
-                    <div class="quote-plan-carrier">
-                        <h3 class="quote-plan-name">
-
-                            <a class="js-view-details1"  href="/stm/plan/[[unique_url]]">
-                                [[plan_name]]
-                            </a>
-                            <a href="/stm/plan/[[unique_url]]" class="secondary-link js-view-details"> (see details)</a>
-
-                        </h3>
+                 <hr>
+                <div class="plan-single-info">
+                    <div class="fee">
+                        $[[actual_premium]]
+                        [[^upfront]]
+                        <span class="quote-plan-per-month">/mo</span>
+                        <sup style="color:#fe8829">+fee</sup>
+                        [[/upfront]]
                     </div>
-                    <ul class="quote-plan-info">
-                        <li>
-                            {% comment %}
-                            <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
-                                  data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                            {% endcomment %}
-                            <span class="plan-info-label">Premium</span>
-                            <span class="plan-info-value"> $[[actual_premium]]</span>
-                        </li>
-                        <li>
-                            {% comment %}
-                            <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
-                                data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                            {% endcomment %}
-                            <span class="plan-info-label">Enrollment Fee</span>
-                            <span class="plan-info-value">$[[Enrollment_Fee]]</span>
-                        </li>
-                        [[^TelaDoc_Fee]]
-                        <li>
-                            {% comment %}
-                            <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
-                                  data-placement="top" data-toggle="popover" data-container="body" class="info-icn" data-original-title="" title=""></span>
-                            {% endcomment %}
-                            {% comment %}
-                            [[#TelaDoc_Fee]]
-                            <span class="plan-info-label">TelaDoc Fee</span>
-                            <span class="plan-info-value">$[[TelaDoc_Fee]]</span>
-                            [[/TelaDoc_Fee]]
-                            {% endcomment %}
-
-                            <span class="plan-info-label">Administrative Fee</span>
-                            <span class="plan-info-value">$[[Administrative_Fee]]</span>
-
-                        </li>
-                        [[/TelaDoc_Fee]]
-                    </ul>
-                    {% comment %}
-                    <div class="quote-plan-bundle">
-                        <ul class="quote-bundle-list">
-                            <li>
-                                <a data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
-                                   class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover" data-placement="top" data-container="body">
-                                    $[[coverage_max_value]] Policy Max
-                                </a>
-                            </li>
-                            <li>
-                                <a class="js-glossary" href="javascript:void(0)">$[[copay]] [[copay_text]]</a>
-                            </li>
-                            [[#copay_2]]
-                            <li>
-                                <a class="js-glossary" href="javascript:void(0)">$[[copay_2]] [[copay_2_text]]</a>
-                            <li>
-                            [[/copay_2]]
-                        </ul>
-                    </div>
-                    {% endcomment %}
+                </div>
+                <div class="plan-single-info">
+                    <h4 class="quote-plan-details">
+                        <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
+                            [[plan_name]]
+                        </a>
+                        </h4>
+                </div>
+                <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                    <p class="deductible">Premium: $[[actual_premium]]</p>
+                <div class="">
+                    <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
+                </div>
+                <div class="deductible">
+                [[^TelaDoc_Fee]]
+                </div>
+                <div class="">
+                    <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
+                </div>
+                <div class="deductible">
+                [[/TelaDoc_Fee]]
+                </div>
+                </div>
+                <div class="plan-select-btn">
+                    <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
                 </div>
             </div>
         </div>
-    </li>
+    </div>
+</div>
 </script>
 <script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
-    <li class="ms-row">
-        <div class="ms-col">
-            <div class="quote-plan">
-                <div class="quote-plan-header">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="quote-plan-logo">
-                                <div class="carrierLogo">
-                                    <img alt="[[Name]]" src="/static/quotes/img/stm/[[plan_name_for_img]].png"
-                                    class="carrier-logo-image">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="quote-plan-price-container js-price-breakdown col-sm-4">
-                            <div class="quote-plan-price">
-                                $[[actual_premium]]
-                                [[^upfront]]
-                                <span class="quote-plan-per-month">/mo</span>
-                                [[/upfront]]
-                            </div>
-                            <div class="text-right">
-                                <div class="fees">+ fees</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <a class="btn quote-plan-buy" href="/stm/plan/[[unique_url]]">
-                                Select This Plan
-                            </a>
-                        </div>
+    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}">
+    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+        <div class="quote-container">
+            <div class="">
+                <div class="qt-plan-logo">
+                    <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
+                            class="carrier-logo-image">
+
+                </div>
+                <hr>
+                <div class="plan-single-info">
+                    <div class="fee">
+                        $[[actual_premium]]
+                        [[^upfront]]
+                        <span class="quote-plan-per-month">/mo</span>
+                        <sup style="color:#fe8829">+fee</sup>
+                        [[/upfront]]
                     </div>
                 </div>
-                <div class="quote-plan-body">
-                    <div class="quote-plan-carrier">
-                        <h3 class="quote-plan-name">
-
-                            <a class="js-view-details1"  href="/stm/plan/[[unique_url]]">
-                                [[plan_name]]
-                            </a>
-                            <a href="/stm/plan/[[unique_url]]" class="secondary-link js-view-details"> (see details)</a>
-
-                        </h3>
+                <div class="plan-single-info">
+                    <h4 class="quote-plan-details">
+                        <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
+                            [[plan_name]]
+                        </a>
+                    </h4>
+                </div>
+                <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                    <p class="deductible">Premium: $[[actual_premium]]</p>
+                    <div class="">
+                        <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
                     </div>
-                    <ul class="quote-plan-info">
-                        <li>
-                            <span class="plan-info-label">Premium</span>
-                            <span class="plan-info-value"> $[[actual_premium]]</span>
-{#                            <span class="info-icn"  data-container="body" data-placement="top"#}
-{#                                      data-content="This includes administrative fee."[[note]]#}
-{#                                      data-toggle="popover">#}
-{##}
-{#                            </span>#}
-                        </li>
-                        <li>
-                            <span class="plan-info-label">Enrollment Fee</span>
-                            <span class="plan-info-value">$[[Enrollment_Fee]]</span>
-                        </li>
-                        <li>
-{#                            <span class="plan-info-label">Note</span>#}
-                            <span>Note: [[note]] </span>
-                        </li>
-
-
-                    </ul>
+                    [[#Administrative_Fee]]
+                     <div class="">
+                        <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
+                    </div>
+                    [[/Administrative_Fee]]
+                    [[#note]]
+                    <div class="">
+                        <p class="deductible">Note: [[note]]</p>
+                    </div>
+                    [[/note]]
+                </div>
+                <div class="plan-select-btn">
+                    <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
                 </div>
             </div>
         </div>
-    </li>
+    </div>
+</div>
 </script>
 
-
 <script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
-    <div class="col-md-4{% comment %}ms-row{% endcomment %}" id="[[#featured_plan]]featured-premium-plan[[/featured_plan]]">
-        <div class={% comment %}row{% endcomment %}>
-            <div class="">
-                <div class="quote-container">
+    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}" id="[[#featured_plan]]featured-premium-plan[[/featured_plan]]">
+        <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+            <div class="quote-container">
+                <div class="">
+
                     <div class="qt-plan-logo">
                         <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
                              class="carrier-logo-image">
+
                     </div>
+                     <hr>
                     <div class="plan-single-info">
                         <div class="fee">
                             $[[actual_premium]]
@@ -798,21 +715,18 @@
                             [[/upfront]]
                         </div>
                     </div>
-                    <div class="plan-select-btn">
-                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
-                    </div>
                     <div class="plan-single-info">
-                        <h5 class="quote-plan-details">
+                        <h4 class="quote-plan-details">
                             <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
                                 [[plan_name]]
                             </a>
-                            </h3>
+                            </h4>
                     </div>
-                    <div class="plan-single-info">
+                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
                         <p class="deductible">Deductible: $[[option]]
                             <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
-                                  data-original-title="" title=""> <i class="fa fa-info-circle"
+                                  data-original-title="" title=""><i class="fa fa-info-circle"
                                                                       aria-hidden="true"></i></span>
                         </p>
                         <p class="policy-max">
@@ -823,8 +737,8 @@
                             </a>
                         </p>
 
-                    </div>
-                    <div class="plan-single-info">
+
+                    <div class="">
                         <p class="deductible">Coinsurance: [[Coinsurance_Percentage]]%
                             <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
@@ -835,7 +749,7 @@
                             <a class="js-glossary" href="javascript:void(0)">$[[copay]] [[copay_text]]</a>
                         </p>
                     </div>
-                    <div class="plan-single-info">
+                    <div class="">
                         <p class="deductible">Max Out of Pocket: $[[out_of_pocket_value]]
                             <span data-content="Your share of costs for a covered service, including your deductible. For example, once you meet your deductible, you pay 0% and your health insurance plan pays 100% up to $10,000; then 100% of the costs for covered services are paid thereafter, up to the plan maximum of $1,000,000."
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
@@ -846,7 +760,10 @@
                             <a class="js-glossary" href="javascript:void(0)">$[[copay_2]] [[copay_2_text]]</a>
                         </p>
                     </div>
-
+                    </div>
+                    <div class="plan-select-btn">
+                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1264,12 +1181,13 @@ $(function() {
                 {#console.log(plan);#}
                 if (plan.out_of_pocket_value) {
                     var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
-                } else if(plan.Name == 'USA Dental') {
+                } else if(plan.Name == 'USA Dental' || plan.Name == 'Freedom Spirit Plus' ||
+                    plan.Name == 'Safeguard Critical Illness') { {# TODO: for torsho: need plan type here #}
                     var rendered = Mustache.to_html(anc_plan_template_usa_dental, data);
                 } else {
                     var rendered = Mustache.to_html(stm_plan_template, data);
                 } //test
-                
+
                 //featured plan will be showed in top
                 if(data.featured_plan){
                     //$("#month_plan_list").prepend(rendered);
@@ -1285,7 +1203,9 @@ $(function() {
             $total_plan_count.text(json.monthly_plans.length - 2);
             if (json.monthly_plans.length == 2 && filtered_plans.length == 0) {
                 $("#month_plan_list").html(
-                        '<h3 class="no-coverage-error">We do not currently have any health insurance plans in your area.</h3>'
+                        `<div class="alert alert-warning w100 text-center no-coverage-error-wrapper">
+                            <h3 class="no-coverage-error"><i class="fa fa-info-circle" style="padding-right: 12px"></i>Sorry, We do not currently have any health insurance plans in your area.</h3>
+                        </div>`
                 );
             }
         } else if (json.monthly_plans.length >= 1) {
@@ -1302,7 +1222,7 @@ $(function() {
         coinsurance_count(json.monthly_plans);
         oop_count(json.monthly_plans);
         policy_max_count(json.monthly_plans);
-        
+
         EndFiltering();
     }
 
@@ -1387,7 +1307,7 @@ $(function() {
             }
         }, 1000);
     });
-    
+
     function EndFiltering()
     {
          $('.overlay-loading').fadeOut();
@@ -1404,6 +1324,15 @@ $(function() {
     $('#close-fs').click(function (e) {
         $('#filter-sort').slideUp();
     })
+
+    $(window).scroll(function () {
+        if($(window).scrollTop() >  230){
+            $('.quote-sort-bar').addClass('qt-sticky');
+        } else {
+            $('.quote-sort-bar').removeClass('qt-sticky');
+        }
+
+    });
 
 </script>
 {% endblock %}

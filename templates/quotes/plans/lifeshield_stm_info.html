@@ -1,0 +1,675 @@
+{% extends 'quotes/plans/base.html' %}
+
+{% load humanize hp_tags%}
+
+{% block qt_plan_info %}
+    <div class="qt-plan-info">
+        <h5 class="mrg-b-0">${{ plan.option|intcomma }}</h5>
+        <p class="small">Deductible</p>
+    </div>
+    <div class="qt-plan-info">
+        <h5 class="mrg-b-0">{{ plan.Coinsurance_Percentage }}%</h5>
+        <p class="small">Coinsurance</p>
+    </div>
+    <div class="qt-plan-info">
+        <h5 class="mrg-b-0">${{ plan.Enrollment_Fee }}</h5>
+        <p class="small">Enrollment Fee</p>
+    </div>
+    <div class="qt-plan-info">
+        <h5 class="mrg-b-0"> ${{ plan.out_of_pocket_value|intcomma }}</h5>
+        <p class="small">Max Out of Pocket</p>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="plan-details-benefits common-section">
+    <div class="container"><h2 class="heading center">Benefits &amp; Coverage</h2>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6"><p class="emphasize">Insurance Type</p>Short Term Medical</div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The company that issues an insurance policy and assumes the risks associated with the insured.">
+                        Company
+                    </a>
+                </p>
+                LifeShield National Insurance Company
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The amount you pay before your health insurance plan begins to pay for the
+                        services you receive. Not everything you pay (such as your premium and copay) counts toward
+                         your deductible. For example, if your deductible is $1,000, your plan won't pay anything
+                         until you've met your $1,000 deductible for covered healthcare services subject to the
+                          deductible. Estimated Premium is based on a (Per Term Deductible)">Deductible</a>
+                </p>
+                Individual: ${{ plan.option|intcomma }}
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, typically after you meet your
+                       deductible and copayment charges. For example, once you meet your deductible, you might
+                        pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you
+                        have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs
+                         for covered services.">Coinsurance</a>
+                </p>
+                {{ plan.Coinsurance_Percentage }}% after deductible
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Maximum lifetime coverage">Coverage Maximum</a>
+                </p>
+                ${{ plan.coverage_max_value|intcomma }}
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="One time enrollment fee.">
+                        Enrollment Fee
+                    </a>
+                </p>
+                ${{ plan.Enrollment_Fee }}
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="Your share of costs for a covered service, including your deductible. For example,
+                        once you meet your deductible, you pay 20% up to your out of pocket maximum, then 100% of
+                        the costs for covered services are paid thereafter, up to the plan maximum of $100,000.">
+                        Max Out of Pocket
+                    </a>
+                </p>
+                ${{ plan.out_of_pocket_value|intcomma }}
+            </div>
+
+        </div>
+        <div class="row details-benefit-row">
+
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Wellness</p>
+                ${{ plan.copay_2 }} Copayment per visit per Covered Person. Benefit not subject to Coinsurance or Plan Deductible.
+            </div>
+
+            <div class="col-md-6">
+                    <p class="emphasize">Does Out-of-Pocket Limit include deductible?</p>
+                    Yes
+                </div>
+        </div>
+
+
+        <h4 class="details-section-header">Mental Disorders</h4>
+
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Inpatient</p>
+                $100 per day, maximum 31 days
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Outpatient</p>
+                $50 per day, maximum 10 visits
+            </div>
+        </div>
+
+
+        <h4 class="details-section-header">Inpatient Hospital Services</h4>
+        <div class="border-bottom">
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Average Standard Room Rate</p>
+               $1,000 per day
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Hospital ICU</p>
+               $1,250 per day
+            </div>
+        </div>
+        <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Doctor Visits</p>
+                    $50 per day, maximum $500
+                </div>
+            </div>
+
+        </div>
+
+        <h4 class="details-section-header">Outpatient Services</h4>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Surgical Facility</p>
+                    $1,250 per day
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Emergency Room - benefit</p>
+                    $250 per visit
+                </div>
+            </div>
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Ambulance</p>
+                    Injury and Sickness: $250 per transport
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Home Health Care</p>
+                    $50 per visit, maximum 30 days
+                </div>
+            </div>
+
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Extended Care Facility</p>
+                    $150 per day, maximum 30 days
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Physical, Occupational and Speech Therapy</p>
+                    $50 per day, maximum 20 visits
+                </div>
+            </div>
+        </div>
+
+
+        <h4 class="details-section-header">Doctor Office Consultation</h4>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Copay</p>
+                    <span class="pre">
+                      $30 Copay, maximum 3
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Wellness Benefit Copay</p>
+                    <span class="pre">
+                       $50 Copay, maximum 1
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+
+
+         <h4 class="details-section-header">Substance Abuse</h4>
+        <div class="border-bottom">
+            <div class="row details-benefit-row">
+                <div class="col-md-6">
+                    <p class="emphasize">Inpatient</p>
+                    <span class="pre">
+                      $100 per day, maximum 31 days
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <p class="emphasize">Outpatient</p>
+                    <span class="pre">
+                       $50 per day, maximum 10 visits
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <h4 class="details-section-header">Maternity Coverage</h4>
+        <div class="row details-benefit-row border-bottom">
+            <div class="col-md-6">
+                <p class="emphasize">Pre &amp; Postnatal Office Visit</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Labor &amp; Delivery Hospital Stay</p>
+                N/A
+            </div>
+        </div>
+        <h4 class="details-section-header">Additional Coverage</h4>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6">
+                <p class="emphasize">Chiropractic Coverage</p>
+                N/A
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">Mental Health Coverage</p>
+                Yes
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Covered Tariff</h2>
+        <p>LifeShield STM membership offers the following health insurance benefits, underwritten by LifeShield National Insurance Co.
+            LifeShield STM plans are not available in all states. State options and benefits may vary.</p>
+        <h4>Why Short-Term Medical (STM)?</h4>
+        <p>Short-term medical pays benefits like a major medical insurance plan, but for a predetermined
+            length of time. Members can select from a wide range of deductible and coinsurance options to
+            tailor a plan to fit their lifestyle needs and budget.</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>How do members figure out what coverage they need and enroll?</h4>
+                <p>Consider the benefit period and choose payment method:</p>
+                <ul>
+                    <li>
+                        <span class="emphasize underline">Single Payment</span>
+                        <br>
+                       This option is ideal if it is known exactly how many days the coverage is needed. The minimum number of days that members
+                        may apply for coverage is 30 days; the maximum is 90 days. Payment via Visa, MasterCard, or bank draft is accepted.
+                    </li>
+                    <li>
+                        <span class="emphasize underline">Monthly Pay</span>
+                        <br>
+                        This plan gives members the flexibility to continue coverage for as long as it is needed and allows them to discontinue
+                        the plan once their temporary need ends. Members can select coverage periods of up to 3 months. Payment via Visa, MasterCard,
+                        or bank draft is accepted.In addition to the ability to apply for up to 3 months of coverage, members have the option at the
+                        time of enrollment to apply for a second policy for up to 3 months of coverage: Pre-existing condition waiver rider availability varies by state.
+                    </li>
+                </ul>
+                <p>Consider lifestyle needs and budget and choose one from each of the following:</p>
+                <ul>
+                    <li>
+                        <span class="emphasize underline">Deductible: $1,000, $2,500, $5,000, $7,500, $10,000</span>
+                        <br>
+                        The selected deductible must be paid by each Covered Person before Coinsurance benefits are payable. After 3 individuals meet
+                        their deductible, the deductible is deemed satisfied for any remaining covered individuals..
+                    </li>
+                    <li>
+                        <span class="emphasize underline">Coinsurance Percentage: 100/0, 80/20, 70/30, 50/50</span>
+                        <br>
+                        The selection of a Coinsurance Percentage represents the percent of covered eligible expenses
+                        that we pay and that members pay after the deductible has been satisfied up to the Out Of Pocket Maximum.
+                    </li>
+                    <li>
+                        <span class="emphasize underline">Out of Pocket Maximum: $2,000, $3,000, $4,000, $5,000</span>
+                        <br>
+                        Once members reach their Out of Pocket Maximum Amount selected, we pay 100%* up to the Coverage Period Maximum Benefit.
+                    </li>
+                </ul>
+
+                <p>*Subject to Maximum Allowable Expense</p>
+            </div>
+
+            <div class="col-md-6">
+                <h4>What medical expenses are covered?</h4>
+                <p>The following benefits are for the Insured and each Covered Dependent subject to the plan
+                    Deductible, Coinsurance Percentage, Out Of Pocket Maximum, Additional Deductibles, and Coverage
+                    Period Maximum Benefit. Benefits are limited to Maximum Allowable Expense for each Covered
+                    Eligible Expense, in addition to any specific limits stated in the policy.</p>
+                <ul>
+                    <li>Preventive / Wellness Care</li>
+                    <li>Doctor's office consultation/Urgent Care visits in excess of $40 for co-pay; this benefit is
+                        not subject to the Plan Deductible or Coinsurance Percentage</li>
+                    <li>Outpatient and Inpatient Treatment for Mental and Nervous Disorders</li>
+                    <li>Outpatient and Inpatient Treatment for Substance Abuse</li>
+                    <li>Organ and Tissue transplants</li>
+                    <li>Inpatient prescription drugs</li>
+                    <li>Physical, Occupational and Speech Therapy $50 per day and 20 visits combined</li>
+                    <li>Ambulance Transportation maximum benefit $250</li>
+                    <li>Outpatient Hospital or Emergency Room Care</li>
+                    <li>Inpatient Room & Board, including Intensive Care</li>
+                    <li>Outpatient Miscellaneous Medical Services, doctors medical care and treatment performed in a hospital</li>
+                    <li>Home Health Care benefit $50 per visit for a maximum of 1 visit per day and 30 Home Health Care visits.</li>
+                    <li>Extended Care Facility up to $150 per day for a maximum of 30 days</li>
+                    <li>Outpatient Surgical Facility</li>
+                    <li>Surgeon services in the hospital or outpatient surgical facility</li>
+                </ul>
+                <p>Note: This is a brief description of the plan benefits, which may vary by state.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="common-section">
+    <div class="container"><h2 class="heading center">Restrictions &amp; Omissions</h2>
+
+        <p>Charges for the following treatments and/or services and/or supplies and/or conditions are excluded
+            from coverage:</p>
+
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <ol class="plan-details-li">
+                    <li>
+                        Pre-existing Conditions:
+                        <ol type="a">
+                            <li>Charges resulting directly or indirectly from a condition for which a Covered Person
+                                received medical treatment, diagnosis, care or advice, including diagnostic tests or
+                                medications, within the 60 month period immediately preceding such person’s
+                                Certificate Effective Date are excluded for the first 12 months of coverage
+                                hereunder.</li>
+                            <li>Pre-existing conditions Conditions includes conditions that produced any symptoms
+                                which would have caused a reasonable prudent person to seek diagnosis, care or
+                                treatment within the 60 month period immediately prior to the Covered Person’s
+                                Certificate Effective Date of coverage under the Policy.</li>
+                        </ol>
+                        <p>
+                            This exclusion does not apply to a newborn child or newborn adopted child who is added
+                            to coverage in accordance withPART II – ELIGIBILITY AND EFFECTIVE DATE OF INSURANCE.
+                        </p>
+                    </li>
+                    <li>
+                        Waiting Period:
+                        <ol type="a">
+                            <li>Covered Persons will only be entitled to receive benefits for Sicknesses that begin,
+                                by occurrence of symptoms and/or receipt of treatment, more than 5 days following
+                                the Covered Person’s Certificate Effective Date of coverage under the Policy.</li>
+                            <li>Covered Persons will only be entitled to receive benefits for Cancer that begins,
+                                by occurrence of symptoms or receipt of treatment more than 30 days following the
+                                Covered Person’s Certificate Effective Date of coverage under the Policy.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        Charges during the first 6 months after the Certificate Effective Date of coverage for a
+                        Covered Person for the following:
+                        <ol type="a">
+                            <li>otal or partial hysterectomy, unless it is Medically Necessary due to a diagnosis of carcinoma;</li>
+                            <li>Tonsillectomy;</li>
+                            <li>Adenoidectomy;</li>
+                            <li>Repair of deviated nasal septum or any type of surgery involving the sinus;</li>
+                            <li>Myringotomy;</li>
+                            <li>Tympanotomy;</li>
+                            <li>Herniorraphy; or</li>
+                            <li>Cholecystectomy</li>
+                        </ol>
+                        <p>
+                            However, if such condition is a Pre-Existing Condition, any benefit consideration will
+                            be in accordance with the Pre-Existing Conditions limitation.
+                        </p>
+                    </li>
+                    <li>
+                        The benefits payable for the following conditions or procedures are limited to the specified
+                        amounts shown in the Schedule of Benefits:
+                        <ol type="a">
+                            <li>Kidney stone</li>
+                            <li>Appendectom</li>
+                            <li>Joint or tendon Surger</li>
+                            <li>Knee Injury or disorde</li>
+                            <li>Acquired Immune Deficiency Syndrome (AIDS)/ Human Immuno-deficiency Virus (HIV)</li>
+                            <li>Gallbladder Surger</li>
+                        </ol>
+                    </li>
+                    <li>
+                        Mental, emotional or nervous disorders or counseling of any type except as specifically covered as an Eligible Expense.
+                    </li>
+                    <li>Treatment for Substance Abuse, unless specifically covered under the Policy as an Eligible Expense.</li>
+                    <li>Outpatient Prescription Drugs, unless specifically covered under the Policy as an Eligible Expense.</li>
+                    <li>Medications, vitamins, and mineral or food supplements including pre-natal vitamins, or any over-the-counter medicines,
+                        whether or not ordered by a Doctor.</li>
+                    <li>Any drug, treatment or procedure that either promotes or prevents conception including but not limited to:
+                        artificial insemination, treatment for infertility or impotency, sterilization or reversal of sterilization.
+                    </li>
+                    <li>Any drug, treatment or procedure that corrects impotency or non-organic sexual dysfunction.</li>
+                    <li>Modifications of the physical body in order to improve the psychological, mental or emotional well-being of the Covered Person, such as sex-change surgery.</li>
+                    <li>Surgeries, treatments, services or supplies for cosmetic or aesthetic reasons, except for reconstructive surgery where expressly covered under the Policy.</li>
+                    <li>Weight modification or surgical treatment of obesity</li>
+                    <li>Eye surgery, such as LASIX, when the primary purpose is to correct nearsightedness, farsightedness or astigmatism.</li>
+                    <li>Dental treatment and dental surgery except as necessary to restore or replace sound and natural teeth lost or damaged as a result of a covered Injury</li>
+                    <li>Expenses incurred in the treatment by any method for jaw joint problems including temporomandibular joint dysfunction (TMJ), TMJ pain syndromes, craniomandibular
+                        disorders, myofacial pain dysfunction or other conditions of the joint linking the jaw bone and skull and the complex of muscles, nerves and other tissues related
+                        to the joint, unless specifically covered under the Policy as an Eligible Expense.</li>
+                    <li>Routine pre-natal care, Pregnancy, child birth, and post natal care. (This exclusion does not apply to “Complications of Pregnancy�? as defined.)</li>
+                    <li>Weight modification or surgical treatment of obesity.</li>
+                    <li>Charges for a Covered Dependent who is a newborn child not yet discharged from the Hospital, unless the charges are Medically Necessary to treat premature
+                        birth, congenital Injury or Sickness, or Sickness or Injury sustained during or after birth.</li>
+                    <li>Sclerotherapy for veins of the extremities.</li>
+                    <li>Abortions, except in connection with covered Complications of Pregnancy or if the life of the expectant mother would be at risk.</li>
+                    <li>Joint replacement or other treatment of joints, spine, bones or connective tissue including tendons, ligaments and cartilage, unless related to a covered Injury.</li>
+                    <li>Surgeries, treatments, services or supplies which are deemed to be Experimental Treatment.</li>
+                    <li>Chronic fatigue or pain disorders.</li>
+                    <li>Kidney or end stage renal disease.</li>
+                    <li>Treatment or diagnosis of allergies, except for emergency treatment of allergic reactions</li>
+                </ol>
+            </div>
+            <div class="col-md-6">
+                <ol start="27" class="plan-details-li">
+                    <li>Treatment for cataracts.</li>
+                    <li>Chronic fatigue or pain disorders.</li>
+                    <li>Treatment of sleep disorders.</li>
+                    <li>Treatment or diagnosis of allergies, except for emergency treatment of allergic reactions.</li>
+                    <li>Treatment for cataracts.</li>
+                    <li>Treatment of sleep disorders.</li>
+                    <li>Treatment required as a result of complications or consequences of a treatment or
+                        condition not covered under this Certificate.</li>
+                    <li>Treatment incurred as a result of exposure to non-medical nuclear radiation and/or radioactive material(s).</li>
+                    <li>Treatment for acne, moles, skin tags, diseases of sebaceous glands, seborrhea, sebaceous cyst,
+                        unspecified disease of sebaceous glands, hypertrophic and atrophic conditions of skin, nevus.</li>
+                    <li>Treatment for or related to any Congenital Condition, except as it relates to a newborn child
+                        or newborn adopted child added as a Covered Person pursuant to the terms of this Certificate.</li>
+                    <li>Treatment, medication or hormones to stimulate growth, or treatment of learning disorders,
+                        disabilities, developmental delays or deficiencies, including therapy.</li>
+                    <li>Spinal manipulation or adjustment.</li>
+                    <li>Biofeedback, acupuncture, recreational, sleep or MIST Therapy®, holistic care of any nature,
+                        massage and kinestherapy, excepted as provided for under Home Health Care.</li>
+                    <li>Hypnotherapy when used to treat conditions that are not recognized as Mental Disorders by the
+                        American Psychiatric Association, and non-medical self-care or self-help programs.</li>
+                    <li>Eyeglasses, contact lenses, hearing aids, hearing implants, eye refraction, visual therapy,
+                        orthoptics, visual eye training and any examination or fitting related to these devices, and
+                        all vision and hearing tests and examinations.</li>
+                    <li>Care, treatment or supplies for the feet, orthopedic shoes, orthopedic prescription devices
+                        to be attached to or placed in shoes, treatment of weak, strained, flat, unstable or unbalanced
+                        feet, metatarsalgia or bunions and treatment of corns, calluses or toenails.</li>
+                    <li>Care and treatment for hair loss including wigs, hair transplants or any drug that
+                        promises hair growth, whether or not prescribed by a Doctor.</li>
+                    <li>Exercise programs, whether or not prescribed or recommended by a Doctor.</li>
+                    <li>Telephone or Internet consultations and/or treatment or failure to keep a scheduled appointment.</li>
+                    <li>Charges for travel or accommodations, except as expressly provided for local ambulance.</li>
+                    <li>All charges incurred while confined primarily to receive Custodial or Convalescent Care.</li>
+                    <li>Services received or supplies purchased outside the United States, its territories or possessions,
+                        or Canada unless specifically covered under the Policy as an Eligible Expense</li>
+                    <li>Any services or supplies in connection with cigarette smoking cessation.</li>
+                    <li>Any services performed or supplies provided by a member of a Covered Person’s Immediate Family.</li>
+                    <li>Services received for any condition caused by a Covered Person’s commission of or attempt to
+                        commit an assault, battery, or felony, whether charged or not, or to which a contributing
+                        cause was the Covered Person being engaged in an illegal occupation.</li>
+                    <li>Willfully self-inflicted Injury or Sickness.</li>
+                    <li>Participating in hazardous occupations or other activity including participating, instructing,
+                        demonstrating, guiding or accompanying others in the following: operation of a flight in an
+                        aircraft other than a regularly scheduled flight by a commercial airline, professional or
+                        semi-professional sports, extreme sports, parachute jumping, hot-air ballooning, hang-gliding,
+                        base jumping, mountain climbing, bungee jumping, scuba diving, sail gliding, parasailing,
+                        parakiting, rock or mountain climbing, cave exploration, parkour, racing including stunt
+                        show or speed test of any motorized or non-motorized vehicle, rodeo activities, or similar
+                        hazardous activities. Also excluded is Injury received while practicing, exercising,
+                        undergoing conditional or physical preparation for such activity.</li>
+                    <li>Injuries or Sicknesses resulting from participation in interscholastic, intercollegiate or
+                        organized competitive sports. This does not include dependent children participating in
+                        local community sports activities</li>
+                    <li>Injury resulting from being under the influence of or due wholly or partly to the effects
+                        of alcohol or drugs, other than drugs taken in accordance with treatment prescribed by a Doctor.</li>
+                    <li>Expenses resulting from a declared or undeclared war, or from voluntary participation in a riot or insurrection. This Exception does not apply to an act of terrorism.</li>
+                    <li>Charges resulting from a declared or undeclared war, or from voluntary participation in a riot or insurrection.</li>
+                    <li>Expenses You or Your Covered Dependent are not required to pay, or which would not have been billed, if no insurance existed.</li>
+                    <li>Expenses to the extent that they are paid or payable under other valid or collectible group insurance or medical prepayment plan.</li>
+                    <li>Charges that are eligible for payment by Medicare or any other government program except Medicaid. Costs for care in government
+                        institutions unless You or Your Covered Dependent are obligated to pay for such care.</li>
+                    <li>Expenses for which benefits are paid or payable under workers’ compensation or similar laws.</li>
+                    <li>Medical expenses which are payable under any automobile insurance policy without regard to fault (does not apply in any state where prohibited).</li>
+                </ol>
+            </div>
+        </div>
+        <div class="footnotes">
+            <p>This is a brief description of the plan limitations and exclusions, which may vary by state.</p>
+
+            <p>LifeShield STM Underwritten By: LifeShield</p>
+
+            <p>Disclaimer: THIS IS A SHORT-TERM LIMITED DURATION HEALTH INSURANCE POLICY THAT IS NOT INTENDED TO AND DOES NOT
+                QUALIFY AS THE MINIMUM ESSENTIAL COVERAGE REQUIRED BY THE AFFORDABLE CARE ACT (ACA). UNLESS YOU PURCHASE A POLICY
+                THAT PROVIDES MINIMUM ESSENTIAL COVERAGE IN ACCORDANCE WITH THE ACA, YOU MAY BE SUBJECT TO A FEDERAL TAX PENALTY. ALSO,
+                THE TERMINATION OR LOSS OF THIS POLICY DOES NOT ENTITLE YOU TO A SPECIAL ENROLLMENT PERIOD TO PURCHASE A HEALTH INSURANCE
+                POLICY THAT QUALIFIES AS MINIMUM ESSENTIAL COVERAGE OUTSIDE OF AN OPEN ENROLLMENT PERIOD.THIS IS A SUPPLEMENT TO HEALTH INSURANCE
+                AND IS NOT A SUBSTITUTE FOR MAJOR MEDICAL COVERAGE. LACK OF MAJOR MEDICAL COVERAGE (OR OTHER MINIMUM ESSENTIAL COVERAGE) MAY RESULT
+                IN AN ADDITIONAL PAYMENT WITH YOUR TAXES. This is a brief summary of LifeShield Short-Term Medical Insurance underwritten by
+                LifeShield National Insurance Co. provided by Policy Form Series LNG- 3001. .Availability and terms may vary by state.
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Frequently Asked Questions</h2>
+
+        <div class="row details-faq-row">
+            <div class="col-md-6">
+                <p class="emphasize">Does the plan require Pre-Certification?</p>
+                <p>
+                    All Inpatient hospitalizations and procedures done at an Outpatient Surgery Facility
+                    must be pre-certified. Everest Reinsurance Company's professional review organization
+                    must be contacted as soon as possible before the expense is to be incurred. If the
+                    Covered Person does not comply with the Pre-certification requirements as stated in
+                    the insurance certificate, the Eligible Medical Expenses will be reduced by 50%.
+                </p>
+
+                <p class="emphasize">What is the waiver of pre-existing conditions?</p>
+                <p>
+                    The pre-existing condition limitation will not apply to any conditions that were covered during the prior coverage period.
+                    Any other pre-existing conditions will remain subject to the limitation as described in the Certificate of Insurance. Pre-existing
+                    condition waiver rider availability varies by state.
+                </p>
+
+                <p class="emphasize">How does Usual and Customary Fees affect my benefits?</p>
+                <p>
+                    The Policy defines Usual and Customary Fees as the usual, fair and reasonable fee for medical
+                    treatment provided to a Covered Person (or any other form of medical care, procedure,
+                    drug or supply).
+                </p>
+                <p>In determining a Usual and Customary Fee, the Company at its discretion, consults:</p>
+                <ol>
+                    <li>one (1) or more standard industry sources to calculate services of comparable severity and
+                        nature in the same geographical area, the cost of the goods and services reasonably required
+                        to produce and deliver such treatment and/or the charge most commonly paid for such treatment.
+                        The standard industry sources utilize cost-based formula methodology and/or pricing data
+                        (updated semi-annually) to produce replicable and consistent cost and/or pricing parameters;
+                    </li>
+                    <li>the cost to the health care provider of performing or providing the medical treatment,
+                        including reasonable allowance for overhead and profit;
+                    </li>
+                    <li>fee schedules used by third parties such as Medicare or Medicaid,
+                        including Medicare allowable charge data for Medicare Part B;</li>
+                    <li>hospital cost data as submitted to Medicare, including Medicare allowable
+                        charge data for Medicare Part A; and</li>
+                    <li>prevailing negotiated fee schedules for same or similar services performed
+                        in the same geographical area.</li>
+                </ol>
+                <p>
+                    All benefits are limited to Usual and Customary Fees. Usual and Customary
+                    Fee definition may vary by state.
+                </p>
+
+                <p class="emphasize">What if members change their minds after the purchase of STM coverage?</p>
+                <p>
+                    If not 100% satisfied with coverage and members have not already used any of the
+                    insurance benefits, they may return the certification to us within 10 days of receipt.
+                    Coverage will be cancelled as of the effective date and the plan cost will be returned.
+                    No questions asked!
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="emphasize">What is the Pre-Existing Conditions Limitation?</p>
+                <p>
+                    Charges resulting directly or indirectly from a condition for which a Covered Person received
+                    medical treatment, diagnosis, care or advice within the 60* month period immediately preceding
+                    such person's Certificate Effective Date. A Pre-Existing condition includes conditions that
+                    produced any symptoms which would have caused a reasonable prudent person to seek diagnosis,
+                    care or treatment within the 60* month period.
+                </p>
+                <p>*varies by state</p>
+
+                <p class="emphasize">Who is eligible to apply for this insurance?</p>
+                <p>
+                    LifeShield STM is available to members and their spouses, who are between 18 and 64 years old and their dependent
+                    unmarried children under 26 years old; and can answer "No" to all of the questions in the application for insurance.
+                    Child-only coverage is available for ages 2-25.
+                </p>
+
+                <p class="emphasize">When does the STM coverage terminate?</p>
+                <p>
+                    Coverage under the Policy will cease at 12:01 a.m. for a Covered Person, based on the time zone
+                    in the place where the Insured resides, on the earliest of the following:
+                </p>
+                <ol>
+                    <li>The date premiums are not paid in accordance with the terms of the Policy,
+                        subject to the Grace Period;</li>
+                    <li>On the next premium due date after the Company receives a written request from the Insured
+                        to terminate coverage, or any later date stated in the request;</li>
+                    <li>The date an Insured performs an act or practice that constitutes fraud, or is found to have
+                        made an intentional misrepresentation of material fact, relating in any way to the Policy,
+                        including claims for benefits under the Policy;</li>
+                    <li>The date of the Insured's death or the termination date of the Insured's coverage,
+                        if the Insured's spouse is not covered under the Policy;</li>
+                    <li>The date the Insured obtains other insurance, excluding Medicare;</li>
+                    <li>The Certificate termination date stated on the Schedule of Benefits.</li>
+                    <li>The date that members enter full-time active duty in the armed forces of any country or
+                        international organization other than for reserve duty of 30 days or less;</li>
+                    <li>The date other major medical insurance coverage becomes effective for a Covered Person;</li>
+                    <li>The date that insurance under the Policy is discontinued; or</li>
+                    <li>The first day of any policy month We elect to terminate the Policy by giving the
+                        Group Policyholder at least 30 advance written notice.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="plan-details-variations common-section">
+        <h2 class="headingplaner">Other LifeShield term insurance products in your area</h2>
+
+        <div class="container">
+        {% for co_ins_rate, plan_list in related_plans.items %}
+        <h2 class="headingplaner">With {{ co_ins_rate }}% co-insurance rates</h2>
+                <div class="row row-stm-related-plan">
+                    {% for related_plan in plan_list %}
+                        <div class="col-md-4">
+                            <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}">
+                                <p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+                                <p>Deductible - ${{ related_plan.option|intcomma }} / Coinsurance - {{ related_plan.Coinsurance_Percentage}}%</p>
+                                <p class="emphasize">
+                                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                </p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endfor %}
+        </div>
+
+</section>
