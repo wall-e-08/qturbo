@@ -1951,6 +1951,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
                                                   mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
                                                   mp['coverage_max_value'] == plan['coverage_max_value'] and
+                                                  mp['Plan'] == plan['Plan'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')   # We need to handle this exception in template/js
