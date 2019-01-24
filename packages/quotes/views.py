@@ -391,8 +391,12 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
         # Edge case 50 percent coinsurance for plan type 2
-        if plan['Plan'] == '1' and '50' in alternate_coinsurace_percentage:
-            alternate_coinsurace_percentage.remove('50')
+        if plan_name == 'LifeShield STM':
+            if plan['Plan'] == '1':
+                if '50' in alternate_coinsurace_percentage:
+                    alternate_coinsurace_percentage.remove('50')
+                if '5000' in alternate_benefit_amount:
+                    alternate_benefit_amount.remove('5000')
 
         alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
         alternate_coverage_max = list(alternate_coverage_max_set)
