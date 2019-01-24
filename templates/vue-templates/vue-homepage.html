@@ -267,19 +267,13 @@
                             <input type="text"v-model="income" v-on:keydown="accept_only_number"
                                class="form-control qt-survey-input" id="enroll-monthly-income" name="monthly-income" >
                         </div>{% endcomment %}
-                        <div class="btn-group-vertical" style="width: 300px;">
-                            <button class="btn btn-primary btn-lg btn-block mb-3 qt-btn-rounded"
-                                    style="border-radius: 25px" {# TODO: add this in css file #}
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "47001")'
-                            >$47,000+</button>
-                            <button class="btn btn-primary btn-lg btn-block mb-3 qt-btn-rounded"
-                                    style="border-radius: 25px" {# TODO: add this in css file #}
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "40000")'
-                            >$30,001 - $47,000+</button>
-                            <button class="btn btn-primary btn-lg btn-block mb-3 qt-btn-rounded"
-                                    style="border-radius: 25px" {# TODO: add this in css file #}
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "20000")'
-                            >$16,001 - $30,000</button>
+                        <div class="btn-group-vertical qt-rigid-btn-group">
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "47001")'>$47,000+</button>
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "40000")'>$30,001 - $47,000+</button>
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "20000")'>$16,001 - $30,000</button>
                         </div>
                         {% comment %}<button id="submit_quote_request" :disabled="income == ''"
                                 class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
@@ -288,6 +282,10 @@
                         </button>{% endcomment %}
                     </form>
                 </div>
+                {% comment %}<div class="d-flex justify-content-center w-100 qt-rigid-btn-group px-3">
+                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 mr-3 w-auto col">$47,000+</button>
+                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 ml-3 w-auto col">$30,001 - $47,000+</button>
+                </div>{% endcomment %}
             </div>
         </div>
     </div>
