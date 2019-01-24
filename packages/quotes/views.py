@@ -134,7 +134,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         return JsonResponse(
             {
                 'status': 'success',
-                'url': reverse('quotes:plan_quote', kwargs={'ins_type': quote_request_form_data['Ins_Type']})
+                'url': reverse('quotes:start_celery', kwargs={})
             }
         )
     else:
@@ -151,8 +151,48 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     )
 
 
+def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
+    """
+
+    :return:
+    """
+    quote_request_form_data = request.session.get('quote_request_form_data')
+    ins_type = 'lim'
+
+    print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
+    annual_income = request.POST.get('Annual_Income', None)
+
+
+
+
+    if annual_income:
+        quote_request_form_data['Annual_Income'] = annual_income
+
+        quote_request_preference_data = request.session.get('quote_request_preference_data', None)
+
+        if quote_request_preference_data:
+            for plan_name in ['LifeShield STM', 'AdvantHealth STM']:
+                quote_request_preference_data[plan_name]['Coverage_Max'] = \
+                    policy_max_from_income(int(quote_request_form_data['Annual_Income']), plan_name)
+
+        request.session['quote_request_preference_data'] = quote_request_preference_data
+
+        response = {
+            'status': 'success',
+            'url': reverse('quotes:plan_quote', kwargs={'ins_type': ins_type})
+        }
+    else:
+        response = {
+            'status': 'fail',
+            'error': "Failed",
+        }
+
+    return JsonResponse(response)
+
+
 def survey_members(request):
     return render(request, 'quotes/survey/members.html', {})
+
 
 
 def policy_max_from_income(income: int, plan_name: str) -> str:
@@ -177,8 +217,8 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
     }
 
 
-    income_low_point = 100000
-    income_high_point = 300000
+    income_low_point = 16000
+    income_high_point = 47000
 
     if income_low_point >= income :
         return policy_max_dict[plan_name]['low']
@@ -240,57 +280,118 @@ def plan_quote(request, ins_type):
 
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
-    if not redis_conn.exists(redis_key):
-        print("Redis connection does not exist for redis key")
-        redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
 
-        print(f"Insurance type is {ins_type}")
-        if ins_type == 'stm':
-            redis_key_done_data = f'{redis_key}:done_data'
-            # We are here setting up a dictionary in the session for future usage
-            print(f'Setting quote request preference data')
-
-            # To be refactored.
-            # We should move this back to validate_quote_form()
-            # This only runs at the first of the quote
-            quote_request_preference_data = {
-                'LifeShield STM': {
-                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
-                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'LifeShield STM'),
-                    'Coinsurance_Percentage': '80/20',
-                    'Benefit_Amount': '2000'
-                },
-
-                'AdvantHealth STM': {
-                    'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
-                    'Coverage_Max': policy_max_from_income(int(quote_request_form_data['Annual_Income']), 'AdvantHealth STM'),
-                    'Coinsurance_Percentage': '80/20',
-                    'Benefit_Amount': '2000'
-                }
-            }
-
-            quote_request_done_data = {
-                'LifeShield STM': {
-                    'Duration_Coverage': [],
-                },
-
-                'AdvantHealth STM': {
-                    'Duration_Coverage': []
-                }
-            }
-            request.session['quote_request_preference_data'] = quote_request_preference_data
-
-            redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
-
-            StmPlanTask.delay(request.session.session_key, quote_request_form_data, quote_request_preference_data)
-
-        elif ins_type == 'lim':
-            LimPlanTask.delay(request.session.session_key, quote_request_form_data)
-        elif ins_type == 'anc':
-            AncPlanTask.delay(request.session.session_key, quote_request_form_data)
-
-    return render(request, 'quotes/quote_list_d.html', {
+    return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
+    })
+
+
+
+def start_celery(request) -> JsonResponse:
+    """Start Celery
+
+    :param request: Django request object
+    :param ins_type: stm/lim/anc
+    :return: Django HttpResponse Object
+    """
+
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+
+    request.session['applicant_enrolled'] = False
+    request.session.modified = True
+    if quote_request_form_data.get('applicant_is_child', True):
+        request.session['quote_request_formset_data'] = []
+
+    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+        quote_request_form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+        request.session['quote_request_response_data'] = {}
+
+    if not quote_request_form_data:
+        return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+
+    logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
+
+    d = {'monthly_plans': [], 'addon_plans': []}
+    request.session['quote_request_response_data'] = d
+    request.session.modified = True
+    logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
+
+    # Changing quote store key regarding insurance type
+    for ins_type in ['lim', 'stm', 'anc']:
+        if ins_type == "stm":
+            quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
+            quote_request_form_data['Ins_Type'] = 'stm'
+        elif ins_type == "lim":
+            quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
+            quote_request_form_data['Ins_Type'] = 'lim'
+        elif ins_type == "anc":
+            quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
+            quote_request_form_data['Ins_Type'] = 'anc'
+
+        # Calling celery for populating quote list
+        redis_key = "{0}:{1}".format(request.session._get_session_key(),
+                                     quote_request_form_data['quote_store_key'])
+        print(f"Calling celery task for ins_type: {ins_type}")
+        print(f"redis_key: {redis_key}")
+
+        print('------------------------\nquote_request_form_data: \n------------------------')
+        print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
+        if not redis_conn.exists(redis_key):
+            print("Redis connection does not exist for redis key")
+            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+
+            print(f"Insurance type is {ins_type}")
+            if ins_type == 'stm':
+                redis_key_done_data = f'{redis_key}:done_data'
+                # We are here setting up a dictionary in the session for future usage
+                print(f'Setting quote request preference data')
+
+                # To be refactored.
+                # We should move this back to validate_quote_form()
+                # This only runs at the first of the quote
+                quote_request_preference_data = {
+                    'LifeShield STM': {
+                        'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+                        'Coverage_Max': [''],
+                        'Coinsurance_Percentage': ['0', '20'],
+                        'Benefit_Amount': ['0', '2000']
+                    },
+
+                    'AdvantHealth STM': {
+                        'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+                        'Coverage_Max': [''],
+                        'Coinsurance_Percentage': ['20'],
+                        'Benefit_Amount': ['2000']
+                    }
+                }
+
+                quote_request_done_data = {
+                    'LifeShield STM': {
+                        'Duration_Coverage': [],
+                    },
+
+                    'AdvantHealth STM': {
+                        'Duration_Coverage': []
+                    }
+                }
+                request.session['quote_request_preference_data'] = quote_request_preference_data
+
+                redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+
+                StmPlanTask.delay(request.session.session_key, quote_request_form_data, quote_request_preference_data)
+
+            elif ins_type == 'lim':
+                LimPlanTask.delay(request.session.session_key, quote_request_form_data)
+            elif ins_type == 'anc':
+                AncPlanTask.delay(request.session.session_key, quote_request_form_data)
+
+    # quote_request_form_data['Ins_Type'] = 'lim'
+    # request.session['quote_request_form_data'] = quote_request_form_data
+
+    return JsonResponse({
+        'status': 'success',
     })
 
 
@@ -391,6 +492,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
         # Edge case 50 percent coinsurance for plan type 2
+        # TODO: Make this dynamic
         if plan_name == 'LifeShield STM':
             if plan['Plan'] == '1':
                 if '50' in alternate_coinsurace_percentage:

@@ -394,7 +394,7 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'AdvantHealth STM': ['6*6']
 }
 
-# TODO: Quote request should use these values
+# TODO: Quote request should use these values OR initial quote should be fully hardcoded
 CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
     'LifeShield STM': ['2000', '3000', '4000', '5000'],
     'AdvantHealth STM': ['2000', '4000']

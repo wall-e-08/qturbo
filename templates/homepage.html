@@ -838,7 +838,9 @@
                                 </template>
                                 <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
                                              v-if="own_input.dob && own_input.gender && own_input.tobacco"
-                                             :to="{ name: 'survey-income'}" @click.native="save_to_cookie">Next</router-link>
+                                             :to="{ name: 'survey-income'}" @click.native="save_to_cookie() ;start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">
+                                                Next
+                                </router-link>
                                 <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
                             </div>
                         </div>
@@ -882,7 +884,7 @@
                                     </div>
                                     <button id="submit_quote_request" :disabled="income == ''"
                                             class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                            v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
+                                            v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}")'>
                                         Check Quote
                                     </button>
                                 </form>
