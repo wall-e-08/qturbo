@@ -411,6 +411,11 @@ CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
     'AdvantHealth STM': ['20']
 }
 
+CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
+    'AdvantHealth STM': ['250000', '500000', '1000000'],
+    'LifeShield STM': ['250000', '750000', '1000000', '1500000']
+}
+
 
 try:
     from .local_settings import *
