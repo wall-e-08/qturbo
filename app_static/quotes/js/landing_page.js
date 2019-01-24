@@ -346,30 +346,19 @@ const router = new VueRouter({
                             },
                             data: form_data,
                             success: function (data) {
-                                console.log("Success");
-                                // console.table(data);
-                                if(data.url) {
-                                    console.log("Redirect URL is "+ data.url);
-                                    $.ajax({
-                                        url: data.url,
-                                        method: 'post',
-                                        beforeSend: function (xhr) {
-                                            xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                                        },
-                                        error: function(data) {
-                                            console.log("Error");
-                                            console.table(data);
-                                        }
-                                    });
-                                }
-                                else {
-                                    // console.error("XXXXXX");
+                                console.log("Initial success");
+                                console.table(data);
+                                if (data.status === "false"){
+                                    console.log("Error in form data");
                                     router.push({name: 'survey-member'});
+
                                 }
+
                             },
                             error: function(data) {
                                 console.log("Error");
                                 console.table(data);
+                                router.push({name: 'survey-member'});
                             }
 
                         })

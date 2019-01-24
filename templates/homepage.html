@@ -838,7 +838,7 @@
                                 </template>
                                 <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
                                              v-if="own_input.dob && own_input.gender && own_input.tobacco"
-                                             :to="{ name: 'survey-income'}" @click.native="save_to_cookie() ;start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">
+                                             :to="{ name: 'survey-income'}" @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">
                                                 Next
                                 </router-link>
                                 <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
