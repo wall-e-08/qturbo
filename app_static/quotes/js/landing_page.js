@@ -365,9 +365,8 @@ const router = new VueRouter({
                     },
 
                     redirect_to_plans: function(redirect_url, csrf_token, income) {
-                        this.income = income;
-                        return null
                         let _t = this;
+                        _t.income = income;
                         let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
                         let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
                         let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
