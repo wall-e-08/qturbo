@@ -140,9 +140,6 @@
      box-shadow: 0 4px 20px 0 rgba(0,0,0,0.2);
   }
 }
-.home-nav-single-item-content-smd:hover{
-
-  }
 
 @media (max-width: 768px) {
     .hi-feature {
@@ -155,4 +152,30 @@
             font-size: map_get($fonts, 'font-18');
         }
     }
+}
+
+.insurance-button{
+    display: block;
+    font-weight: bold;
+    border-radius: 4px;
+    color: #fff;
+    padding: 15px;
+    width: 100%;
+    background: #19B4FA;
+    border-bottom: 3px solid #1282b5;
+    margin-bottom: 16px;
+    text-transform: none;
+    touch-action: manipulation;
+    position: relative;
+    transition:all .3s ease-in-out;
+  &:hover{
+    background-color: #58B1ED;
+    color: #fff;
+    top: 2px;
+  }
+  &:focus{
+    background-color: #58B1ED;
+    color: #fff;
+    top: 4px;
+  }
 }
