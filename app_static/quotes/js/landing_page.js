@@ -9,8 +9,8 @@ const v_cookies_keys = {
 
 const v_templates = {
     children: '<router-view></router-view>', // for children templates
-    zip_code: '#zipcode-template',
     root: '#root-template',
+    zip_code: '#zipcode-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
     monthly_income: '#monthly-income-template',
@@ -168,6 +168,12 @@ const router = new VueRouter({
         name: 'root',
         component: {
             template: v_templates.root,
+        }
+    }, {
+        path: '/zip-code',
+        name: 'zip-code',
+        component: {
+            template: v_templates.zip_code,
             data: function () {
                 return {
                     zip_placeholder: 'Enter Zip Code',
@@ -358,8 +364,9 @@ const router = new VueRouter({
                         }
                     },
 
-                    redirect_to_plans: function(redirect_url, csrf_token) {
+                    redirect_to_plans: function(redirect_url, csrf_token, income) {
                         let _t = this;
+                        _t.income = income;
                         let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
                         let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
                         let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
