@@ -227,8 +227,8 @@
                                 </div>
                             </template>
                             <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                         v-if="own_input.dob && own_input.gender && own_input.tobacco"
-                                         :to="{ name: 'survey-income'}" @click.native="save_to_cookie">Next</router-link>
+                                         v-if="own_input.dob && own_input.gender && own_input.tobacco" :to="{ name: 'survey-income'}"
+                                         @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</router-link>
                             <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
                         </div>
                     </div>
@@ -269,11 +269,11 @@
                         </div>{% endcomment %}
                         <div class="btn-group-vertical qt-rigid-btn-group">
                             <button class="btn btn-primary btn-lg btn-block mb-3"
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "47001")'>$47,000+</button>
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "47001")'>$47,000+</button>
                             <button class="btn btn-primary btn-lg btn-block mb-3"
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "40000")'>$30,001 - $47,000+</button>
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "40000")'>$30,001 - $47,000</button>
                             <button class="btn btn-primary btn-lg btn-block mb-3"
-                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}", "20000")'>$16,001 - $30,000</button>
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "20000")'>$16,001 - $30,000</button>
                         </div>
                         {% comment %}<button id="submit_quote_request" :disabled="income == ''"
                                 class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
