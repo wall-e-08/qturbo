@@ -9,8 +9,8 @@ const v_cookies_keys = {
 
 const v_templates = {
     children: '<router-view></router-view>', // for children templates
-    root: '#root-template',
     zip_code: '#zipcode-template',
+    root: '#root-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
     monthly_income: '#monthly-income-template',
@@ -168,12 +168,6 @@ const router = new VueRouter({
         name: 'root',
         component: {
             template: v_templates.root,
-        }
-    }, {
-        path: '/zip-code',
-        name: 'zip-code',
-        component: {
-            template: v_templates.zip_code,
             data: function () {
                 return {
                     zip_placeholder: 'Enter Zip Code',
@@ -451,58 +445,9 @@ const router = new VueRouter({
                             }
                         }
                     },
-
-                    redirect_to_plans: function(redirect_url, csrf_token, income) {
+                    redirect_to_plans: function(redirect_url, csrf_token) {
+                        console.log("Yggdrasil");
                         let _t = this;
-                        _t.income = income;
-                        let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
-                        let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
-                        let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
-                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null;
-
-                        let form_data = {
-                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
-                            Include_Spouse: cookie_spouse_input ? 'Yes': 'No',
-                            Payment_Option: '1',
-                            Ins_Type: 'lim',
-                            'child-TOTAL_FORMS': cookie_dependents_input ? cookie_dependents_input.length : 0,
-                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
-                            'child-MIN_NUM_FORMS': 0,
-                            'child-MAX_NUM_FORMS': this.max_dependents,
-                            Annual_Income: this.income
-
-                        };
-                        if(Object.keys(cookie_own_input).every((k) => cookie_own_input[k])){    // checking if all data present for applicant
-                            form_data['Applicant_DOB'] = cookie_own_input.dob;
-                            form_data['Applicant_Gender'] = cookie_own_input.gender;
-                            form_data['Tobacco'] = cookie_own_input == 'true' ? 'Y' : 'N';
-                            form_data['Children_Count'] = cookie_dependents_input ? cookie_dependents_input.length : 0;
-
-                            var newDate = new Date();
-                            newDate.setDate(newDate.getDate() + 1);
-                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
-
-                        } else {
-                            console.error("Please insert data to see plans");
-                            return null;
-                        }
-                        if (cookie_spouse_input) {
-                            if (Object.keys(cookie_spouse_input).every((k) => cookie_spouse_input[k])) { // check spouse data
-                                form_data['Spouse_DOB'] = cookie_spouse_input.dob;
-                                form_data['Spouse_Gender'] = cookie_spouse_input.gender;
-                                form_data['Spouse_Tobacco'] = cookie_spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
-                            } else {
-                                console.error("Please insert spouse data correctly to see plans");
-                                return null;
-                            }cookie_dependents_input ? cookie_dependents_input.length : 0;
-                        }
-                        if(cookie_dependents_input) {
-                            for(var i=0; i<cookie_dependents_input.length; i++){
-                                if (Object.keys(cookie_dependents_input[i]).every((k) => cookie_dependents_input[i][k])) {
-
-                                    form_data['child-' + i + '-Child_DOB'] = cookie_dependents_input[i].dob;
-                                    form_data['child-' + i + '-Child_Gender'] = cookie_dependents_input[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = cookie_dependents_input[i].tobacco == 'true';
 
                         $.ajax({
                             url: redirect_url,
