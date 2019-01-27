@@ -153,29 +153,3 @@
         }
     }
 }
-
-.insurance-button{
-    display: block;
-    font-weight: bold;
-    border-radius: 4px;
-    color: #fff;
-    padding: 15px;
-    width: 100%;
-    background: #19B4FA;
-    border-bottom: 3px solid #1282b5;
-    margin-bottom: 16px;
-    text-transform: none;
-    touch-action: manipulation;
-    position: relative;
-    transition:all .3s ease-in-out;
-  &:hover{
-    background-color: #58B1ED;
-    color: #fff;
-    top: 2px;
-  }
-  &:focus{
-    background-color: #58B1ED;
-    color: #fff;
-    top: 4px;
-  }
-}

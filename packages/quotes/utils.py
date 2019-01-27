@@ -496,3 +496,114 @@ def create_selection_data(completed_data: dict, stm_name: str, duration_coverage
         return quote_request_data
     else:
         return None
+
+
+def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> dict:
+    # plan_list = plan_list.remove(selected_plan)
+
+    coins_set = set()
+    out_of_pocket_set = set()
+    coverage_max_set = set()
+    plan_set = set()
+
+
+    print("Finding out alternative coinsurance.")
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+                coins_set.add(plan['Coinsurance_Percentage'])
+
+    print("Finding out alternative max_out_of_pocket.")
+    for plan in plan_list:
+
+        if (plan["Coinsurance_Percentage"] == selected_plan['Coinsurance_Percentage'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+                out_of_pocket_set.add(plan['Benefit_Amount'])
+
+
+
+    print("Finding out alternative maximum coverage.")
+
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coinsurance_Percentage'] == selected_plan['Coinsurance_Percentage'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+                coverage_max_set.add(plan['Coverage_Max'])
+
+    print("Finding out alternative plan type.")
+
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
+                plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+                plan['Coinsurance_Percentage'] == selected_plan['Coinsurance_Percentage'] and
+                plan["Name"] == selected_plan["Name"] and
+                plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+                plan != selected_plan):
+            plan_set.add(plan['Plan'])
+
+    return {
+        'alternate_benefit_amount': out_of_pocket_set,
+        'alternate_coinsurace_percentage': coins_set,
+        'alternate_coverage_max': coverage_max_set,
+        'alternate_plan': plan_set,
+    }
+
+
+def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, selected_plan: dict) -> dict:
+
+    coins_set = set()
+
+
+    print(f"Finding out alternative coinsurance for {benefit_amount}.")
+    for plan in plan_list:
+
+        if (plan["out_of_pocket_value"] == benefit_amount and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+                coins_set.add(plan['Coinsurance_Percentage'])
+
+    return list(coins_set)
+
+
+def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> dict:
+
+    out_of_pocket_set = set()
+
+
+    print(f"Finding out alternative benefit amount for {coinsurance}.")
+    for plan in plan_list:
+
+        if (plan["Coinsurance_Percentage"] == coinsurance and
+            plan['Duration_Coverage'] == selected_plan['Duration_Coverage'] and
+            plan['Coverage_Max'] == selected_plan['Coverage_Max'] and
+            plan["Name"] == selected_plan["Name"] and
+            plan['Plan'] == selected_plan['Plan'] and
+            plan != selected_plan):
+
+
+                out_of_pocket_set.add(plan['Benefit_Amount'])
+
+    return list(out_of_pocket_set)
+
+
+

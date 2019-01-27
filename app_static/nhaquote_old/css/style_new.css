@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700');
+
 /* Self explanatory */
 
 .product-type-select{
@@ -228,4 +230,85 @@
     .mobile-right-link {
         display: none;
     }
+}
+
+img {
+    max-width: 100%;
+}
+.qt-d-inline-block{
+    display: inline-block !important;
+}
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+.qt-btn-tertiary, .qt-btn-tertiary:hover,
+.qt-btn-tertiary:active, .qt-btn-tertiary:focus{
+    color: #fff;
+}
+.qt-btn-tertiary {
+    background-color: #fe8829;
+    border-color: #fe8829;
+}
+.qt-btn-tertiary:hover {
+    background-color: #fe7303;
+    border-color: #f36d01;
+}
+.qt-btn-tertiary:active,
+.qt-btn-tertiary:focus {
+    background-color: #f36d01;
+    border-color: #e66701;
+}
+
+
+/* bootstrap-4 card */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+}
+.card > hr {
+    margin-right: 0;
+    margin-left: 0
+}
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    border-radius: 8px;
+}
+.card-title {
+    margin-bottom: .75rem
+}
+.card-text:last-child {
+    margin-bottom: 0
+}
+.card-link:hover {
+    text-decoration: none
+}
+.card-link + .card-link {
+    margin-left: 1.25rem
+}
+.card-header {
+    padding: .75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125)
+}
+.card-header:first-child {
+    border-radius: calc(5px - 1px) calc(5px - 1px) 0 0
+}
+.card-footer {
+    padding: .75rem 1.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.125)
+}
+.card-footer:last-child {
+    border-radius: 0 0 calc(5px - 1px) calc(5px - 1px)
+}
+.card-img {
+    width: 100%;
+    border-radius: calc(5px - 1px)
 }

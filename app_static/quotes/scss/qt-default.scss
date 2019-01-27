@@ -131,6 +131,40 @@ input[type="date"] {
     margin-bottom: 2rem;
 }
 
+.qt-btn-rounded {
+    border-radius: 25px !important;
+}
+
+.qt-rigid-btn-group {
+    width: 300px;
+    .btn {
+        border: none;
+        position: relative;
+        border-radius: 6px !important;
+        background-color: $tertiary !important;
+        box-shadow: 0 6px #d45f00;
+        @include css-prefix((transition, none));
+        &:hover {
+            box-shadow: 0 4px #a5581a;
+            top: 2px;
+        }
+        &:active,
+        &:focus {
+            box-shadow: 0 0 #823a02;
+            top: 6px;
+        }
+    }
+}
+
+@media (max-width: map_get($grid-breakpoints, sm)) {
+    .qt-rigid-btn-group {
+        width: auto;
+        .btn {
+            font-size: 18px !important;
+        }
+    }
+}
+
 @media (max-width: map_get($grid-breakpoints, lg)) {
     body {
         padding-top: $fixed-header-body-spacing;

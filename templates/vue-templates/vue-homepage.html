@@ -1,0 +1,292 @@
+{% load static %}
+
+<script type="text/x-template" id="root-template">
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="font-wight-700 mb-3 font-xl responsive-font-xl heading-slogan">{{ general_topic.top_quote_heading }}</h1>
+                <h2 class="font-wight-600 mb-4 font-md">{{ general_topic.top_quote_sub_heading }}</h2>
+
+                <div class="mt-5">
+                    <div class="row">
+                        <div class="home-nav-item-box">
+                            <a href="javascript:void(0);" target="_blank" class="mr-4 home-nav-single-item">
+                                <div class="home-nav-single-item-content">
+                                    <div class="pb-2" style="height: 80px">
+                                        <img src="{% static 'img/family.svg' %}" alt="" class="h-100">
+                                    </div>
+                                    <h5 class="text-dark font-md font-weight-bold">Life</h5>
+                                </div>
+                            </a>
+                            <router-link :to="{ name: 'zip-code'}" class="mr-4 home-nav-single-item">
+                                {#<a href="javascript:void(0);" class="home-nav-single-item">#}
+                                <div class="home-nav-single-item-content">
+                                    <div class="pb-2" style="height: 80px">
+                                        <img src="{% static 'img/heartbeat.svg' %}" alt="" class="h-100">
+                                    </div>
+                                    <h5 class="text-dark font-md font-weight-bold">Health</h5>
+                                </div>
+                                {#</a>#}
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="zipcode-template">
+    <div class="row">
+        <div class="col-12">
+            <div class="mx-auto" style="max-width: 730px;">
+                {% comment %}<h1 class="font-wight-600 mb-3 font-xl responsive-font-xl heading-slogan">{{ general_topic.top_quote_heading }}</h1>
+                <h2 class="font-wight-600 mb-4 font-md heading-mini-slogan">{{ general_topic.top_quote_sub_heading }}</h2>{% endcomment %}
+                <router-link :to="{ name: 'root'}" class="mb-3 d-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                        <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                    </svg>
+                    Back
+                </router-link>
+                <div id="find-plans" class="mb-5">
+                    <h1 class="font-wight-600 mb-3 font-xl responsive-font-xl text-center mb-3 heading-slogan">Enter Your Zip Code</h1>
+                    <form novalidate class="border-md border-0 border-tertiary rounded" @submit.prevent="check_zipcode"
+                          style="border-right-color: transparent !important;"> {# hack for bootstrap 1px error #}
+                        <div class="row">
+                            <div class="col-md-4 border-md-right border-0 border-tertiary">
+                                <div class="py-1 pr-md-0 pl-md-3 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                    <div class="text-capitalize text-secondary font-wight-600 quote-info-label">I'm looking
+                                        For:
+                                    </div>
+                                    <div class="text-capitalize font-md text-black quote-name">Health Insurance</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="py-1 px-md-0 px-3 mb-md-0 mb-3 border-md-0 border border-tertiary rounded">
+                                    <label for="home-zip-code"
+                                           class="text-capitalize text-secondary font-wight-600 mb-0 quote-info-label">Zip
+                                        Code
+                                    </label>
+                                    <div class="position-relative">
+                                        <input type="text" id="home-zip-code"
+                                               class="font-md border-0 outline-0 w-100"
+                                               :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
+                                               v-on:keydown="validate_zip($event)">
+                                        <div class="position-absolute vertical-center" style="left:99%"
+                                             v-html="current_marker"></div>
+                                    </div>
+                                    <div class="home-zc-err"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="h-100 rounded" style="min-height: 50px;">
+                                    <button type="submit" :disabled="!is_valid_zip"
+                                            class="text-capitalize rounded-0 btn btn-tertiary w-100 h-100 font-weight-bold font-md">
+                                        Find plans
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% comment %}<div class="col-lg-4 text-center">
+            <div class="position-absolute d-none d-lg-block rounded" id="separator"></div>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+                <div class="">{% endcomment %}
+                    {% comment %}<a href="#" class="btn btn-primary font-md font-wight-600 btn-lg">Assisted by Agent?</a>
+                    <p class="small text-secondary pt-2">If you're being assisted by an Agent, click here</p>{% endcomment %}
+                    {% comment %}<img src="{{ general_topic.top_img.url }}" alt="bg">
+                </div>
+            </div>
+            <hr class="mb-5 d-block d-lg-none">
+        </div>{% endcomment %}
+    </div>
+</script>
+
+<script type="text/x-template" id="survey-card-template">
+    <div class="card py-3 my-3 px-4 qt-survey">
+        <div class="d-flex align-items-center qt-survey-who">
+            <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="15" height="15" viewBox="0 0 24 24">
+                <path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"></path>
+            </svg>
+            <span class="font-md pl-2 font-md font-wight-600 text-capitalize">[[ survey_type ]]</span>
+        </div>
+        <p>What’s [[ txt_whos() ]] date of birth?
+           {% comment %} <span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                  v-if="survey_type == 'me'">?</span>{% endcomment %}
+        </p>
+        <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
+               @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
+               class="font-mm border border-secondary mb-3 rounded w-100 qt-survey-input">
+
+        <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
+            <!--show only if current stage is gender or tobacco-->
+            <p>What’s [[ txt_whos() ]] gender?
+                {% comment %}<span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                      v-if="survey_type == 'me'">?</span>{% endcomment %}
+            </p>
+            <div class="btn-group w-100" role="group">
+                <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="Male"
+                       :id="'gender_m-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
+                <label class="btn btn-outline-primary btn-lg col" :for="'gender_m-'+survey_type+index">Male</label>
+
+                <input class="d-none controlled-by-label" type="radio" :name="'gender-'+survey_type+index" value="Female"
+                       :id="'gender_f-'+survey_type+index" v-model="inputs.gender" @change="current_stage = 'tobacco'">
+                <label class="btn btn-outline-primary btn-lg col" :for="'gender_f-'+survey_type+index">Female
+                </label>
+            </div>
+        </div>
+
+        <div class="qt-survey-tobacco my-3" v-if="current_stage === 'tobacco'">
+            <p>
+                <span v-if="survey_type == 'me'">Do you</span>
+                <span v-else>Does your [[ survey_type ]]</span>
+                use tobacco products?
+                {% comment %}<span class="border border-secondary rounded-circle cur-p qt-tooltip"
+                      v-if="survey_type == 'me'">?</span>{% endcomment %}
+            </p>
+            <div class="btn-group w-100" role="group">
+                <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
+                       value="true" :id="'tobacco_y-'+survey_type+index" v-model="inputs.tobacco">
+                <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_y-'+survey_type+index">Yes</label>
+
+                <input class="d-none controlled-by-label" type="radio" :name="'tobacco-'+survey_type+index"
+                       value="false" :id="'tobacco_n-'+survey_type+index" v-model="inputs.tobacco">
+                <label class="btn btn-outline-primary btn-lg col" :for="'tobacco_n-'+survey_type+index">No</label>
+            </div>
+        </div>
+        <div v-if="survey_type !== 'me'"
+             class="position-absolute cur-p font-md font-wight-600 remove-card-X" @click="remove_component(survey_type, index)">
+            X
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="survey-template">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <router-link :to="{ name: 'zip-code'}" class="mb-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                </svg>
+                Back
+            </router-link>
+            <div class="card text-center mt-2">
+                <h5 class="card-header text-black font-wight-600">Tell us about you</h5>
+                <div class="card-body">
+                    <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
+                    <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
+                        this new coverage.</p>
+                    <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                        <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
+                             viewBox="0 0 24 24">
+                            <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
+                        </svg>
+                    </a>
+                    <br>
+                    <div class="row text-left">
+                        <div class="col-md-6 offset-md-3">
+                            <survey-card :survey_type="holder_types_enum.own"
+                                         :prop_max_age= {{ applicant_max_age }}
+                                         :prop_min_age= {{ applicant_min_age }}
+                                         :inputs="own_input" ref="own_input_ref"></survey-card>
+
+                            <template>
+                                <survey-card v-if="spouse" :survey_type="holder_types_enum.spouse" :prop_max_age={{ spouse_max_age }}
+                                             :prop_min_age={{ spouse_min_age }} :inputs="spouse_input"></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="spouse = true"
+                                     v-else>
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                +
+                                            </div>
+                                            <span class="pl-2">Add a Spouse</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template>
+                                <survey-card v-if="dependents.length !== 0" v-for="(child, index) in dependents"
+                                             :key="index" :index="index" :survey_type="holder_types_enum.child" :inputs="child"
+                                             :prop_max_age={{ dependents_max_age }} :prop_min_age={{ dependents_min_age }}></survey-card>
+                                <div class="card py-3 my-3 px-4 cur-p qt-survey border-primary" @click="add_dependent"
+                                     v-if="dependents.length <= max_dependents">
+                                    <div class="d-flex align-items-center qt-survey-who">
+                                        <div class="font-md pl-2 font-sm font-wight-600 text-primary">
+                                            <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center font-wight-700 qt-single-icon">
+                                                +
+                                            </div>
+                                            <span class="pl-2">Add a Dependent</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
+                                         v-if="own_input.dob && own_input.gender && own_input.tobacco" :to="{ name: 'survey-income'}"
+                                         @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</router-link>
+                            <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="monthly-income-template">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <router-link :to="{ name: 'survey-member'}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                </svg>
+                Back
+            </router-link>
+
+            <div class="card text-center mt-2">
+                <div class="card-body">
+                    <form class="text-center w-100">
+                        <h1 class="font-wight-600 mb-3 font-lg responsive-font-xl text-center mb-3 heading-slogan">Your Annual Income
+                            <span id="enroll-monthly-income-label" class="cur-p btn btn-outline-dark rounded-circle p-0 font-weight-bold font-xs"
+                            style="width: 23px;line-height: 23px;height: 23px;">i</span>
+                        </h1>
+                        <b-tooltip target="enroll-monthly-income-label">
+                            Household income <br>
+                            Enter the gross income from your 2018 (or most recent) income tax return, and adjust for changes to your income and deductions for 2019.
+                        </b-tooltip>
+                        {% comment %}<div class="input-group mb-3">
+                            <br>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text"v-model="income" v-on:keydown="accept_only_number"
+                               class="form-control qt-survey-input" id="enroll-monthly-income" name="monthly-income" >
+                        </div>{% endcomment %}
+                        <div class="btn-group-vertical qt-rigid-btn-group">
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "47001")'>$47,000+</button>
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "40000")'>$30,001 - $47,000</button>
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "20000")'>$16,001 - $30,000</button>
+                        </div>
+                        {% comment %}<button id="submit_quote_request" :disabled="income == ''"
+                                class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
+                                v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
+                            Check Quote
+                        </button>{% endcomment %}
+                    </form>
+                </div>
+                {% comment %}<div class="d-flex justify-content-center w-100 qt-rigid-btn-group px-3">
+                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 mr-3 w-auto col">$47,000+</button>
+                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 ml-3 w-auto col">$30,001 - $47,000+</button>
+                </div>{% endcomment %}
+            </div>
+        </div>
+    </div>
+</script>
