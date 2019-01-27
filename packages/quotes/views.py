@@ -371,6 +371,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param plan_url: Unique url for plan that sits in plan_data
     :return: HttpResponse
     """
+    stm_carriers = ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']
+
     logger.info(f"Plan details: {plan_url}")
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -396,7 +398,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         raise Http404()
 
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+            plan = next(filter(lambda mp: mp['unique_url'] == plan_url
+                                   or mp['general_url'] == plan_url, sp))
     except StopIteration:
         logger.warning("No Plan Found: {0}; there are plans for this session".format(plan_url))
         raise Http404()
@@ -404,7 +407,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     # Changing/Filtering the related plans here
     # Here option means deductible
 
-    if plan['Name'] == "Everest STM" or plan['Name'] == "LifeShield STM" or plan['Name'] == "AdvantHealth STM":
+
+    if plan['Name'] in stm_carriers:
         related_plans = list(filter(
             lambda mp: mp['Name'] == plan['Name'] and \
                        mp['option'] == plan['option'] and \
