@@ -1255,18 +1255,18 @@ $(function() {
             },
             data: data, type: method, dataType: 'json',
             success: function(json) {
-                console.log("\nAjax : success");
+                {#console.log("\nAjax : success");#}
                 if (json.featured_stm_plan_quote) {
                     console.log("Feature: " + json.featured_stm_plan_quote);
                 }
                 if (json.monthly_plans[json.monthly_plans.length-1] != 'END' && json.monthly_plans[0] == 'START') {
-                    console.info("There are more plans");
+                    {#console.info("There are more plans");#}
                     setTimeout(ajax_request_for_data, 2000, action_url,
                             'GET', {}, success_handler, error_handler);
                 } else if (json.monthly_plans[0] == undefined) {
                     window.location = '/plans/';
                 } else {
-                    console.log("There are no more plans");
+                    {#console.log("There are no more plans");#}
 
                     $('#stm_plan_template').attr('data-plans', JSON.stringify(json));
                     $('#plan_sorting_options').attr('data-status', 'done');     // Is not being used at the moment.
