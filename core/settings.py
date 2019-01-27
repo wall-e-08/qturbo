@@ -394,6 +394,10 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'AdvantHealth STM': ['6*6']
 }
 
+# -----------------------------------+
+# Carrier specific plan attributes   +
+# -----------------------------------+
+
 # TODO: Quote request should use these values OR initial quote should be fully hardcoded
 CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
     'LifeShield STM': ['2000', '3000', '4000', '5000'],
@@ -414,6 +418,57 @@ CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
 CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
     'AdvantHealth STM': ['250000', '500000', '1000000'],
     'LifeShield STM': ['250000', '750000', '1000000', '1500000']
+}
+
+# --------------+
+#    Income     +
+# --------------+
+
+CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM = {
+    'LifeShield STM': {
+        'low': '250000',
+        'medium': '750000',
+        'high': '1000000'
+    },
+
+    'AdvantHealth STM': {
+        'low': '250000',
+        'medium': '500000',
+        'high': '1000000'
+    }
+}
+
+# -----------------+
+# User Preference  +
+# -----------------+
+
+USER_INITIAL_PREFERENCE_DATA = {
+    'LifeShield STM': {
+        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+        'Coverage_Max': [''],
+        'Coinsurance_Percentage': ['0', '20'],
+        'Benefit_Amount': ['0', '2000']
+    },
+
+    'AdvantHealth STM': {
+        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+        'Coverage_Max': [''],
+        'Coinsurance_Percentage': ['20'],
+        'Benefit_Amount': ['2000']
+    }
+}
+
+# -----------------------+
+#   Homepage Properties  +
+# -----------------------+
+
+HOMEPAGE_USER_PROPERTIES = {
+    'min_age': 21,
+    'max_age': 99,
+
+    'dependents_min_age': 6,
+    'dependents_max_age': 25,
+
 }
 
 

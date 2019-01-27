@@ -45,30 +45,31 @@ json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
-# Should this be in settings file?
-prop = {
-    'min_age': 21,
-    'max_age': 99,
+def get_prop_context():
+    """Return context variables for the home and plans view
 
-    'dependents_min_age': 6,
-    'dependents_max_age': 25,
+    :param prop: User attributes
+    :return: context variables
+    """
+    props = settings.HOMEPAGE_USER_PROPERTIES
+    prop_context = {
+        'applicant_min_age': props['min_age'],
+        'applicant_max_age': props['max_age'],
 
-}
+        'spouse_min_age': props['min_age'],
+        'spouse_max_age': props['max_age'],
 
-prop_context = {
-    'applicant_min_age': prop['min_age'],
-    'applicant_max_age': prop['max_age'],
+        'dependents_min_age': props['dependents_min_age'],
+        'dependents_max_age': props['dependents_max_age']
+    }
 
-    'spouse_min_age': prop['min_age'],
-    'spouse_max_age': prop['max_age'],
-
-    'dependents_min_age': prop['dependents_min_age'],
-    'dependents_max_age': prop['dependents_max_age']
-}
-
+    return prop_context
 
 def home(request: WSGIRequest) -> HttpResponse:
-    return render(request, 'homepage.html', prop_context)
+    prop =settings.HOMEPAGE_USER_PROPERTIES
+
+
+    return render(request, 'homepage.html', get_prop_context())
 
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
@@ -79,7 +80,7 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     :param request: Django request object
     :return: Django HttpResponse Object
     """
-    return render(request, 'quotes/../../templates/homepage.html', prop_context)
+    return render(request, 'quotes/../../templates/homepage.html', get_prop_context())
 
 
 @require_POST
@@ -188,21 +189,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
                     # To be refactored.
                     # We should move this back to validate_quote_form()
                     # This only runs at the first of the quote
-                    quote_request_preference_data = {
-                        'LifeShield STM': {
-                            'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
-                            'Coverage_Max': [''],
-                            'Coinsurance_Percentage': ['0', '20'],
-                            'Benefit_Amount': ['0', '2000']
-                        },
-
-                        'AdvantHealth STM': {
-                            'Duration_Coverage': settings.STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
-                            'Coverage_Max': [''],
-                            'Coinsurance_Percentage': ['20'],
-                            'Benefit_Amount': ['2000']
-                        }
-                    }
+                    quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA
 
                     quote_request_done_data = {
                         'LifeShield STM': {
@@ -213,6 +200,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
                             'Duration_Coverage': []
                         }
                     }
+
                     request.session['quote_request_preference_data'] = quote_request_preference_data
 
                     redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
@@ -294,21 +282,9 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
 
     # 'policy_max_dict' is a dictionary which has been hardcoded to return values against
     # low medium and High.
-    policy_max_dict = {
-        'LifeShield STM': {
-            'low': '250000',
-            'medium': '750000',
-            'high': '1000000'
-        },
+    policy_max_dict = settings.CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM
 
-        'AdvantHealth STM': {
-            'low': '250000',
-            'medium': '500000',
-            'high': '1000000'
-        }
-    }
-
-    income_low_point = 16000
+    income_low_point = 30000
     income_high_point = 47000
 
     if income_low_point >= income:
