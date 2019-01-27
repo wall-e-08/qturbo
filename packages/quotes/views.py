@@ -132,8 +132,10 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         save_lead_info(qm.Leads, lead_form.cleaned_data)
 
         """
-            Start Celery
+            # Start Celery
             
+            Instead of starting celery in the plan_quote method, I have copied the whole plan quote in this method. 
+            Refractoring is needed as the whole method might be necessary. 
         """
 
         # quote_request_form_data = request.session.get('quote_request_form_data', {})
@@ -235,6 +237,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     else:
         print(form.errors)
         print(formset.errors)
+        # changed 'fail' to 'false'
     return JsonResponse(
         {
             'status': 'false',
@@ -249,7 +252,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
     """
 
-    :return:
+    :return: JsonResponse containing the url
     """
     quote_request_form_data = request.session.get('quote_request_form_data')
     ins_type = 'lim'
@@ -297,6 +300,9 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
     :param income: Annual Income
     :return: Coverage/Policy Maximum
     """
+
+    # 'policy_max_dict' is a dictionary which has been hardcoded to return values against
+    # low medium and High.
     policy_max_dict = {
             'LifeShield STM' : {
             'low': '250000',
@@ -327,8 +333,20 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
     # TODO: Return a None and handle it.
 
 
+
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
+
+    # Update 01/27/2019 - ds87
+    I have put the whole function in validate_quote_form function. And I have removed
+    the celery function call from the end of the function. So, when the method is called,
+    it only renders the HttpResponse to render the plan list.
+
+    That happens when user gives annual income in the set_annual_income_and_redirect_to_plans
+    method. It redirects to plans page.
+
+    Note: some modification might be in order as the function has been changed. Espicially
+    in the later part of the application.
 
     :param request: Django request object
     :param ins_type: stm/lim/anc
