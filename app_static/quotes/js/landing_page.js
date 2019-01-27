@@ -268,7 +268,6 @@ const router = new VueRouter({
                         this.dependents.splice(idx, 1);
                     },
                     save_to_cookie: function() {
-                        console.log("Saving to cookie");
                         let _t = this;
                         _t.$cookies.set(v_cookies_keys.own_input, _t.own_input, 60 * 60 * 24);
 
@@ -281,13 +280,9 @@ const router = new VueRouter({
                             _t.$cookies.set(v_cookies_keys.dependents, JSON.stringify(_t.dependents), 60 * 60 * 24)
                         else
                             _t.$cookies.remove(v_cookies_keys.dependents);
-
-
-
                     },
-
                     start_celery_quote: function(redirect_url, csrf_token) {
-                        console.log("Hello there");
+                        // console.log("Starting celery. url: " + redirect_url);
                         let _t = this;
 
                         let form_data = {
@@ -339,10 +334,8 @@ const router = new VueRouter({
                                 }
                             }
                         }
-
-
-                        console.table(form_data);
-                        console.log("Redirect URL is: "+ redirect_url);
+                        // console.table(form_data);
+                        // console.log("Redirect URL is: "+ redirect_url);
                         $.ajax({
                             url: redirect_url,
                             method: 'post',
@@ -352,27 +345,22 @@ const router = new VueRouter({
                             },
                             data: form_data,
                             success: function (data) {
-                                console.log("Initial success");
+                                // console.log("Initial success");
                                 console.table(data);
                                 if (data.status === "false"){
-                                    console.log("Error in form data");
+                                    // console.log("Error in form data");
+                                    console.error(data.errors);
                                     router.push({name: 'survey-member'});
-
                                 }
-
                             },
-                            error: function(data) {
-                                console.log("Error");
-                                console.table(data);
+                            error: function(er) {
+                                // console.log("Error");
+                                // console.table(data);
+                                console.error(er);
                                 router.push({name: 'survey-member'});
                             }
-
                         })
                     },
-
-
-
-
                 },
                 watch: {
                     spouse_input: function () {
@@ -381,19 +369,17 @@ const router = new VueRouter({
                 },
                 created() {
                     let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
-                    console.log("cookies:  " + zip_code);
-                    if(!zip_code){
-                        router.push({name: 'root'});
-                    }
-
                     let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
                     let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
                     let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
+                    // console.log("cookies(zip):  " + zip_code);
+                    // console.log("cookies(own):  " + JSON.stringify(cookie_own_input));
+                    // console.log("cookies(spouse):  " + JSON.stringify(cookie_spouse_input));
+                    // console.log("cookies(childs):  " + JSON.stringify(cookie_dependents));
 
-                    console.log("cookies:  " + JSON.stringify(cookie_own_input));
-                    console.log("cookies:  " + JSON.stringify(cookie_spouse_input));
-                    console.log("cookies:  " + JSON.stringify(cookie_dependents));
-
+                    if(!zip_code){
+                        router.push({name: 'root'});
+                    }
 
                     if(cookie_own_input)
                         this.own_input = cookie_own_input;
@@ -401,8 +387,9 @@ const router = new VueRouter({
                     if(cookie_spouse_input)
                         this.spouse_input = cookie_spouse_input;
 
+                    let cookie_dependents_input = {};
                     if(cookie_dependents) {
-                        var cookie_dependents_input = JSON.parse(cookie_dependents);
+                        cookie_dependents_input = JSON.parse(cookie_dependents);
 
                         for (var i=0; i<cookie_dependents_input.length; i++){
                             this.dependents.push({
@@ -412,16 +399,6 @@ const router = new VueRouter({
                             })
                         }
                     }
-/*                    this.own_input = {
-                        dob: '',
-                        gender: '',
-                        tobacco: '',
-                    };
-                    this.spouse_input = {
-                        dob: '',
-                        gender: '',
-                        tobacco: '',
-                    };*/
                 }
             },
             name: 'survey-member',
@@ -438,11 +415,11 @@ const router = new VueRouter({
                 },
                 methods: {
                     accept_only_number: function (e) {
-                        /* all accepted key codes:
-                   * backspace: 8      * left arrow: 37
-                   * right arrow: 39   * del: 46
-                   * num pad: 96-105   * number: 48-57
-                   * */
+                       /* all accepted key codes:
+                       * backspace: 8      * left arrow: 37
+                       * right arrow: 39   * del: 46
+                       * num pad: 96-105   * number: 48-57
+                       * */
                         var kc = e.keyCode;
                         if (![8,37,39,46].includes(kc)) {
                             if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
@@ -453,77 +430,24 @@ const router = new VueRouter({
                     },
 
                     redirect_to_plans: function(redirect_url, csrf_token, income) {
+                        // if(!$cookies)   /// TODO: check if cookies exists... if not redirect to first page logically 
                         let _t = this;
                         _t.income = income;
-                        let cookie_own_input = this.$cookies.get(v_cookies_keys.own_input);
-                        let cookie_spouse_input = this.$cookies.get(v_cookies_keys.spouse_input);
-                        let cookie_dependents = this.$cookies.get(v_cookies_keys.dependents);
-                        let cookie_dependents_input = cookie_dependents ? JSON.parse(cookie_dependents) : null;
-
-                        let form_data = {
-                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
-                            Include_Spouse: cookie_spouse_input ? 'Yes': 'No',
-                            Payment_Option: '1',
-                            Ins_Type: 'lim',
-                            'child-TOTAL_FORMS': cookie_dependents_input ? cookie_dependents_input.length : 0,
-                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
-                            'child-MIN_NUM_FORMS': 0,
-                            'child-MAX_NUM_FORMS': this.max_dependents,
-                            Annual_Income: this.income
-
-                        };
-                        if(Object.keys(cookie_own_input).every((k) => cookie_own_input[k])){    // checking if all data present for applicant
-                            form_data['Applicant_DOB'] = cookie_own_input.dob;
-                            form_data['Applicant_Gender'] = cookie_own_input.gender;
-                            form_data['Tobacco'] = cookie_own_input == 'true' ? 'Y' : 'N';
-                            form_data['Children_Count'] = cookie_dependents_input ? cookie_dependents_input.length : 0;
-
-                            var newDate = new Date();
-                            newDate.setDate(newDate.getDate() + 1);
-                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
-
-                        } else {
-                            console.error("Please insert data to see plans");
-                            return null;
-                        }
-                        if (cookie_spouse_input) {
-                            if (Object.keys(cookie_spouse_input).every((k) => cookie_spouse_input[k])) { // check spouse data
-                                form_data['Spouse_DOB'] = cookie_spouse_input.dob;
-                                form_data['Spouse_Gender'] = cookie_spouse_input.gender;
-                                form_data['Spouse_Tobacco'] = cookie_spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
-                            } else {
-                                console.error("Please insert spouse data correctly to see plans");
-                                return null;
-                            }cookie_dependents_input ? cookie_dependents_input.length : 0;
-                        }
-                        if(cookie_dependents_input) {
-                            for(var i=0; i<cookie_dependents_input.length; i++){
-                                if (Object.keys(cookie_dependents_input[i]).every((k) => cookie_dependents_input[i][k])) {
-
-                                    form_data['child-' + i + '-Child_DOB'] = cookie_dependents_input[i].dob;
-                                    form_data['child-' + i + '-Child_Gender'] = cookie_dependents_input[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = cookie_dependents_input[i].tobacco == 'true';
-
                         $.ajax({
                             url: redirect_url,
                             method: 'post',
                             dataType: 'json',
-
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("X-CSRFToken", csrf_token);
                             },
-
                             data: {
-                                Annual_Income: _t.income
+                                Annual_Income: income
                             },
                             success: function (data) {
-                                console.log('Mjolnir');
-
                                 if (data.url){
                                     console.log("Redirecting to "+ data.url);
                                     location.href = data.url;
                                 } else {
-                                    // console.error("XXXXXX");
                                     router.push({name: 'survey-member'});
                                 }
                             },
@@ -531,15 +455,8 @@ const router = new VueRouter({
                                 console.log("Error");
                                 console.table(data);
                             }
-
-
                         });
-
                     }
-
-
-
-
                 }
             },
             name: 'survey-income',

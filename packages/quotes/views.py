@@ -383,7 +383,7 @@ def plan_quote(request, ins_type):
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
-    return render(request, 'quotes/quote_list.html', {
+    return render(request, 'quotes/quote_list_d.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
