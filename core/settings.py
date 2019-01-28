@@ -396,7 +396,7 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
 
 # TODO: Quote request should use these values OR initial quote should be fully hardcoded
 CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
-    'LifeShield STM': ['2000', '3000', '4000', '5000'],
+    'LifeShield STM': ['0', '2000', '3000', '4000', '5000'],
     'AdvantHealth STM': ['2000', '4000']
 }
 
@@ -407,7 +407,7 @@ CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE = {
 
 
 CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
-    'LifeShield STM': [ '0', '20', '30', '50'],
+    'LifeShield STM': ['0', '20', '30', '50'],
     'AdvantHealth STM': ['20']
 }
 

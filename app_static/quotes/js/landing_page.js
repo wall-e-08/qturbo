@@ -1,5 +1,13 @@
 'use strict';
 
+const v_all_routes_name = {
+    root: 'root',
+    zip: 'zip-code',
+    survey: 'survey',
+    quote: 'survey-member',
+    income: 'survey-income',
+};
+
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
     own_input: "qt_own_input",
@@ -165,13 +173,13 @@ const v_survey_card = {
 const router = new VueRouter({
     routes: [{
         path: '/',
-        name: 'root',
+        name: v_all_routes_name.root,
         component: {
             template: v_templates.root,
         }
     }, {
         path: '/zip-code',
-        name: 'zip-code',
+        name: v_all_routes_name.zip,
         component: {
             template: v_templates.zip_code,
             data: function () {
@@ -207,7 +215,7 @@ const router = new VueRouter({
                 check_zipcode: function () {
                     if (this.is_valid_zip) {
                         this.$cookies.set(v_cookies_keys.zip_code, this.zip_code, 60 * 60 * 24);
-                        router.push({name: 'survey-member'});
+                        router.push({name: v_all_routes_name.quote});
                     } else {
                         this.$cookies.remove(v_cookies_keys.zip_code);
                     }
@@ -227,12 +235,13 @@ const router = new VueRouter({
         },
     }, {
         path: '/health-insurance',
-        name: 'survey',
+        name: v_all_routes_name.survey,
         component: {
             template: v_templates.children,
         },
         children: [{    // this is path-children, it's not dependent
             path: 'member',
+            name: v_all_routes_name.quote,
             component: {
                 template: v_templates.survey_member,
                 components: {
@@ -291,7 +300,7 @@ const router = new VueRouter({
                             Payment_Option: '1',
                             Ins_Type: 'lim',
                             'child-TOTAL_FORMS': this.dependents.length,
-                            'child-INITIAL_FORMS': 0,   // TODO: this would be initialized from this.created()
+                            'child-INITIAL_FORMS': 0,
                             'child-MIN_NUM_FORMS': 0,
                             'child-MAX_NUM_FORMS': this.max_dependents,
 
@@ -314,7 +323,7 @@ const router = new VueRouter({
                             if (Object.keys(_t.spouse_input).every((k) => _t.spouse_input[k])) { // check spouse data
                                 form_data['Spouse_DOB'] = _t.spouse_input.dob;
                                 form_data['Spouse_Gender'] = _t.spouse_input.gender;
-                                form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';  // TODO: Implement spouse tobacco in forms/views
+                                form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';
                             } else {
                                 console.error("Please insert spouse data correctly to see plans");
                                 return null;
@@ -350,14 +359,14 @@ const router = new VueRouter({
                                 if (data.status === "false"){
                                     // console.log("Error in form data");
                                     console.error(data.errors);
-                                    router.push({name: 'survey-member'});
+                                    router.push({name: v_all_routes_name.quote});
                                 }
                             },
                             error: function(er) {
                                 // console.log("Error");
                                 // console.table(data);
                                 console.error(er);
-                                router.push({name: 'survey-member'});
+                                router.push({name: v_all_routes_name.quote});
                             }
                         })
                     },
@@ -378,7 +387,7 @@ const router = new VueRouter({
                     // console.log("cookies(childs):  " + JSON.stringify(cookie_dependents));
 
                     if(!zip_code){
-                        router.push({name: 'root'});
+                        router.push({name: v_all_routes_name.zip});
                     }
 
                     if(cookie_own_input)
@@ -401,9 +410,9 @@ const router = new VueRouter({
                     }
                 }
             },
-            name: 'survey-member',
         },{
             path: 'income',
+            name: v_all_routes_name.income,
             component: {
                 // TODO: Make this annual income
                 template: v_templates.monthly_income,
@@ -428,9 +437,7 @@ const router = new VueRouter({
                             }
                         }
                     },
-
-                    redirect_to_plans: function(redirect_url, csrf_token, income) {
-                        // if(!$cookies)   /// TODO: check if cookies exists... if not redirect to first page logically 
+                    redirect_to_plans: function (redirect_url, csrf_token, income) {
                         let _t = this;
                         _t.income = income;
                         $.ajax({
@@ -448,7 +455,7 @@ const router = new VueRouter({
                                     console.log("Redirecting to "+ data.url);
                                     location.href = data.url;
                                 } else {
-                                    router.push({name: 'survey-member'});
+                                    router.push({name: v_all_routes_name.quote});
                                 }
                             },
                             error: function(data) {
@@ -456,10 +463,19 @@ const router = new VueRouter({
                                 console.table(data);
                             }
                         });
-                    }
+                    },
+                },
+                created: function () {
+                    let _t = this;
+                    let zip_code = _t.$cookies.get(v_cookies_keys.zip_code);
+                    if (!zip_code)
+                        router.push({name: v_all_routes_name.zip});
+
+                    let cookie_own_input = _t.$cookies.get(v_cookies_keys.own_input);
+                    if (!cookie_own_input)
+                        router.push({name: v_all_routes_name.quote});
                 }
             },
-            name: 'survey-income',
         },]
     },{
         path: '/dashboard',

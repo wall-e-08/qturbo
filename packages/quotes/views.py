@@ -383,7 +383,7 @@ def plan_quote(request, ins_type):
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
-    return render(request, 'quotes/quote_list_d.html', {
+    return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
@@ -466,19 +466,16 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration_set = set(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]) - \
-                                          {plan['Duration_Coverage']}
-        alternate_coverage_duration = list(alternate_coverage_duration_set)
+        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]
+        # alternate_coverage_duration = list(alternate_coverage_duration_set)
 
         # All of them
-        alternate_benefit_amount_set = set(settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]) - \
-                                       {plan['Benefit_Amount']}
-        alternate_benefit_amount = list(alternate_benefit_amount_set)
+        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
+        # alternate_benefit_amount = list(alternate_benefit_amount_set)
 
         # All of them
-        alternate_coinsurace_percentage_set = set(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]) - \
-                                              {plan['Coinsurance_Percentage']}
-        alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
+        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]
+        # alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
         # Edge case 50 percent coinsurance for plan type 2
         # TODO: Make this dynamic
@@ -489,8 +486,9 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                 if '5000' in alternate_benefit_amount:
                     alternate_benefit_amount.remove('5000')
 
-        alternate_coverage_max_set = available_alternatives_as_set['alternate_coverage_max'] - {plan['Coverage_Max']}
-        alternate_coverage_max = list(alternate_coverage_max_set)
+        alternate_coverage_max = list(available_alternatives_as_set['alternate_coverage_max'])
+        alternate_coverage_max.sort(key=int)
+        # alternate_coverage_max = list(alternate_coverage_max_set)
 
         alternate_plan_set = available_alternatives_as_set['alternate_plan'] - {plan['Plan']}
         alternate_plan = list(alternate_plan_set)
@@ -512,8 +510,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         print("Very weird error: {}".format(er))
 
     return render(request,
-                  'quotes/stm_plan.html',
-                  # 'quotes/plans/{0}_info.html'.format(plan["Name"].lower().replace(' ', '_')),
+                  # 'quotes/stm_plan.html',
+                  'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
