@@ -70,8 +70,8 @@
                 {% endif %}
 
                 <hr>
-                <div id="qt-customize-plan-link" class="text-center">
-                    <a href="#" class="text-muted">
+                <div class="text-center">
+                    <a href="#qt-customize-plan" id="qt-customize-plan-link" class="text-muted">
                         <i class="fa fa-sliders"></i>
                         Customize your plan
                     </a>
@@ -831,6 +831,19 @@
     </script>
 
     <script>
+        $('#qt-customize-plan-link').click(function() {
+            if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                var target = $(this.hash);
+                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                if (target.length) {
+                    $('html,body').animate({
+                        scrollTop: target.offset().top - 50	//(-0) because navbar height 50px
+                    }, 1000);
+                    return false;
+                }
+            }
+        });
+    
         $('.qt-all-customize-dropdowns').on('click', '.dropdown-menu>li:not(.active)', function (e) {
             e.preventDefault();
             let _t = $(this);
