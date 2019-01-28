@@ -270,6 +270,61 @@ a.qt-plan-brochure-file > i.fa:last-child {
     color: #080808;
 }
 
+.qt-each-pkg-include {
+    border: 1px solid #d7d7d7;
+    padding: 0 24px;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
+    user-select: none;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+.qt-each-pkg-include:not(:first-child) {
+    border-top-width: 0;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open {
+    margin: 20px 0;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open,
+.qt-each-pkg-include.qt-pkg-include-open + .qt-each-pkg-include {
+    border-top-width: 1px;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open:first-child {
+    margin-top: 0;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open:last-child {
+    margin-bottom: 0;
+}
+
+.qt-each-pkg-hover {
+    padding: 12px 0;
+}
+
+.qt-each-pkg-hover h3 {
+    font-size: 21px;
+    font-weight: 700;
+    margin: 17px 0;
+}
+
+.qt-each-pkg-img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.qt-each-pkg-dropdown-icon {
+    line-height: 1;
+}
+
 .footer {
     display: none;
 }
@@ -291,5 +346,19 @@ a.qt-plan-brochure-file > i.fa:last-child {
     #qt-customize-plan .qt-all-customize-dropdowns {
         -ms-grid-columns: auto;
         grid-template-columns: auto;
+    }
+    
+    .qt-each-pkg-include {
+        padding: 0 15px;
+    }
+
+    .qt-each-pkg-hover h3 {
+        font-size: 16px;
+        margin: 12px 0;
+    }
+
+    .qt-each-pkg-img {
+        width: 28px;
+        margin-right: 8px;
     }
 }

@@ -81,53 +81,26 @@
                 <div id="qt-package-includes">
                     <h2>Your package includes:</h2>
                     <div class="qt-all-pkg-includes">
-
-                    {# TODO: manage those below #}
-                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
-                            <div>
-                                <div>
-                                    <img src="#">
-                                    <p>24/7 access to board-certified doctors</p>
-                                </div>
-                                <div>
-                                    <span>
+                        {% for bc in benefit_coverage %}
+                            <div class="cur-p qt-each-pkg-include" unselectable="on">
+                                <div class="flex-center-between qt-each-pkg-hover">
+                                    <div class="flex-center-between">
+                                        <img class="qt-each-pkg-img" src="https://smart.assurance.com/static/media/medical-app-smartphone-touch.398c7f0a.svg">
+                                        <h3>{{ bc.get_instance.title }}</h3>
+                                    </div>
+                                    <span class="qt-each-pkg-dropdown-icon">
                                         <svg width="20" viewBox="0 0 24 24">
                                             <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
                                             <path fill="none" d="M0 0h24v24H0z"></path>
                                         </svg>
                                     </span>
                                 </div>
-                            </div>
-                            <div>
-                                <ul>
-                                    <li>=========</li>
-                                    <li>=========</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
-                            <div>
-                                <div>
-                                    <img src="#">
-                                    <p>24/7 access to board-certified doctors</p>
-                                </div>
-                                <div>
-                                    <span>
-                                        <svg width="20" viewBox="0 0 24 24">
-                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
-                                            <path fill="none" d="M0 0h24v24H0z"></path>
-                                        </svg>
-                                    </span>
+                                <div class="none qt-each-pkg-hover-content">
+                                    <hr>
+                                    {{ bc.get_instance.description|safe }}
                                 </div>
                             </div>
-                            <div>
-                                <ul>
-                                    <li>=========</li>
-                                    <li>=========</li>
-                                </ul>
-                            </div>
-                        </div>
-    
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -230,22 +203,10 @@
                     </div>
                 </div>
 
-                {% if benefit_coverage %}
-                    <hr>
-                    <div id="benefits-n-coverage">
-                        <h3>Benefits and Coverage</h3>
-                        {% for bc in benefit_coverage %}
-                            <div>
-                                <h4>{{ bc.get_instance.title }}</h4>
-                                <div>{{ bc.get_instance.description|safe }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
                 {% if restrictions_omissions %}
                     <hr>
                     <div id="restrictions-n-omissions">
-                        <h3>Restrictions and Omissions</h3>
+                        <h3>Disclaimer</h3>
                         {% for bc in restrictions_omissions %}
                             <div>
                                 <h4>{{ bc.get_instance.title }}</h4>
@@ -873,5 +834,20 @@
                 }
             });
         });
+        
+        $('.qt-all-pkg-includes').on('click', '.qt-each-pkg-include', function () {
+            let _t = $(this);
+            let open_class_str = 'qt-pkg-include-open';
+            if (_t.hasClass(open_class_str)) {
+                _t.removeClass(open_class_str);
+            } else {
+                $('.qt-each-pkg-include').removeClass(open_class_str);
+                _t.addClass(open_class_str);
+                $('.qt-each-pkg-hover-content').each(function () {
+                    $(this).slideUp();  // slide up other opened div
+                })
+            }
+            _t.children('.qt-each-pkg-hover-content').slideToggle();
+        })
     </script>
 {% endblock extra_js %}
