@@ -52,7 +52,186 @@
             </div>
 
             <div class="col-md-6">
+                
+                {% if True %}
+                {# TODO: this should come from db plan-wise #}
+                <div id="qt-sidebar-plan-details">
+                    <h2>Plan name: {{ plan.Name }}</h2>
+                    <p>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</p>
+                    <div id="qt-sidebar-small-plan-description">
+                        <ul>
+                            <li>GG</li>
+                            <li>WP</li>
+                            <li>sdfhgsjdfgsdf</li>
+                            <li>ffjsdf wyoeg yweg weyfgwergwrwr</li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr>
+                <div id="qt-customize-plan-link" class="text-center">
+                    <a href="#" class="text-muted">
+                        <i class="fa fa-sliders"></i>
+                        Customize your plan
+                    </a>
+                </div>
+                <hr>
+
+                <div id="qt-package-includes">
+                    <h2>Your package includes:</h2>
+                    <div class="qt-all-pkg-includes">
+
+                    {# TODO: manage those below #}
+                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
+                            <div>
+                                <div>
+                                    <img src="#">
+                                    <p>24/7 access to board-certified doctors</p>
+                                </div>
+                                <div>
+                                    <span>
+                                        <svg width="20" viewBox="0 0 24 24">
+                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+                                            <path fill="none" d="M0 0h24v24H0z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <ul>
+                                    <li>=========</li>
+                                    <li>=========</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
+                            <div>
+                                <div>
+                                    <img src="#">
+                                    <p>24/7 access to board-certified doctors</p>
+                                </div>
+                                <div>
+                                    <span>
+                                        <svg width="20" viewBox="0 0 24 24">
+                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+                                            <path fill="none" d="M0 0h24v24H0z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <ul>
+                                    <li>=========</li>
+                                    <li>=========</li>
+                                </ul>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+
+                <hr>
+                <div id="qt-customize-plan">
+                    <h2>Customize your plan:</h2>
+                    <div class="qt-all-customize-dropdowns">
+                        {% if alternate_coverage_duration %}
+                            <div class="dropdown">
+                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                    <span class="ms-block mrg-r-10">
+                                        <span class="ms-block qt-customize-plan-title">Coverage Duration</span>
+                                        <span class="ms-block qt-customize-plan-selected-val">{{ plan.Duration_Coverage }}</span>
+                                    </span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for duration in alternate_coverage_duration %}
+                                        <li data-value="{{ duration }}" {% if plan.Duration_Coverage == duration %}class="active"{% endif %}>{{ duration }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <form action="{% url 'quotes:alternate_duration_coverage' plan.unique_url %}" class="none" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden"
+                                           id="{{ duration_coverage_form.Duration_Coverage.id_for_label }}"
+                                           name="{{ duration_coverage_form.Duration_Coverage.html_name }}"
+                                           value="{{ plan.Duration_Coverage }}">
+                                </form>
+                            </div>
+                        {% endif %}
+                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_benefit_amount %}
+                            <div class="dropdown">
+                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                    <span class="ms-block mrg-r-10">
+                                        <span class="ms-block qt-customize-plan-title">Maximum Out Of Pocket</span>
+                                        <span class="ms-block qt-customize-plan-selected-val">{{ plan.Benefit_Amount }}</span>
+                                    </span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for benefit in alternate_benefit_amount %}
+                                        <li data-value="{{ benefit }}" {% if plan.Benefit_Amount == benefit %}class="active"{% endif %}>{{ benefit }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden"
+                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
+                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}"
+                                           value="{{ plan.Benefit_Amount }}">
+                                </form>
+                            </div>
+                        {% endif %}
+                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coinsurace_percentage %}
+                            <div class="dropdown">
+                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                    <span class="ms-block mrg-r-10">
+                                        <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
+                                        <span class="ms-block qt-customize-plan-selected-val">{{ plan.Coinsurance_Percentage }}</span>
+                                    </span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for percentage in alternate_coinsurace_percentage %}
+                                        <li data-value="{{ percentage }}" {% if plan.Coinsurance_Percentage == percentage %}class="active"{% endif %}>{{ percentage }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden"
+                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
+                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}"
+                                           value="{{ plan.Coinsurance_Percentage }}">
+                                </form>
+                            </div>
+                        {% endif %}
+                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coverage_max %}
+                            <div class="dropdown">
+                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                    <span class="ms-block mrg-r-10">
+                                        <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
+                                        <span class="ms-block qt-customize-plan-selected-val">{{ plan.coverage_max_value }}</span>
+                                    </span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for coverage in alternate_coverage_max %}
+                                        <li data-value="{{ coverage }}" {% if plan.coverage_max_value == coverage %}class="active"{% endif %}>{{ coverage }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden"
+                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
+                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}"
+                                           value="{{ plan.coverage_max_value }}">
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 {% if benefit_coverage %}
+                    <hr>
                     <div id="benefits-n-coverage">
                         <h3>Benefits and Coverage</h3>
                         {% for bc in benefit_coverage %}
@@ -64,6 +243,7 @@
                     </div>
                 {% endif %}
                 {% if restrictions_omissions %}
+                    <hr>
                     <div id="restrictions-n-omissions">
                         <h3>Restrictions and Omissions</h3>
                         {% for bc in restrictions_omissions %}
@@ -650,4 +830,35 @@
 
     </script>
 
+    <script>
+        $('.qt-all-customize-dropdowns').on('click', '.dropdown-menu>li:not(.active)', function (e) {
+            e.preventDefault();
+            let _t = $(this);
+            let _form = _t.parent().next();
+
+            _form.children('input:not([name="csrfmiddlewaretoken"])').val(_t.attr('data-value'));
+            $.ajax({
+                url: _form.attr("action"),
+                async : false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                data: _form.serialize(),
+                type: 'POST',
+                dataType: 'json',
+                success: function (json) {
+                    if (json.status === 'success') {
+                        location.href = json.url;
+                    } else {
+                        location.reload();
+                        {# TODO HANDLE THIS #}
+                    }
+                },
+                error: function () {
+                    location.reload();
+                    {#TODO HANDLE#}
+                }
+            });
+        });
+    </script>
 {% endblock extra_js %}
