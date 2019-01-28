@@ -79,7 +79,7 @@
                 <hr>
 
                 <div id="qt-package-includes">
-                    <h2>Your package includes:</h2>
+                    <h2 class="mrg-b-40">Your package includes:</h2>
                     <div class="qt-all-pkg-includes">
                         {% for bc in benefit_coverage %}
                             <div class="cur-p qt-each-pkg-include" unselectable="on">
@@ -201,6 +201,19 @@
                             </div>
                         {% endif %}
                     </div>
+                </div>
+
+                <hr>
+                <div>
+                    <h3>Coverage details</h3>
+                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                        <div>
+                            No insurance policy covers everything, and short-term plans have important exclusions.
+                            Please review the following information to make sure this plan covers what matters to you.
+                        </div>
+                    {% else %}
+                        <div>will be updated later</div>
+                    {% endif %}
                 </div>
 
                 {% if restrictions_omissions %}

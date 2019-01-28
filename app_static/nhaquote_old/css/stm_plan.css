@@ -291,6 +291,9 @@ a.qt-plan-brochure-file > i.fa:last-child {
 
 .qt-each-pkg-include.qt-pkg-include-open {
     margin: 20px 0;
+    -webkit-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
 }
 
 .qt-each-pkg-include.qt-pkg-include-open,
