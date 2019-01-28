@@ -73,7 +73,7 @@
 </head>
 
 <body class="{% block body_class %}{% endblock body_class %}"
-      onload="_googWcmGet('phone-number', '(877) 593-3736')">
+      {% comment %}onload="_googWcmGet('phone-number', '(877) 593-3736')"{% endcomment %}>
 {% block google_tag_manager_noscript %}
     {% comment %}<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PM8CJTJ"
                       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>{% endcomment %}
