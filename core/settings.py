@@ -443,6 +443,9 @@ CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM = {
 # -----------------+
 
 USER_INITIAL_PREFERENCE_DATA = {
+    # The general_url_chosen flag will be true when user goes into stm_plan page.
+    # It will be again set false when the user gets back to quote list page.
+    'general_url_chosen': False,
     'LifeShield STM': {
         'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
         'Coverage_Max': [''],

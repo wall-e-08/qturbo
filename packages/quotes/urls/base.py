@@ -28,20 +28,20 @@ urlpatterns = [
             r'-[a-z]{2}-[a-zA-Z0-9_]+(Plus)?-[0-9]+)/$',
             views.stm_plan, name='stm_plan'),
 
-    # LifeShield_STM-tx-1000-12*3p2/
-
     re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
             r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/$',
             views.stm_plan, name='stm_plan'),
 
 
     re_path('stm/alternate_duration_coverage/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/$',
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+            r'(\*\d{1,1})?p?\d?)/$',
             views.alternate_duration_coverage, name='alternate_duration_coverage'),
 
 
     re_path('stm/ben_amount_coins_policy_max_change_action/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/$',
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
+            r'(\*\d{1,1})?p?\d?)/$',
             views.ben_amount_coins_policy_max_change_action, name='ben_amount_coins_policy_max_change_action'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
@@ -53,7 +53,7 @@ urlpatterns = [
             views.stm_apply, name='stm_apply'),
 
     re_path('stm/apply/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/$',
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
             views.stm_apply, name='stm_apply'),
 
     re_path('stm/apply/(?P<plan_url>(USA_Dental|Foundation_Dental|Safeguard_Critical_Illness|Freedom_Spirit_Plus)'
@@ -69,7 +69,7 @@ urlpatterns = [
             views.stm_plan_addon_action, name='stm_plan_addon_action'),
 
     re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/'
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/'
             r'addon-(?P<action>(include|remove))/$',
             views.stm_plan_addon_action, name='stm_plan_addon_action'),
 

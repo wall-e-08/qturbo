@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core import settings
-
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
                     ChildInfoFormSet, LeadForm, Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
@@ -317,6 +316,11 @@ def plan_quote(request, ins_type):
     :param ins_type: stm/lim/anc
     :return: Django HttpResponse Object
     """
+    try:
+        request.session['quote_request_preference_data']['general_url_chosen'] = False
+    except KeyError:
+        print("User preference not found")
+        pass
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
 
@@ -375,6 +379,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     logger.info(f"Plan details: {plan_url}")
     quote_request_form_data = request.session.get('quote_request_form_data', {})
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
     request.session['applicant_enrolled'] = False
     if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
         quote_request_form_data = {}
@@ -384,6 +389,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+
+    ins_type = quote_request_form_data['Ins_Type']
 
     sp = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
@@ -398,16 +405,26 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         raise Http404()
 
     try:
-            plan = next(filter(lambda mp: mp['unique_url'] == plan_url
-                                   or mp['general_url'] == plan_url, sp))
+        if ins_type == 'stm':
+            if quote_request_preference_data['general_url_chosen'] == False:
+                plan = next(filter(lambda mp : mp['general_url'] == plan_url, sp))
+            else:
+                plan = next(filter(
+                    lambda mp: mp['general_url'] == plan_url and
+                        mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
+                        mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and
+                        mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['out_of_pocket_value'][0], sp))
+        else:
+            plan = next(filter(lambda mp: mp['unique_url'] == plan_url , sp))
     except StopIteration:
         logger.warning("No Plan Found: {0}; there are plans for this session".format(plan_url))
         raise Http404()
+    except KeyError:
+        logger.warning("No session preference data")
+        raise Http404
 
     # Changing/Filtering the related plans here
     # Here option means deductible
-
-
     if plan['Name'] in stm_carriers:
         related_plans = list(filter(
             lambda mp: mp['Name'] == plan['Name'] and \
@@ -492,8 +509,9 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         print("Very weird error: {}".format(er))
 
     return render(request,
-                  # 'quotes/stm_plan.html',
-                  'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
+                  # TODO: Change it back
+                  'quotes/stm_plan.html',
+                  # 'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
@@ -1785,6 +1803,8 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
                 # TODO
             }
 
+    # UPDATE: Insteam of plan url we are returning apply url.
+
     :param request:
     :return: json data
     """
@@ -1910,6 +1930,14 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
     # Alternate plan found
     alternative_plan_url = alternative_plan['unique_url']
 
+    # Setting preference data
+    preference = request.session.get('quote_request_preference_data')
+    preference[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
+    preference[stm_name]['out_of_pocket_value'] = [benefit_amount]
+    preference[stm_name]['Coverage_Max'] = [coverage_maximum]
+
+    request.session['quote_request_preference_data'] = preference
+
     print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
     logger.info(f'apply for plan - {alternative_plan_url}: {alternative_plan}')
@@ -1945,7 +1973,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
     return JsonResponse(
         {
             'status': 'success',
-            'url': reverse('quotes:stm_plan', kwargs={'plan_url': alternative_plan_url})
+            'url': reverse('quotes:stm_apply', kwargs={'plan_url': alternative_plan_url})
         }
     )
 

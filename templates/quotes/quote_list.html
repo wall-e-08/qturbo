@@ -717,8 +717,8 @@
                     </div>
                     <div class="plan-single-info">
                         <h4 class="quote-plan-details">
-                            <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
-                                [[plan_name]]
+                            <a class="js-view-details1" href="/stm/plan/[[general_url]]">
+                                [[general_plan_name]]
                             </a>
                             </h4>
                     </div>
@@ -762,7 +762,7 @@
                     </div>
                     </div>
                     <div class="plan-select-btn">
-                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                        <a href="/stm/plan/[[general_url]]">Select this Plan</a>
                     </div>
                 </div>
             </div>
@@ -1168,7 +1168,9 @@ $(function() {
                     'TelaDoc_Fee': plan.TelaDoc_Fee,
                     'Administrative_Fee': plan.Administrative_Fee,
                     'unique_url': plan.unique_url,
+                    'general_url': plan.general_url,
                     'plan_name': plan.plan_name,
+                    'general_plan_name': plan.general_plan_name,
                     'featured_plan': plan.featured_plan,
                     'option': numeral(plan.option).format('0,0'),
                     'Coinsurance_Percentage': plan.Coinsurance_Percentage,

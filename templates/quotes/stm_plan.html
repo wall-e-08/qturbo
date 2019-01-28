@@ -23,7 +23,14 @@
             <div class="row">
                 <div class="col-xs-12 col-md-8">
                     <div class="plan-details-planName-wrapper">
-                        <h1 class="planerh1 fw-300 plan_name_h1">{{ plan.plan_name }}</h1>
+                        <h1 class="planerh1 fw-300 plan_name_h1">
+                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                            {{ plan.general_plan_name }}
+                            {% else %}
+                            {{ plan.plan_name}}
+                            {% endif %}
+                        </h1>
+
                     </div>
                     <h3>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</h3>
 
@@ -619,6 +626,8 @@
 
         {% comment %}Dev_torsho edit start{% endcomment %}
 
+        var $apply_button = $('#plan-details-primary-apply');
+
         var $duration_coverage_form = $('#duration_coverage_form')
 
         $duration_coverage_form.submit(function (e) {
@@ -693,7 +702,8 @@
 
                     if (json.status == 'success') {
 
-                        location.href = json.url;
+                        $apply_button.attr('href', json.url);
+                        
 
                     } else {
 
@@ -770,8 +780,6 @@
             $benifit_amount_coins_policy_max_form.submit();
 
         });
-
-
 
         {% comment %}dev_torsho edit end{% endcomment %}
 

@@ -825,14 +825,13 @@ class StmPlan(object):
     def __str__(self):
         return "<Month: {0}~~{1}@@{2}>".format(self.Name, self.option, self.month)
 
-    # TODO: Create a unique plan name
-    def get_plan_name(self):
+    def get_general_plan_name(self):
         plan_name = "{0} {1}@{2}".format(self.Name, self.option, self.Duration_Coverage)
         if self.Name in ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']:
             return plan_name + ' Plan {0}'.format(self.Plan)
         return plan_name
 
-    def get_unique_plan_name(self):
+    def get_plan_name(self):
         plan_name = "{0} {1}/{2}/{3}/{4}@{5}".format(self.Name, self.option, self.get_out_of_pocket(),
                                                      self.get_coverage_max(), self.Coinsurance_Percentage,
                                                      self.Duration_Coverage)
@@ -877,7 +876,8 @@ class StmPlan(object):
     def get_data_as_dict(self):
         data = {'Name': self.Name, 'month': self.month, 'option': self.option,
                 'Coinsurance_Percentage': self.Coinsurance_Percentage, 'Premium': self.Premium,
-                'unique_url': self.get_unique_url(), 'general_url': self.get_general_url(), 'plan_name': self.get_plan_name(),
+                'unique_url': self.get_unique_url(), 'general_url': self.get_general_url(),
+                'plan_name': self.get_plan_name(), 'general_plan_name': self.get_general_plan_name(),
                 'out_of_pocket_value': self.get_out_of_pocket(), 'coverage_max_value': self.get_coverage_max(),
                 'Quote_ID': self.Quote_ID, 'Access_Token': self.Access_Token, 'Plan_ID': self.Plan_ID,
                 'Duration_Coverage': self.Duration_Coverage, 'quote_request_timestamp': self.quote_request_timestamp,

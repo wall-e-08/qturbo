@@ -356,7 +356,7 @@
                         Charges during the first 6 months after the Certificate Effective Date of coverage for a
                         Covered Person for the following:
                         <ol type="a">
-                            <li>otal or partial hysterectomy, unless it is Medically Necessary due to a diagnosis of carcinoma;</li>
+                            <li>Total or partial hysterectomy, unless it is Medically Necessary due to a diagnosis of carcinoma;</li>
                             <li>Tonsillectomy;</li>
                             <li>Adenoidectomy;</li>
                             <li>Repair of deviated nasal septum or any type of surgery involving the sinus;</li>
@@ -615,7 +615,7 @@
                 <div class="row row-stm-related-plan">
                     {% for related_plan in plan_list %}
                         <div class="col-md-4">
-                            <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}">
+                            <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.general_url %}">
                                 <p class="variations-plan-name">{{ related_plan.plan_name }}</p>
                                 <p>Deductible - ${{ related_plan.option|intcomma }} / Coinsurance - {{ related_plan.Coinsurance_Percentage}}%</p>
                                 <p class="emphasize">
