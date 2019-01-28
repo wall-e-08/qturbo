@@ -299,10 +299,15 @@ class ApplicantInfoForm(forms.Form):
         if effective_date < datetime.date.today():
             raise forms.ValidationError(_('Invalid Coverage Start Date.'), code='invalid')
         if effective_date.day > 28:
-            raise forms.ValidationError(
-                _("Invalid Coverage Start Date. Coverage Start Date must be 1-28th of any month."),
-                code='invalid'
-            )
+            # forcefully making 1st day of next month
+            if effective_date.month == 12:
+                self.cleaned_data['Effective_Date'] = effective_date.replace(year=effective_date.year + 1, month=1, day=1)
+            else:
+                self.cleaned_data['Effective_Date'] = effective_date.replace(month=effective_date.month + 1, day=1)
+            # raise forms.ValidationError(
+            #     _("Invalid Coverage Start Date. Coverage Start Date must be 1-28th of any month."),
+            #     code='invalid'
+            # )
         return effective_date.strftime("%m-%d-%Y")
 
     def clean_Coverage_Days(self):
