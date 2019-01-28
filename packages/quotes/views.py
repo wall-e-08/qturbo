@@ -359,7 +359,7 @@ def plan_quote(request, ins_type):
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
-    return render(request, 'quotes/quote_list_d.html', {
+    return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
 
@@ -492,8 +492,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         print("Very weird error: {}".format(er))
 
     return render(request,
-                  'quotes/stm_plan.html',
-                  # 'quotes/plans/{0}_info.html'.format(plan["Name"].lower().replace(' ', '_')),
+                  # 'quotes/stm_plan.html',
+                  'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
