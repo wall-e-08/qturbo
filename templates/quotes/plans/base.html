@@ -829,11 +829,12 @@
             e.preventDefault();
             let _t = $(this);
             let _form = _t.parent().next();
+            let _val = _t.attr('data-value');
 
             let $apply_button = $('.qt-apply-plan-link');
 
 
-            _form.children('input:not([name="csrfmiddlewaretoken"])').val(_t.attr('data-value'));
+            _form.children('input:not([name="csrfmiddlewaretoken"])').val(_val);
             $.ajax({
                 url: _form.attr("action"),
                 async : false,
@@ -846,6 +847,9 @@
                 success: function (json) {
                     if (json.status === 'success') {
                         $apply_button.attr('href', json.url);
+                        _t.parent().siblings('button').find('.qt-customize-plan-selected-val').html(_val);
+                        _t.siblings().removeClass('active');
+                        _t.addClass('active');
                     } else {
                         location.reload();
                         {# TODO HANDLE THIS #}
