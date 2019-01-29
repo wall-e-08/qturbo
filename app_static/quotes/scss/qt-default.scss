@@ -82,7 +82,7 @@ input[type="date"] {
 
 #QUOTE_TURBO {
     //full vertical height - header height - header margin - footer height - footer margin
-    min-height: calc(100vh - 60px - 0px - 72px - 3rem);
+    min-height: calc(100vh - 60px - 0px - 266px - 3rem*2);
 }
 
 .no-fixed-svg {
