@@ -1809,7 +1809,7 @@ legal_page_info = [
 
 
 @require_POST
-def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: str) -> JsonResponse:
+def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonResponse:
     """
     This is executed on ajax request from the stm_plan page.
 
@@ -1865,12 +1865,6 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
 
     print(f"redis_key: {redis_key}")
 
-    # Flag to check if quote for alternative coverage has been done.
-    # Created by joining redis_key and 'alt'. Value 1 or 0
-    redis_done_data_flag = f'{redis_key}:done_data'
-    # Gathering preference data from session
-    quote_request_completed_data = json.loads(redis_conn.get(redis_done_data_flag))
-
     # TODO: Set an expiration timer for plans in redis.
 
     # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
@@ -1920,14 +1914,6 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
     coverage_duration = plan['Duration_Coverage']
 
     # Here we shall create the selection data
-    selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
-
-    if not redis_conn.exists(redis_key):
-        print("Redis connection does not exist for redis key")
-    elif not selection_data:
-        print(f'Already quoted alternative plans.')
-    else:
-        threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
 
     available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
 
@@ -1937,7 +1923,7 @@ def ben_amount_coins_policy_max_change_action(request: WSGIRequest, plan_url: st
             l.remove(benefit_amount)
         benefit_amount = min(l)
 
-    if benefit_amount not in available_alternatives_as_set['alternate_benefit_amount']:
+    elif benefit_amount not in available_alternatives_as_set['alternate_benefit_amount']:
         l = get_available_coins_against_benefit(sp, benefit_amount, plan)
         if coinsurance_percentage in l and len(l) > 1:
             l.remove(coinsurance_percentage)

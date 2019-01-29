@@ -38,7 +38,7 @@
                                 </div>
                                 
                             </div>
-                            <a href="#" class="btn qt-btn-tertiary btn-lg qt-apply-plan-link">Apply now</a>
+                            <a href="{% url 'quotes:stm_apply' plan.unique_url %}" class="btn qt-btn-tertiary btn-lg qt-apply-plan-link">Apply now</a>
                             <div class="mrg-t-30">
                                 <a href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf" target="_blank" class="card-link qt-plan-brochure-file">
                                     <i class="fa fa-file-pdf-o"></i>
@@ -145,7 +145,7 @@
                                             <li data-value="{{ benefit }}" {% if plan.Benefit_Amount == benefit %}class="active"{% endif %}>{{ benefit }}</li>
                                         {% endfor %}
                                     </ul>
-                                    <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
                                         {% csrf_token %}
                                         <input type="hidden"
                                                id="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
@@ -168,7 +168,7 @@
                                             <li data-value="{{ percentage }}" {% if plan.Coinsurance_Percentage == percentage %}class="active"{% endif %}>{{ percentage }}</li>
                                         {% endfor %}
                                     </ul>
-                                    <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
                                         {% csrf_token %}
                                         <input type="hidden"
                                                id="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
@@ -191,7 +191,7 @@
                                             <li data-value="{{ coverage }}" {% if plan.coverage_max_value == coverage %}class="active"{% endif %}>{{ coverage }}</li>
                                         {% endfor %}
                                     </ul>
-                                    <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
                                         {% csrf_token %}
                                         <input type="hidden"
                                                id="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
@@ -830,6 +830,9 @@
             let _t = $(this);
             let _form = _t.parent().next();
 
+            let $apply_button = $('.qt-apply-plan-link');
+
+
             _form.children('input:not([name="csrfmiddlewaretoken"])').val(_t.attr('data-value'));
             $.ajax({
                 url: _form.attr("action"),
@@ -842,7 +845,7 @@
                 dataType: 'json',
                 success: function (json) {
                     if (json.status === 'success') {
-                        location.href = json.url;
+                        $apply_button.attr('href', json.url);
                     } else {
                         location.reload();
                         {# TODO HANDLE THIS #}

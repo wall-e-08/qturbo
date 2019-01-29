@@ -73,7 +73,7 @@
                         </form>
                         {% endif %}
                     {% if quote_request_form_data.Ins_Type == 'stm' %}
-                        <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}"
+                        <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}"
                               id="benifit_amount_coins_policy_max_form">
                         {% csrf_token %} <!-- Maybe not needed -->
 
