@@ -717,7 +717,7 @@
                     </div>
                     <div class="plan-single-info">
                         <h4 class="quote-plan-details">
-                            <a class="js-view-details1" href="/stm/plan/[[general_url]]">
+                            <a class="js-view-details1" data-unique-url=[[unique_url]] href="/stm/plan/[[general_url]]">
                                 [[general_plan_name]]
                             </a>
                             </h4>
@@ -762,7 +762,7 @@
                     </div>
                     </div>
                     <div class="plan-select-btn">
-                        <a href="/stm/plan/[[general_url]]">Select this Plan</a>
+                        <a class="stm-plan-unique-url" data-unique-url="[[unique_url]]" href="/stm/plan/[[general_url]]">Select this Plan</a>
                     </div>
                 </div>
             </div>
@@ -1335,6 +1335,23 @@ $(function() {
         }
 
     });
+
+    {% if form_data.Ins_Type == 'stm' %}
+
+    $("#month_plan_list").on('click', '.stm-plan-unique-url', function (e) {
+        $that = $(this);
+        $.cookie('current-plan-unique-url', $that.attr('data-unique-url'), { path: '/'});
+        let lastSlashIndex = $that.attr('href').lastIndexOf('/');
+        $.cookie('current-plan-general-url', $that.attr('href').substr(lastSlashIndex + 1),  { path: '/'});
+    });
+
+    $("#month_plan_list").on('click', '.js-view-details1', function (e) {
+        $that = $(this);
+        $.cookie('current-plan-unique-url', $that.attr('data-unique-url'), { path: '/'});
+        let lastSlashIndex = $that.attr('href').lastIndexOf('/');
+        $.cookie('current-plan-general-url', $that.attr('href').substr(lastSlashIndex + 1),  { path: '/'});
+    });
+    {% endif %}
 
 </script>
 {% endblock %}

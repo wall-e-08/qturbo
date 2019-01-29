@@ -135,10 +135,15 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
         # Here be thy roar
         redis_key_done_data = f'{redis_key}:done_data'
 
-        done_data = json.loads(redis.get(redis_key_done_data))  # TODO: Try/Catch
-        for i in selection_data:
-            for j in done_data[i]:
-                done_data[i][j].extend(selection_data[i][j])
+        try:
+            done_data = json.loads(redis.get(redis_key_done_data))
+            for i in selection_data:
+                for j in done_data[i]:
+                    done_data[i][j].extend(selection_data[i][j])
+        except KeyError as k:
+            print(f'{k} is in selection_data but not in done_data')
+            pass
+
 
         redis.set(redis_key_done_data, json.dumps(done_data))
 

@@ -297,6 +297,29 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
 
     # TODO: Return a None and handle it.
 
+def reset_preference(request) -> None:
+    """
+    Reset everything but duration coverage and coverage max.
+    :param request:
+    :return:
+    """
+    preference =  request.session.get('quote_request_preference_data', None)
+    if preference is None:
+        return
+    stm_carriers = ['LifeShield STM', 'AdvantHealth STM']
+    duration_coverage, coverage_max = {}, {}
+    for carrier in stm_carriers:
+        duration_coverage[carrier] = preference[carrier]['Duration_Coverage']
+        coverage_max[carrier] = preference[carrier]['Coverage_Max']
+    preference = settings.USER_INITIAL_PREFERENCE_DATA
+
+    for carrier in stm_carriers:
+        preference[carrier]['Duration_Coverage'] = duration_coverage[carrier]
+        preference[carrier]['Coverage_Max'] = coverage_max[carrier]
+
+    request.session['quote_request_preference_data'] = preference
+
+    return
 
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
@@ -317,12 +340,15 @@ def plan_quote(request, ins_type):
     :return: Django HttpResponse Object
     """
     try:
-        request.session['quote_request_preference_data']['general_url_chosen'] = False
+        if ins_type == 'stm':
+            reset_preference(request)
+            # request.session['quote_request_preference_data']['general_url_chosen'] = False
     except KeyError:
         print("User preference not found")
         pass
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
+
 
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -406,8 +432,11 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     try:
         if ins_type == 'stm':
-            if quote_request_preference_data['general_url_chosen'] == False:
-                plan = next(filter(lambda mp : mp['general_url'] == plan_url, sp))
+            stm_plan_unique_url = request.COOKIES.get('current-plan-unique-url')
+            stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
+            if quote_request_preference_data['general_url_chosen'] == False and stm_plan_general_url == plan_url:
+                plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
+                request.session['quote_request_preference_data']['general_url_chosen'] = True
             else:
                 plan = next(filter(
                     lambda mp: mp['general_url'] == plan_url and
@@ -2060,11 +2089,14 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         raise Http404()
 
     # Alternate plan found
-    alternative_plan_url = alternative_plan['unique_url']
+    alternative_plan_general_url = alternative_plan['general_url']
+
+    # Setting the duration coverage in preference data
+    request.session['quote_request_preference_data'][stm_name]['Duration_Coverage'] = coverage_duration
 
     print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
-    logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
-    logger.info(f'apply for plan - {alternative_plan_url}: {alternative_plan}')
+    logger.info(f'CHANGING to alternative plan {alternative_plan_general_url}')
+    logger.info(f'apply for plan - {alternative_plan_general_url}: {alternative_plan}')
 
     # Keeping the same addons. We might need to change this.
 
@@ -2096,7 +2128,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     return JsonResponse(
         {
             'status': 'success',
-            'url': reverse('quotes:stm_plan', kwargs={'plan_url': alternative_plan_url})
+            'url': reverse('quotes:stm_plan', kwargs={'plan_url': alternative_plan_general_url})
         }
     )
 
