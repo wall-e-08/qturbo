@@ -1,0 +1,367 @@
+#qt-plan-details {
+    max-width: 500px;
+    position: fixed;
+    margin-top: 20px;
+}
+
+.flex-center-between {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+}
+
+.qt-plan-details-body {
+    padding: 25px 30px;
+    background-image: -webkit-linear-gradient(left, #68cefc, #e3f5fe, #68cefc);
+    background-image: -moz-linear-gradient(left, #68cefc, #e3f5fe, #68cefc);
+    background-image: linear-gradient(to right, #68cefc, #e3f5fe, #68cefc);
+}
+
+.qt-plan-header {
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.qt-plan-img-wrapper {
+    padding: 22px 12px;
+    border: 4px solid #777;
+    background-color: #fff;
+}
+
+.qt-plan-name {
+    font-size: 23px;
+    margin-bottom: 20px;
+    color: #ff9900;
+    line-height: 1.3;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.qt-plan-info-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+}
+
+.qt-plan-info > h5 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.qt-plan-info > p.small {
+    color: #555;
+}
+
+.qt-plan-details-price {
+    margin: 30px 0;
+}
+
+.qt-plan-price-superscript {
+    vertical-align: top;
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.qt-plan-price-value {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 45px;
+}
+
+.qt-plan-price-subscript {
+    vertical-align: bottom;
+    font-weight: 600;
+}
+
+.qt-plan-price-subscript > .small {
+    font-size: 10px;
+    color: #777;
+}
+
+.qt-plan-details-price hr {
+    border-bottom: 1px dashed #777;
+    margin: 0;
+}
+
+.qt-3d-box-shadow {
+    position: relative;
+}
+
+.qt-3d-box-shadow:before, .qt-3d-box-shadow:after,
+.qt-3d-box-shadow > .card:before, .qt-3d-box-shadow > .card:after {
+    content: "";
+    position: absolute;
+    bottom: 35px;
+    left: 10px;
+    width: 50%;
+    top: 80%;
+    max-width: 300px;
+    background: #777;
+    z-index: -1;
+    -webkit-box-shadow: 0 35px 20px #777;
+    -moz-box-shadow: 0 35px 20px #777;
+    box-shadow: 0 35px 20px #777;
+    -webkit-transform: rotate(-4deg);
+    -moz-transform: rotate(-4deg);
+    -o-transform: rotate(-4deg);
+    -ms-transform: rotate(-4deg);
+    transform: rotate(-4deg);
+}
+
+.qt-3d-box-shadow:after,
+.qt-3d-box-shadow > .card:after {
+    -webkit-transform: rotate(4deg);
+    -moz-transform: rotate(4deg);
+    -o-transform: rotate(4deg);
+    -ms-transform: rotate(4deg);
+    transform: rotate(4deg);
+}
+
+.qt-3d-box-shadow:after,
+.qt-3d-box-shadow > .card:before {
+    left: initial;
+    right: 10px;
+}
+
+.qt-3d-box-shadow > .card:after,
+.qt-3d-box-shadow > .card:before {
+    top: 35px;
+    bottom: 80%;
+    -webkit-box-shadow: 0 -35px 20px #777;
+    -moz-box-shadow: 0 -35px 20px #777;
+    box-shadow: 0 -35px 20px #777;
+}
+
+.qt-plan-info {
+    background-color: #fff;
+    border: 1px solid #777;
+    padding: 5px 15px;
+    margin: 8px;
+    border-radius: 7px;
+    -webkit-box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
+}
+
+.qt-apply-plan-link {
+    font-weight: 600;
+    min-width: 220px;
+    border-radius: 22px;
+    position: relative;
+    box-shadow: 0 6px #d45f00;
+    -webkit-transition: none;
+    -moz-transition: none;
+    transition: none;
+}
+
+.qt-apply-plan-link:hover {
+    box-shadow: 0 4px #a5581a;
+    top: 2px;
+}
+
+.qt-apply-plan-link:active {
+    box-shadow: 0 0 #823a02;
+    top: 6px;
+}
+
+.qt-plan-brochure-file {
+    color: #da6100;
+}
+
+a.qt-plan-brochure-file > i.fa:last-child {
+    color: #000;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: auto auto;
+    grid-template-columns: auto auto;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown {
+    min-width: 50%;
+}
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > ul.dropdown-menu{
+    width: 100%;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > ul.dropdown-menu > li{
+    padding: 12px 16px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > ul.dropdown-menu > li:not(:last-child){
+    margin-bottom: 2px;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > ul.dropdown-menu > li:hover{
+    background-color: #ececec;
+    cursor: pointer;
+}
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > ul.dropdown-menu > li.active{
+    background-color: #dbdbdb;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn {
+    background-color: #fff;
+    border: 1px solid #b4b5b6;
+    padding: 12px 12px 12px 16px;
+    text-align: left;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    box-shadow: none !important;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn:hover {
+    background-color: #fafafa;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn:focus,
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn:active {
+    border-color: #19b4fa;
+}
+
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn:focus .qt-customize-plan-title,
+#qt-customize-plan .qt-all-customize-dropdowns > .dropdown > .btn:active .qt-customize-plan-title {
+    color: #19B4FA;
+}
+
+#qt-customize-plan .qt-customize-plan-title {
+    color: #8f8f8f;
+    font-size: 12px;
+}
+
+#qt-customize-plan .qt-customize-plan-selected-val {
+    font-size: 16px;
+    color: #080808;
+}
+
+.qt-each-pkg-include {
+    border: 1px solid #d7d7d7;
+    padding: 0 24px;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    -o-user-select: none;
+    user-select: none;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+.qt-each-pkg-include:not(:first-child) {
+    border-top-width: 0;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open {
+    margin: 20px 0;
+    -webkit-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.qt-each-pkg-include.qt-pkg-include-open,
+.qt-each-pkg-include.qt-pkg-include-open + .qt-each-pkg-include {
+    border-top-width: 1px;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open:first-child {
+    margin-top: 0;
+}
+
+.qt-each-pkg-include.qt-pkg-include-open:last-child {
+    margin-bottom: 0;
+}
+
+.qt-each-pkg-hover {
+    padding: 12px 0;
+}
+
+.qt-each-pkg-hover h3 {
+    font-size: 21px;
+    font-weight: 700;
+    margin: 17px 0;
+}
+
+.qt-each-pkg-img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.qt-each-pkg-dropdown-icon {
+    line-height: 1;
+}
+
+.footer {
+    display: none;
+}
+
+@media (max-width: 1200px) and (min-width: 992px) {
+    .non-container-fluid-md {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    #qt-plan-details {
+        position: relative !important;
+        margin: 50px auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #qt-customize-plan .qt-all-customize-dropdowns {
+        -ms-grid-columns: auto;
+        grid-template-columns: auto;
+    }
+    
+    .qt-each-pkg-include {
+        padding: 0 15px;
+    }
+
+    .qt-each-pkg-hover h3 {
+        font-size: 16px;
+        margin: 12px 0;
+    }
+
+    .qt-each-pkg-img {
+        width: 28px;
+        margin-right: 8px;
+    }
+}

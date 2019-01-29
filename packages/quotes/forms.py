@@ -221,11 +221,11 @@ class ApplicantInfoForm(forms.Form):
         required=False
     )
 
-    Annual_Income = forms.CharField(
-        label=_("Annual Income"),
-        error_messages={'required': _("Annual Income is Required")},
-        required=True
-    )
+    # Annual_Income = forms.CharField(
+    #     label=_("Annual Income"),
+    #     error_messages={'required': _("Annual Income is Required")},
+    #     required=True
+    # )
 
     quote_request_timestamp = forms.IntegerField(required=False)
 
@@ -299,10 +299,15 @@ class ApplicantInfoForm(forms.Form):
         if effective_date < datetime.date.today():
             raise forms.ValidationError(_('Invalid Coverage Start Date.'), code='invalid')
         if effective_date.day > 28:
-            raise forms.ValidationError(
-                _("Invalid Coverage Start Date. Coverage Start Date must be 1-28th of any month."),
-                code='invalid'
-            )
+            # forcefully making 1st day of next month
+            if effective_date.month == 12:
+                self.cleaned_data['Effective_Date'] = effective_date.replace(year=effective_date.year + 1, month=1, day=1)
+            else:
+                self.cleaned_data['Effective_Date'] = effective_date.replace(month=effective_date.month + 1, day=1)
+            # raise forms.ValidationError(
+            #     _("Invalid Coverage Start Date. Coverage Start Date must be 1-28th of any month."),
+            #     code='invalid'
+            # )
         return effective_date.strftime("%m-%d-%Y")
 
     def clean_Coverage_Days(self):
@@ -392,7 +397,7 @@ class ApplicantInfoForm(forms.Form):
 
         self.cleaned_data['quote_request_timestamp'] = int(round(time.time(), 0))
 
-        self.cleaned_data['Annual_Income'] = self.cleaned_data.get('Annual_Income', None)
+        # self.cleaned_data['Annual_Income'] = self.cleaned_data.get('Annual_Income', None)
 
         return self.cleaned_data
 
@@ -401,13 +406,70 @@ class ApplicantInfoForm(forms.Form):
             dob = datetime.datetime.strptime(dob, '%m-%d-%Y').date()
         return age(dob)
 
-class AlternateSelectionForm(forms.Form):
-    Coverage_Duration = forms.ChoiceField()
-    Benefit_Amount = forms.CharField()
-    Coinsurance_Percentage = forms.CharField()
+
+class Duration_Coverage_Form(forms.Form):
+    Duration_Coverage = forms.CharField(
+        label=_("Select Minimum"),
+        error_messages={"required": _("Duration Coverage is required.")},
+        required=False
+    )
 
     def clean(self):
         super().clean()
+
+        duration_coverage = self.cleaned_data.get('Duration_Coverage', None)
+        if duration_coverage is not None:
+            self.cleaned_data['Duration_Coverage'] = duration_coverage
+
+
+        return self.cleaned_data
+
+
+class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
+
+    Benefit_Amount = forms.CharField(
+        label=_("Select Max Out Of Pocket"),
+        error_messages={"required": _("Max out of pocket is required.")},
+        required=False
+    )
+
+    Coinsurance_Percentage = forms.CharField(
+        label=_("Select Co-Insurance Percentage"),
+        error_messages={"required": _("Co-Insurance Percentage required.")},
+        required=False
+    )
+
+    Coverage_Max = forms.CharField(
+        label=_("Select Maximum Amount of Coverage"),
+        error_messages={"required": _("Coverage_Maximum is required.")},
+        required=False
+    )
+
+    Plan = forms.CharField(
+        label=_("Select plan Name"),
+        error_messages={"required": _("Plan name is required.")},
+        required=False
+    )
+
+    def clean(self):
+        super().clean()
+
+        benefit_amount = self.cleaned_data.get('Benefit_Amount', None)
+        if benefit_amount is not None:
+            self.cleaned_data['Benefit_Amount'] = benefit_amount
+
+        coinsurance_percentage = self.cleaned_data.get('Coinsurance_Percentage', None)
+        if coinsurance_percentage is not None:
+            self.cleaned_data['Coinsurance_Percentage'] = coinsurance_percentage
+
+        coverage_max = self.cleaned_data.get('Coverage_Max', None)
+        if coverage_max is not None:
+            self.cleaned_data['Coverage_Maximum'] = coverage_max
+
+        plan = self.cleaned_data.get('Plan', None)
+        if plan is not None:
+            self.cleaned_data['Plan'] = plan
+
         return self.cleaned_data
 
 

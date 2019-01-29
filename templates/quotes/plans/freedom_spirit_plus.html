@@ -1,0 +1,257 @@
+{% extends 'quotes/plans/base.html' %}
+
+{% load humanize hp_tags%}
+
+{% block qt_plan_info %}
+    <div class="qt-plan-info">
+        <h5 class="mrg-b-0">${{ plan.Enrollment_Fee }}</h5>
+        <p class="small">Enrollment Fee</p>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="plan-details-benefits common-section">
+    <div class="container"><h2 class="heading center">Benefits &amp; Coverage</h2>
+
+        <div class="row details-benefit-row">
+            <div class="col-md-6"><p class="emphasize">Insurance Type</p>Limited Health</div>
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="The company that issues an insurance policy and assumes the risks associated with the insured.">
+                        Company
+                    </a>
+                </p>
+                FEDERAL INSURANCE COMPANY
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">
+                    <a class="js-glossary" data-container="body" data-placement="top"
+                       href="javascript:void(0);" data-toggle="popover"
+                       data-content="One time enrollment fee.">
+                        Enrollment Fee
+                    </a>
+                </p>
+                ${{ plan.Enrollment_Fee }}
+            </div>
+
+            <div class="col-md-6">
+                <p class="emphasize">Office Visit for Wellness</p>
+                ${{ plan.copay_2 }} Copayment per visit per Covered Person. Benefit not subject to Coinsurance or Plan Deductible.
+            </div>
+
+
+
+        </div>
+    </div>
+</section>
+
+
+<section class="plan-details-faqs plan-details-section">
+    <div class="container">
+        <h2 class="heading center">Covered Tariff</h2>
+        <p>This plan does not provide the minimum essential health benefits required by federal law nor will the benefits satisfy the individual
+            mandate as defined by the ACA.Any amount payable under this policy will be reduced by 50% if an Insured Person is age 65 or older on
+            the date the benefit becomes payable.</p>
+        <h3>Description of Benefits</h3>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>In-Hospital Indemnity Benefit</h4>
+                <p>Pays a daily In-Hospital Benefit Amount for each day a Covered Person is In-Hospital due to a Sickness or Accident. The first day
+                    of a Hospital stay must occur within 30 days of the Accident, causing the Injury. The In-Hospital Benefit Amount will be paid until
+                    the earliest of the date the:</p>
+                <ul>
+                    <li>
+                        Covered Person dies;
+                    </li>
+                    <li>
+                        Covered Person is no longer In-Hospital; or
+                    </li>
+                    <li>
+                        Maximum Number of Days, shown in the Schedule of Benefits, has elapsed; or
+                    </li>
+                    <li>
+                        Maximum Benefit Amount has been paid.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Intensive Care Unit Indemnity Benefit</h4>
+                <p>Pays a daily Intensive Care Unit Benefit Amount for each day of Confinement if an Accident or Sickness causes a Covered Person
+                    to be Confined in an Intensive Care Unit. This benefit is paid in addition to the In-Hospital Benefit Amount. The first day of
+                    Confinement in the Intensive Care Unit must occur within 30 days of the Accident.The Intensive Care Unit Benefit Amount will be
+                    paid until the earliest of the date:</p>
+                <ul>
+                    <li>the Covered Person dies;</li>
+                    <li>the Covered Person is no longer Confined in an Intensive Care Unit; or</li>
+                    <li>Maximum Number of Days, shown in the Schedule of Benefits, has elapsed; or</li>
+                    <li>Maximum Benefit Amount has been paid.</li>
+
+                </ul>
+            </div>
+
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Physician Office Visit Indemnity Benefit</h4>
+                <p>Pays a Physician Office Visit Indemnity Benefit Amount for a Physician office visit resulting from an Accident or Sickness.
+                    The visit must be made to the Physician’s office or clinic. The visit to a Physician’s office must occur within 30 days of the
+                    Accident, causing an Injury.Benefits are not payable for:</p>
+                <ul>
+                    <li>
+                        visits made by a Physician while the Covered Person is Confined in a Hospital;
+                    </li>
+                    <li>
+                        routine eye examinations, or fitting of glasses or fitting of hearing aids;
+                    </li>
+                    <li>
+                        dental examinations or dental care other than expenses resulting from Accidental injury; or
+                    </li>
+                    <li>
+                        Annual physicals, school sports physicals, and other types of preventive visits not required due to an Accident or Sickness.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Emergency Room Indemnity Benefit</h4>
+                <p>Pays the Emergency Room Benefit Amount if an Accident or Sickness causes the Covered Person to require and receive Emergency Medical
+                    Care in an emergency room of a Hospital. Treatment must be received within 24 hours of the Accident</p>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Surgical Indemnity Benefit</h4>
+                <p>Pays a Surgical Indemnity Benefit if a Covered Person has a Major or Minor Surgical Procedure performed while In-Hospital or on an
+                    outpatient basis in an Outpatient Unit.</p>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Anesthesia Indemnity Benefit</h4>
+                <p>Pays an Anesthesia Indemnity Benefit for the administration of anesthesia related to a covered surgical procedure, if the Surgical
+                    Indemnity Benefit is payable. If the related Surgical Indemnity Benefit is not payable, no benefits are payable under this Benefit.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="common-section">
+    <div class="container"><h2 class="heading center">Restrictions &amp; Omissions</h2>
+
+        <p>The following exclusions apply to all benefits under this policy. Additional exclusions, limitations or conditions may also apply to specific
+            benefits. Please read this entire policy carefully.</p>
+
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <h4>Alcoholism and Drug or Substance Abuse</h4>
+                <p>This insurance does not apply to alcoholism or drug or substance abuse. In addition, the insurance does not apply to any confinement
+                    in a detoxification facility or drug or alcohol rehabilitation facility that is not also a Hospital or part of a Hospital.</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Intoxication Exclusion Vehicular</h4>
+                <p>This insurance does not apply to any Accident caused by or resulting from, directly or indirectly, the Covered Person being
+                    intoxicated, while operating a motorized vehicle at the time of an Accident. Intoxication is defined by the laws of the
+                    jurisdiction where such Accident occurs.</p>
+            </div>
+        </div>
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <h4>Pre-existing Condition</h4>
+                <p>This insurance does not any benefits for Sickness caused by or resulting from a covered Person’s Pre-existing Condition if the
+                    Sickness occurs during the first 12 months that a Covered Person is insured under this policy</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Pregnancy</h4>
+                <p>This insurance does not apply to normal pregnancy. Complications of Pregnancy are covered as any other Sickness.</p>
+            </div>
+        </div>
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <h4>Pregnancy of a Dependent Child</h4>
+                <p>This insurance does not apply to pregnancy of a Dependent Child, unless required by law.</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Service in the Armed Forces</h4>
+                <p>This insurance does not apply to any Accident or Sickness caused by or resulting from, directly or indirectly, the Covered Person
+                    participating in military action while in active military service with the armed forces of any country or established international authority.</p>
+            </div>
+        </div>
+        <div class="row details-section-row details-limitations-row">
+            <div class="col-md-6">
+                <h4>Suicide or Intentional Injury</h4>
+                <p>This insurance does not apply to, and no benefits are payable related to the Covered Person's suicide, attempted suicide or
+                    intentionally self-inflicted injury.</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Voluntary Abortion</h4>
+                <p>This insurance does not apply to voluntary abortion, except with respect to the Insured Person or his or her covered Spouse or
+                    Domestic Partner where such person’s life would be endangered if the fetus were carried to term.</p>
+            </div>
+        </div>
+
+        <div class="footnotes">
+            <p>This is a brief description of the plan limitations and exclusions, which may vary by state.</p>
+            {#TODO#}
+{#            <p>Cardinal Choices Underwritten By: Cardinal</p>#}
+{##}
+{#            <p>Disclaimer: Cardinal Choice Accident and Sickness Hospital Indemnity plan is Underwritten by FEDERAL INSURANCE COMPANY, a Chubb#}
+{#                company.This information is a brief description of the important features of this insurance plan. It is not an insurance contract.#}
+{#                Insurance benefits are underwritten by Federal Insurance Company. Coverage may not be available in all states or certain terms may#}
+{#                be different where required by state law. Chubb NA is the U.S.-based operating division of the Chubb Group of Companies, headed by#}
+{#                Chubb Ltd. (NYSE:CB) Insurance products and services are provided by Chubb insurance underwriting companies and not by the parent company itself.#}
+{#            </p>#}
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+<section class="plan-details-variations common-section">
+    <div class="container">
+
+{#        <h2 class="headingplaner">Other Cardinal insurance products in your area</h2>#}
+
+        <div class="row">
+        {% for related_plan in related_plans %}
+            <div class="col-md-4"><a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}"><p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+
+                <p> Enrollment Fee - {{ related_plan.Enrollment_Fee }}</p>
+
+                <p class="emphasize">
+                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                </p>
+            </a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>

@@ -6,11 +6,11 @@
     <script src="{% static 'vue/vue-router.js' %}"></script>
 {% endblock %}
 
-{% block navbar_brand %}
+{% comment %}{% block navbar_brand %}
     <router-link :to="{ name: 'root'}" class="navbar-brand font-weight-bold">
         <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span> quote <i class="text-uppercase text-primary">turbo</i>
     </router-link>
-{% endblock %}
+{% endblock %}{% endcomment %}
 
 
 {% block bootstrap_vue_init %}
