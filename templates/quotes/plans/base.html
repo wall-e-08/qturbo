@@ -59,8 +59,9 @@
                     </p>
                     <div id="qt-sidebar-small-plan-description">
                         <p>It is a {% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %}
-                            Health Insurance plan, meaning your plan will last {{ plan.Duration_Coverage|plan_duration_month }} months and will automatically renew for a total length
-                            of {{ plan.Duration_Coverage|plan_duration_total_month }} months (though you can cancel anytime).This is a great option for healthy individuals
+                            Health Insurance plan{% if quote_request_form_data.Ins_Type == 'stm' %}, meaning your plan will last {{ plan.Duration_Coverage|plan_duration_month }}
+                            months and will automatically renew for a total length
+                            of {{ plan.Duration_Coverage|plan_duration_total_month }} months (though you can cancel anytime){% endif %}.This is a great option for healthy individuals
                             who are looking for a more affordable alternative to ACA plans with streamlined benefits and do not need pre-existing conditions covered.
                             We recommend you review the full plan brochure to understand all the details, benefits and limitations of the plan.</p>
                     </div>
