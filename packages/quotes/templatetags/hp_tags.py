@@ -320,3 +320,18 @@ def slug_pdfied(value):
     }
 
     return addon_dict[value]
+
+
+@register.filter
+def plan_duration_month(value):
+    # TODO: Handle exceptions
+    month_times = value.split("*")
+    return month_times[0]
+
+
+@register.filter
+def plan_duration_total_month(value):
+    # TODO: Handle exceptions
+    month_times = value.split("*")
+    return int(month_times[0]) * int(month_times[1])
+

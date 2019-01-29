@@ -5,6 +5,7 @@ from multiselectfield import MultiSelectField
 from djrichtextfield.models import RichTextField
 from core import settings
 from .us_states import states, states_list
+from .utils import get_img_path
 
 
 class PatchedMultiSelectField(MultiSelectField):
@@ -1554,9 +1555,17 @@ class BenefitsAndCoverage(Feature):
         blank=True, null=True,
     )
 
+    image = models.ImageField(
+        verbose_name='Image File',
+        upload_to=get_img_path,
+        blank=True,
+        null=True,
+    )
+
     feature_type = models.CharField(
         max_length=50,
-        default="Benefits and Coverage"
+        default="Benefits and Coverage",
+        editable=False,
     )
 
     def __str__(self):

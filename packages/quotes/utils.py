@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function
 
+import os
 import re
 import copy
 import time
@@ -26,8 +27,15 @@ def age(dob):
     if today.month < dob.month or (today.month == dob.month and today.day < dob.day):
         return today.year - dob.year - 1
     return today.year - dob.year
-#
-#
+
+
+def get_img_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+    return os.path.join(
+        "benefits",
+        str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
+    )
+
 # def date_from_str(date_str, date_format='%d-%M-%Y'):
 #     if not isinstance(date_str, str):
 #         return date_str

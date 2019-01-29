@@ -52,23 +52,19 @@
             </div>
 
             <div class="col-md-6">
-                
-                {% if True %}
-                {# TODO: this should come from db plan-wise #}
-                <div id="qt-sidebar-plan-details">
-                    <h2>Plan name: {{ plan.Name }}</h2>
-                    <p>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</p>
+                <div {% comment %}id="qt-sidebar-plan-details"{% endcomment %}>
+                    <h2 class="mrg-b-5">Your Selected Plan: {{ plan.Name }}</h2>
+                    <p class="small">
+                        {% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance
+                    </p>
                     <div id="qt-sidebar-small-plan-description">
-                        <ul>
-                            <li>GG</li>
-                            <li>WP</li>
-                            <li>sdfhgsjdfgsdf</li>
-                            <li>ffjsdf wyoeg yweg weyfgwergwrwr</li>
-                        </ul>
+                        <p>It is a {% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %}
+                            Health Insurance plan, meaning your plan will last {{ plan.Duration_Coverage|plan_duration_month }} months and will automatically renew for a total length
+                            of {{ plan.Duration_Coverage|plan_duration_total_month }} months (though you can cancel anytime).This is a great option for healthy individuals
+                            who are looking for a more affordable alternative to ACA plans with streamlined benefits and do not need pre-existing conditions covered.
+                            We recommend you review the full plan brochure to understand all the details, benefits and limitations of the plan.</p>
                     </div>
                 </div>
-                {% endif %}
-
                 <hr>
                 <div class="text-center">
                     <a href="#qt-customize-plan" id="qt-customize-plan-link" class="text-muted">
@@ -85,7 +81,7 @@
                             <div class="cur-p qt-each-pkg-include" unselectable="on">
                                 <div class="flex-center-between qt-each-pkg-hover">
                                     <div class="flex-center-between">
-                                        <img class="qt-each-pkg-img" src="https://smart.assurance.com/static/media/medical-app-smartphone-touch.398c7f0a.svg">
+                                        <img class="qt-each-pkg-img" src="{% if bc.get_instance.image %}{{ bc.get_instance.image.url }}{% endif %}">
                                         <h3>{{ bc.get_instance.title }}</h3>
                                     </div>
                                     <span class="qt-each-pkg-dropdown-icon">
@@ -227,9 +223,9 @@
                             </div>
                         {% endfor %}
                     </div>
-                    </div>
                 {% endif %}
-        
+            </div>
+
             <div class="col-md-6 none">
                 
     
@@ -519,8 +515,8 @@
 
             </div>
         </div>
+        </div>
     </div>
-</div>
 
 {% endblock container %}
 
