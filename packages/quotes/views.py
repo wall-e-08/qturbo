@@ -536,9 +536,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         print("Very weird error: {}".format(er))
 
     return render(request,
-                  # TODO: Change it back
-                  'quotes/stm_plan.html',
-                  # 'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
+                  # 'quotes/stm_plan.html',
+                  'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
