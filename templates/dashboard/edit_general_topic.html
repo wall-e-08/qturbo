@@ -79,7 +79,7 @@
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_text.errors|join:" " }}</div>
                             {% endif %}
                         </div>
-                        <hr>
+                        {% comment %}<hr>
                         <div class="form-group">
                             <label for="{{ form.top_img.id_for_label }}">{{ form.top_img.label }}</label>
                             <b-form-file accept=".jpg, .png, .gif"
@@ -91,9 +91,9 @@
                             {% if form.top_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_img.errors|join:" " }}</div>
                             {% endif %}
-                        </div>
+                        </div>{% endcomment %}
                     </div>
-
+{% comment %}
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="service">
                         <div class="form-group">
                             <label for="{{ form.service_heading.id_for_label }}">{{ form.service_heading.label }}</label>
@@ -275,7 +275,7 @@
                         <hr>
                         <social-link-items></social-link-items>
                     </div>
-
+{% endcomment %}
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
             </div>
@@ -480,6 +480,9 @@
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
     {% with selectors='#review_item_2' non_container=True multiple_instance=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#'|add:form.top_text.id_for_label non_container=True multiple_instance=True %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 
