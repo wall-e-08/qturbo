@@ -2,14 +2,16 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
+from djrichtextfield.models import RichTextField
+from core import settings
+from .us_states import states, states_list
+from .utils import get_img_path
+
 
 class PatchedMultiSelectField(MultiSelectField):
   def value_to_string(self, obj):
     value = self.value_from_object(obj)
     return self.get_prep_value(value)
-
-from core import settings
-from .us_states import states, states_list
 
 
 class Carrier(models.Model):
@@ -1528,3 +1530,68 @@ class StandAloneAddonPlan(models.Model):
 
     class Meta:
         db_table = 'stand_alone_addon_plan'
+
+
+class Feature(models.Model):
+    plan = models.ForeignKey(
+        "Carrier",
+        on_delete=models.CASCADE,
+    )
+
+    title = models.CharField(
+        max_length=200,
+        blank=True, null=True,
+    )
+
+    description = RichTextField(blank=True, null=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class BenefitsAndCoverage(Feature):
+    self = models.ForeignKey(
+        "BenefitsAndCoverage",
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+    )
+
+    image = models.ImageField(
+        verbose_name='Image File',
+        upload_to=get_img_path,
+        blank=True,
+        null=True,
+    )
+
+    feature_type = models.CharField(
+        max_length=50,
+        default="Benefits and Coverage",
+        editable=False,
+    )
+
+    def __str__(self):
+        return "{} ({})".format(self.title or self.self.title, "benefits")
+
+    def get_instance(self):
+        """hack to ignore many to many relation"""
+        return self if self.title else self.self
+
+
+class RestrictionsAndOmissions(Feature):
+    self = models.ForeignKey(
+        "RestrictionsAndOmissions",
+        on_delete=models.CASCADE,
+        blank=True, null=True,
+    )
+
+    feature_type = models.CharField(
+        max_length=50,
+        default="Restrictions and Omissions"
+    )
+
+    def __str__(self):
+        return "{} ({})".format(self.title or self.self.title, "restriction")
+
+    def get_instance(self):
+        """hack to ignore many to many relation"""
+        return self if self.title else self.self
+

@@ -34,67 +34,139 @@
                     </div>
 
                     <div class="plan-apply-container">
+
+
+
+
                         {% if alternate_coverage_duration %}
-                            {% if alternate_coverage_duration %}
-{#                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">#}
-                                {% csrf_token %}
-                            {% endif %}
+                        <form action="{% url 'quotes:alternate_duration_coverage' plan.unique_url %}"
+                              method="POST"
+                              id="duration_coverage_form">
+                        {% csrf_token %} {% comment %}IS it needed?{% endcomment %}
 
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Coverage Duration</h3>
+                                <div class="">
 
-{#                            <div class="row">#}
-{#                                <div class="col-md-5">#}
-{#                                    <h3>Select Coverage Duration</h3>#}
-{#                                </div>#}
-{#                                <div class="">#}
-{##}
-{#                                    <select type="button" class="btn btn-info dropdown-toggle" id="duration_coverage_dropdown" name="duration_coverage_dropdown">#}
-{#                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>#}
-{#                                        {% for duration in alternate_coverage_duration %}#}
-{#                                            <option value="{{ duration }}"> {{ duration }} </option>#}
-{#                                        {% endfor %}#}
-{#                                    </select>#}
-{##}
-{#                                </div>#}
-{#                            </div>#}
+                                    <select type="button"
+                                            class="btn btn-info dropdown-toggle"
+                                            id="duration_coverage_dropdown {{ duration_coverage_form.Duration_Coverage.id_for_label }}"
+                                            name="{{ duration_coverage_form.Duration_Coverage.html_name }}">
+
+                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>
+                                        {% for duration in alternate_coverage_duration %}
+                                            <option value="{{ duration }}"> {{ duration }} </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                            </div>
+                                </div>
+                        </form>
                         {% endif %}
+                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                        <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}"
+                              id="benifit_amount_coins_policy_max_form">
+                        {% csrf_token %} <!-- Maybe not needed -->
 
-                        {% comment %}{% if alternate_benefit_amount %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Max Out Of Pocket</h3>
+
+
+
+                        {% if alternate_benefit_amount %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Max Out Of Pocket</h3>
 
                                     <div class="">
 
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternative_benefit_amount_dropdown" name = "alternative_benefit_amount_dropdown">
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="alternative_benefit_amount_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}">
+
+                                                <option value="{{ plan.Benefit_Amount }}">{{ plan.Benefit_Amount }}</option>
                                             {% for benefit in alternate_benefit_amount %}
                                                 <option value="{{ benefit }}"> {{ benefit }} </option>
                                             {% endfor %}
                                         </select>
 
                                     </div>
+                                </div>
                             </div>
-                        </div>
                         {% endif %}
 
                         {% if alternate_coinsurace_percentage %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Co-Insurance Percentage</h3>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Co-Insurance Percentage</h3>
 
                                     <div class="">
 
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternate_coinsurace_percentage" name="alternate_coinsurace_percentage">
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="alternate_coinsurace_percentage_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
+                                                name="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}">
+                                            <option value="{{ plan.Coinsurance_Percentage }}">{{ plan.Coinsurance_Percentage }}</option>
+
                                             {% for percentage in alternate_coinsurace_percentage %}
                                                 <option value="{{ percentage }}"> {{ percentage }} </option>
                                             {% endfor %}
                                         </select>
 
                                     </div>
+                                </div>
                             </div>
-                        </div>
-                        {% endif %}{% endcomment %}
+                        {% endif %}
 
-                        {% if not alternate_coverage_duration %}
+                        {% if alternate_coverage_max %}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select Maximum Coverage</h3>
+
+                                    <div class="">
+
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="coverage_max_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}">
+
+                                                <option value="{{ plan.coverage_max_value }}">{{ plan.coverage_max_value }}</option>
+                                            {% for coverage in alternate_coverage_max %}
+                                                <option value="{{ coverage }}"> {{ coverage }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h3>Select alternate Plan</h3>
+
+                                    <div class="">
+
+                                        <select type="button"
+                                                class="btn btn-info dropdown-toggle"
+                                                id="plan_dropdown {{ benefit_amount_coinsurance_coverage_max_form.Plan.id_for_label }}"
+                                                name = "{{ benefit_amount_coinsurance_coverage_max_form.Plan.html_name }}"
+                                                {% if not alternate_plan %} disabled {% endif %}
+>
+
+                                                <option value="{{ plan.Plan }}">{{ plan.Plan }}</option>
+                                            {% for plan in alternate_plan %}
+                                                <option value="{{ plan }}"> {{ plan }} </option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    {% endif %}
+
                             <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
                                class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
                                     <span>
@@ -102,14 +174,6 @@
                                         Apply for This Plan
                                     </span>
                             </a>
-                        {% else %}
-                            <div class="plan-apply-container">
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-primary-apply">
-                        Apply for This Plan
-                    </a>
-                </div>
-                        {% endif %}
 
                     </div>
                     <a class="detailsancho"
@@ -450,7 +514,7 @@
                 console.log($coverage_duration_dropdown.val());
                 console.log($alternative_benefit_amount_dropdown.val());
                 console.log($alternate_coinsurace_percentage.val());
-                {#location.href = $coverage_duration_dropdown.val();#}
+                location.href = $coverage_duration_dropdown.val();
             })
         });
 
@@ -552,6 +616,164 @@
                 );
             });
         });
+
+        {% comment %}Dev_torsho edit start{% endcomment %}
+
+        var $duration_coverage_form = $('#duration_coverage_form')
+
+        $duration_coverage_form.submit(function (e) {
+
+            console.log('Test');
+
+            e.preventDefault();
+
+            var csrftoken = $.cookie('csrftoken');
+
+            var $that = $(this);
+
+            $.ajax({
+                url: $duration_coverage_form.attr("action"),
+
+                async : false,
+
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+
+                data: $that.serialize(), type: 'POST', dataType: 'json',
+
+                success: function (json) {
+
+                    console.log("json: " + json);
+
+                    if (json.status == 'success') {
+
+                        location.href = json.url;
+
+                    } else {
+
+                        {#    TODO HANDLE THIS#}
+                    }
+                },
+
+                error: function () {
+
+                    location.reload();
+
+                    {#TODO HANDLE#}
+                }
+
+            });
+
+
+        });
+
+        var $benifit_amount_coins_policy_max_form = $('#benifit_amount_coins_policy_max_form');
+
+        $benifit_amount_coins_policy_max_form.submit(function(e) {
+
+            e.preventDefault();
+
+            var csrftoken = $.cookie('csrftoken');
+
+            var $that = $(this);
+
+            $.ajax({
+                url: $benifit_amount_coins_policy_max_form.attr("action"),
+
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+
+                data: $that.serialize(), type: 'POST', dataType: 'json',
+
+                success: function (json) {
+
+                    console.log("json: " + json);
+
+                    if (json.status == 'success') {
+
+                        location.href = json.url;
+
+                    } else {
+
+                        {#    TODO HANDLE THIS#}
+                    }
+                },
+
+                error: function () {
+                    //$quote_request_info_form_submit.html('Compare Health Insurance');
+                    //$quote_request_info_form_submit.prop('disabled', false);
+                    {#$quote_request_info_form_submit.show();#}
+                    {#$quote_submit_ajax_loader.hide();#}
+                    {#$add_sender_form_error_messages.append(#}
+                    {#    '<span class="internal_error">Something unexpected happened. Please try again after some time.</span>'#}
+                    {#);#}
+                    location.reload();
+
+                    {#TODO HANDLE#}
+                }
+
+            });
+        });
+
+        var $duration_coverage_form_field = $('select[name="Duration_Coverage"]');
+
+        $duration_coverage_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $duration_coverage_form.submit();
+
+        });
+
+
+
+        var $benefit_amount_form_field = $('select[name="Benefit_Amount"]');
+
+        $benefit_amount_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
+
+        var $coinsurance_percentage_form_field = $('select[name="Coinsurance_Percentage"]');
+
+        $coinsurance_percentage_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
+
+        var $coverage_max_form_field = $('select[name="Coverage_Max"]');
+
+        $coverage_max_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
+        var $plan_form_field = $('select[name="Plan"]');
+
+        $plan_form_field.on('change', function (e) {
+
+            var $that = $(this);
+
+            $benifit_amount_coins_policy_max_form.submit();
+
+        });
+
+
+
+        {% comment %}dev_torsho edit end{% endcomment %}
 
 
     </script>

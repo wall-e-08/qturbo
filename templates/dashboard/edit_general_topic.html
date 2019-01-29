@@ -87,7 +87,7 @@
                                          name="{{ form.top_img.name }}"
                                          id="{{ form.top_img.id_for_label }}"
                                          value="{{ form.top_img.value|default:'' }}"></b-form-file>
-                            {% if form.top_img.value %}<img width="150" src="/media/{{ form.top_img.value }}" alt="No image found!">{% endif %}
+                            {% if form.top_img.value %}<img width="150" src="/media/{{ form.top_img.value }}" alt="No image found! Try reloading">{% endif %}
                             {% if form.top_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_img.errors|join:" " }}</div>
                             {% endif %}
