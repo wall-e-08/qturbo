@@ -4,11 +4,11 @@
 
 {% block qt_plan_info %}
     <div class="qt-plan-info">
-        <h5 class="mrg-b-0">${{ plan.option|intcomma }}</h5>
+        <h5 class="mrg-b-0" >$<span id="qt-stm-plan-option-amount">{{ plan.option|intcomma }}</span></h5>
         <p class="small">Deductible</p>
     </div>
     <div class="qt-plan-info">
-        <h5 class="mrg-b-0">{{ plan.Coinsurance_Percentage }}%</h5>
+        <h5 class="mrg-b-0" >$<span id="qt-stm-plan-coinsurance">{{ plan.Coinsurance_Percentage }}</span>%</h5>
         <p class="small">Coinsurance</p>
     </div>
     <div class="qt-plan-info">
@@ -16,14 +16,15 @@
         <p class="small">Enrollment Fee</p>
     </div>
     <div class="qt-plan-info">
-        <h5 class="mrg-b-0"> ${{ plan.out_of_pocket_value|intcomma }}</h5>
+        <h5 class="mrg-b-0">$<span id="qt-stm-plan-benefit-amount">{{ plan.out_of_pocket_value|intcomma }}</span></h5>
         <p class="small">Max Out of Pocket</p>
     </div>
     <div class="qt-plan-info">
-        <h5 class="mrg-b-0">${{ plan.coverage_max_value|intcomma }}</h5>
+        <h5 class="mrg-b-0" >$<span id="qt-stm-plan-coverage-max">{{ plan.coverage_max_value|intcomma }}</span></h5>
         <p class="small">Coverage Maximum</p>
     </div>
 {% endblock %}
+
 
 
 
