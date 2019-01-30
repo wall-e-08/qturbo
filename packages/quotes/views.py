@@ -1985,7 +1985,10 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     return JsonResponse(
         {
             'status': 'success',
-            'url': reverse('quotes:stm_apply', kwargs={'plan_url': alternative_plan_url})
+            'url': reverse('quotes:stm_apply', kwargs={'plan_url': alternative_plan_url}),
+            'coinsurance': alternative_plan['Coinsurance_Percentage'],
+            'benefit_amount': alternative_plan['out_of_pocket_value'],
+            'coverage_maximum': alternative_plan['coverage_max_value']
         }
     )
 
