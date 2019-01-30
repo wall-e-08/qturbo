@@ -153,3 +153,12 @@
         }
     }
 }
+
+@media (max-width: 768px) {
+    .home-nav-item-box {
+        flex-direction: column;
+        a {
+            margin-bottom: 20px;
+        }
+    }
+}

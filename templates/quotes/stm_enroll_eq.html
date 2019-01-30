@@ -19,18 +19,22 @@
                             <div class="" id="underwritingQuestions">
                                 <div id="headingunderwritingQuestions">
                                     <div class="ms-row">
-                                        <div class="col-md-8 col-md-offset-2">
-                                            <h3 class="reset app-page-heading color-base bold">Eligibility Questions</h3>
+                                        <div class="text-center">
+                                            <h3 class="text-19 font-weight-bold">Eligibility
+                                                Questions</h3>
 
                                             <p class="reset fw-400">Please answer for you and any of your dependents
-                                                applying for coverage. (<a data-placement="auto top"
-                                                                           data-sectiontitle="Eligibility Questions"
-                                                                           data-glossary="shortTerm.application.eligibility.learnmore"
-                                                                           data-toggle="popover" href="javascript:void(0)"
-                                                                           class="js-glossary js-glossary-tellmemore">tell
-                                                    me more</a>)</p>
+                                                {#                                                applying for coverage.</p> (<a data-placement="auto top"#}
+                                                {#                                                                           data-sectiontitle="Eligibility Questions"#}
+                                                {#                                                                           data-glossary="shortTerm.application.eligibility.learnmore"#}
+                                                {#                                                                           data-toggle="popover" href="javascript:void(0)"#}
+                                                {#                                                                           class="js-glossary js-glossary-tellmemore">tell#}
+                                                {#                                                    me more</a>)#}
 
-                                            <p class="reset"></p></div>
+                                            <p class="reset">
+
+                                            </p>
+                                        </div>
 
                                     </div>
                                     <div class="row app-section-summary"></div>
@@ -57,8 +61,8 @@
                                                                  data-expected_answers="{{ stm_question.ExpectedAnswers }}"
                                                                  data-correct_answer="{{ stm_question.CorrectAnswer }}"
                                                                  data-question-id="{{ stm_question.ID }}">
-                                                                <p class="question-label">Question {{ forloop.counter }} of {{ stm_questions|length }}</p>
-                                                                <P class="question-text">{{ stm_question.Text|linebreaksbr }}</P>
+                                                                <p class="question-label text-center">Question {{ forloop.counter }} of {{ stm_questions|length }}</p>
+                                                                <P class="question-text text-center">{{ stm_question.Text|linebreaksbr }}</P>
 
                                                                 {# <div class="col-sm-12 question-col" data-question-id="{{ stm_question.ID }}"> #}
 
