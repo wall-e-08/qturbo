@@ -1,39 +1,10 @@
 {% extends 'base_nhaquote.html' %}
-{% load i18n hp_tags %}
+{% load static i18n hp_tags %}
 {% block title %}
     {% trans "Eligibility Questions" %} | {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-<style type="text/css">
-    body {font-size: 1.6rem;}
-    .question-col {background-color: #f1f2f4;padding: 2rem;margin-bottom: 2rem;}
-    .question-label {color: #156e95;font-size: 1.5rem;text-transform: uppercase;}
-    .question-text {line-height: 22px;}
-    .selected-ans-button {background-color: #57adef !important;color: #ffffff !important;font-weight: bold !important;}
-    .btn-default-answer {
-        background-color: #fff;
-        border-color: #ccc;
-        color: #333;
-        width: 100%;
-        margin-top: 10px;
-    }
-    .none {display: none;}
-    .wrong_ans_none {display: none;}
-    .app-page-cta-container .heading {color: #16c060}
-    .btn-default-continue {
-        background-color: #57adef;
-        border-color: #57adef;
-        border-radius: 23px;
-        color: #fff;
-        padding: 1.2rem 2.4rem;
-        font-size: 1.8rem;
-        font-weight: bold;
-    }
-    .btn-default-continue:hover {color: #c2e2f2}
-    .app-message-container.warning {border: 1px solid #ff6000;}
-    .app-message-container.warning .heading {color: #ff6000;}
-    .emphasize {font-weight: bold;}
-</style>
+    <link rel="stylesheet" href="{% static 'nhaquote_old/css/stm_eq.css' %}">
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
@@ -214,7 +185,7 @@
             });
 
             function question_form_success_handler(form_data) {
-                console.log('.question_row[data-order="'+ form_data.order  +'"]');
+                {#console.log('.question_row[data-order="'+ form_data.order  +'"]');#}
                 var $question = $('.question_row[data-order="'+ form_data.order  +'"]');
                 $question.attr('data-user_answer', form_data.answer);
 
@@ -244,17 +215,22 @@
                     if ((form_data.order + 1) < form_data.total) {
                         $('.question_row[data-order="' + (form_data.order + 1) + '"]').removeClass('none');
                         $question.siblings('.question_row')
-                                .filter(function () {return $(this).data('order') > form_data.order;})
-                                .removeClass('wrong_ans_none');
+                                .filter(function () {return $(this).data('order') > form_data.order;});
+
+                        // scroll to the next question
+                        $("html, body").animate({
+                            scrollTop: $question.siblings('.question_row').filter(function () {return $(this).data('order') > form_data.order;}).offset().top
+                        }, 600);
                     }
                 }
+                {% comment %}   {# commented by debashis, because it seems duplicate of previous block #}
                 if (!form_data.is_correct_ans) {
                     if ((form_data.order + 1) < form_data.total) {
                         $question.siblings('.question_row')
                                 .filter(function(){return $(this).data('order') > form_data.order;})
                                 .addClass('wrong_ans_none');
                     }
-                }
+                }{% endcomment %}
             }
         });
     });

@@ -250,7 +250,7 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         if quote_request_preference_data:
             for plan_name in ['LifeShield STM', 'AdvantHealth STM']:
                 quote_request_preference_data[plan_name]['Coverage_Max'] = \
-                    policy_max_from_income(int(quote_request_form_data['Annual_Income']), plan_name)
+                    [policy_max_from_income(int(quote_request_form_data['Annual_Income']), plan_name)]
 
         request.session['quote_request_preference_data'] = quote_request_preference_data
 
@@ -442,7 +442,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                     lambda mp: mp['general_url'] == plan_url and
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
                         mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and
-                        mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['out_of_pocket_value'][0], sp))
+                        mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0], sp))
         else:
             plan = next(filter(lambda mp: mp['unique_url'] == plan_url , sp))
     except StopIteration:
