@@ -663,9 +663,6 @@
                 success: function (json) {
                     loading_div.fadeOut();
                     if (json.status === 'success') {
-
-                        console.log("Test")
-
                         $apply_button.attr('href', json.url);
                         $coinsurance.html(json.coinsurance);
                         $benefit_amount.html(json.benefit_amount);
@@ -676,17 +673,15 @@
                         _t.siblings().removeClass('active');
                         _t.addClass('active');
 
-                        {#$coinsurance_dropdown.siblings().removeClass('active');#}
-                        {#$coinsurance_dropdown.find('.qt-customize-plan-selected-val').html(json.coinsurance);#}
-                        {#$coinsurance_dropdown.addClass('active');#}
-                        {##}
-                        {#$benefit_amount_dropdown.siblings().removeClass('active');#}
-                        {#$benefit_amount_dropdown.find('.qt-customize-plan-selected-val').html(json.benefit_amount);#}
-                        {#$benefit_amount_dropdown.addClass('active');#}
-                        {##}
-                        {#$coverage_max_dropdown.siblings().removeClass('active');#}
-                        {#$coverage_max_dropdown.find('.qt-customize-plan-selected-val').html(json.coverage_maximum);#}
-                        {#$coverage_max_dropdown.addClass('active');#}
+                        let customize_item_plan_array = [
+                            [$coinsurance_dropdown, json.coinsurance],
+                            [$benefit_amount_dropdown, json.benefit_amount],
+                            [$coverage_max_dropdown, json.coverage_maximum],
+                        ];
+                        $.each(customize_item_plan_array, function (e) {
+                            customize_item_plan_array[e][0].html(customize_item_plan_array[e][1]).parents('button').siblings().children('.active').removeClass('active')
+                                .siblings('[data-value="' + customize_item_plan_array[e][1] + '"]').addClass('active');
+                        });
                     } else {
                         location.reload();
                         {# TODO HANDLE THIS #}
