@@ -4,7 +4,7 @@
     Apply For Plan {{ plan.plan_name }} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-    <style type="text/css"></style>
+<style type="text/css"></style>
 {% endblock extra_css %}
 {% block container %}
     <div class="container apply-container">
@@ -12,57 +12,49 @@
         <div>
             <span id="variation_key" data-variation_key="1" class="none"></span>
             <span id="js-plan-max-duration" class="none"></span>
-            <a href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}"
-               class="apply-shopping-link" id="js-apply-continue-shopping-link">Continue Shopping
-            </a>
-
-        </div>
-
-        <div class="apply-details-header my-50 text-center">
-            <h2 class="text-19">Review and start application</h2>
+            <a href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}" class="apply-shopping-link" id="js-apply-continue-shopping-link">Continue Shopping</a>
+            <div class="apply-details-header"><h3 class="reset">Review and start application</h3></div>
             <p>Please review the following information before starting your application.</p>
         </div>
-        <div class="row my-50">
+
+
+        <div class="row">
             <div class="col-md-8">
                 <div style="font-weight: 500" class="apply-details-summary js-apply-details-summary">
                     <div class="row">
                         <div class="col-sm-6 col-xs-12 apply-details-plan-summary first-div">
                             <table class="table quote-price-breakdown-table">
                                 <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="carrierLogo">
-                                            <img alt="{{ plan.Name }}"
-                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
-                                                 class="carrier-logo-image">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
-                                                (Details)
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
-                                                (Details)
-                                            </a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        {% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:
-                                    </td>
-                                    <td class="text-right">${% plan_actual_premium %}</td>
-                                </tr>
-                                <tr>
-                                    <td>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee:</td>
-                                    <td class="text-right">${{ plan.Enrollment_Fee }}</td>
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="carrierLogo">
+                                                <img alt="{{ plan.Name }}" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                                <a href="{% url 'quotes:stm_plan' plan.general_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% endif %}
+                                            </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:
+                                        </td>
+                                        <td class="text-right">${% plan_actual_premium %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee:</td>
+                                        <td class="text-right">${{ plan.Enrollment_Fee }}</td>
+                                    </tr>
 
                                 </tbody>
                                 <tfoot></tfoot>
@@ -90,14 +82,14 @@
                                     </td>
                                 </tr>
                                 {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                    <tr id="js-apply-effectiveEnd">
-                                        <td class="info-label">Coverage End</td>
-                                        <td class="info-value">
+                                <tr id="js-apply-effectiveEnd">
+                                    <td class="info-label">Coverage End</td>
+                                    <td class="info-value">
                                         <span id="js-apply-original-effectiveEnd">
                                             {% plan_coverage_end_date %}
                                         </span>
-                                        </td>
-                                    </tr>
+                                    </td>
+                                </tr>
                                 {% endif %}
                                 <tr>
                                     <td class="info-label">Payment Options</td>
@@ -110,11 +102,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">Change Info
-                                            <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                                        </a>
-                                    </td>
+                                    <td><a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">CHANGE INFO</a></td>
                                     <td></td>
                                 </tr>
                                 </tbody>
@@ -133,33 +121,30 @@
                                         Add-On Plan{{ selected_addon_plans|pluralize }}
                                     </span>
                                     {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container"
-                                           style="font-size: 16px;">
+                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container" style="font-size: 16px;">
                                     {% else %}
-                                        <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container"
-                                           style="font-size: 16px;">
+                                        <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container" style="font-size: 16px;">
                                     {% endif %}
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                     </a>
                                 </h3>
                                 {% for add_on in selected_addon_plans %}
-                                    <div class="row">
-                                        <div class="col-sm-12 {% if not forloop.last %}individual-add-on-plan{% endif %}">
-                                            <h4 class="add-on-plan-name ">
-                                                {{ add_on.Name }}
-                                                <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                   target="_blank">
-                                                    <small>(details)</small>
-                                                </a>
-                                            </h4>
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <span class="">Premium</span>
-                                                    : ${{ add_on.actual_premium }}
-                                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 {% if not forloop.last %}individual-add-on-plan{% endif %}">
+                                        <h4 class="add-on-plan-name ">
+                                            {{ add_on.Name }}
+                                            <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
+                                               target="_blank">
+                                                <small>(details)</small>
+                                            </a>
+                                        </h4>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <span class="">Premium</span>: ${{ add_on.actual_premium }}
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -187,14 +172,14 @@
                                 </tr>
 
                                 {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                    <tr id="js-apply-effectiveEnd">
-                                        <td class="info-label">Coverage End</td>
-                                        <td class="info-value">
+                                <tr id="js-apply-effectiveEnd">
+                                    <td class="info-label">Coverage End</td>
+                                    <td class="info-value">
                                         <span id="js-apply-original-effectiveEnd">
                                             {% plan_coverage_end_date %}
                                         </span>
-                                        </td>
-                                    </tr>
+                                    </td>
+                                </tr>
                                 {% endif %}
                                 <tr>
                                     <td class="info-label">Payment Options</td>
@@ -207,9 +192,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">CHANGE INFO</a>
-                                    </td>
+                                    <td><a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">CHANGE INFO</a></td>
                                     <td></td>
                                 </tr>
                                 </tbody>
@@ -218,12 +201,21 @@
 
                     </div>
                 </div>
-
+                <div id="applyCta">
+                    <a class="btn btn-default js-apply-button vimm-nim-width-btn" id="applyButton"
+{#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+{#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
+{#                            {% else %}#}
+                               href="{% url 'quotes:stm_application' plan.unique_url %}">
+{#                            {% endif %}#}
+                    <span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Start Secure Application</span>
+                    </a>
+                </div>
             </div>
             <div class="col-md-4">
                 <div class="apply-right-bar-wrapper">
-                    <div class="apply-what-to-know"><h3 class="text-19">Swift &amp; Easy Application</h3>
-                        <ul class="list-image">
+                    <div class="apply-what-to-know"><h3>Swift &amp; Easy Application</h3>
+                        <ul>
                             <li>Check for eligibility in seconds</li>
                             <li>Get approval in minutes</li>
                             <li>Be enrolled today!</li>
@@ -233,27 +225,12 @@
                 <div class="apply-guarantee">
                     <div class="row" id="nations-guarantee">
                         <div class="nations-guarantee-text hccadvantage">
-                            <p>
-                                <span class="emphasize">10 day Risk Free Cancellation</span>
-                                <br>
-                                <small>30 days Risk Free Cancellation for USA+ Dental</small>
-                            </p>
+                            <p><span class="emphasize">10 day Risk Free Cancellation</span> <br>
+                                <small>30 days Risk Free Cancellation for USA+ Dental</small></p>
                         </div>
                     </div>
                 </div>
             </div>
-
-        </div>
-        <div id="applyCta">
-            <a class="btn btn-default js-apply-button vimm-nim-width-btn" id="applyButton"
-                    {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
-                    {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
-                    {#                            {% else %}#}
-               href="{% url 'quotes:stm_application' plan.unique_url %}">
-                {#                            {% endif %}#}
-                <span class="fa fa-lock"></span>
-                <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
-            </a>
         </div>
         <p class="apply-disclaimer font-small pad-t-20">AFFORDABLE CARE ACT TAX. Term health insurance is not
             considered “minimum essential coverage” and you may be subject to the Affordable Care Act uninsured tax
@@ -265,31 +242,31 @@
     </div>
 
     {% if ctx_app_url_exists %}
-        {% include 'quotes/info-popup.html' %}
+    {% include 'quotes/info-popup.html' %}
     {% endif %}
 {% endblock container %}
 {% block extra_js %}
-    <script>
-        {#$(document).ready(function($) {#}
-        {#    console.log('Page loaded: /stm/apply.');#}
-        {#    if (window.history && window.history.pushState) {#}
-        {#        window.history.pushState('forward', null, './#forward');#}
-        {#        $(window).on('popstate', function() {#}
-        {#            console.log('Back button was pressed on /stm/apply.');#}
-        {#            location.href = "{% url 'quotes:stm_plan' plan.unique_url %}";#}
-        {#        });#}
-        {#    }#}
-        {% comment %}});{% endcomment %}
-        $(function () {
-            $('#applyButton').click(function (e) {
-                vimm_button_click_processing(
+<script>
+    {#$(document).ready(function($) {#}
+    {#    console.log('Page loaded: /stm/apply.');#}
+    {#    if (window.history && window.history.pushState) {#}
+    {#        window.history.pushState('forward', null, './#forward');#}
+    {#        $(window).on('popstate', function() {#}
+    {#            console.log('Back button was pressed on /stm/apply.');#}
+    {#            location.href = "{% url 'quotes:stm_plan' plan.unique_url %}";#}
+    {#        });#}
+    {#    }#}
+    {% comment %}});{% endcomment %}
+    $(function(){
+        $('#applyButton').click(function(e) {
+            vimm_button_click_processing(
                     $(this),
                     ($button => false),
                     ['<span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Starting Secure Application...</span>',
                         '<span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Starting Secure Application..</span>',
                         '<span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Starting Secure Application.</span>']
-                );
-            });
+            );
         });
-    </script>
+    });
+</script>
 {% endblock extra_js %}
