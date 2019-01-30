@@ -30,7 +30,11 @@ class Menu(models.Model):
 
 
 class GeneralTopic(models.Model):
-    # TODO: need restrictions in saving ArrayField
+    site_name = models.CharField(max_length=250)
+    site_main_title = models.CharField(max_length=250)
+    meta_keywords = models.TextField()
+    meta_description = models.TextField()
+
     top_quote_heading = models.TextField(max_length=500)
     top_quote_sub_heading = models.TextField(max_length=500)
     top_img = models.ImageField(

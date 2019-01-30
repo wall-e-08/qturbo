@@ -6,7 +6,9 @@
 <head>
     {% block meta %}{% include 'snippets/meta_default.html' %}{% endblock %}
 
-    <title>{% block title %}Quote Turbo{% endblock %}</title>
+    <title>{% block title %}{{ general_topic.site_main_title }}{% endblock %}</title>
+    <meta name="description" content="{{ general_topic.meta_description }}">
+    <meta name="keywords" content="{{ general_topic.meta_keywords }}">
 
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
@@ -49,9 +51,7 @@
 
                     {% block navbar_brand %}
                         <b-navbar-brand href="{% url 'quotes:home' %}" class="font-weight-bold">
-                            <span><img width="30" src="{% static 'img/pre-logo.png' %}" alt=""></span>
-                            quote
-                            <i class="text-uppercase text-primary">turbo</i>
+                            <img height="50" src="{% static 'img/logo.png' %}" alt="">
                         </b-navbar-brand>
                     {% endblock %}
 
