@@ -34,7 +34,7 @@
                             <div class="qt-plan-details-price">
                                 <div class="qt-d-inline-block">
                                     <span class="qt-d-inline-block qt-plan-price-superscript">$</span>
-                                    <span class="qt-plan-price-value">{% plan_actual_premium plan %}</span>
+                                    <span class="qt-plan-price-value" id="qt-actual-premium">{% plan_actual_premium plan %}</span>
                                     <span class="qt-d-inline-block qt-plan-price-subscript">{% if plan.Payment_Option != '2' %}/mo{% endif %} <span class="small">+fees</span></span>
                                     <hr>
                                 </div>
@@ -644,6 +644,7 @@
             let $coinsurance = $('#qt-stm-plan-coinsurance');
             let $benefit_amount = $('#qt-stm-plan-benefit-amount');
             let $coverage_max = $('#qt-stm-plan-coverage-max');
+            let $premium = $('#qt-actual-premium')
 
             let $coinsurance_dropdown = $('#qt-coinsurance-percentage-dropdown');
             let $benefit_amount_dropdown = $('#qt-benefit-amount-dropdown');
@@ -669,6 +670,7 @@
                         $coinsurance.html(json.coinsurance);
                         $benefit_amount.html(json.benefit_amount);
                         $coverage_max.html(json.coverage_maximum);
+                        $premium.html(json.premium)
 
                         _t.parent().siblings('button').find('.qt-customize-plan-selected-val').html(_val);
                         _t.siblings().removeClass('active');

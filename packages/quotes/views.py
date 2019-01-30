@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core import settings
+from quotes.templatetags.hp_tags import plan_actual_premium
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
                     ChildInfoFormSet, LeadForm, Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
@@ -297,6 +298,7 @@ def policy_max_from_income(income: int, plan_name: str) -> str:
 
     # TODO: Return a None and handle it.
 
+
 def reset_preference(request) -> None:
     """
     Reset everything but duration coverage and coverage max.
@@ -320,6 +322,7 @@ def reset_preference(request) -> None:
     request.session['quote_request_preference_data'] = preference
 
     return
+
 
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
@@ -436,13 +439,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
             if quote_request_preference_data['general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
-                request.session['quote_request_preference_data']['general_url_chosen'] = True
             else:
+                # When page is refreshed.
                 plan = next(filter(
                     lambda mp: mp['general_url'] == plan_url and
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
                         mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and
                         mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0], sp))
+                request.session['quote_request_preference_data']['general_url_chosen'] = True
         else:
             plan = next(filter(lambda mp: mp['unique_url'] == plan_url , sp))
     except StopIteration:
@@ -1930,7 +1934,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         coinsurance_percentage = min(l)
 
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == coinsurance_percentage and
+        alternative_plan = next(filter(lambda mp: mp['option'] == plan['option'] and
+                                                  mp['Coinsurance_Percentage'] == coinsurance_percentage and
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['Coverage_Max'] == coverage_maximum and
                                                   mp['Duration_Coverage'] == coverage_duration and
@@ -1945,8 +1950,10 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     # Setting preference data
     preference = request.session.get('quote_request_preference_data')
     preference[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
-    preference[stm_name]['out_of_pocket_value'] = [benefit_amount]
+    preference[stm_name]['Benefit_Amount'] = [benefit_amount]
     preference[stm_name]['Coverage_Max'] = [coverage_maximum]
+
+    preference['general_url_chosen'] = True
 
     request.session['quote_request_preference_data'] = preference
 
@@ -1988,7 +1995,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'url': reverse('quotes:stm_apply', kwargs={'plan_url': alternative_plan_url}),
             'coinsurance': alternative_plan['Coinsurance_Percentage'],
             'benefit_amount': alternative_plan['out_of_pocket_value'],
-            'coverage_maximum': alternative_plan['coverage_max_value']
+            'coverage_maximum': alternative_plan['coverage_max_value'],
+            'premium': plan_actual_premium(context=None, stm_plan=alternative_plan)
         }
     )
 
