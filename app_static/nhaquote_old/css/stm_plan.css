@@ -1,3 +1,31 @@
+p {
+    word-spacing: initial;
+}
+
+h3 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+#overlay-loading {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99999;
+    position: fixed;
+    font-size: 50px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    line-height: 100vh;
+}
+
+#overlay-loading img {
+    width: 65px;
+}
+
 #qt-plan-details {
     max-width: 500px;
     position: fixed;
@@ -180,7 +208,7 @@
     margin-top: 20px;
     padding: 12px 30px;
     font-size: 18px;
-    transition: all 100ms ease-in-out;
+    transition: all 300ms;
     line-height: 24px;
     border-radius: 25px;
     border: 1px solid #3333;
@@ -191,6 +219,10 @@
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2),
                 0 2px 2px 0 rgba(0, 0, 0, 0.14),
                 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+}
+
+.qt-plan-brochure-file:not(.card-link):hover {
+    background: #e4e4e4;
 }
 
 .qt-plan-brochure-file.card-link {
@@ -286,6 +318,11 @@ a.qt-plan-brochure-file > i.fa:last-child {
 #qt-customize-plan .qt-customize-plan-selected-val {
     font-size: 16px;
     color: #080808;
+}
+
+#restrictions-n-omissions div,
+#restrictions-n-omissions p {
+    font-size: 11px !important;
 }
 
 .qt-each-pkg-include {
