@@ -60,7 +60,7 @@
 
     {% block extra_meta %}{% endblock extra_meta %}
 
-    <title>{% block title %}{{ general_topic.site_main_title }}{% endblock title %}</title>
+    <title>{% block title %}Healthinsurance.fm{% endblock title %}</title>
     {#        - Get Best Health Insurance Quotes and Buy Medical Coverage online#}
 
     {% block css %}
@@ -91,7 +91,7 @@
                     <div class="logo-container">
                         <a href="{% url 'quotes:home' %}">
                             {% block navbar_brand %}
-                                <img src="{% static 'img/logo.png' %}" alt="Logo"/>
+                                <img src="{% static 'quotes/img/logo.png' %}" alt="Logo"/>
                             {% endblock %}
                         </a>
                     </div>
@@ -205,33 +205,92 @@
     </div>
 {% endblock container %}
 
-<section id="nhaqt_footer">
+<div class="footer">
     <div class="container">
-        <div class="row nhaqt_footer_content">
-            <div class="col-sm-6">
-                <div class="nhaqt_footer_content1">
-                    <div class="nhaqt_footer-logo">
-                        <a href="{% url 'quotes:home' %}">
-                            <img src="{% static 'quotes/img/logo.png' %}" class="mw100" alt="Logo"/>
-                        </a>
-                    </div>
-                    <h5 class="my-30">
-                        {{ general_topic.copyright_text|safe }}
-                    </h5>
+        {% block footer-info %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                     TODO                       <h3><a class="fs-15 bold" href="{% url 'thi:term-health-insurance' %}">Term Health Insurance</a></h3>
+                    <ul class="footer-list">
 
+                          TODO                      <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}">Everest</a></li>
+                          TODO                      <li><a href="{% url 'thi:stm_carrier' 'lifeshield-stm' %}">LifeShield</a></li>
+                          TODO                      <li><a href="{% url 'lhi:limited_carrier' 'cardinal-choice' %}">Cardinal</a></li>
+                        {% comment %}
+                            <li><a href="{% url 'thi:stm_carrier' 'sage-stm' %}">Sage</a></li>
+                            <li><a href="{% url 'thi:stm_carrier' 'healthemed-stm' %}">HealtheMed</a></li>
+                            <li><a href="{% url 'thi:stm_carrier' 'healtheflex-stm' %}">HealtheFlex</a></li>
+                            <li><a href="{% url 'thi:stm_carrier' 'premier-stm' %}">Premier</a></li>
+                            <li><a href="{% url 'thi:stm_carrier' 'everest-stm' %}">Everest</a></li>
+                            {% endcomment %}
+                    </ul>
                 </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="nhaqt_footer_content2">
-                    <div class="text-right">
-                        <img src="{% static 'quotes/img/getseal.png' %}" class="mw100"
-                             alt="Verified & Secured by Norton"/>
+                {% comment %}
+                    <div class="col-xs-12 col-sm-4 col-md-20p">
+                        <h3><a class="fs-15 bold" href="javascript:void(0);">Dental Insurance</a></h3>
+                        <ul class="footer-list">
+                            <li><a href="javascript:void(0);">Nationwide</a></li>
+                        </ul>
                     </div>
+                    {% endcomment %}
+
+
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                           TODO             <h3><a class="fs-15 bold" href="{% url 'hilc:learning_center' %}">Knowledge Center</a></h3>
+                           TODO           <h3 style="margin-top: 0"><a class="fs-15 bold" href="{% url 'articleList:home' %}">Articles</a></h3>
+
+
+                           TODO             <h3 style="margin-top: 0"><a class="fs-15 bold" href="{% url 'quotes:company_info' 'about-us' %}">About Us</a></h3>
+                           TODO             <h3 style="margin-top: 0"><a class="fs-15 bold" href="{% url 'quotes:company_info' 'contact-us' %}">Contact Us</a></h3>
+                    {% comment %}<ul class="footer-list">
+                            <li><a href="{% url 'quotes:company_info' 'contact-us' %}">Contact Us</a></li>
+                        </ul>{% endcomment %}
+                </div>
+
+
+                        TODO        <div class="col-xs-12 col-sm-4 col-md-3">
+                        TODO            <h3><a class="fs-15 bold" href="{% url 'quotes:addon_home' %}">Addon products</a></h3>
+                        TODO            <ul class="footer-list">
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'dental-savings' %}">Dental Savings</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'foundation-dental' %}">Foundation Dental</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'foundation-vision' %}">Foundation Vision</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'freedom-spirit' %}">Freedom Spirit</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'freedom-spirit-plus' %}">Freedom Spirit Plus</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'safeguard-critical-illness' %}">Safeguard Critical Illness</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'sentry-accident-plan' %}">Sentry Accident Plan</a></li>
+                        TODO                <li><a href="{% url 'quotes:addon_plan' 'usa+-dental' %}">USA+ Dental</a></li>
+                        TODO            </ul>
+                {% comment %}
+                        <ul class="footer-social-list">
+                            <li><a href="javascript:void(0);"><span class="fa fa-twitter"></span></a></li>
+                            <li><a href="javascript:void(0);"><span class="fa fa-facebook"></span></a></li>
+                            <li><a href="javascript:void(0);"><span class="fa fa-google-plus"></span></a></li>
+                            <li><a href="javascript:void(0);"><span class="fa fa-linkedin"></span></a></li>
+                        </ul>
+                        {% endcomment %}
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                <a href="{% url 'quotes:plans' %}" class="footer-quote-button mrg-t-25">See Plans</a>
+            </div>
+            </div>
+        {% endblock %}
+    {% block footer %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-xs-12" style="font-weight: 400">
+                    <p class="mrg-t-40">&copy; 2016 {{ request.site.title }}. Read our
+                        <a href="{% url 'quotes:legal' 'privacy' %}">Privacy Policy</a>,
+                        <a href="{% url 'quotes:legal' 'terms-of-use' %}">Terms of Use</a> and
+                        <a href="{% url 'quotes:legal' 'licensing' %}">Licensing Info</a></p>
+                    <p class="mrg-t-20">Protected by NAS cyber insurance</p>
+                </div>
+                <div class="col-xs-12 col-md-4 text-right">
+                    <img src="{% static 'quotes/img/getseal.png' %}" class="mw100" alt="Verified & Secured by Norton"/>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    {% endblock footer %}
+</div>
 
 
 {% block js %}
