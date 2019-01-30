@@ -612,6 +612,3 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
                 out_of_pocket_set.add(plan['Benefit_Amount'])
 
     return list(out_of_pocket_set)
-
-
-
