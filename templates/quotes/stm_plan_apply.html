@@ -34,10 +34,16 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span> (Details)
-                                            </a>
-                                        </td>
+                                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                                <a href="{% url 'quotes:stm_plan' plan.general_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% endif %}
+                                            </td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -55,7 +61,8 @@
                             </table>
                         </div>
                         <div class="col-sm-6 col-xs-12 apply-details-census-summary hidden-xs">
-                            <table class="table apply-census-table">
+                            <table class="tabl
+                            e apply-census-table">
                                 <tbody>
                                 <tr>
                                     <td class="info-label">Location</td>
