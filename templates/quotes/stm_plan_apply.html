@@ -33,13 +33,17 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        {% if quote_request_form_data.Ins_Type == 'stm' %}
                                         <td colspan="2">
-                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span> (Details)
-                                            </a>
-                                        </td>
-                                        {% endif %}
+                                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                                <a href="{% url 'quotes:stm_plan' plan.general_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
+                                                    <span class="emphasize">{{ plan.plan_name }}</span> (Details)
+                                                </a>
+                                            {% endif %}
+                                            </td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -117,11 +121,11 @@
                                           unless requested by you.">
                                         Add-On Plan{{ selected_addon_plans|pluralize }}
                                     </span>
-{#                                    {% if quote_request_form_data.Ins_Type == 'stm' %}#}
-{#                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container" style="font-size: 16px;">#}
-{#                                    {% else %}#}
+                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container" style="font-size: 16px;">
+                                    {% else %}
                                         <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container" style="font-size: 16px;">
-{#                                    {% endif %}#}
+                                    {% endif %}
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                     </a>
                                 </h3>
