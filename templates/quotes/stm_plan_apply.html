@@ -10,14 +10,14 @@
 {% block container %}
     <div class="container apply-container">
 
-        <div>
+        {% comment %}<div>
             <span id="variation_key" data-variation_key="1" class="none"></span>
             <span id="js-plan-max-duration" class="none"></span>
             <a href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}"
                class="apply-shopping-link" id="js-apply-continue-shopping-link">Continue Shopping
             </a>
 
-        </div>
+        </div>{% endcomment %}
 
         <div class="apply-details-header my-50 text-center">
             <h2 class="text-19">Review and Start Application</h2>
@@ -112,9 +112,9 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">Change Info
-                                            <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                                        </a>
+{#                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">Change Info#}
+{#                                            <i class="fa fa-angle-double-right" aria-hidden="true"></i>#}
+{#                                        </a>#}
                                     </td>
                                     <td></td>
                                 </tr>
