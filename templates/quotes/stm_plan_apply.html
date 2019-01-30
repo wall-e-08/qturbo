@@ -197,11 +197,11 @@
                 </div>
                 <div id="applyCta">
                     <a class="btn btn-default js-apply-button vimm-nim-width-btn" id="applyButton"
-                            {% if quote_request_form_data.Ins_Type == 'stm' %}
-                               href="{% url 'quotes:stm_application' plan.general_url %}">
-                            {% else %}
+{#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+{#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
+{#                            {% else %}#}
                                href="{% url 'quotes:stm_application' plan.unique_url %}">
-                            {% endif %}
+{#                            {% endif %}#}
                     <span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Start Secure Application</span>
                     </a>
                 </div>
