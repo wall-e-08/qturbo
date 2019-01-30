@@ -18,6 +18,7 @@ body{
 }
 #applyButton{
     font-weight: bold;
+    background: #fe8829;
     box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.4);
     -webkit-transition: .4s ease-in-out;
     -moz-transition: .4s ease-in-out;
@@ -29,21 +30,9 @@ body{
     box-shadow: none;
 }
 
-.question-toggle-group .boolean-toggle {
-    box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.4);
-}
 #application-body .app-page-underwriting-questions li {
     background-color: #f8f8f8;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-}
-#app-page-container #application-body .app-page-body-content, #app-page-container #application-body .app-page-right-bar {
-    font-family: 'Open Sans', sans-serif;
-}
-#application-body .app-page-body-content {
-    font-family: 'Open Sans', sans-serif;
-}
-#app-page-container {
-     padding-right: 0;
 }
 
 #nhaqt_footer{
