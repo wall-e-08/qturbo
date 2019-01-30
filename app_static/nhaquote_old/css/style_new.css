@@ -2,6 +2,11 @@
 
 /* Self explanatory */
 
+#app-page-wrapper {
+    /*  100 vertical height - header height - footer height  */
+    min-height: calc(100vh - 80px - 200px);
+}
+
 .product-type-select{
     background-color: #fe8829 ;
     border-radius: 5px;
@@ -18,9 +23,7 @@
 
 .quote-tab-info-line li.active a{
     border: 0;
-    border-bottom: 4px solid;
-    border-color: #19B4FA;
-
+    border-bottom: 4px solid #19B4FA;
 }
 
 .quote-tab-info-line li.active a:hover{
