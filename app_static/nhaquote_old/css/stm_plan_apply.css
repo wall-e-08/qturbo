@@ -1,0 +1,31 @@
+#nhaqt_footer{
+    background: #343a40;
+}
+.nhaqt_footer_content{
+    padding: 70px 0;
+    color: #fff;
+}
+.nhaqt_footer-logo{
+    width: 250px;
+}
+.my-30{
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+.nhaqt_footer-logo a img{
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 580px) {
+    .nhaqt_footer_content{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .nhaqt_footer-logo{
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
