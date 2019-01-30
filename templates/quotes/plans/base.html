@@ -8,6 +8,13 @@
 {% endblock extra_css %}
 
 {% block container %}
+    {% if quote_request_form_data.Ins_Type == 'stm' %}
+        {# overlay only need for customizing plans... And it's available only in stm #}
+        <div id="overlay-loading">
+            <img src="{% static 'quotes/img/ajax-loader.gif' %}" alt="ajax-loader">
+        </div>
+    {% endif %}
+
     <div class="container non-container-fluid-md">
         <div class="row">
             <div class="col-md-6">
@@ -21,12 +28,7 @@
                                 <h2 class="card-title qt-plan-name">{{ plan.Name }}-Plan {{ plan.Plan }}</h2>
                             </div>
                             <div class="qt-plan-info-wrapper">
-                                {% block qt_plan_info %}
-                                    {% comment %}<div class="qt-plan-info">
-                                    <h5 class="mrg-b-0">$3,000</h5>
-                                    <p class="small">Deductible</p>
-                                </div>{% endcomment %}
-                                {% endblock %}
+                                {% block qt_plan_info %}{% endblock %}
                             </div>
                             
                             <div class="qt-plan-details-price">
@@ -38,7 +40,7 @@
                                 </div>
                                 
                             </div>
-                            <a href="#" class="btn qt-btn-tertiary btn-lg qt-apply-plan-link">Apply now</a>
+                            <a href="{% url 'quotes:stm_apply' plan.unique_url %}" class="btn qt-btn-tertiary btn-lg qt-apply-plan-link">Apply now</a>
                             <div class="mrg-t-30">
                                 <a href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf" target="_blank" class="card-link qt-plan-brochure-file">
                                     <i class="fa fa-file-pdf-o"></i>
@@ -52,200 +54,276 @@
             </div>
 
             <div class="col-md-6">
-                
-                {% if True %}
-                {# TODO: this should come from db plan-wise #}
-                <div id="qt-sidebar-plan-details">
-                    <h2>Plan name: {{ plan.Name }}</h2>
-                    <p>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</p>
+                <div {% comment %}id="qt-sidebar-plan-details"{% endcomment %}>
+                    <h2 class="mrg-b-5">Your Plan: <i>{{ plan.Name }}</i></h2>
+                    <p class="small" style="color: #808080">
+                        {% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance
+                    </p>
                     <div id="qt-sidebar-small-plan-description">
-                        <ul>
-                            <li>GG</li>
-                            <li>WP</li>
-                            <li>sdfhgsjdfgsdf</li>
-                            <li>ffjsdf wyoeg yweg weyfgwergwrwr</li>
-                        </ul>
+                        <p>It is a {% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %}
+                            Health Insurance plan{% if quote_request_form_data.Ins_Type == 'stm' %}, meaning your plan will last {{ plan.Duration_Coverage|plan_duration_month }}
+                            months and will automatically renew for a total length
+                            of {{ plan.Duration_Coverage|plan_duration_total_month }} months (though you can cancel anytime){% endif %}.This is a great option for healthy individuals
+                            who are looking for a more affordable alternative to ACA plans with streamlined benefits and do not need pre-existing conditions covered.
+                            We recommend you review the full plan brochure to understand all the details, benefits and limitations of the plan.</p>
                     </div>
                 </div>
+
+                {% if quote_request_form_data.Ins_Type != 'anc' %}
+                    <hr>
+                    <div class="add-on-section">
+                        <div class="mrg-t-20" id="add-on-plan-container">
+                            {% csrf_token %}
+                            <h2>Add-on:</h2>
+                            <div class="row">
+                                <div class="col-sm-12 addon_plan_action_message"></div>
+                                <div class="col-sm-12" id="available-add-on">
+                                    <div class="panel panel-default ms-panel-adon">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title bold">Available Add-on plans</h3>
+                                        </div>
+                                        <div class="panel-body addon_plans_panel addon_plans_panel_available">
+                                            {% for addon_plan in remaining_addon_plans %}
+                                                <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row"
+                                                     style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
+                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                Premium: ${{ addon_plan.actual_premium }} / mo
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a class="add_on_plan_brochure"
+                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                                   target="_blank">
+                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 text-right" style="flex: 1;">
+                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                        <button class="btn btn-success action_addon_plan_button" type="button"
+                                                                style="top: 25%; position: relative;"
+                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
+                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                            <span class="fa fa-plus"></span> Add
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="selected-add-on">
+                                    <div class="panel panel-default ms-panel-adon">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title bold">Selected Add-on Plans</h3>
+                                        </div>
+                                        <div class="panel-body addon_plans_panel addon_plans_panel_selected">
+                                            {% for addon_plan in selected_addon_plans %}
+                                                <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;  margin-top: 5px; padding: 5px; display: flex;">
+                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                Premium: ${{ addon_plan.actual_premium }} / mo
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a class="add_on_plan_brochure"
+                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                                   target="_blank">
+                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 text-right" style="flex: 1;">
+                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                        <button class="btn btn-warning action_addon_plan_button" type="button"
+                                                                style="top: 25%; position: relative;"
+                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
+                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                            <span class="fa fa-remove"> Remove</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% empty %}
+                                                <h4>No Add-on Plan</h4>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
 
-                <hr>
-                <div class="text-center">
-                    <a href="#qt-customize-plan" id="qt-customize-plan-link" class="text-muted">
-                        <i class="fa fa-sliders"></i>
-                        Customize your plan
-                    </a>
-                </div>
-                <hr>
-
-                <div id="qt-package-includes">
-                    <h2>Your package includes:</h2>
-                    <div class="qt-all-pkg-includes">
-
-                    {# TODO: manage those below #}
-                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
-                            <div>
-                                <div>
-                                    <img src="#">
-                                    <p>24/7 access to board-certified doctors</p>
-                                </div>
-                                <div>
-                                    <span>
-                                        <svg width="20" viewBox="0 0 24 24">
-                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
-                                            <path fill="none" d="M0 0h24v24H0z"></path>
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <ul>
-                                    <li>=========</li>
-                                    <li>=========</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="qt-each-pkg-include" style="border: 1px solid #000;">
-                            <div>
-                                <div>
-                                    <img src="#">
-                                    <p>24/7 access to board-certified doctors</p>
-                                </div>
-                                <div>
-                                    <span>
-                                        <svg width="20" viewBox="0 0 24 24">
-                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
-                                            <path fill="none" d="M0 0h24v24H0z"></path>
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <ul>
-                                    <li>=========</li>
-                                    <li>=========</li>
-                                </ul>
-                            </div>
-                        </div>
-    
+                {% if quote_request_form_data.Ins_Type == 'stm' %}
+                    <hr>
+                    <div class="text-center">
+                        <a href="#qt-customize-plan" id="qt-customize-plan-link" class="text-muted">
+                            <i class="fa fa-sliders"></i>
+                            Customize your plan
+                        </a>
                     </div>
-                </div>
+                {% endif %}
 
-                <hr>
-                <div id="qt-customize-plan">
-                    <h2>Customize your plan:</h2>
-                    <div class="qt-all-customize-dropdowns">
-                        {% if alternate_coverage_duration %}
-                            <div class="dropdown">
-                                <button type="button" data-toggle="dropdown" class="btn w100">
+                {% if benefit_coverage %}
+                    <hr>
+                    <div id="qt-package-includes">
+                        <h2 class="mrg-b-40">Your package includes:</h2>
+                        <div class="qt-all-pkg-includes">
+                            {% for bc in benefit_coverage %}
+                                <div class="cur-p qt-each-pkg-include" unselectable="on">
+                                    <div class="flex-center-between qt-each-pkg-hover">
+                                        <div class="flex-center-between">
+                                            <img class="qt-each-pkg-img" src="{% if bc.get_instance.image %}{{ bc.get_instance.image.url }}{% endif %}">
+                                            <h3>{{ bc.get_instance.title }}</h3>
+                                        </div>
+                                        <span class="qt-each-pkg-dropdown-icon">
+                                        <svg width="20" viewBox="0 0 24 24">
+                                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+                                            <path fill="none" d="M0 0h24v24H0z"></path>
+                                        </svg>
+                                    </span>
+                                    </div>
+                                    <div class="none qt-each-pkg-hover-content">
+                                        <hr>
+                                        {{ bc.get_instance.description|safe }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if quote_request_form_data.Ins_Type == 'stm' %}
+                    <hr>
+                    <div id="qt-customize-plan">
+                        <h2>Customize your plan:</h2>
+                        <div class="qt-all-customize-dropdowns">
+                            {% if alternate_coverage_duration %}
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
                                         <span class="ms-block qt-customize-plan-title">Coverage Duration</span>
                                         <span class="ms-block qt-customize-plan-selected-val">{{ plan.Duration_Coverage }}</span>
                                     </span>
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% for duration in alternate_coverage_duration %}
-                                        <li data-value="{{ duration }}" {% if plan.Duration_Coverage == duration %}class="active"{% endif %}>{{ duration }}</li>
-                                    {% endfor %}
-                                </ul>
-                                <form action="{% url 'quotes:alternate_duration_coverage' plan.unique_url %}" class="none" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden"
-                                           id="{{ duration_coverage_form.Duration_Coverage.id_for_label }}"
-                                           name="{{ duration_coverage_form.Duration_Coverage.html_name }}"
-                                           value="{{ plan.Duration_Coverage }}">
-                                </form>
-                            </div>
-                        {% endif %}
-                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_benefit_amount %}
-                            <div class="dropdown">
-                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for duration in alternate_coverage_duration %}
+                                            <li data-value="{{ duration }}" {% if plan.Duration_Coverage == duration %}class="active"{% endif %}>{{ duration }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <form action="{% url 'quotes:alternate_duration_coverage' plan.unique_url %}" class="none" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden"
+                                               id="{{ duration_coverage_form.Duration_Coverage.id_for_label }}"
+                                               name="{{ duration_coverage_form.Duration_Coverage.html_name }}"
+                                               value="{{ plan.Duration_Coverage }}">
+                                    </form>
+                                </div>
+                            {% endif %}
+                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_benefit_amount %}
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
                                         <span class="ms-block qt-customize-plan-title">Maximum Out Of Pocket</span>
                                         <span class="ms-block qt-customize-plan-selected-val">{{ plan.Benefit_Amount }}</span>
                                     </span>
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% for benefit in alternate_benefit_amount %}
-                                        <li data-value="{{ benefit }}" {% if plan.Benefit_Amount == benefit %}class="active"{% endif %}>{{ benefit }}</li>
-                                    {% endfor %}
-                                </ul>
-                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden"
-                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
-                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}"
-                                           value="{{ plan.Benefit_Amount }}">
-                                </form>
-                            </div>
-                        {% endif %}
-                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coinsurace_percentage %}
-                            <div class="dropdown">
-                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for benefit in alternate_benefit_amount %}
+                                            <li data-value="{{ benefit }}" {% if plan.Benefit_Amount == benefit %}class="active"{% endif %}>{{ benefit }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden"
+                                               id="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}"
+                                               name="{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}"
+                                               value="{{ plan.Benefit_Amount }}">
+                                    </form>
+                                </div>
+                            {% endif %}
+                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coinsurace_percentage %}
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
                                         <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
                                         <span class="ms-block qt-customize-plan-selected-val">{{ plan.Coinsurance_Percentage }}</span>
                                     </span>
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% for percentage in alternate_coinsurace_percentage %}
-                                        <li data-value="{{ percentage }}" {% if plan.Coinsurance_Percentage == percentage %}class="active"{% endif %}>{{ percentage }}</li>
-                                    {% endfor %}
-                                </ul>
-                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden"
-                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
-                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}"
-                                           value="{{ plan.Coinsurance_Percentage }}">
-                                </form>
-                            </div>
-                        {% endif %}
-                        {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coverage_max %}
-                            <div class="dropdown">
-                                <button type="button" data-toggle="dropdown" class="btn w100">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for percentage in alternate_coinsurace_percentage %}
+                                            <li data-value="{{ percentage }}" {% if plan.Coinsurance_Percentage == percentage %}class="active"{% endif %}>{{ percentage }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden"
+                                               id="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}"
+                                               name="{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}"
+                                               value="{{ plan.Coinsurance_Percentage }}">
+                                    </form>
+                                </div>
+                            {% endif %}
+                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coverage_max %}
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
                                         <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
                                         <span class="ms-block qt-customize-plan-selected-val">{{ plan.coverage_max_value }}</span>
                                     </span>
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% for coverage in alternate_coverage_max %}
-                                        <li data-value="{{ coverage }}" {% if plan.coverage_max_value == coverage %}class="active"{% endif %}>{{ coverage }}</li>
-                                    {% endfor %}
-                                </ul>
-                                <form action="{% url 'quotes:ben_amount_coins_policy_max_change_action' plan.unique_url %}" class="none" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden"
-                                           id="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
-                                           name="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}"
-                                           value="{{ plan.coverage_max_value }}">
-                                </form>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {% if benefit_coverage %}
-                    <hr>
-                    <div id="benefits-n-coverage">
-                        <h3>Benefits and Coverage</h3>
-                        {% for bc in benefit_coverage %}
-                            <div>
-                                <h4>{{ bc.get_instance.title }}</h4>
-                                <div>{{ bc.get_instance.description|safe }}</div>
-                            </div>
-                        {% endfor %}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% for coverage in alternate_coverage_max %}
+                                            <li data-value="{{ coverage }}" {% if plan.coverage_max_value == coverage %}class="active"{% endif %}>{{ coverage }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <form action="{% url 'quotes:select_from_quoted_plans_ajax' plan.unique_url %}" class="none" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden"
+                                               id="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}"
+                                               name="{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}"
+                                               value="{{ plan.coverage_max_value }}">
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endif %}
+                <hr>
+                <div>
+                    <h3>Coverage details</h3>
+                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                        <div>
+                            No insurance policy covers everything, and short-term plans have important exclusions.
+                            Please review the following information to make sure this plan covers what matters to you.
+                        </div>
+                    {% else %}
+                        <div>
+                            A health benefit that is intended to supplement your major medical health care plan. It pays a daily benefit for each day you are confined in a hospital, or depending on
+                            the plan you select, certain other medical services. Benefits are payable directly to you regardless of any other insurance you may have. These benefits may be used to help
+                            cover out-of-pocket medical expenses or any other expenses you may have.
+                        </div>
+                    {% endif %}
+                    <a href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
+                       target="_blank"
+                       class="qt-plan-brochure-file">View Plan Brochure</a>
+                </div>
+
                 {% if restrictions_omissions %}
                     <hr>
                     <div id="restrictions-n-omissions">
-                        <h3>Restrictions and Omissions</h3>
+                        <h3>Disclaimer</h3>
                         {% for bc in restrictions_omissions %}
                             <div>
                                 <h4>{{ bc.get_instance.title }}</h4>
@@ -253,300 +331,10 @@
                             </div>
                         {% endfor %}
                     </div>
-                    </div>
                 {% endif %}
-        
-            <div class="col-md-6 none">
-                
-    
-            
-            
-            
-            
-            
-            
-    <div class="blue-section plane-single-top">
-        <div class="container">
-            <div class="row">
-                <div id="msbreadCrumb">
-                    <div class="col-sm-10 col-xs-9" style="color:#000">
-                        &nbsp;«&nbsp;
-                        <a class="fw-300" href="{% url 'quotes:plan_quote' ins_type=quote_request_form_data.Ins_Type %}">back to plans</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-12 col-md-8">
-                    <div class="plan-details-planName-wrapper">
-                        <h1 class="planerh1 fw-300 plan_name_h1">{{ plan.plan_name }}</h1>
-                    </div>
-                    <h3>{% if quote_request_form_data.Ins_Type == 'stm' %}Short-Term{% elif quote_request_form_data.Ins_Type == 'lim' %}Limited{% else %}Ancillary{% endif %} Health Insurance</h3>
-
-                    <div class="plan-details-price js-price-breakdown">
-                        ${% plan_actual_premium plan %}  {{ plan.Premium }} 
-                        {% if plan.Payment_Option != '2' %}/mo{% endif %}
-                        <span class="fees">+ fees</span>
-                    </div>
-
-                    <div class="plan-apply-container">
-                        {% if alternate_coverage_duration %}
-                            {% if alternate_coverage_duration %}
-{#                                <form action="{% url 'quotes:alternate_plan' plan.unique_url %}" method="POST">#}
-                                {% csrf_token %}
-                            {% endif %}
-
-                                                    <div class="row">
-                                <div class="col-md-5">
-                                    <h3>Select Coverage Duration</h3>
-                                </div>
-                                <div class="">
-
-                                    <select type="button" class="btn btn-info dropdown-toggle" id="duration_coverage_dropdown" name="duration_coverage_dropdown">
-                                        <option value="{{ plan.Duration_Coverage}}"> {{ plan.Duration_Coverage }} </option>
-                                        {% for duration in alternate_coverage_duration %}
-                                            <option value="{{ duration }}"> {{ duration }} </option>
-                                        {% endfor %}
-                                    </select>
-
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if alternate_benefit_amount %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Max Out Of Pocket</h3>
-
-                                    <div class="">
-
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternative_benefit_amount_dropdown" name = "alternative_benefit_amount_dropdown">
-                                            {% for benefit in alternate_benefit_amount %}
-                                                <option value="{{ benefit }}"> {{ benefit }} </option>
-                                            {% endfor %}
-                                        </select>
-
-                                    </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if alternate_coinsurace_percentage %}
-                        <div class="row">
-                            <div class="col-md-5">
-                                <h3>Select Co-Insurance Percentage</h3>
-
-                                    <div class="">
-
-                                        <select type="button" class="btn btn-info dropdown-toggle" id="alternate_coinsurace_percentage" name="alternate_coinsurace_percentage">
-                                            {% for percentage in alternate_coinsurace_percentage %}
-                                                <option value="{{ percentage }}"> {{ percentage }} </option>
-                                            {% endfor %}
-                                        </select>
-
-                                    </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if not alternate_coverage_duration %}
-                            <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                               class="btn btn-default js-apply-button vimm-nim-width-btn apply-btn" id="plan-details-primary-apply">
-                                    <span>
-
-                                        Apply for This Plan
-                                    </span>
-                            </a>
-                        {% else %}
-                            <div class="plan-apply-container">
-                    <a href="{% url 'quotes:stm_apply' plan.unique_url %}"
-                       class="btn btn-primary btn-lg apply-btn" id="plan-details-primary-apply">
-                        Apply for This Plan
-                    </a>
-                </div>
-                        {% endif %}
-
-                    </div>
-                    <a class="detailsancho"
-                       href="/static/quotes/brochure/stm/{{ plan.Name|plan_name_for_img }}.pdf"
-                       target="_blank">
-                        <span class="fa fa-file-pdf-o"></span> View Plan Brochure
-                    </a>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <img alt="HCC Advantage" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="mw100 mrg-t-20">
-                </div>
             </div>
         </div>
     </div>
-
-
-    {# addon section - commenetd #}
-
-    <section class="add-on-section">
-        <div class="container" style="margin-top: 20px;" id="add-on-plan-container">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-sm-12 addon_plan_action_message"></div>
-
-                {% if quote_request_form_data.Ins_Type != 'anc' %}
-                    <div class="col-sm-6 col-sm-push-6" id="selected-add-on">
-                        <div class="panel panel-default ms-panel-adon">
-                            <div class="panel-heading">
-                                <h3 class="panel-title bold">Selected Add-on Plans</h3>
-                            </div>
-                            <div class="panel-body addon_plans_panel addon_plans_panel_selected" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
-                                {% for addon_plan in selected_addon_plans %}
-                                    <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;
-                            margin-top: 5px; padding: 5px; display: flex;">
-                                        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                            <h4>{{ addon_plan.Name }}</h4>
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    Premium: ${{ addon_plan.actual_premium }} / mo
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <a class="add_on_plan_brochure"
-                                                       href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                       target="_blank">
-                                                        <span class="fa fa-file-pdf-o"></span> Brochure
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3 text-right" style="flex: 1;">
-                                            <img width="35px" style="top: 25%; position: relative;" class="none"
-                                                 src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                            <button class="btn btn-warning action_addon_plan_button" type="button"
-                                                    style="top: 25%; position: relative;"
-                                                    data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
-                                                    data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                                <span class="fa fa-remove"> Remove</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <h4>No Add-on Plan</h4>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-sm-pull-6" id="available-add-on">
-                        <div class="panel panel-default ms-panel-adon">
-                            <div class="panel-heading">
-                                <h3 class="panel-title bold">Available Add-on plans</h3>
-                            </div>
-                            <div class="panel-body addon_plans_panel addon_plans_panel_available" {% comment %}style="height: 300px !important; overflow: hidden; overflow-y:scroll;"{% endcomment %}>
-                                {% for addon_plan in remaining_addon_plans %}
-                                    <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
-                                        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                            <h4>{{ addon_plan.Name }}</h4>
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    Premium: ${{ addon_plan.actual_premium }} / mo
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <a class="add_on_plan_brochure"
-                                                       href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                       target="_blank">
-                                                        <span class="fa fa-file-pdf-o"></span> Brochure
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3 text-right" style="flex: 1;">
-                                            <img width="35px" style="top: 25%; position: relative;" class="none"
-                                                 src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                            <button class="btn btn-success action_addon_plan_button" type="button"
-                                                    style="top: 25%; position: relative;"
-                                                    data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
-                                                    data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                                <span class="fa fa-plus"></span> Add
-                                            </button>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-
-            </div>
-        </div>
-    </section>
-
-
-    <div class="plan-details-section">
-        <div class="container">
-            <div class="row">
-                {% stm_plan_feature plan.Name %}
-            </div>
-        </div>
-    </div>
-{% comment %}</div>{% endcomment %} {# commented by debu #}
-
-<div class="section">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <h2 class="text-center text-heading mt-30 ">USA+ Dental Authorizations and Acknowledgments</h2>
-                <h3 class="text-sub-heading">Fraud Notice:</h3>
-                <p>In several states, we are required to advise you of the following: Any person who knowingly and with
-                    intent to defraud provides false, incomplete or misleading information in an application for insurance,
-                    or who knowingly presents a false or fraudulent claim f or payment of a loss or benefit, is guilty
-                    of a crime and may be subject to fines and criminal penalties, including imprisonment. In addition,
-                    insurance benefits may be denied if false information provided by an applicant is materially related
-                    to a claim.</p>
-
-
-                <h3 class="text-sub-heading">Membership Agreement:</h3>
-                <p>I understand and agree that membership is subject to the terms and conditions of the Membership Agreement.
-                    We reserve the right to accept or decline any membership application in accordance with the by -laws
-                    that govern our association. In order to ensure that I am able to utilize the benefits, it may be
-                    necessary for USA+ to send and/or receive personal information about me to the companies that provide
-                    products and services to me. I have 30 day s to evaluate the membership and request a full refund.</p>
-
-
-                <h3 class="text-sub-heading">Payment Acknowledgement:</h3>
-                <p>As a convenience to me, I hereby request and authorize you to pay and charge to my account, checks or
-                    electronic debits drawn on my account by and pay able to the order of United Service Association For
-                    Health Care, provided there are sufficient collected funds in said account to pay the same upon
-                    presentation. I agree that y our rights in respect to each such check or electronic debit shall
-                    be the same as if it were a check drawn on you and signed by me. This authority is to remain in
-                    effect until revoked by me in writing, and until you actually receive such notice I agree that you
-                    shall be fully protected in honoring any such check or debit. I further agree that if any such
-                    checks or electronic debits be dishonored, whether with or without cause and whether intentionally
-                    or inadvertently, you shall be under no liability whatsoever even though such dishonor results in the
-                    forfeiture of membership benefits.</p>
-            </div>
-        </div>
-    </div>
-
-    {% stm_plan_info plan %}
-
-
-    {% if ctx_app_url_exists %}
-        {% include 'quotes/info-popup.html' %}
-    {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-        </div>
-    </div>
-</div>
 
 {% endblock container %}
 
@@ -734,13 +522,13 @@
 
 
             //making same height in available or selected add on plans
-            if($(window).width() > 767)
+            {% comment %}if($(window).width() > 767)
             {
                 var s_plan = $('#selected-add-on');
                 var a_plan = $('#available-add-on');
                 if (s_plan.height() > a_plan.height())  a_plan.find('.ms-panel-adon').css('min-height', s_plan.height() - 15);
                 else  s_plan.find('.ms-panel-adon').css('min-height', a_plan.height() - 15);    //20 reduced for margin-bottom & padding bottom
-            }
+            }{% endcomment %}
         });
 
         var plansDisplay = [];
@@ -845,14 +633,19 @@
         });
     
         $('.qt-all-customize-dropdowns').on('click', '.dropdown-menu>li:not(.active)', function (e) {
+            let loading_div = $('#overlay-loading');
+            loading_div.fadeIn();
+
             e.preventDefault();
             let _t = $(this);
             let _form = _t.parent().next();
+            let _val = _t.attr('data-value');
+            let $apply_button = $('.qt-apply-plan-link');
 
-            _form.children('input:not([name="csrfmiddlewaretoken"])').val(_t.attr('data-value'));
+            _form.children('input:not([name="csrfmiddlewaretoken"])').val(_val);
             $.ajax({
                 url: _form.attr("action"),
-                async : false,
+                {#async : false,#}
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                 },
@@ -860,18 +653,38 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function (json) {
+                    loading_div.fadeOut();
                     if (json.status === 'success') {
-                        location.href = json.url;
+                        $apply_button.attr('href', json.url);
+                        _t.parent().siblings('button').find('.qt-customize-plan-selected-val').html(_val);
+                        _t.siblings().removeClass('active');
+                        _t.addClass('active');
                     } else {
                         location.reload();
                         {# TODO HANDLE THIS #}
                     }
                 },
                 error: function () {
+                    loading_div.fadeOut();
                     location.reload();
                     {#TODO HANDLE#}
                 }
             });
         });
+        
+        $('.qt-all-pkg-includes').on('click', '.qt-each-pkg-include', function () {
+            let _t = $(this);
+            let open_class_str = 'qt-pkg-include-open';
+            if (_t.hasClass(open_class_str)) {
+                _t.removeClass(open_class_str);
+            } else {
+                $('.qt-each-pkg-include').removeClass(open_class_str);
+                _t.addClass(open_class_str);
+                $('.qt-each-pkg-hover-content').each(function () {
+                    $(this).slideUp();  // slide up other opened div
+                })
+            }
+            _t.children('.qt-each-pkg-hover-content').slideToggle();
+        })
     </script>
 {% endblock extra_js %}

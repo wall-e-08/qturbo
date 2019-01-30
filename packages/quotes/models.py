@@ -5,6 +5,7 @@ from multiselectfield import MultiSelectField
 from djrichtextfield.models import RichTextField
 from core import settings
 from .us_states import states, states_list
+from .utils import get_img_path
 
 
 class PatchedMultiSelectField(MultiSelectField):
@@ -697,6 +698,8 @@ class StmPlanBase(models.Model):
 
     unique_url = models.TextField()
 
+    general_url = models.TextField()
+
     Premium = models.DecimalField(
         max_digits=20,
         decimal_places=2
@@ -733,6 +736,7 @@ class StmPlanBase(models.Model):
         return {'vimm_enroll_id': self.vimm_enroll_id,
                 'Name': self.Name,
                 'plan_name': self.plan_name,
+                'general_url': self.general_url,
                 'unique_url': self.unique_url,
                 'Premium': str(self.Premium),
                 'actual_premium': str(self.actual_premium),
@@ -1554,9 +1558,17 @@ class BenefitsAndCoverage(Feature):
         blank=True, null=True,
     )
 
+    image = models.ImageField(
+        verbose_name='Image File',
+        upload_to=get_img_path,
+        blank=True,
+        null=True,
+    )
+
     feature_type = models.CharField(
         max_length=50,
-        default="Benefits and Coverage"
+        default="Benefits and Coverage",
+        editable=False,
     )
 
     def __str__(self):
