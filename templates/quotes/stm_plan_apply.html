@@ -33,11 +33,13 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                        {% if quote_request_form_data.Ins_Type == 'stm' %}
                                         <td colspan="2">
                                             <a href="{% url 'quotes:stm_plan' plan.general_url %}">
                                                 <span class="emphasize">{{ plan.plan_name }}</span> (Details)
                                             </a>
                                         </td>
+                                        {% endif %}
                                     </tr>
                                     <tr>
                                         <td>
@@ -55,7 +57,8 @@
                             </table>
                         </div>
                         <div class="col-sm-6 col-xs-12 apply-details-census-summary hidden-xs">
-                            <table class="table apply-census-table">
+                            <table class="tabl
+                            e apply-census-table">
                                 <tbody>
                                 <tr>
                                     <td class="info-label">Location</td>
@@ -114,11 +117,11 @@
                                           unless requested by you.">
                                         Add-On Plan{{ selected_addon_plans|pluralize }}
                                     </span>
-                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container" style="font-size: 16px;">
-                                    {% else %}
+{#                                    {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+{#                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container" style="font-size: 16px;">#}
+{#                                    {% else %}#}
                                         <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container" style="font-size: 16px;">
-                                    {% endif %}
+{#                                    {% endif %}#}
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                     </a>
                                 </h3>
@@ -197,11 +200,11 @@
                 </div>
                 <div id="applyCta">
                     <a class="btn btn-default js-apply-button vimm-nim-width-btn" id="applyButton"
-                            {% if quote_request_form_data.Ins_Type == 'stm' %}
-                               href="{% url 'quotes:stm_application' plan.general_url %}">
-                            {% else %}
+{#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+{#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
+{#                            {% else %}#}
                                href="{% url 'quotes:stm_application' plan.unique_url %}">
-                            {% endif %}
+{#                            {% endif %}#}
                     <span class="fa fa-lock"></span> <span class="js-apply-text apply-button-text">Start Secure Application</span>
                     </a>
                 </div>
