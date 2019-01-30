@@ -1,4 +1,6 @@
-
+body{
+    font-family: 'Open Sans', sans-serif;
+}
 .text-19{
     color: #19B4FA;
 }
@@ -26,8 +28,27 @@
 #applyButton:hover{
     box-shadow: none;
 }
+
+.question-toggle-group .boolean-toggle {
+    box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.4);
+}
+#application-body .app-page-underwriting-questions li {
+    background-color: #f8f8f8;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+#app-page-container #application-body .app-page-body-content, #app-page-container #application-body .app-page-right-bar {
+    font-family: 'Open Sans', sans-serif;
+}
+#application-body .app-page-body-content {
+    font-family: 'Open Sans', sans-serif;
+}
+#app-page-container {
+     padding-right: 0;
+}
+
 #nhaqt_footer{
     background: #343a40;
+    margin-top: 40px;
 }
 .nhaqt_footer_content{
     padding: 70px 0;
@@ -35,6 +56,7 @@
 }
 .nhaqt_footer-logo{
     width: 250px;
+    cursor: pointer;
 }
 .my-30{
     margin: 30px 0;
