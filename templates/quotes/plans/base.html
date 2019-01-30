@@ -651,16 +651,14 @@
             let $benefit_amount_dropdown = $('#qt-benefit-amount-dropdown');
             let $coverage_max_dropdown = $('#qt-coverage-max-dropdown');
 
-            {#console.log($('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}').val());#}
-            {#console.log($('#{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentageid_for_label }}').val());#}
-            {#console.log($('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}').val());#}
 
             _form.children('input:not([name="csrfmiddlewaretoken"])').val(_val);
             let _form_data = {
                '{{ duration_coverage_form.Duration_Coverage.html_name }}' : $('#{{ duration_coverage_form.Duration_Coverage.id_for_label }}').val(),
                '{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}').val(),
                '{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}').val(),
-               '{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}': $('#{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}').val()
+               '{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}': $('#{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}').val(),
+                changed: _form.children('input:not([name="csrfmiddlewaretoken"])').attr('name')
             };
             console.table(_form_data)
             $.ajax({
