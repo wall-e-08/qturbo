@@ -60,7 +60,7 @@
 
     {% block extra_meta %}{% endblock extra_meta %}
 
-    <title>{% block title %}Healthinsurance.fm{% endblock title %}</title>
+    <title>{% block title %}{{ general_topic.site_main_title }}{% endblock title %}</title>
     {#        - Get Best Health Insurance Quotes and Buy Medical Coverage online#}
 
     {% block css %}
@@ -91,7 +91,7 @@
                     <div class="logo-container">
                         <a href="{% url 'quotes:home' %}">
                             {% block navbar_brand %}
-                                <img src="{% static 'quotes/img/logo.png' %}" alt="Logo"/>
+                                <img src="{% static 'img/logo.png' %}" alt="Logo"/>
                             {% endblock %}
                         </a>
                     </div>

@@ -278,7 +278,7 @@
                                 <div class="dropdown">
                                     <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
-                                        <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
+                                        <span class="ms-block qt-customize-plan-title">Coverage Period Maximum</span>
                                         <span class="ms-block qt-customize-plan-selected-val" id="qt-coverage-max-dropdown">{{ plan.coverage_max_value }}</span>
                                     </span>
                                         <span class="caret"></span>
@@ -641,6 +641,7 @@
             let _form = _t.parent().next();
             let _val = _t.attr('data-value');
             let $apply_button = $('.qt-apply-plan-link');
+
             let $coinsurance = $('#qt-stm-plan-coinsurance');
             let $benefit_amount = $('#qt-stm-plan-benefit-amount');
             let $coverage_max = $('#qt-stm-plan-coverage-max');
@@ -651,18 +652,37 @@
             let $coverage_max_dropdown = $('#qt-coverage-max-dropdown');
 
             _form.children('input:not([name="csrfmiddlewaretoken"])').val(_val);
+            let changed_attr = _form.children('input:not([name="csrfmiddlewaretoken"])').attr('name');
+
+            console.log(changed_attr);
+
+            let _form_data = {
+               '{{ duration_coverage_form.Duration_Coverage.html_name }}' : $('#{{ duration_coverage_form.Duration_Coverage.id_for_label }}').val(),
+               '{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}').val(),
+               '{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}').val(),
+               '{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}': $('#{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}').val(),
+                changed: changed_attr
+            };
+            console.table(_form_data)
             $.ajax({
                 url: _form.attr("action"),
                 {#async : false,#}
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                 },
-                data: _form.serialize(),
+                {#data: _form.serialize(),#}
+                data: _form_data,
                 type: 'POST',
                 dataType: 'json',
                 success: function (json) {
+                    console.log(json)
                     loading_div.fadeOut();
                     if (json.status === 'success') {
+                        if (changed_attr == 'Duration_Coverage') {
+                            location.href = json.url;
+                            return;
+                        }
+
                         $apply_button.attr('href', json.url);
                         $coinsurance.html(json.coinsurance);
                         $benefit_amount.html(json.benefit_amount);
@@ -673,10 +693,13 @@
                         _t.siblings().removeClass('active');
                         _t.addClass('active');
 
+                        $('#{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}').val(json.coinsurance);
+                        $('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label}}').val(json.benefit_amount);
+                        $('#{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}').val(json.coverage_maximum);
                         let customize_item_plan_array = [
-                            [$coinsurance_dropdown, json.coinsurance],
-                            [$benefit_amount_dropdown, json.benefit_amount],
-                            [$coverage_max_dropdown, json.coverage_maximum],
+                            [$coinsurance_dropdown, json.coinsurance,],
+                            [$benefit_amount_dropdown, json.benefit_amount,],
+                            [$coverage_max_dropdown, json.coverage_maximum,],
                         ];
                         $.each(customize_item_plan_array, function (e) {
                             customize_item_plan_array[e][0].html(customize_item_plan_array[e][1]).parents('button').siblings().children('.active').removeClass('active')

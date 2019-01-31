@@ -156,11 +156,25 @@ input[type="date"] {
     }
 }
 
+@media (max-width: map_get($grid-breakpoints, md)) {
+    .navbar-brand {
+        img {
+            height: 35px;
+        }
+    }
+}
+
 @media (max-width: map_get($grid-breakpoints, sm)) {
     .qt-rigid-btn-group {
         width: auto;
         .btn {
             font-size: 18px !important;
+        }
+    }
+
+    .navbar-brand {
+        img {
+            height: 25px;
         }
     }
 }
