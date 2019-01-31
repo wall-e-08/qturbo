@@ -82,6 +82,7 @@ body {
 .question-toggle-group .boolean-toggle{
     border: none;
     color: #fff;
+    padding: 10px 0;
 
 }
 .btn-orange{
