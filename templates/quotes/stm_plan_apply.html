@@ -5,7 +5,29 @@
     Apply For Plan {{ plan.plan_name }} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-    <style type="text/css"></style>
+    <style type="text/css">
+    .apply-details-summary{
+        min-height: auto;
+        background: #f8f8f8;
+        border-left: 7px solid #19b4fa;
+        border-bottom: 7px solid #19b4fa;
+        border-radius: 15px;
+        box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.4);
+        -webkit-transition: .4s ease-in-out;
+        -moz-transition: .4s ease-in-out;
+        -ms-transition: .4s ease-in-out;
+        -o-transition: .4s ease-in-out;
+        transition: .4s ease-in-out;
+        }
+    .apply-details-summary:hover{
+        box-shadow: none;
+    }
+    @media (max-width: 992px) {
+        .img-margin{
+            margin-top: 40px;
+        }
+    }
+    </style>
 {% endblock extra_css %}
 {% block container %}
     <div class="container apply-container">
@@ -222,7 +244,7 @@
 
             </div>
             <div class="col-md-4">
-                <div class="apply-right-bar-wrapper">
+                {% comment %}<div class="apply-right-bar-wrapper-new">
                     <div class="apply-what-to-know"><h3 class="text-19">Swift &amp; Easy Application</h3>
                         <ul class="list-image">
                             <li>Check for eligibility in seconds</li>
@@ -241,10 +263,69 @@
                             </p>
                         </div>
                     </div>
+                </div>{% endcomment %}
+                <div class="w100 text-center img-margin">
+                    <img src="{% static 'quotes/img/swift_easy.png' %}" alt="">
+                    <img src="{% static 'quotes/img/risk-free.png' %}" alt="" style="margin: 50px auto 0" height="200px">
                 </div>
             </div>
 
         </div>
+        <!------Xtraaaaaaa------>
+       {% comment %} <div class="row">
+            <div class="col-md-8">
+                <div class="apply-right-bar-wrapper-new">
+                    <div class="" style="display: flex;flex-direction: row;padding: 20px 10px">
+                        <div style="display: flex;flex-direction: column;width: 50%">
+                            <div class="carrierLogo">
+                                            <img alt="{{ plan.Name }}"
+                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
+                                                 class="carrier-logo-image">
+                                        </div>
+                            <div class="">
+                                <h3>
+                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
+                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                (Details)
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
+                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                (Details)
+                                            </a>
+                                        {% endif %}
+                                </h3>
+                                <p>{% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium: ${% plan_actual_premium %}</p>
+                                <p>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee: ${{ plan.Enrollment_Fee }}</p>
+                            </div>
+                        </div>
+                        <div style="display: flex;flex-direction: column; width: 50%">
+                            <p>Location: {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}</p>
+                            <p>Primary Applicant: {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}</p>
+                            <p>Coverage Start: {% form_date_field_value quote_request_form_data.Effective_Date %}</p>
+                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                    <p id="js-apply-effectiveEnd">
+                                        <span class="info-label">Coverage End</span>
+                                        <span class="info-value">
+                                        <span id="js-apply-original-effectiveEnd">
+                                            {% plan_coverage_end_date %}
+                                        </span>
+                                        </span>
+                                    </p>
+                                {% endif %}
+                            <p>Coverage End: {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}</p>
+                            <p>Payment Options: {% if quote_request_form_data.Payment_Option == '1' %}
+                                            {% trans "Monthly" %}
+                                        {% elif quote_request_form_data.Payment_Option == '2' %}
+                                            {% trans "Single Up Front" %}
+                                        {% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>{% endcomment %}
+         <!------Xtraaaaaaa------>
         <div id="applyCta">
             <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
                     {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
