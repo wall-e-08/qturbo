@@ -112,3 +112,16 @@ body {
     box-shadow: 0 0 #823a02;
     top: 6px;
 }
+.text-orange{
+    color: #FE8829;
+}
+#application-body .question-label {
+    color: #fe8829;
+    font-size: 18px;
+}
+
+#application-body .question-text {
+    font-size: 18px;
+    line-height: 25px;
+    margin-bottom: 2rem;
+}
