@@ -18,7 +18,7 @@ body{
 }
 #applyButton{
     font-weight: bold;
-    background: #fe8829;
+    background: #19B4FA;
     box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.4);
     -webkit-transition: .4s ease-in-out;
     -moz-transition: .4s ease-in-out;
@@ -36,7 +36,7 @@ body{
 }
 
 #nhaqt_footer{
-    background: #343a40;
+    background: #5b5e61;
     margin-top: 40px;
 }
 .nhaqt_footer_content{
