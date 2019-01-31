@@ -565,7 +565,6 @@
                             <div id="quote_plans-loading" style="display:none;text-align: center;margin-bottom: 30px">
                                 <img src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}">
                             </div>
-                            <div id="featured_plan_container"></div>
                             <div class="plan-list" id="month_plan_list">
                                 <div class="qt-quote-loading-icon">
                                     <img width="80px" src="{% static 'quotes/img/ajax-loader.gif' %}">
@@ -593,7 +592,7 @@
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}">
+    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
     <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
         <div class="quote-container">
             <div class="">
@@ -639,11 +638,18 @@
                 </div>
             </div>
         </div>
+                <div>
+            {% comment %}showed only in featured plan{% endcomment %}
+        [[#featured_plan]]
+            <div class="best-seller-badge"></div>
+
+        [[/featured_plan]]
+        </div>
     </div>
 </div>
 </script>
 <script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}">
+    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
     <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
         <div class="quote-container">
             <div class="">
@@ -690,12 +696,19 @@
                 </div>
             </div>
         </div>
+                <div>
+            {% comment %}showed only in featured plan{% endcomment %}
+        [[#featured_plan]]
+            <div class="best-seller-badge"></div>
+
+        [[/featured_plan]]
+        </div>
     </div>
 </div>
 </script>
 
 <script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan{% comment %}ms-row{% endcomment %}" id="[[#featured_plan]]featured-premium-plan[[/featured_plan]]">
+    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
             <div class="quote-container">
                 <div class="">
@@ -767,13 +780,14 @@
                 </div>
             </div>
         </div>
-    </div>
-    [[#featured_plan]]
         <div>
             {% comment %}showed only in featured plan{% endcomment %}
-            <div id="best-seller-badge"></div>
+        [[#featured_plan]]
+            <div class="best-seller-badge"></div>
+
+        [[/featured_plan]]
         </div>
-    [[/featured_plan]]
+    </div>
     </div>
 
 </script>
@@ -1180,7 +1194,6 @@ $(function() {
                     'copay_2': plan.copay_2, 'copay_2_text': plan.copay_2_text,
                     'note': plan.note
                 };
-                {#console.log(plan);#}
                 if (plan.out_of_pocket_value) {
                     var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
                 } else if(plan.Name == 'USA Dental' || plan.Name == 'Freedom Spirit Plus' ||
@@ -1192,10 +1205,11 @@ $(function() {
 
                 //featured plan will be showed in top
                 if(data.featured_plan){
-                    //$("#month_plan_list").prepend(rendered);
-                    $("#featured_plan_container").html(rendered);
+                    $("#month_plan_list").prepend(rendered);
+                    {#$("#featured_plan_container").append(rendered);#}
                 }
-                else                    $("#month_plan_list").append(rendered);
+                else
+                    $("#month_plan_list").append(rendered);
             }
         });
         $('[data-toggle="popover"]').popover({trigger:'hover'});

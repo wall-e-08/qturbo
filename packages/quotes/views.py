@@ -1286,6 +1286,17 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     """
     print("Calling AJAX.")
     sp = []
+
+    lifeshield_featured_flag = False
+    advanthealth_featured_flag = False
+    healthchoice_featured_flag = False
+    vitalacare_featured_flag = False
+    legion_featured_flag = False
+    usa_dental_featured_flag = False
+    fredom_spirit_featured_flag = False
+    safeguard_critical_featured_flag = False
+
+
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     print(quote_request_form_data)
 
@@ -1319,6 +1330,40 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                         decoded_plan['Benefit_Amount'] not in preference[decoded_plan['Name']]['Benefit_Amount']
                 ):
                     continue
+
+            if decoded_plan not in ['START', 'END']:
+                plan_name = decoded_plan['Name']
+                if not lifeshield_featured_flag and plan_name == 'LifeShield STM':
+                    decoded_plan['featured_plan'] = True
+                    lifeshield_featured_flag = True
+
+                if not advanthealth_featured_flag and plan_name == 'AdvantHealth STM':
+                    decoded_plan['featured_plan'] = True
+                    advanthealth_featured_flag = True
+
+                if not healthchoice_featured_flag and plan_name == 'Health Choice':
+                    decoded_plan['featured_plan'] = True
+                    healthchoice_featured_flag = True
+
+                if not vitalacare_featured_flag and plan_name == 'Vitala Care':
+                    decoded_plan['featured_plan'] = True
+                    vitalacare_featured_flag = True
+
+                if not legion_featured_flag and plan_name == 'Legion Limited Medical':
+                    decoded_plan['featured_plan'] = True
+                    legion_featured_flag = True
+
+                if not usa_dental_featured_flag and plan_name == 'USA Dental':
+                    decoded_plan['featured_plan'] = True
+                    usa_dental_featured_flag = True
+
+                if not fredom_spirit_featured_flag and plan_name == 'Freedom Spirit Plus':
+                    decoded_plan['featured_plan'] = True
+                    fredom_spirit_featured_flag = True
+
+                if not safeguard_critical_featured_flag and plan_name == 'Safeguard Critical Illness':
+                    decoded_plan['featured_plan'] = True
+                    safeguard_critical_featured_flag = True
 
             sp.append(decoded_plan)
 
