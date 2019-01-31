@@ -496,11 +496,11 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]
+        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name].copy()
         # alternate_coverage_duration = list(alternate_coverage_duration_set)
 
         # All of them
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
+        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name].copy()
         # alternate_benefit_amount = list(alternate_benefit_amount_set)
 
         # All of them
