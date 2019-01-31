@@ -69,3 +69,59 @@ body {
 .emphasize {
     font-weight: bold;
 }
+
+#app-page-container #application-body .app-page-body-content, #app-page-container #application-body .app-page-right-bar {
+    font-family: 'Open Sans', sans-serif;
+}
+#application-body .app-page-body-content {
+    font-family: 'Open Sans', sans-serif;
+}
+#app-page-container {
+     padding-right: 0;
+}
+.question-toggle-group .boolean-toggle{
+    border: none;
+    color: #fff;
+
+}
+.btn-orange{
+    border: none;
+    position: relative;
+    border-radius: 6px !important;
+    background-color: #fe8829 !important;
+    box-shadow: 0 6px #d45f00;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+.selected-ans-button {
+    background-color: #fe8829 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
+.btn-orange:hover{
+    box-shadow: 0 4px #a5581a;
+    top: 2px;
+}
+.btn-orange:focus{
+    background: #fe8829;
+    box-shadow: 0 0 #823a02;
+    top: 6px;
+}
+.text-orange{
+    color: #FE8829;
+}
+#application-body .question-label {
+    color: #fe8829;
+    font-size: 18px;
+}
+
+#application-body .question-text {
+    font-size: 18px;
+    line-height: 25px;
+    margin-bottom: 2rem;
+}

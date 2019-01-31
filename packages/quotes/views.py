@@ -496,15 +496,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]
+        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name].copy()
         # alternate_coverage_duration = list(alternate_coverage_duration_set)
 
         # All of them
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
+        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name].copy()
         # alternate_benefit_amount = list(alternate_benefit_amount_set)
 
         # All of them
-        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]
+        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name].copy()
         # alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
         # Edge case 50 percent coinsurance for plan type 2
@@ -1914,6 +1914,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         if plan_type == '' or None:
             plan_type = plan['Plan']
 
+        input_change = request.POST.get('changed', None)
+
     # Let the coverage duration be the current plan coverage duration.
     coverage_duration = plan['Duration_Coverage']
 
@@ -1921,17 +1923,17 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
 
-    if coinsurance_percentage not in available_alternatives_as_set['alternate_coinsurace_percentage']:
-        l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
-        if benefit_amount in l and len(l) > 1:
-            l.remove(benefit_amount)
-        benefit_amount = min(l)
 
-    elif benefit_amount not in available_alternatives_as_set['alternate_benefit_amount']:
+    if input_change == 'Benefit_Amount':
         l = get_available_coins_against_benefit(sp, benefit_amount, plan)
-        if coinsurance_percentage in l and len(l) > 1:
-            l.remove(coinsurance_percentage)
-        coinsurance_percentage = min(l)
+        if coinsurance_percentage not in l:
+            coinsurance_percentage = min(l)
+
+
+    elif input_change == 'Coinsurance_Percentage':
+        l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
+        if benefit_amount not in l:
+            benefit_amount = min(l)
 
     try:
         alternative_plan = next(filter(lambda mp: mp['option'] == plan['option'] and

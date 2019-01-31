@@ -20,10 +20,10 @@
                                 <div id="headingunderwritingQuestions">
                                     <div class="ms-row">
                                         <div class="text-center">
-                                            <h3 class="text-19 font-weight-bold">Eligibility
-                                                Questions</h3>
+                                            <h2 class="text-orange font-weight-bold">Eligibility
+                                                Questions</h2>
 
-                                            <p class="reset fw-400">Please answer for you and any of your dependents
+                                            <p class="reset fw-400" style="font-size: 18px">Please answer for you and any of your dependents
                                                 {#                                                applying for coverage.</p> (<a data-placement="auto top"#}
                                                 {#                                                                           data-sectiontitle="Eligibility Questions"#}
                                                 {#                                                                           data-glossary="shortTerm.application.eligibility.learnmore"#}
@@ -73,7 +73,7 @@
                                                                         <div class="col-sm-{{ stm_question.ExpectedAnswers|length|qeadcs }} qus-btn-col question-toggle-group"
                                                                              data-question-id="{{ stm_question.ID }}">
                                                                             <button type="button"
-                                                                                    class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button
+                                                                                    class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button btn-orange
                                                                                     q-e-a-{{ forloop.parentloop.counter }}
                                                                                     {% if stm_question.user_answer == expected_answer %}selected-ans-button{% endif %}"
                                                                                     data-action="{% url 'quotes:stm_enroll' plan_url stage %}"
