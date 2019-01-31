@@ -241,8 +241,19 @@
 
                     </div>
                 </div>
-
+             <div id="applyCta" style="margin-top: 70px">
+            <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
+                    {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+                    {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
+                    {#                            {% else %}#}
+               href="{% url 'quotes:stm_application' plan.unique_url %}">
+                {#                            {% endif %}#}
+                <span class="fa fa-lock"></span>
+                <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
+            </a>
+        </div>
             </div>
+
             <div class="col-md-4">
                 {% comment %}<div class="apply-right-bar-wrapper-new">
                     <div class="apply-what-to-know"><h3 class="text-19">Swift &amp; Easy Application</h3>
@@ -326,17 +337,7 @@
             </div>
         </div>{% endcomment %}
          <!------Xtraaaaaaa------>
-        <div id="applyCta">
-            <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
-                    {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
-                    {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
-                    {#                            {% else %}#}
-               href="{% url 'quotes:stm_application' plan.unique_url %}">
-                {#                            {% endif %}#}
-                <span class="fa fa-lock"></span>
-                <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
-            </a>
-        </div>
+
         <p class="apply-disclaimer font-small pad-t-20">AFFORDABLE CARE ACT TAX. Term health insurance is not
             considered “minimum essential coverage” and you may be subject to the Affordable Care Act uninsured tax
             if you do not qualify for an exemption. To learn more about the tax and how consumers can determine if
