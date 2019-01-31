@@ -16,36 +16,58 @@ body{
     margin-left: 10px;
     list-style-image: url("../../quotes/img/l-icon.png");
 }
+/*#applyButton{*/
+    /*font-weight: bold;*/
+    /*background: #fe8829;*/
+    /*box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.4);*/
+    /*-webkit-transition: .4s ease-in-out;*/
+    /*-moz-transition: .4s ease-in-out;*/
+    /*-ms-transition: .4s ease-in-out;*/
+    /*-o-transition: .4s ease-in-out;*/
+    /*transition: .4s ease-in-out;*/
+/*}*/
+/*#applyButton:hover{*/
+    /*box-shadow: none;*/
+/*}*/
 #applyButton{
-    font-weight: bold;
-    background: #19B4FA;
-    box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.4);
-    -webkit-transition: .4s ease-in-out;
-    -moz-transition: .4s ease-in-out;
-    -ms-transition: .4s ease-in-out;
-    -o-transition: .4s ease-in-out;
-    transition: .4s ease-in-out;
-}
-#applyButton:hover{
-    box-shadow: none;
+    border: none;
+    position: relative;
+    border-radius: 6px !important;
+    background-color: #fe8829 !important;
+    box-shadow: 0 6px #d45f00;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
 }
 
+#applyButton:hover{
+    box-shadow: 0 4px #a5581a;
+    top: 2px;
+}
+#applyButton:focus{
+    background: #fe8829;
+    box-shadow: 0 0 #823a02;
+    top: 6px;
+}
 #application-body .app-page-underwriting-questions li {
     background-color: #f8f8f8;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 #nhaqt_footer{
-    background: #5b5e61;
+    background: #f9f9f9;
     margin-top: 40px;
+    border-top: 1px solid #e4e0e0;
 }
 .nhaqt_footer_content{
-    padding: 70px 0;
+    padding: 25px 0 10px 0;
     color: #fff;
 }
 .nhaqt_footer-logo{
-    width: 250px;
-    cursor: pointer;
+    width: 100%;
+    /*cursor: pointer;*/
 }
 .my-30{
     margin: 30px 0;
@@ -66,8 +88,7 @@ body{
         align-items: center;
     }
     .nhaqt_footer-logo{
-        margin-right: auto;
-        margin-left: auto;
+        margin: 10px auto;
     }
     .carrierLogo{
         width: 150px;

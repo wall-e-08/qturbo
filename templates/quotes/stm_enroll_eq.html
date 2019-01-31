@@ -23,7 +23,7 @@
                                             <h2 class="text-orange font-weight-bold">Eligibility
                                                 Questions</h2>
 
-                                            <p class="reset fw-400" style="font-size: 18px">Please answer for you and any of your dependents
+                                            <p class="reset fw-400" style="font-size: 20px">Please answer for you and any of your dependents
                                                 {#                                                applying for coverage.</p> (<a data-placement="auto top"#}
                                                 {#                                                                           data-sectiontitle="Eligibility Questions"#}
                                                 {#                                                                           data-glossary="shortTerm.application.eligibility.learnmore"#}
@@ -102,12 +102,12 @@
                                                                 {% trans "Congratulations, you have met the eligibility requirements. Please continue on to the next step of the application." %}
                                                             </p>
                                                             <div class="button-wrapper">
-                                                                <a class="btn btn-default-continue" data-total="{{ stm_questions|length }}"
+                                                                <a class="btn btn-default-continue btn-orange" data-total="{{ stm_questions|length }}"
                                                                    id="continue_next_stage_link"
                                                                    data-stage="{{ stage }}"
                                                                    data-next-stage="{{ next_stage }}"
                                                                    data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%; background: #FE8829 !important;">
                                                                     {% trans "Continue" %}
                                                                 </a>
                                                             </div>

@@ -2,9 +2,9 @@
 
 /* Self explanatory */
 
-#app-page-wrapper {
+#app-page-wrapper , .apply-container{
     /*  100 vertical height - header height - footer height  */
-    min-height: calc(100vh - 80px - 200px);
+    min-height: calc(100vh - 80px - 141.25px);
 }
 
 .product-type-select{

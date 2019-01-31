@@ -204,27 +204,33 @@
         </div>
     </div>
 {% endblock container %}
-
+{% block footer %}
 <section id="nhaqt_footer">
     <div class="container">
         <div class="row nhaqt_footer_content">
-            <div class="col-sm-6">
-                <div class="nhaqt_footer_content1">
-                    <div class="nhaqt_footer-logo">
-                        <a href="{% url 'quotes:home' %}">
-                            <img src="{% static 'quotes/img/logo.png' %}" class="mw100" alt="Logo"/>
-                        </a>
-                    </div>
-                    <h5 class="my-30">
+            <div class="col-md-4">
+                <div class="hi-footer-single-item text-center">
+                    <h5 class="" style="color: #000">
                         {{ general_topic.copyright_text|safe }}
                     </h5>
+                </div>
+
+            </div>
+            <div class="col-md-5">
+                <div class="hi-footer-single-item nhaqt_footer_content1">
+                    <div class="nhaqt_footer-logo">
+                        <a href="javascript:void(0);">
+                            <img src="{% static 'img/logo.png' %}" class="mw100" alt="Logo"/>
+                        </a>
+                    </div>
+
 
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="nhaqt_footer_content2">
-                    <div class="text-right">
-                        <img src="{% static 'quotes/img/getseal.png' %}" class="mw100"
+            <div class="col-md-3">
+                <div class="hi-footer-single-item nhaqt_footer_content2">
+                    <div class="text-center">
+                        <img src="{% static 'quotes/img/getseal.png' %}" height="50" class="mw100"
                              alt="Verified & Secured by Norton"/>
                     </div>
                 </div>
@@ -232,7 +238,7 @@
         </div>
     </div>
 </section>
-
+{% endblock footer %}
 
 {% block js %}
     <script type="text/javascript" src="{% static 'nhaquote_old/js/jquery.min.js' %}"></script>
