@@ -88,7 +88,7 @@ body {
     border: none;
     position: relative;
     border-radius: 6px !important;
-    background-color: #fe8829 !important;
+    background-color: #eb9855c4 !important;
     box-shadow: 0 6px #d45f00;
     -webkit-transition: none;
     -moz-transition: none;
@@ -101,6 +101,7 @@ body {
     background-color: #fe8829 !important;
     color: #ffffff !important;
     font-weight: bold !important;
+    box-shadow: none !important;
 }
 
 .btn-orange:hover{
