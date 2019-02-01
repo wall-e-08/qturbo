@@ -1893,6 +1893,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
     request.session['applicant_enrolled'] = False
     request.session.modified = True
     if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
@@ -1990,14 +1992,12 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     alternative_plan_url = alternative_plan['unique_url']
 
     # Setting preference data
-    preference = request.session.get('quote_request_preference_data')
-    preference[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
-    preference[stm_name]['Benefit_Amount'] = [benefit_amount]
-    preference[stm_name]['Coverage_Max'] = [coverage_maximum]
+    quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
+    quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
+    quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
+    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
-    preference['general_url_chosen'] = True
-
-    request.session['quote_request_preference_data'] = preference
+    quote_request_preference_data['general_url_chosen'] = True
 
     print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
@@ -2015,13 +2015,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
                                          alternative_plan['unique_url'], "addon-plans")] = [
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
-
-    # Changing the preference of the user.
-    # We need to change the preference data in this function. # TODO
-
-    # The following three lines should be changed into a function.
-    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
-    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
     request.session['quote_request_preference_data'] = quote_request_preference_data
 
@@ -2044,14 +2037,25 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
 
 def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResponse:
-    form = Duration_Coverage_Form(request.POST)
+    duration_coverage_form = Duration_Coverage_Form(request.POST)
+    ajax_attr_form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
 
-    if form.is_valid():
+    if duration_coverage_form.is_valid():
         print(f'Form is valid.')
-        coverage_duration = form.cleaned_data.get('Duration_Coverage', None)
+        coverage_duration = duration_coverage_form.cleaned_data.get('Duration_Coverage', None)
 
         if coverage_duration is None:
             raise Http404
+
+    if ajax_attr_form.is_valid():
+        print(f'ajax_attr_form is valid.')
+        changed_benefit_amount = ajax_attr_form.cleaned_data.get('Benefit_Amount', None)
+        changed_coinsurance_percentage = ajax_attr_form.cleaned_data.get('Coinsurance_Percentage', None)
+        changed_coverage_maximum = ajax_attr_form.cleaned_data.get('Coverage_Max', None)
+
+        # plan_type = ajax_attr_form.cleaned_data.get('Plan', None) # Not Needed
+        # input_change = request.POST.get('changed', None) # Not Needed
+
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
@@ -2163,9 +2167,21 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
     try:
-        quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
-        quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
-        quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+        if not changed_coinsurance_percentage:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
+        else:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [changed_coinsurance_percentage]
+
+        if not changed_benefit_amount:
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
+        else:
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [changed_benefit_amount]
+
+        if not changed_coverage_maximum:
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+        else:
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [changed_coverage_maximum]
+
 
     except KeyError as k:
         logger.warning(f'======>{k}')
