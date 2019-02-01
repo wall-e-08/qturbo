@@ -440,7 +440,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             if quote_request_preference_data['general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
             else:
-                # When page is refreshed.
+                # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
                     lambda mp: mp['general_url'] == plan_url and
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
@@ -2147,12 +2147,28 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
+    # Also saving the currently used addons into general url dictionary as the next stm plan function call only has
+    # general url
+
+    request.session['{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'],
+                                         alternative_plan['general_url'], "addon-plans")] = [
+        addon_plan.data_as_dict() for addon_plan in selected_addon_plans
+    ]
+
     # Changing the preference of the user.
     # We need to change the preference data in this function. # TODO
 
     # The following three lines should be changed into a function.
     quote_request_preference_data = request.session.get('quote_request_preference_data', {})
     quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
+
+    try:
+        quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
+        quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
+        quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+
+    except KeyError as k:
+        logger.warning(f'======>{k}')
 
     request.session['quote_request_preference_data'] = quote_request_preference_data
 
