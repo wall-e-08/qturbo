@@ -313,7 +313,7 @@ const router = new VueRouter({
 
                             var newDate = new Date();
                             newDate.setDate(newDate.getDate() + 1);
-                            // form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
+                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
                             // TODO: Not commit
                             form_data['Effective_Date'] = '02/01/2019'
 

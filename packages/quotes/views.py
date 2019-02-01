@@ -1287,14 +1287,11 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     print("Calling AJAX.")
     sp = []
 
-    lifeshield_featured_flag = False
-    advanthealth_featured_flag = False
-    healthchoice_featured_flag = False
-    vitalacare_featured_flag = False
-    legion_featured_flag = False
-    usa_dental_featured_flag = False
-    fredom_spirit_featured_flag = False
-    safeguard_critical_featured_flag = False
+    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST.copy()
+
+    featured_flag_for_stm_name = {}
+    for plan in plan_name_list:
+        featured_flag_for_stm_name[plan] = False
 
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
@@ -1331,41 +1328,39 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 ):
                     continue
 
-            if decoded_plan not in ['START', 'END']:
-                plan_name = decoded_plan['Name']
-                if not lifeshield_featured_flag and plan_name == 'LifeShield STM':
-                    decoded_plan['featured_plan'] = True
-                    lifeshield_featured_flag = True
 
-                if not advanthealth_featured_flag and plan_name == 'AdvantHealth STM':
-                    decoded_plan['featured_plan'] = True
-                    advanthealth_featured_flag = True
 
-                if not healthchoice_featured_flag and plan_name == 'Health Choice':
-                    decoded_plan['featured_plan'] = True
-                    healthchoice_featured_flag = True
+            try:
+                if decoded_plan not in ['START', 'END']:
+                    plan_name = decoded_plan['Name']
 
-                if not vitalacare_featured_flag and plan_name == 'Vitala Care':
-                    decoded_plan['featured_plan'] = True
-                    vitalacare_featured_flag = True
 
-                if not legion_featured_flag and plan_name == 'Legion Limited Medical':
-                    decoded_plan['featured_plan'] = True
-                    legion_featured_flag = True
+                    if not featured_flag_for_stm_name[plan_name]:
+                        premium = decoded_plan['Premium']
+                        if float(premium) > 100:
+                            decoded_plan['featured_plan'] = True
+                            featured_flag_for_stm_name[plan_name] = True
 
-                if not usa_dental_featured_flag and plan_name == 'USA Dental':
-                    decoded_plan['featured_plan'] = True
-                    usa_dental_featured_flag = True
-
-                if not fredom_spirit_featured_flag and plan_name == 'Freedom Spirit Plus':
-                    decoded_plan['featured_plan'] = True
-                    fredom_spirit_featured_flag = True
-
-                if not safeguard_critical_featured_flag and plan_name == 'Safeguard Critical Illness':
-                    decoded_plan['featured_plan'] = True
-                    safeguard_critical_featured_flag = True
+            except Exception as e:
+                logger.warning(e)
+                pass
 
             sp.append(decoded_plan)
+
+
+
+    for plan in featured_flag_for_stm_name.items():
+        if not featured_flag_for_stm_name[plan[0]]:
+            try:
+                plan = next(filter(lambda mp: mp['Name'] == plan[0], sp[1:len(sp)-1]))
+                sp.remove(plan)
+                plan['featured_plan'] = True
+                sp.append(plan)
+
+            except (StopIteration, TypeError, KeyError) as error:
+                print(error)
+                pass
+
 
     logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({

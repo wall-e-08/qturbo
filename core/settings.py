@@ -478,6 +478,10 @@ HOMEPAGE_USER_PROPERTIES = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
+AVAILABLE_PLAN_NAME_LIST = ['LifeShield STM', 'AdvantHealth STM', 'Health Choice', 'Vitala Care',
+             'Legion Limited Medical', 'USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+
+
 #
 # FEATURED_PLAN_DICT = {
 #                          'LifeShield STM': {
