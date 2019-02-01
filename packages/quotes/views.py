@@ -496,15 +496,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name]
+        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name].copy()
         # alternate_coverage_duration = list(alternate_coverage_duration_set)
 
         # All of them
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name]
+        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name].copy()
         # alternate_benefit_amount = list(alternate_benefit_amount_set)
 
         # All of them
-        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name]
+        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name].copy()
         # alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
 
         # Edge case 50 percent coinsurance for plan type 2
@@ -1286,6 +1286,14 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     """
     print("Calling AJAX.")
     sp = []
+
+    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST.copy()
+
+    featured_flag_for_stm_name = {}
+    for plan in plan_name_list:
+        featured_flag_for_stm_name[plan] = False
+
+
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     print(quote_request_form_data)
 
@@ -1320,7 +1328,39 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 ):
                     continue
 
+
+
+            try:
+                if decoded_plan not in ['START', 'END']:
+                    plan_name = decoded_plan['Name']
+
+
+                    if not featured_flag_for_stm_name[plan_name]:
+                        premium = decoded_plan['Premium']
+                        if float(premium) > 100:
+                            decoded_plan['featured_plan'] = True
+                            featured_flag_for_stm_name[plan_name] = True
+
+            except Exception as e:
+                logger.warning(e)
+                pass
+
             sp.append(decoded_plan)
+
+
+
+    for plan in featured_flag_for_stm_name.items():
+        if not featured_flag_for_stm_name[plan[0]]:
+            try:
+                plan = next(filter(lambda mp: mp['Name'] == plan[0], sp[1:len(sp)-1]))
+                sp.remove(plan)
+                plan['featured_plan'] = True
+                sp.append(plan)
+
+            except (StopIteration, TypeError, KeyError) as error:
+                print(error)
+                pass
+
 
     logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({

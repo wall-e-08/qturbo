@@ -474,6 +474,44 @@ HOMEPAGE_USER_PROPERTIES = {
 
 }
 
+# ----------------------------+
+#  Featured Plan Properties   +
+#-----------------------------+
+
+AVAILABLE_PLAN_NAME_LIST = ['LifeShield STM', 'AdvantHealth STM', 'Health Choice', 'Vitala Care',
+             'Legion Limited Medical', 'USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+
+
+#
+# FEATURED_PLAN_DICT = {
+#                          'LifeShield STM': {
+#                              'Coinsurance_Percentage': '20',
+#                              'Benefit_Amount': '2000',
+#                              'Duration_Coverage': '12*1',
+#                              'Premium': '100.00',
+#                              'coverage_max_value': '1000000',
+#                              'session_key': 'qt_dummy_session_key',
+#                          },
+#
+#                         'AdvantHealth STM': {
+#                             'Coinsurance_Percentage': '20',
+#                             'Benefit_Amount': '2000',
+#                             'Duration_Coverage': '6*6',
+#                             'Premium': '100.00',
+#                             'coverage_max_value': '1000000',
+#                             'session_key': 'qt_dummy_session_key',
+#                         },
+#
+#                         # 'Health Choice':{
+#                         #
+#                         # }
+#
+#                     }
+
+# WILL BE DONE LATER IF GOD WISHES.
+
+
+
 
 try:
     from .local_settings import *

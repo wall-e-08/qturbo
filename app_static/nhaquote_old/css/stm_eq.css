@@ -82,13 +82,14 @@ body {
 .question-toggle-group .boolean-toggle{
     border: none;
     color: #fff;
+    padding: 10px 0;
 
 }
 .btn-orange{
     border: none;
     position: relative;
     border-radius: 6px !important;
-    background-color: #fe8829 !important;
+    background-color: #eb9855c4 !important;
     box-shadow: 0 6px #d45f00;
     -webkit-transition: none;
     -moz-transition: none;
@@ -101,6 +102,7 @@ body {
     background-color: #fe8829 !important;
     color: #ffffff !important;
     font-weight: bold !important;
+    box-shadow: none !important;
 }
 
 .btn-orange:hover{
@@ -111,4 +113,17 @@ body {
     background: #fe8829;
     box-shadow: 0 0 #823a02;
     top: 6px;
+}
+.text-orange{
+    color: #FE8829;
+}
+#application-body .question-label {
+    color: #fe8829;
+    font-size: 18px;
+}
+
+#application-body .question-text {
+    font-size: 18px;
+    line-height: 25px;
+    margin-bottom: 2rem;
 }

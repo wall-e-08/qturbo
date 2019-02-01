@@ -15,7 +15,7 @@
         </div>
     {% endif %}
 
-    <div class="container non-container-fluid-md">
+    <div class="container non-container-fluid-md pad-b-30">
         <div class="row">
             <div class="col-md-6">
                 <div id="qt-plan-details" class="qt-3d-box-shadow">
@@ -278,7 +278,7 @@
                                 <div class="dropdown">
                                     <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
-                                        <span class="ms-block qt-customize-plan-title">Co-Insurance Percentage</span>
+                                        <span class="ms-block qt-customize-plan-title">Coverage Period Maximum</span>
                                         <span class="ms-block qt-customize-plan-selected-val" id="qt-coverage-max-dropdown">{{ plan.coverage_max_value }}</span>
                                     </span>
                                         <span class="caret"></span>
@@ -337,6 +337,8 @@
     </div>
 
 {% endblock container %}
+
+{% block footer %}{% endblock footer %}
 
 
 {% block extra_js %}
@@ -651,14 +653,17 @@
             let $benefit_amount_dropdown = $('#qt-benefit-amount-dropdown');
             let $coverage_max_dropdown = $('#qt-coverage-max-dropdown');
 
-
             _form.children('input:not([name="csrfmiddlewaretoken"])').val(_val);
+            let changed_attr = _form.children('input:not([name="csrfmiddlewaretoken"])').attr('name');
+
+            console.log(changed_attr);
+
             let _form_data = {
                '{{ duration_coverage_form.Duration_Coverage.html_name }}' : $('#{{ duration_coverage_form.Duration_Coverage.id_for_label }}').val(),
                '{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Benefit_Amount.id_for_label }}').val(),
                '{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.html_name }}' : $('#{{ benefit_amount_coinsurance_coverage_max_form.Coinsurance_Percentage.id_for_label }}').val(),
                '{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.html_name }}': $('#{{ benefit_amount_coinsurance_coverage_max_form.Coverage_Max.id_for_label }}').val(),
-                changed: _form.children('input:not([name="csrfmiddlewaretoken"])').attr('name')
+                changed: changed_attr
             };
             console.table(_form_data)
             $.ajax({
@@ -675,6 +680,11 @@
                     console.log(json)
                     loading_div.fadeOut();
                     if (json.status === 'success') {
+                        if (changed_attr == 'Duration_Coverage') {
+                            location.href = json.url;
+                            return;
+                        }
+
                         $apply_button.attr('href', json.url);
                         $coinsurance.html(json.coinsurance);
                         $benefit_amount.html(json.benefit_amount);
