@@ -476,7 +476,7 @@ class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
 
 class ChildInfoForm(forms.Form):
 
-    MAX_CHILD_AGE = 25
+    MAX_CHILD_AGE = settings.USER_PROPERTIES['dependents_max_age']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -495,6 +495,15 @@ class ChildInfoForm(forms.Form):
     )
 
     Child_Age = forms.IntegerField(required=False)
+
+    Child_Tobacco = forms.ChoiceField(
+        required=False,
+        label=_("Tobacco"),
+        choices=(
+            ("N", "No"),
+            ("Y", "Yes"),
+        )
+    )
 
     def clean_Child_DOB(self):
         dob = self.cleaned_data['Child_DOB']

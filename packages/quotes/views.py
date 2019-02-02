@@ -51,7 +51,7 @@ def get_prop_context():
     :param prop: User attributes
     :return: context variables
     """
-    props = settings.HOMEPAGE_USER_PROPERTIES
+    props = settings.USER_PROPERTIES
     prop_context = {
         'applicant_min_age': props['min_age'],
         'applicant_max_age': props['max_age'],
@@ -66,7 +66,7 @@ def get_prop_context():
     return prop_context
 
 def home(request: WSGIRequest) -> HttpResponse:
-    prop =settings.HOMEPAGE_USER_PROPERTIES
+    prop =settings.USER_PROPERTIES
 
 
     return render(request, 'homepage.html', get_prop_context())

@@ -465,7 +465,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 #   Homepage Properties  +
 # -----------------------+
 
-HOMEPAGE_USER_PROPERTIES = {
+USER_PROPERTIES = {
     'min_age': 21,
     'max_age': 99,
 
