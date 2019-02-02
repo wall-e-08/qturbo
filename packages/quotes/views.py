@@ -461,19 +461,13 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     if plan['Name'] in stm_carriers:
         related_plans = list(filter(
             lambda mp: mp['Name'] == plan['Name'] and \
-                       mp['option'] == plan['option'] and \
-                       mp['actual_premium'] != plan['actual_premium'], sp))
-        related_plans_dict = {}
-        for i in related_plans:
-            try:
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
-            except KeyError as k:
-                print(f"Preparing stm_plan template... Creating related plan dictionary for {k} percent co-insurance")
-                related_plans_dict[i['Coinsurance_Percentage']] = []
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
+                       mp['option'] != plan['option'] and \
+                       mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and \
+                       mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and \
+                       mp['coverage_max_value'] == plan['coverage_max_value'] and \
+                       mp['Plan'] == plan['Plan'], sp))
 
-        related_plans = OrderedDict(sorted(related_plans_dict.items()))
-        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))

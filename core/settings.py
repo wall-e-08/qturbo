@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os, dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from typing import Dict
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -465,7 +467,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 #   Homepage Properties  +
 # -----------------------+
 
-USER_PROPERTIES = {
+USER_PROPERTIES: Dict[str, int] = {
     'min_age': 21,
     'max_age': 99,
 
