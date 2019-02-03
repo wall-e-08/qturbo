@@ -458,14 +458,20 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     # Changing/Filtering the related plans here
     # Here option means deductible
+
     if plan['Name'] in stm_carriers:
-        related_plans = list(filter(
-            lambda mp: mp['Name'] == plan['Name'] and \
-                       mp['option'] != plan['option'] and \
-                       mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and \
-                       mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and \
-                       mp['coverage_max_value'] == plan['coverage_max_value'] and \
-                       mp['Plan'] == plan['Plan'], sp))
+        try:
+            related_plans = list(filter(
+                lambda mp: mp['Name'] == plan['Name'] and \
+                           mp['option'] != plan['option'] and \
+                           mp['Plan'] == plan['Plan'] and \
+                           mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and \
+                           mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0] and \
+                           mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and \
+                           mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(sp, key=lambda x: x['Premium'])))
+        except KeyError as k:
+            print(k)
+            pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
