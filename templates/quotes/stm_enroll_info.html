@@ -1,129 +1,12 @@
 {% extends 'base_nhaquote.html' %}
 {% load i18n static humanize hp_tags %}
-{% load static %}
 {% block title %}
     {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
 {#<link rel="stylesheet" type="text/css" href="{% static 'quotes/css/jquery-ui.min.css' %}">#}
 <link href="{% static 'nhaquote_old/css/stm_enroll_info.css' %}" rel="stylesheet">
-<style>
-    /* breadcrumb progress */
-    .d-flex {
-        display: -webkit-box !important;
-        display: -ms-flexbox !important;
-        display: flex !important;
-    }
 
-    .d-block {
-        display: block !important;
-    }
-
-    .payment-progress {
-        padding: 0 0 .25rem;
-        margin: 0;
-        list-style: none;
-        counter-reset: step;
-    }
-
-    .payment-progress li {
-        position: relative;
-        flex: 1;
-    }
-
-    .payment-progress li .tooltip {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        padding: 3px 10px;
-        font-size: 15px;
-        line-height: 17px;
-        color: #3a639b;
-        background-color: #f1f7fd;
-        border-radius: .1875rem;
-        -webkit-box-shadow: 0 2px 4px 0 hsla(0, 0%, 78.4%, .5);
-        box-shadow: 0 2px 4px 0 hsla(0, 0%, 78.4%, .5);
-        opacity: 0;
-        -webkit-transition: opacity .3s ease-in-out, -webkit-transform .3s ease-in-out;
-        transition: opacity .3s ease-in-out, -webkit-transform .3s ease-in-out;
-        -o-transition: opacity .3s ease-in-out, transform .3s ease-in-out;
-        transition: opacity .3s ease-in-out, transform .3s ease-in-out;
-        transition: opacity .3s ease-in-out, transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
-        -webkit-transform: translate(-50%);
-        -ms-transform: translate(-50%);
-        transform: translate(-50%)
-    }
-
-    .payment-progress li:hover .tooltip {
-        opacity: 1;
-        -webkit-transform: translate(-50%, 100%);
-        -ms-transform: translate(-50%, 100%);
-        transform: translate(-50%, 100%);
-    }
-
-    .payment-progress li:before {
-        display: block;
-        width: 30px;
-        height: 30px;
-        margin: 0 auto;
-        font-weight: 600;
-        line-height: 27px;
-        color: #e6e6e6;
-        text-align: center;
-        content: counter(step);
-        counter-increment: step;
-        background: #fff;
-        border: 2px solid #e6e6e6;
-        border-radius: 50%;
-    }
-
-    .payment-progress li.current:before {
-        width: 40px;
-        height: 40px;
-        margin-top: -5px;
-        line-height: 37px;
-    }
-
-    .payment-progress li.active:before {
-        color: #fff;
-        background-color: #19b4fa;
-        border-color: #19b4fa;
-    }
-
-    .payment-progress li.active.current:before {
-        border-color: rgba(0, 86, 125, 0.45);
-    }
-
-    .payment-progress li:not(:first-child):after {
-        position: absolute;
-        top: 15px;
-        left: -50%;
-        z-index: -1;
-        width: 100%;
-        height: 3px;
-        content: "";
-        background: #e6e6e6;
-    }
-
-    .payment-progress li.active:after {
-        background: #19b4fa;
-    }
-
-    .payment-progress li > a {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        width: 30px;
-        height: 30px;
-        -webkit-transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
-    /* END: breadcrumb progress */
-</style>
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
@@ -185,12 +68,18 @@
 
             <div id="application-body">
                 <div class="ms-row">
-                    <div id="js-app-page-body-content" class="app-page-body-content col-md-8">
-                        <p class="app-page-heading-required-text">* Required</p>
+                    <div id="js-app-page-body-content" class="app-page-body-content col-xs-12 col-md-8">
+                    <div class="rounded border-0 box-shadow-light panel panel-base">
+
+                    <div class="border-0 bg-transparent panel-heading">
+                        <h4 class="bold no-margin">Step 2. Applicant Info</h4>
+                    </div>
+                        {% comment %}<p class="app-page-heading-required-text">* Required</p>
                         <h3 class="bold color-base no-padding no-margin">Step 2. Applicant Info</h3>
-                        <p class="reset">Please complete the applicant, contact and beneficiary information of the application. (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>
+                        <p class="reset">Please complete the applicant, contact and beneficiary information of the application.
+                            (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>{% endcomment %}
 
-
+                        <div class="panel-body">
                         <form id="applicant_info_form" method="post">
                             {% csrf_token %}
 
@@ -199,7 +88,11 @@
                             {# ===================== #}
                             <div class="row section">
                                 <div class="col-sm-12 custom_form-border">
-                                    <h3>{% trans "Applicant Information" %}</h3>
+                                <div class="row">
+                                <div class="col-xs-12 mrg-b-10">
+                                    <h4 class="inner-heading mrg-t-0">{% trans "Applicant Information" %}</h4>
+                                    </div>
+                                    </div>
                                     {# name #}
                                     <div class="row" style="margin-bottom: 1.5rem;">
                                         <div class="col-sm-4">
@@ -689,15 +582,17 @@
 
                                 </div>
                             </div>
+
                             {% endif %}
 
 
                             {# =================== #}
                             {# Contact Information #}
                             {# =================== #}
+                         <hr>
                             <div class="row section">
                                 <div class="col-sm-12 custom_form-border">
-                                    <h3>{% trans "Contact Information" %}</h3>
+                                    <h4 class="inner-heading mrg-t-0 mrg-b-0">{% trans "Contact Information" %}</h4>
                                     {# Address and City #}
                                     <div class="row" style="margin-bottom: 1.5rem;">
                                         <div class="col-sm-6">
@@ -864,13 +759,13 @@
                             </div>
 
                         </form>
+                        </div>
 
 
-
-                        <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                        <div class="row" style="margin-bottom:50px;margin-top:0;">
                             <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
-                                <p id="info-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
-                                <a class="btn btn-lg btn-yellow"
+                                <h3 id="info-form-error-message-fix" class="none text-danger">↑↑Please correct the above↑↑</h3>
+                                <a class="btn btn-lg btn-yellow btn-orange"
                                    id="continue_next_stage_link"
                                    data-stage="{{ stage }}"
                                    data-next-stage="{{ next_stage }}"
@@ -946,17 +841,19 @@
                             </div>
                         </div>
                     </div>{% endcomment %}
-                    
-                    <!--<div class="app-page-right-bar col-md-4">
-                        <div id="js-app-page-summary" class="app-page-summary">
+                     </div>
+                    <div class="col-xs-12 col-md-4">
+                    <div class="side-bar-panel rounded bg-white box-shadow">
+                        <div id="js-app-page-summary" class="">
+                        <div class="border-basic rounded sidebar-each-part">
                             <div class="summary-wrapper">
-                                <p class="emphasize">Policy Summary</p>
+                                <h3 class="emphasize text-capitalize mrg-t-0 fw-700" style="margin-bottom: 20px">Policy Summary</h3>
                                 <div class="carrierLogo">
-                                    <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                    <img alt="" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
                                 </div>
-                                <p class="policy-label">PLAN</p>
+                                <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
                                 <div class="plan-summary">
-                                    <p>{{ plan.plan_name }}</p>
+                                    <h4 class="text-primary">{{ plan.plan_name }}</h4>
                                     {% if form_data.Ins_Type == 'stm' %}
                                     <p>Deductible: ${{ plan.option|intcomma }}</p>
 
@@ -1010,35 +907,35 @@
                                     </ul>
                                 {% endif %}
                                 {% endcomment %}
-
-
-	                            <table class="table">
+                            
+                                    <div class="table-responsive">
+	                            <table class="table mrg-b-0">
 
 	                                <tr>
 		                                <td>Applicant:</td>
 		                                <td>
-		                                    <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+		                                    <span class="">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
 		                                </td>
 	                                </tr>
 		                            {% if plan.Coinsurance_Percentage %}
 		                            <tr>
 		                                <td>Deductible:</td>
-		                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+		                                <td><span class="">${{ plan.option|intcomma }}</span></td>
 		                            </tr>
 
 		                            <tr>
 		                                <td>Out of Pocket:</td>
-		                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+		                                <td><span class="">${{ plan.out_of_pocket_value }}</span></td>
 		                            </tr>
 
 		                            <tr>
 		                                <td>Coverage Max:</td>
-		                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+		                                <td><span class="">${{ plan.coverage_max_value|intcomma }}</span></td>
 		                            </tr>
 
 		                            <tr>
 		                                <td>Coinsurance:</td>
-		                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+		                                <td><span class="">{{ plan.Coinsurance_Percentage }}%</span></td>
 		                            </tr>
 		                            {% endif %}
 
@@ -1046,7 +943,7 @@
 		                            <tr>
 		                                <td>Effective Date:</td>
 		                                <td>
-		                                    <span class="emphasize badge" id="app-effective-date-change">
+		                                    <span class="" id="app-effective-date-change">
 		                                        {% form_date_field_value form_data.Effective_Date %}
 		                                    </span>
 		                                </td>
@@ -1063,35 +960,38 @@
 
 		                            <tr>
 		                                <td>Monthly Premium:</td>
-		                                <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+		                                <td><span class="">${{ plan.actual_premium }}</span></td>
 		                            </tr>
 		                            <tr>
 		                                <td>Enrollment Fee:</td>
-		                                <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+		                                <td><span class="">${{ plan.Enrollment_Fee }}</span></td>
 		                            </tr>
 
 		                        </table>
-
-                                <div class="addon-holder" id="sidebar-add-on-holder">
+                            </div>
+                            </div>
+                            </div>
+                        <hr>
+                         <div class="addon-holder border-basic rounded sidebar-each-part" id="sidebar-add-on-holder">
 			                        {% if selected_addon_plans %}
-			                        <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+			                        <h4 class="text-uppercase policy-label mrg-t-0 fw-700" style="margin-bottom: 1em">
 			                            ADD-ON PLAN
 			                        </h4>
 
 			                        {% for add_on in selected_addon_plans %}
-			                        <div class="addon-single">
-			                            <h4 class="review_addon">{{ add_on.Name }}</h4>
+			                        <div class="border-basic rounded mrg-b-15 addon-single">
+			                            <h5 class="review_addon">{{ add_on.Name }}</h5>
 
 			                            <div class="table-responsive">
 			                                <table class="table mrg-b-0">
 			                                    <tbody>
 			                                        <tr>
 			                                            <td>Premium</td>
-			                                            <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+			                                            <td><span class="">${{ add_on.actual_premium }}</span></td>
 			                                        </tr>
 			                                        <tr>
 			                                            <td>Enrollment Fee</td>
-			                                            <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+			                                            <td><span class="">${{ add_on.EnrollmentFee }}</span></td>
 			                                        </tr>
 			                                    </tbody>
 			                                </table>
@@ -1125,153 +1025,9 @@
 
 
 			                    </div>
-
-                            </div>
-                        </div>
-                    </div>-->
-
-
-
-
-
-
-
-
-                <div class="col-xs-12 col-md-4">
-                    <div class="side-bar-panel rounded bg-white box-shadow">
-                        <div class="border-basic rounded sidebar-each-part">
-                            <h3 class="text-capitalize mrg-t-0 fw-700">Policy Summary</h3>
-                            <div class="table-responsive">
-                                <table class="table mrg-b-0" id="policy-summary-table">
-                                    <tbody>
-                                    <tr>
-                                        <td style="font-size: 1.2em;">Total Premium:</td>
-                                        <td>
-                                            <span style="font-size: 1.2em; color: #FFA500;">$123</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total First Month Payment:</td>
-                                        <td>
-                                            <span>$122</span>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <hr/>
-
-                        <div class="border-basic rounded sidebar-each-part">
-                            <h3 class="text-capitalize mrg-t-0 fw-700">Plan</h3>
-                            <h4 class="text-primary">{{ plan.plan_name_long }}</h4>
-                            <div class="table-responsive">
-                                <table class="table mrg-b-0">
-
-                                    {% if form_data.Ins_Type == 'stm' %}
-                                        <tr>
-                                            <td>Deductible:</td>
-                                            <td>
-                                                <span>${{ plan.option|intcomma }}</span>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Out of Pocket:</td>
-                                            <td>
-                                                <span>${{ plan.out_of_pocket_value|intcomma }}</span>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Coverage Max:</td>
-                                            <td>
-                                                <span>${{ plan.coverage_max_value|intcomma }}</span>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Coinsurance:</td>
-                                            <td>{{ plan.Coinsurance_Percentage }}%</td>
-                                        </tr>
-                                    {% endif %}
-
-                                    <tr>
-                                        <td>Effective Date:</td>
-                                        <td>343434</td>
-                                    </tr>
-
-                                    {% if stm_enroll_obj.is_post_date %}
-                                        <tr>
-                                            <td class="emphasize">Post Date:</td>
-                                            <td class="emphasize">
-                                    <span style="text-decoration: underline dashed #003366; color: #800080;">
-                                       4343434
-                                    </span>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-
-                                    {% if form_data.Ins_Type == 'stm' %}
-                                        <tr>
-                                            <td>Expiration Date:</td>
-                                            <td>
-                                                <span style="text-decoration: underline dashed #003366">3434</span>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                    <tr>
-                                        <td>MONTHLY PREMIUM:</td>
-                                        <td>
-                                            <span>${{ plan.actual_premium }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Enrollment Fee:</td>
-                                        <td>
-                                            <span>${{ plan.Enrollment_Fee }}</span>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="border-basic rounded sidebar-each-part">
-                            <div class="addon-holder" id="sidebar-add-on-holder">
-                                <h4 class="text-capitalize mrg-t-0 fw-700">ADD-ON PLAN</h4>
-                                {% for add_on in selected_addon_plans %}
-                                    <div class="border-basic rounded mrg-b-15 addon-single">
-                                        <h4 class="review_addon">{{ add_on.Name }}</h4>
-                                        <div class="table-responsive">
-                                            <table class="table mrg-b-0">
-                                                <tbody>
-                                                <tr>
-                                                    <td>Premium</td>
-                                                    <td>
-                                                        <span>${{ add_on.actual_premium }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Enrollment Fee</td>
-                                                    <td>
-                                                        <span>${{ add_on.EnrollmentFee }}</span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
                         </div>
                     </div>
-                </div>
-
-
-
+                    </div>
                 </div>
 
             </div>
