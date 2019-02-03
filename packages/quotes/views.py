@@ -2113,10 +2113,12 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
 
+    # TODO: Try catch for changed values.
+
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
-                                                  mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
-                                                  mp['coverage_max_value'] == plan['coverage_max_value'] and
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == changed_coinsurance_percentage and
+                                                  mp['out_of_pocket_value'] == changed_benefit_amount and
+                                                  mp['coverage_max_value'] == changed_coverage_maximum and
                                                   mp['Plan'] == plan['Plan'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))
     except StopIteration:
