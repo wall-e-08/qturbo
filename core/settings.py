@@ -480,8 +480,11 @@ USER_PROPERTIES: Dict[str, int] = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
-AVAILABLE_PLAN_NAME_LIST = ['LifeShield STM', 'AdvantHealth STM', 'Health Choice', 'Vitala Care',
-             'Legion Limited Medical', 'USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+AVAILABLE_PLAN_NAME_LIST_DICT = {
+    'stm': ['LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+}
 
 
 #
