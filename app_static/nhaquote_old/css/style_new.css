@@ -142,16 +142,18 @@
 }
 .plan-select-btn{
     text-align: center;
-    padding: 10px 5px;
     background: #28a745;
     border-radius: 28px;
     font-weight: bold;
     width: 55%;
-    margin: 10px auto;
+    margin: 10px auto 25px;
 }
-
 .plan-select-btn a{
     color: #fff;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 10px 5px;
 }
 .quote-plan-details{
     padding: 15px 10px;
