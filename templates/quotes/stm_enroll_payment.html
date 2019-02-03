@@ -15,8 +15,10 @@
             <span class="tooltip">Eligibility</span>
         </a>
     </li>
-    <li>
-        <span class="tooltip">Applicant Info</span>
+    <li class="active">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 2 %}">
+            <span class="tooltip">Applicant Info</span>
+        </a>
     </li>
     <li class="active current">
         <span class="tooltip">Payment & Billing</span>
@@ -44,7 +46,7 @@
                 </li>
                 <li class="current" id="payment">
                     <span class="progress-bar-step-label">3</span>
-                    <span class="progress-bar-label">Payment &amp; Billing masum</span>
+                    <span class="progress-bar-label">Payment &amp; Billing</span>
                     <span class="progress-bar-divider"> &gt; </span>
                 </li>
                 <li id="review">
