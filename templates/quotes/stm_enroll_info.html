@@ -7,13 +7,149 @@
 {% block extra_css %}
 {#<link rel="stylesheet" type="text/css" href="{% static 'quotes/css/jquery-ui.min.css' %}">#}
 <link href="{% static 'nhaquote_old/css/stm_enroll_info.css' %}" rel="stylesheet">
+<style>
+    /* breadcrumb progress */
+    .d-flex {
+        display: -webkit-box !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
+    }
+
+    .d-block {
+        display: block !important;
+    }
+
+    .payment-progress {
+        padding: 0 0 .25rem;
+        margin: 0;
+        list-style: none;
+        counter-reset: step;
+    }
+
+    .payment-progress li {
+        position: relative;
+        flex: 1;
+    }
+
+    .payment-progress li .tooltip {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        padding: 3px 10px;
+        font-size: 15px;
+        line-height: 17px;
+        color: #3a639b;
+        background-color: #f1f7fd;
+        border-radius: .1875rem;
+        -webkit-box-shadow: 0 2px 4px 0 hsla(0, 0%, 78.4%, .5);
+        box-shadow: 0 2px 4px 0 hsla(0, 0%, 78.4%, .5);
+        opacity: 0;
+        -webkit-transition: opacity .3s ease-in-out, -webkit-transform .3s ease-in-out;
+        transition: opacity .3s ease-in-out, -webkit-transform .3s ease-in-out;
+        -o-transition: opacity .3s ease-in-out, transform .3s ease-in-out;
+        transition: opacity .3s ease-in-out, transform .3s ease-in-out;
+        transition: opacity .3s ease-in-out, transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
+        -webkit-transform: translate(-50%);
+        -ms-transform: translate(-50%);
+        transform: translate(-50%)
+    }
+
+    .payment-progress li:hover .tooltip {
+        opacity: 1;
+        -webkit-transform: translate(-50%, 100%);
+        -ms-transform: translate(-50%, 100%);
+        transform: translate(-50%, 100%);
+    }
+
+    .payment-progress li:before {
+        display: block;
+        width: 30px;
+        height: 30px;
+        margin: 0 auto;
+        font-weight: 600;
+        line-height: 27px;
+        color: #e6e6e6;
+        text-align: center;
+        content: counter(step);
+        counter-increment: step;
+        background: #fff;
+        border: 2px solid #e6e6e6;
+        border-radius: 50%;
+    }
+
+    .payment-progress li.current:before {
+        width: 40px;
+        height: 40px;
+        margin-top: -5px;
+        line-height: 37px;
+    }
+
+    .payment-progress li.active:before {
+        color: #fff;
+        background-color: #19b4fa;
+        border-color: #19b4fa;
+    }
+
+    .payment-progress li.active.current:before {
+        border-color: rgba(0, 86, 125, 0.45);
+    }
+
+    .payment-progress li:not(:first-child):after {
+        position: absolute;
+        top: 15px;
+        left: -50%;
+        z-index: -1;
+        width: 100%;
+        height: 3px;
+        content: "";
+        background: #e6e6e6;
+    }
+
+    .payment-progress li.active:after {
+        background: #19b4fa;
+    }
+
+    .payment-progress li > a {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+
+    /* END: breadcrumb progress */
+</style>
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
+{% block show_qt_breadcrumb %}{% endblock %}
+
+{% block qt_breadcrumb %}
+    <li class="active">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
+            <span class="tooltip">Eligibility</span>
+        </a>
+    </li>
+    <li class="active current">
+        <span class="tooltip">Applicant Info</span>
+    </li>
+    <li>
+        <span class="tooltip">Payment & Billing</span>
+    </li>
+    <li>
+        <span class="tooltip">Review & Submit</span>
+    </li>
+{% endblock %}
+
 {% block container %}
 
 
-<div class="app-page-status-bar">
+{% comment %}<div class="app-page-status-bar">
     <div class="container">
         <div class="col-xs-12">
             <ul class="app-status-list">
@@ -39,7 +175,7 @@
             </ul>
         </div>
     </div>
-</div>
+</div>{% endcomment %}
 
 
 <div id="app-page-wrapper">
