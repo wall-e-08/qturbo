@@ -313,9 +313,7 @@ const router = new VueRouter({
 
                             var newDate = new Date();
                             newDate.setDate(newDate.getDate() + 1);
-                            // form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
-                            // TODO: Not commit
-                            form_data['Effective_Date'] = '02/01/2019'
+                            form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
 
                         } else {
                             console.error("Please insert data to see plans");
@@ -337,7 +335,7 @@ const router = new VueRouter({
 
                                     form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
                                     form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
+                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true' ? 'Y' : 'N';
 
                                 } else {
                                     console.error("Please insert child data correctly to see plans");

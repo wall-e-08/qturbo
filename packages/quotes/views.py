@@ -51,7 +51,7 @@ def get_prop_context():
     :param prop: User attributes
     :return: context variables
     """
-    props = settings.HOMEPAGE_USER_PROPERTIES
+    props = settings.USER_PROPERTIES
     prop_context = {
         'applicant_min_age': props['min_age'],
         'applicant_max_age': props['max_age'],
@@ -66,7 +66,7 @@ def get_prop_context():
     return prop_context
 
 def home(request: WSGIRequest) -> HttpResponse:
-    prop =settings.HOMEPAGE_USER_PROPERTIES
+    prop =settings.USER_PROPERTIES
 
 
     return render(request, 'homepage.html', get_prop_context())
@@ -440,7 +440,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             if quote_request_preference_data['general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
             else:
-                # When page is refreshed.
+                # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
                     lambda mp: mp['general_url'] == plan_url and
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
@@ -461,19 +461,13 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     if plan['Name'] in stm_carriers:
         related_plans = list(filter(
             lambda mp: mp['Name'] == plan['Name'] and \
-                       mp['option'] == plan['option'] and \
-                       mp['actual_premium'] != plan['actual_premium'], sp))
-        related_plans_dict = {}
-        for i in related_plans:
-            try:
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
-            except KeyError as k:
-                print(f"Preparing stm_plan template... Creating related plan dictionary for {k} percent co-insurance")
-                related_plans_dict[i['Coinsurance_Percentage']] = []
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
+                       mp['option'] != plan['option'] and \
+                       mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and \
+                       mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and \
+                       mp['coverage_max_value'] == plan['coverage_max_value'] and \
+                       mp['Plan'] == plan['Plan'], sp))
 
-        related_plans = OrderedDict(sorted(related_plans_dict.items()))
-        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
@@ -1286,6 +1280,14 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     """
     print("Calling AJAX.")
     sp = []
+
+    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST.copy()
+
+    featured_flag_for_stm_name = {}
+    for plan in plan_name_list:
+        featured_flag_for_stm_name[plan] = False
+
+
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     print(quote_request_form_data)
 
@@ -1320,7 +1322,39 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 ):
                     continue
 
+
+
+            try:
+                if decoded_plan not in ['START', 'END']:
+                    plan_name = decoded_plan['Name']
+
+
+                    if not featured_flag_for_stm_name[plan_name]:
+                        premium = decoded_plan['Premium']
+                        if float(premium) > 100:
+                            decoded_plan['featured_plan'] = True
+                            featured_flag_for_stm_name[plan_name] = True
+
+            except Exception as e:
+                logger.warning(e)
+                pass
+
             sp.append(decoded_plan)
+
+
+
+    for plan in featured_flag_for_stm_name.items():
+        if not featured_flag_for_stm_name[plan[0]]:
+            try:
+                plan = next(filter(lambda mp: mp['Name'] == plan[0], sp[1:len(sp)-1]))
+                sp.remove(plan)
+                plan['featured_plan'] = True
+                sp.append(plan)
+
+            except (StopIteration, TypeError, KeyError) as error:
+                print(error)
+                pass
+
 
     logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
     return JsonResponse({
@@ -1853,6 +1887,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
     request.session['applicant_enrolled'] = False
     request.session.modified = True
     if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
@@ -1950,14 +1986,12 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     alternative_plan_url = alternative_plan['unique_url']
 
     # Setting preference data
-    preference = request.session.get('quote_request_preference_data')
-    preference[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
-    preference[stm_name]['Benefit_Amount'] = [benefit_amount]
-    preference[stm_name]['Coverage_Max'] = [coverage_maximum]
+    quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
+    quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
+    quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
+    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
-    preference['general_url_chosen'] = True
-
-    request.session['quote_request_preference_data'] = preference
+    quote_request_preference_data['general_url_chosen'] = True
 
     print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
@@ -1975,13 +2009,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
                                          alternative_plan['unique_url'], "addon-plans")] = [
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
-
-    # Changing the preference of the user.
-    # We need to change the preference data in this function. # TODO
-
-    # The following three lines should be changed into a function.
-    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
-    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
     request.session['quote_request_preference_data'] = quote_request_preference_data
 
@@ -2004,14 +2031,25 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
 
 def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResponse:
-    form = Duration_Coverage_Form(request.POST)
+    duration_coverage_form = Duration_Coverage_Form(request.POST)
+    ajax_attr_form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
 
-    if form.is_valid():
+    if duration_coverage_form.is_valid():
         print(f'Form is valid.')
-        coverage_duration = form.cleaned_data.get('Duration_Coverage', None)
+        coverage_duration = duration_coverage_form.cleaned_data.get('Duration_Coverage', None)
 
         if coverage_duration is None:
             raise Http404
+
+    if ajax_attr_form.is_valid():
+        print(f'ajax_attr_form is valid.')
+        changed_benefit_amount = ajax_attr_form.cleaned_data.get('Benefit_Amount', None)
+        changed_coinsurance_percentage = ajax_attr_form.cleaned_data.get('Coinsurance_Percentage', None)
+        changed_coverage_maximum = ajax_attr_form.cleaned_data.get('Coverage_Max', None)
+
+        # plan_type = ajax_attr_form.cleaned_data.get('Plan', None) # Not Needed
+        # input_change = request.POST.get('changed', None) # Not Needed
+
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
@@ -2107,12 +2145,40 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
+    # Also saving the currently used addons into general url dictionary as the next stm plan function call only has
+    # general url
+
+    request.session['{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'],
+                                         alternative_plan['general_url'], "addon-plans")] = [
+        addon_plan.data_as_dict() for addon_plan in selected_addon_plans
+    ]
+
     # Changing the preference of the user.
     # We need to change the preference data in this function. # TODO
 
     # The following three lines should be changed into a function.
     quote_request_preference_data = request.session.get('quote_request_preference_data', {})
     quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
+
+    try:
+        if not changed_coinsurance_percentage:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
+        else:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [changed_coinsurance_percentage]
+
+        if not changed_benefit_amount:
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
+        else:
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [changed_benefit_amount]
+
+        if not changed_coverage_maximum:
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+        else:
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [changed_coverage_maximum]
+
+
+    except KeyError as k:
+        logger.warning(f'======>{k}')
 
     request.session['quote_request_preference_data'] = quote_request_preference_data
 
