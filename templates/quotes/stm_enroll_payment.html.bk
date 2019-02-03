@@ -4,31 +4,13 @@
     {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-<link href="{% static 'nhaquote_old/css/stm_enroll_info.css' %}" rel="stylesheet">
+<style type="text/css"></style>
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
-{% block show_qt_breadcrumb %}{% endblock %}
-{% block qt_breadcrumb %}
-    <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
-            <span class="tooltip">Eligibility</span>
-        </a>
-    </li>
-    <li>
-        <span class="tooltip">Applicant Info</span>
-    </li>
-    <li class="active current">
-        <span class="tooltip">Payment & Billing</span>
-    </li>
-    <li>
-        <span class="tooltip">Review & Submit</span>
-    </li>
-{% endblock %}
-
 {% block container %}
 
-{% comment %}<div class="app-page-status-bar">
+<div class="app-page-status-bar">
     <div class="container">
         <div class="col-xs-12">
             <ul class="app-status-list">
@@ -54,7 +36,7 @@
             </ul>
         </div>
     </div>
-</div>{% endcomment %}
+</div>
 
 <div id="app-page-wrapper">
     <div id="app-page-container" class="container">
