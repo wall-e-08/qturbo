@@ -195,6 +195,11 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 0 #823a02;
     top: 6px;
 }
+.panel-base >.panel-body label {
+    font-weight: 400;
+    font-size: 18px;
+    color: #4c4848;
+}
 /* breadcrumb progress */
 .d-flex {
     display: -webkit-box !important;

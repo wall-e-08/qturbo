@@ -61,168 +61,189 @@
         <div class="row">
             <div id="application-body">
                 <div class="ms-row">
-                    <div id="js-app-page-body-content" class="app-page-body-content col-md-8">
-                        <p class="app-page-heading-required-text">* Required</p>
+                    <div id="js-app-page-body-content" class="app-page-body-content col-xs-12 col-md-8">
+                        <div class="rounded border-0 box-shadow-light panel panel-base">
+                            {% comment %}<p class="app-page-heading-required-text">* Required</p>
                         <h3 class="bold color-base no-padding no-margin">Step 3. Payment & Billing</h3>
-                        <p class="reset">Please provide your payment and billing preferences. (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>
+                        <p class="reset">Please provide your payment and billing preferences. (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>{% endcomment %}
+                            <div class="border-0 bg-transparent panel-heading">
+                                <h4 class="bold no-margin">Step 3. Payment & Billing</h4>
+                            </div>
+                            <div class="panel-body">
+                                <form method="post" id="payment_method_form">
+                                    {% csrf_token %}
 
-                        <form method="post" id="payment_method_form">
-                        {% csrf_token %}
-
-                        <div class="row section" id="select_payment_method">
-                            <div class="col-sm-12">
-                                <h3>{% trans "Payment Method" %}</h3>
-                                <div class="row" style="margin-top: 3.5rem">
-                                    <div class="col-sm-12">
-                                        <div class="row">
-                                            <div class="col-sm-12" style="margin-bottom: 2rem">
-                                                <label class="required">{% trans "Select Your Payment Method" %}:</label>
+                                    <div class="row section" id="select_payment_method">
+                                        <div class="col-sm-12">
+                                            <h3>{% trans "Payment Method" %}</h3>
+                                            <div class="row" style="margin-top: 3.5rem">
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-sm-12" style="margin-bottom: 2rem">
+                                                            <label class="required">{% trans "Select Your Payment Method" %}:</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="hp-radio-parent_custom">
+                                                        <div class="row">
+                                                            <div class="col-sm-6 col-xs-12">
+                                                                <div class="hp-radio">
+                                                                    <input type="radio" id="payment_method_credit_card"
+                                                                           value="CreditCard"
+                                                                           name="{{ payment_method_form.Payment_Method.html_name }}"
+                                                                            {% if payment_method_form.Payment_Method.value == 'CreditCard' %}
+                                                                           checked{% elif payment_method_form.Payment_Method.value != 'BankDraft' %}checked{% endif %} >
+                                                                    <label class="radio-toggle"
+                                                                           for="payment_method_credit_card">{% trans "Credit Card" %}</label>
+                                                                </div>
+                                                                <div class="hp-radio">
+                                                                    <input type="radio" id="payment_method_bank_draft"
+                                                                           value="BankDraft"
+                                                                           name="{{ payment_method_form.Payment_Method.html_name }}"
+                                                                           {% if payment_method_form.Payment_Method.value == 'BankDraft' %}checked{% endif %}>
+                                                                    <label class="radio-toggle"
+                                                                           for="payment_method_bank_draft">{% trans "Bank Draft" %}</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="hp-radio-parent_custom">
-	                                        <div class="row">
-	                                            <div class="col-sm-6 col-xs-12">
-	                                                <div class="hp-radio">
-	                                                    <input type="radio" id="payment_method_credit_card"
-	                                                           value="CreditCard" name="{{ payment_method_form.Payment_Method.html_name }}"
-	                                                           {% if payment_method_form.Payment_Method.value == 'CreditCard' %}
-	                                                           checked{% elif payment_method_form.Payment_Method.value != 'BankDraft' %}checked{% endif %} >
-	                                                    <label class="radio-toggle" for="payment_method_credit_card">{% trans "Credit Card" %}</label>
-	                                                </div>
-	                                                <div class="hp-radio">
-	                                                    <input type="radio" id="payment_method_bank_draft"
-	                                                           value="BankDraft" name="{{ payment_method_form.Payment_Method.html_name }}"
-	                                                           {% if payment_method_form.Payment_Method.value == 'BankDraft' %}checked{% endif %}>
-	                                                    <label class="radio-toggle" for="payment_method_bank_draft">{% trans "Bank Draft" %}</label>
-	                                                </div>
-	                                            </div>
-	                                        </div>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-						<div id="payment_method_wrapper" class="mb_2rem">
-                        {# CARD INFO #}
-                        <div class="{% if payment_method_form.Payment_Method.value == 'BankDraft' %}none{% endif %}" id="card_info">
-                            <div class="row">
+                                    <div id="payment_method_wrapper" class="mb_2rem">
+                                        {# CARD INFO #}
+                                        <div class="{% if payment_method_form.Payment_Method.value == 'BankDraft' %}none{% endif %}"
+                                             id="card_info">
+                                            <div class="row">
 
-	                            {% comment %}<div class="col-sm-6 col-sm-6-push">
+                                                {% comment %}<div class="col-sm-6 col-sm-6-push">
 	                                <img src="{% static 'quotes/img/credit-card-info.png' %}" style="max-width: 100%;">
 	                            </div>{% endcomment %}
-	
-	                            <div class="col-sm-12 col-sm-6-card-margin-top">
-	                                <div class="row" style="margin-bottom: 2rem">
-	                                    <div class="col-sm-12">
-	                                        <label class="required">{% trans "Credit Card Number:" %}</label>
-	                                        <input type="text" class="form-control" name="{{ payment_method_form.Card_Number.html_name }}"
-	                                               value="{{ payment_method_form.Card_Number.value|default:'' }}">
-	                                        <span class="form_field_error" id="{{ payment_method_form.Card_Number.id_for_label }}_error"></span>
-	                                    </div>
-	                                </div>
-	
-	                                <div class="row" style="margin-bottom: 2rem">
-	                                    <div class="col-sm-12">
-	                                        <label class="required">{% trans "Card Expiration: (Month/Year)" %}</label>
-	                                        <div class="row">
-	                                            <div class="col-sm-6 col-xs-6">
-	                                                <select class="form-control" name="{{ payment_method_form.Card_ExpirationMonth.html_name }}">
-	                                                    {% for choice in payment_method_form.Card_ExpirationMonth.field.choices %}
-	                                                        <option value="{{ choice.0 }}"
-	                                                                {% if payment_method_form.Card_ExpirationMonth.value == choice.0 %}
-	                                                                selected{% endif %}>{{ choice.1 }}</option>
-	                                                    {% endfor %}
-	                                                </select>
-	                                            </div>
-	                                            <div class="col-sm-6 col-xs-6">
-	                                                <select class="form-control" name="{{ payment_method_form.Card_ExpirationYear.html_name }}">
-	                                                    {% for choice in payment_method_form.Card_ExpirationYear.field.choices %}
-	                                                        <option value="{{ choice.0 }}"
-	                                                                {% if payment_method_form.Card_ExpirationYear.value and payment_method_form.Card_ExpirationYear.value == choice.0 %}
-	                                                                selected
-	                                                                {% elif not payment_method_form.Card_ExpirationYear.value and choice.0 == '2020' %}selected
-	                                                                {% endif %}>{{ choice.1 }}</option>
-	                                                    {% endfor %}
-	                                                </select>
-	                                            </div>
-	                                        </div>
-	                                        <span class="form_field_error" id="{{ payment_method_form.Card_ExpirationMonth.id_for_label }}_error"></span>
-	                                        <span class="form_field_error" id="{{ payment_method_form.Card_ExpirationYear.id_for_label }}_error"></span>
-	                                    </div>
-	                                </div>
-	
-	                                <div class="form-group">
-	                                    <label class="required">{% trans "Card Holder Name:" %}</label>
-	                                    <input type="text" class="form-control"
-	                                           name="{{ payment_method_form.CardHolder_Name.html_name }}"
-	                                           value="{{ payment_method_form.CardHolder_Name.value|default:'' }}">
-	                                    <span class="form_field_error" id="{{ payment_method_form.CardHolder_Name.id_for_label }}_error"></span>
-	                                </div>
-	
-	                            </div>
-							</div>
-                        </div>
+
+                                                <div class="col-sm-12 col-sm-6-card-margin-top">
+                                                    <div class="row" style="margin-bottom: 2rem">
+                                                        <div class="col-sm-12">
+                                                            <label class="required">{% trans "Credit Card Number:" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Card_Number.html_name }}"
+                                                                   value="{{ payment_method_form.Card_Number.value|default:'' }}">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Card_Number.id_for_label }}_error"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" style="margin-bottom: 2rem">
+                                                        <div class="col-sm-12">
+                                                            <label class="required">{% trans "Card Expiration: (Month/Year)" %}</label>
+                                                            <div class="row">
+                                                                <div class="col-sm-6 col-xs-6">
+                                                                    <select class="form-control"
+                                                                            name="{{ payment_method_form.Card_ExpirationMonth.html_name }}">
+                                                                        {% for choice in payment_method_form.Card_ExpirationMonth.field.choices %}
+                                                                            <option value="{{ choice.0 }}"
+                                                                                    {% if payment_method_form.Card_ExpirationMonth.value == choice.0 %}
+                                                                                    selected{% endif %}>{{ choice.1 }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-sm-6 col-xs-6">
+                                                                    <select class="form-control"
+                                                                            name="{{ payment_method_form.Card_ExpirationYear.html_name }}">
+                                                                        {% for choice in payment_method_form.Card_ExpirationYear.field.choices %}
+                                                                            <option value="{{ choice.0 }}"
+                                                                                    {% if payment_method_form.Card_ExpirationYear.value and payment_method_form.Card_ExpirationYear.value == choice.0 %}
+                                                                                    selected
+                                                                                    {% elif not payment_method_form.Card_ExpirationYear.value and choice.0 == '2020' %}selected
+                                                                                    {% endif %}>{{ choice.1 }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Card_ExpirationMonth.id_for_label }}_error"></span>
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Card_ExpirationYear.id_for_label }}_error"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="required">{% trans "Card Holder Name:" %}</label>
+                                                        <input type="text" class="form-control"
+                                                               name="{{ payment_method_form.CardHolder_Name.html_name }}"
+                                                               value="{{ payment_method_form.CardHolder_Name.value|default:'' }}">
+                                                        <span class="form_field_error"
+                                                              id="{{ payment_method_form.CardHolder_Name.id_for_label }}_error"></span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
 
 
-                        {# BANK INFO #}
-                        <div class="{% if payment_method_form.Payment_Method.value != 'BankDraft' %}none{% endif %}" id="bank_info">
-                            <div class="row">
+                                        {# BANK INFO #}
+                                        <div class="{% if payment_method_form.Payment_Method.value != 'BankDraft' %}none{% endif %}"
+                                             id="bank_info">
+                                            <div class="row">
 
-	                            {% comment %}<div class="col-sm-6 col-sm-6-push">
+                                                {% comment %}<div class="col-sm-6 col-sm-6-push">
 	                                <img src="{% static 'quotes/img/bank-draft-info.png' %}" style="max-width: 100%;">
 	                            </div>{% endcomment %}
-	
-	                            <div class="col-sm-12 col-sm-6-card-margin-top">
-	                                <div class="row">
-		                                <div class="form-group col-sm-6">
-		                                    <label class="required">{% trans "Account Holder Name:" %}</label>
-		                                    <input type="text" class="form-control"
-		                                           name="{{ payment_method_form.Bank_Account_Name.html_name }}"
-		                                           value="{{ payment_method_form.Bank_Account_Name.value|default:'' }}">
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Name.id_for_label }}_error"></span>
-		                                </div>
-		
-		                                <div class="form-group col-sm-6">
-		                                    <label class="required">{% trans "Bank Name:" %}</label>
-		                                    <input type="text" class="form-control"
-		                                           name="{{ payment_method_form.Bank_Name.html_name }}"
-		                                           value="{{ payment_method_form.Bank_Name.value|default:'' }}">
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Name.id_for_label }}_error"></span>
-		                                </div>
-	                                
-		                                <div class="form-group col-sm-6">
-		                                    <label class="required">{% trans "Routing Number" %}</label>
-		                                    <input type="text" class="form-control"
-		                                           name="{{ payment_method_form.Bank_Routing_Number.html_name }}"
-		                                           value="{{ payment_method_form.Bank_Routing_Number.value|default:'' }}" >
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Routing_Number.id_for_label }}_error"></span>
-		                                </div>
-		
-		                                <div class="form-group col-sm-6">
-		                                    <label class="required">{% trans "Account Number" %}</label>
-		                                    <input type="text" class="form-control"
-		                                           name="{{ payment_method_form.Bank_Account_Number.html_name }}"
-		                                           value="{{ payment_method_form.Bank_Account_Number.value|default:'' }}">
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Number.id_for_label }}_error"></span>
-		                                </div>
-		
-		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
-		                                    <label class="required">{% trans "Account Type:" %}</label>
-		                                
-			                                
-			                                {# using select/option (used in salesfusion) #}
-			                                <select class="form-control ms-form-control ms-round"
-			                                        id="{{ payment_method_form.Bank_Account_Type.id_for_label }}"
-			                                        name="{{ payment_method_form.Bank_Account_Type.html_name }}">
-	                                            {% for choice in payment_method_form.Bank_Account_Type.field.choices %}
-	                                                <option value="{{ choice.0 }}"
-	                                                    {% if payment_method_form.Bank_Account_Type.value == choice.0 %}selected{% endif %}>
-	                                                    {{ choice.1 }}
-	                                                </option>
-	                                            {% endfor %}
-	                                        </select>
-			                                
-		                                    {% comment %}
+
+                                                <div class="col-sm-12 col-sm-6-card-margin-top">
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-6">
+                                                            <label class="required">{% trans "Account Holder Name:" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Bank_Account_Name.html_name }}"
+                                                                   value="{{ payment_method_form.Bank_Account_Name.value|default:'' }}">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Account_Name.id_for_label }}_error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-sm-6">
+                                                            <label class="required">{% trans "Bank Name:" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Bank_Name.html_name }}"
+                                                                   value="{{ payment_method_form.Bank_Name.value|default:'' }}">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Name.id_for_label }}_error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-sm-6">
+                                                            <label class="required">{% trans "Routing Number" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Bank_Routing_Number.html_name }}"
+                                                                   value="{{ payment_method_form.Bank_Routing_Number.value|default:'' }}">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Routing_Number.id_for_label }}_error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-sm-6">
+                                                            <label class="required">{% trans "Account Number" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Bank_Account_Number.html_name }}"
+                                                                   value="{{ payment_method_form.Bank_Account_Number.value|default:'' }}">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Account_Number.id_for_label }}_error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-sm-4" style="margin-bottom: 15px">
+                                                            <label class="required">{% trans "Account Type:" %}</label>
+
+
+                                                            {# using select/option (used in salesfusion) #}
+                                                            <select class="form-control ms-form-control ms-round"
+                                                                    id="{{ payment_method_form.Bank_Account_Type.id_for_label }}"
+                                                                    name="{{ payment_method_form.Bank_Account_Type.html_name }}">
+                                                                {% for choice in payment_method_form.Bank_Account_Type.field.choices %}
+                                                                    <option value="{{ choice.0 }}"
+                                                                            {% if payment_method_form.Bank_Account_Type.value == choice.0 %}selected{% endif %}>
+                                                                        {{ choice.1 }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                            {% comment %}
 		                                    <div class="row">
 		                                        <div class="col-sm-12 col-xs-12">
 		                                            <div class="hp-radio">
@@ -240,25 +261,26 @@
 		                                        </div>
 		                                    </div>
 		                                    {% endcomment %}
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Type.id_for_label }}_error"></span>
-		                                </div>
-		
-		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
-		                                    <label class="required">{% trans "Account Class:" %}</label>
-		                                
-			                                {# using select/option (used in salesfusion) #}
-			                                <select class="form-control ms-form-control ms-round"
-			                                        id="{{ payment_method_form.Bank_Account_Class.id_for_label }}"
-			                                        name="{{ payment_method_form.Bank_Account_Class.html_name }}">
-		                                        {% for choice in payment_method_form.Bank_Account_Class.field.choices %}
-		                                            <option value="{{ choice.0 }}"
-		                                                    {% if payment_method_form.Bank_Account_Class.value == choice.0 %}selected{% endif %}>
-		                                                {{ choice.1 }}
-		                                            </option>
-		                                        {% endfor %}
-		                                    </select>
-			                                
-			                                {% comment %}
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Account_Type.id_for_label }}_error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-sm-4" style="margin-bottom: 15px">
+                                                            <label class="required">{% trans "Account Class:" %}</label>
+
+                                                            {# using select/option (used in salesfusion) #}
+                                                            <select class="form-control ms-form-control ms-round"
+                                                                    id="{{ payment_method_form.Bank_Account_Class.id_for_label }}"
+                                                                    name="{{ payment_method_form.Bank_Account_Class.html_name }}">
+                                                                {% for choice in payment_method_form.Bank_Account_Class.field.choices %}
+                                                                    <option value="{{ choice.0 }}"
+                                                                            {% if payment_method_form.Bank_Account_Class.value == choice.0 %}selected{% endif %}>
+                                                                        {{ choice.1 }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                            {% comment %}
 		                                    <div class="row">
 		                                        <div class="col-sm-12 col-xs-12">
 		                                            <div class="hp-radio">
@@ -276,136 +298,153 @@
 		                                        </div>
 		                                    </div>
 			                                {% endcomment %}
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Class.id_for_label }}_error"></span>
-		                                </div>
-		
-		
-		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
-		                                    <label class="required">{% trans "Check Number" %}</label>
-		                                    <input type="text" class="form-control"
-		                                           name="{{ payment_method_form.Bank_Check_Number.html_name }}"
-		                                           value="100">
-		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Check_Number.id_for_label }}_error"></span>
-		                                </div>
-									</div>
-	                            </div>
-							</div>
-                        </div>
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Account_Class.id_for_label }}_error"></span>
+                                                        </div>
 
 
-                        <div class="row" id="billing_info" style="margin-top: 2rem; margin-bottom: 2rem;">
-                            <div class="col-sm-12">
-                                <div class="row mb_2rem">
-                                    <div class="col-sm-12">
-                                        <input type="checkbox" name="{{ payment_method_form.same_as_contact_address.html_name }}"
-                                               id="{{ payment_method_form.same_as_contact_address.id_for_label}}"
-                                                {% if payment_method_form.same_as_contact_address.value %}checked{% endif %}>
-                                        <label for="{{ payment_method_form.same_as_contact_address.id_for_label}}">
-                                            {% trans "My billing address is the same as my contact information address." %}
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="row {% if payment_method_form.same_as_contact_address.value %}none{% endif %}"
-                                     id="billing_address_fields">
-                                    <div class="col-sm-12">
-
-                                        <div class="row">
-
-                                            <div class="col-sm-6 mb_2rem">
-                                                <label class="required">{% trans "Billing Address" %}</label>
-                                                <input type="text" class="form-control"
-                                                       name="{{ payment_method_form.Billing_Address.html_name }}"
-                                                       value="{{ payment_method_form.Billing_Address.value|default:'' }}">
-                                                <span class="form_field_error" id="{{ payment_method_form.Billing_Address.id_for_label }}_error"></span>
-                                            </div>
-
-                                            <div class="col-sm-6 mb_2rem">
-                                                <label class="required">{% trans "City" %}</label>
-                                                <input type="text" class="form-control"
-                                                       name="{{ payment_method_form.Billing_City.html_name }}"
-                                                       value="{{ payment_method_form.Billing_City.value|default:'' }}">
-                                                <span class="form_field_error" id="{{ payment_method_form.Billing_City.id_for_label }}_error"></span>
+                                                        <div class="form-group col-sm-4" style="margin-bottom: 15px">
+                                                            <label class="required">{% trans "Check Number" %}</label>
+                                                            <input type="text" class="form-control"
+                                                                   name="{{ payment_method_form.Bank_Check_Number.html_name }}"
+                                                                   value="100">
+                                                            <span class="form_field_error"
+                                                                  id="{{ payment_method_form.Bank_Check_Number.id_for_label }}_error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="col-sm-3 col-xs-6">
-                                                <label class="required">{% trans "State" %}</label>
-                                                <select class="form-control" name="{{ payment_method_form.Billing_State.html_name }}">
-                                                    {% for choice in payment_method_form.Billing_State.field.choices %}
-                                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <span class="form_field_error" id="{{ payment_method_form.Billing_State.id_for_label }}_error"></span>
+
+                                        <div class="row" id="billing_info"
+                                             style="margin-top: 2rem; margin-bottom: 2rem;">
+                                            <div class="col-sm-12">
+                                                <div class="row mb_2rem">
+                                                    <div class="col-sm-12">
+                                                        <input type="checkbox"
+                                                               name="{{ payment_method_form.same_as_contact_address.html_name }}"
+                                                               id="{{ payment_method_form.same_as_contact_address.id_for_label }}"
+                                                               {% if payment_method_form.same_as_contact_address.value %}checked{% endif %}>
+                                                        <label for="{{ payment_method_form.same_as_contact_address.id_for_label }}">
+                                                            {% trans "My billing address is the same as my contact information address." %}
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row {% if payment_method_form.same_as_contact_address.value %}none{% endif %}"
+                                                     id="billing_address_fields">
+                                                    <div class="col-sm-12">
+
+                                                        <div class="row">
+
+                                                            <div class="col-sm-6 mb_2rem">
+                                                                <label class="required">{% trans "Billing Address" %}</label>
+                                                                <input type="text" class="form-control"
+                                                                       name="{{ payment_method_form.Billing_Address.html_name }}"
+                                                                       value="{{ payment_method_form.Billing_Address.value|default:'' }}">
+                                                                <span class="form_field_error"
+                                                                      id="{{ payment_method_form.Billing_Address.id_for_label }}_error"></span>
+                                                            </div>
+
+                                                            <div class="col-sm-6 mb_2rem">
+                                                                <label class="required">{% trans "City" %}</label>
+                                                                <input type="text" class="form-control"
+                                                                       name="{{ payment_method_form.Billing_City.html_name }}"
+                                                                       value="{{ payment_method_form.Billing_City.value|default:'' }}">
+                                                                <span class="form_field_error"
+                                                                      id="{{ payment_method_form.Billing_City.id_for_label }}_error"></span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-3 col-xs-6">
+                                                                <label class="required">{% trans "State" %}</label>
+                                                                <select class="form-control"
+                                                                        name="{{ payment_method_form.Billing_State.html_name }}">
+                                                                    {% for choice in payment_method_form.Billing_State.field.choices %}
+                                                                        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <span class="form_field_error"
+                                                                      id="{{ payment_method_form.Billing_State.id_for_label }}_error"></span>
+                                                            </div>
+                                                            <div class="col-sm-3 col-xs-6">
+                                                                <label class="required">{% trans "Zip Code" %}</label>
+                                                                <input type="text" class="form-control"
+                                                                       name="{{ payment_method_form.Billing_ZipCode.html_name }}"
+                                                                       value="{{ payment_method_form.Billing_ZipCode.value|default:'' }}">
+                                                                <span class="form_field_error"
+                                                                      id="{{ payment_method_form.Billing_ZipCode.id_for_label }}_error"></span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="col-sm-3 col-xs-6">
-                                                <label class="required">{% trans "Zip Code" %}</label>
-                                                <input type="text" class="form-control"
-                                                       name="{{ payment_method_form.Billing_ZipCode.html_name }}"
-                                                       value="{{ payment_method_form.Billing_ZipCode.value|default:'' }}">
-                                                <span class="form_field_error" id="{{ payment_method_form.Billing_ZipCode.id_for_label }}_error"></span>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <input type="checkbox"
+                                                       name="{{ payment_method_form.Payment_Agree.html_name }}"
+                                                       id="{{ payment_method_form.Payment_Agree.id_for_label }}"
+                                                       {% if payment_method_form.Payment_Agree.value %}checked{% endif %}>
+                                                <label class="required"
+                                                       for="{{ payment_method_form.Payment_Agree.id_for_label }}">I
+                                                    agree with payment terms & conditions.
+                                                </label>
+                                                <br>
+                                                <span class="form_field_error"
+                                                      id="{{ payment_method_form.Payment_Agree.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-bottom:10px;margin-top:25px;">
+                                            <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+                                                <h4 id="payment-form-error-message-fix" class="none text-warning">↑↑Please correct the
+                                                    above↑↑</h4>
+                                                <a class="btn btn-lg btn-yellow btn-orange"
+                                                   id="continue_next_stage_link"
+                                                   data-stage="{{ stage }}"
+                                                   data-next-stage="{{ next_stage }}"
+                                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}"
+                                                   style="width: 100%;">
+                                                    {% trans "Continue to Step 4 - Review" %} &gt;
+                                                </a>
                                             </div>
                                         </div>
 
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
-
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <input type="checkbox" name="{{ payment_method_form.Payment_Agree.html_name }}"
-                                       id="{{ payment_method_form.Payment_Agree.id_for_label }}"
-                                       {% if payment_method_form.Payment_Agree.value %}checked{% endif %}>
-                                <label class="required" for="{{ payment_method_form.Payment_Agree.id_for_label }}">I agree with payment terms & conditions.</label>
-                                <br>
-                                <span class="form_field_error" id="{{ payment_method_form.Payment_Agree.id_for_label }}_error"></span>
-                            </div>
-                        </div>
-						
-						<div class="row" style="margin-bottom:10px;margin-top:25px;">
-                            <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
-                                <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
-                                <a class="btn btn-lg btn-yellow"
-                                   id="continue_next_stage_link"
-                                   data-stage="{{ stage }}"
-                                   data-next-stage="{{ next_stage }}"
-                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
-                                    {% trans "Continue to Step 4 - Review" %} &gt;
-                                </a>
-                            </div>
-                        </div>
-						
-						</div>
-                        </form>
-
-                        
-
                     </div>
+                    <div class="col-xs-12 col-md-4">
+                        <div class="side-bar-panel rounded bg-white box-shadow">
+                            <div id="js-app-page-summary" class="">
+                                <div class="border-basic rounded sidebar-each-part">
+                                    <div class="summary-wrapper">
+                                        <h3 class="emphasize text-capitalize mrg-t-0 fw-700"
+                                            style="margin-bottom: 20px">Policy Summary</h3>
+                                        <div class="carrierLogo">
+                                            <img alt=""
+                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
+                                                 class="carrier-logo-image">
+                                        </div>
+                                        <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
+                                        <div class="plan-summary">
+                                            <h4 class="text-primary">{{ plan.plan_name }}</h4>
+                                            {% if form_data.Ins_Type == 'stm' %}
+                                                <p>Deductible: ${{ plan.option|intcomma }}</p>
 
-                     <div class="col-xs-12 col-md-4">
-                    <div class="side-bar-panel rounded bg-white box-shadow">
-                        <div id="js-app-page-summary" class="">
-                        <div class="border-basic rounded sidebar-each-part">
-                            <div class="summary-wrapper">
-                                <h3 class="emphasize text-capitalize mrg-t-0 fw-700" style="margin-bottom: 20px">Policy Summary</h3>
-                                <div class="carrierLogo">
-                                    <img alt="" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
-                                </div>
-                                <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
-                                <div class="plan-summary">
-                                    <h4 class="text-primary">{{ plan.plan_name }}</h4>
-                                    {% if form_data.Ins_Type == 'stm' %}
-                                    <p>Deductible: ${{ plan.option|intcomma }}</p>
+                                                <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                                            {% endif %}
+                                        </div>
 
-                                    <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
-                                    {% endif %}
-                                </div>
-
-                            {% comment %}
+                                        {% comment %}
                                 <p class="policy-label">APPLICANT</p>
                                 <p id="summary-censusSummary">
                                     {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
@@ -452,99 +491,119 @@
                                 {% endif %}
                                 {% endcomment %}
 
-                                    <div class="table-responsive">
-	                            <table class="table mrg-b-0">
+                                        <div class="table-responsive">
+                                            <table class="table mrg-b-0">
 
-	                                <tr>
-		                                <td>Applicant:</td>
-		                                <td>
-		                                    <span class="">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
-		                                </td>
-	                                </tr>
-		                            {% if plan.Coinsurance_Percentage %}
-		                            <tr>
-		                                <td>Deductible:</td>
-		                                <td><span class="">${{ plan.option|intcomma }}</span></td>
-		                            </tr>
+                                                <tr>
+                                                    <td>Applicant:</td>
+                                                    <td>
+                                                        <span class="">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+                                                    </td>
+                                                </tr>
+                                                {% if plan.Coinsurance_Percentage %}
+                                                    <tr>
+                                                        <td>Deductible:</td>
+                                                        <td>
+                                                            <span class="">${{ plan.option|intcomma }}</span>
+                                                        </td>
+                                                    </tr>
 
-		                            <tr>
-		                                <td>Out of Pocket:</td>
-		                                <td><span class="">${{ plan.out_of_pocket_value }}</span></td>
-		                            </tr>
+                                                    <tr>
+                                                        <td>Out of Pocket:</td>
+                                                        <td>
+                                                            <span class="">${{ plan.out_of_pocket_value }}</span>
+                                                        </td>
+                                                    </tr>
 
-		                            <tr>
-		                                <td>Coverage Max:</td>
-		                                <td><span class="">${{ plan.coverage_max_value|intcomma }}</span></td>
-		                            </tr>
+                                                    <tr>
+                                                        <td>Coverage Max:</td>
+                                                        <td>
+                                                            <span class="">${{ plan.coverage_max_value|intcomma }}</span>
+                                                        </td>
+                                                    </tr>
 
-		                            <tr>
-		                                <td>Coinsurance:</td>
-		                                <td><span class="">{{ plan.Coinsurance_Percentage }}%</span></td>
-		                            </tr>
-		                            {% endif %}
+                                                    <tr>
+                                                        <td>Coinsurance:</td>
+                                                        <td>
+                                                            <span class="">{{ plan.Coinsurance_Percentage }}%</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
 
 
-		                            <tr>
-		                                <td>Effective Date:</td>
-		                                <td>
+                                                <tr>
+                                                    <td>Effective Date:</td>
+                                                    <td>
 		                                    <span class="" id="app-effective-date-change">
 		                                        {% form_date_field_value form_data.Effective_Date %}
 		                                    </span>
-		                                </td>
-		                            </tr>
+                                                    </td>
+                                                </tr>
 
 
-		                            {% if form_data.Ins_Type == 'stm' %}
-		                            <tr>
-		                                <td>Expiration Date:</td>
-		                                <td><span>{% plan_coverage_end_date %}</span></td>
-		                            </tr>
-		                            {% endif %}
+                                                {% if form_data.Ins_Type == 'stm' %}
+                                                    <tr>
+                                                        <td>Expiration Date:</td>
+                                                        <td>
+                                                            <span>{% plan_coverage_end_date %}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
 
 
-		                            <tr>
-		                                <td>Monthly Premium:</td>
-		                                <td><span class="">${{ plan.actual_premium }}</span></td>
-		                            </tr>
-		                            <tr>
-		                                <td>Enrollment Fee:</td>
-		                                <td><span class="">${{ plan.Enrollment_Fee }}</span></td>
-		                            </tr>
+                                                <tr>
+                                                    <td>Monthly Premium:</td>
+                                                    <td>
+                                                        <span class="">${{ plan.actual_premium }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Enrollment Fee:</td>
+                                                    <td>
+                                                        <span class="">${{ plan.Enrollment_Fee }}</span>
+                                                    </td>
+                                                </tr>
 
-		                        </table>
-                            </div>
-                            </div>
-                            </div>
-                        <hr>
-                         <div class="addon-holder border-basic rounded sidebar-each-part" id="sidebar-add-on-holder">
-			                        {% if selected_addon_plans %}
-			                        <h4 class="text-uppercase policy-label mrg-t-0 fw-700" style="margin-bottom: 1em">
-			                            ADD-ON PLAN
-			                        </h4>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="addon-holder border-basic rounded sidebar-each-part"
+                                     id="sidebar-add-on-holder">
+                                    {% if selected_addon_plans %}
+                                        <h4 class="text-uppercase policy-label mrg-t-0 fw-700"
+                                            style="margin-bottom: 1em">
+                                            ADD-ON PLAN
+                                        </h4>
 
-			                        {% for add_on in selected_addon_plans %}
-			                        <div class="border-basic rounded mrg-b-15 addon-single">
-			                            <h5 class="review_addon">{{ add_on.Name }}</h5>
+                                        {% for add_on in selected_addon_plans %}
+                                            <div class="border-basic rounded mrg-b-15 addon-single">
+                                                <h5 class="review_addon">{{ add_on.Name }}</h5>
 
-			                            <div class="table-responsive">
-			                                <table class="table mrg-b-0">
-			                                    <tbody>
-			                                        <tr>
-			                                            <td>Premium</td>
-			                                            <td><span class="">${{ add_on.actual_premium }}</span></td>
-			                                        </tr>
-			                                        <tr>
-			                                            <td>Enrollment Fee</td>
-			                                            <td><span class="">${{ add_on.EnrollmentFee }}</span></td>
-			                                        </tr>
-			                                    </tbody>
-			                                </table>
-			                            </div>
-			                        </div>
-			                        {% endfor %}
-			                        {% endif %}
+                                                <div class="table-responsive">
+                                                    <table class="table mrg-b-0">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td>Premium</td>
+                                                            <td>
+                                                                <span class="">${{ add_on.actual_premium }}</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Enrollment Fee</td>
+                                                            <td>
+                                                                <span class="">${{ add_on.EnrollmentFee }}</span>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
 
-	                                {% comment %}{% if selected_addon_plans %}
+                                    {% comment %}{% if selected_addon_plans %}
 	                                    <p class="emphasize policy-label">Add-On Plan</p>
 	                                    <ul class="add-on-plan-list">
 	                                        {% for add_on in selected_addon_plans %}
@@ -568,9 +627,9 @@
                                     {% endif %}{% endcomment %}
 
 
-			                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
 
