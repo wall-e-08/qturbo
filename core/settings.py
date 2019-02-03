@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os, dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from typing import Dict
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -465,7 +467,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 #   Homepage Properties  +
 # -----------------------+
 
-HOMEPAGE_USER_PROPERTIES = {
+USER_PROPERTIES: Dict[str, int] = {
     'min_age': 21,
     'max_age': 99,
 
@@ -473,6 +475,44 @@ HOMEPAGE_USER_PROPERTIES = {
     'dependents_max_age': 25,
 
 }
+
+# ----------------------------+
+#  Featured Plan Properties   +
+#-----------------------------+
+
+AVAILABLE_PLAN_NAME_LIST = ['LifeShield STM', 'AdvantHealth STM', 'Health Choice', 'Vitala Care',
+             'Legion Limited Medical', 'USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+
+
+#
+# FEATURED_PLAN_DICT = {
+#                          'LifeShield STM': {
+#                              'Coinsurance_Percentage': '20',
+#                              'Benefit_Amount': '2000',
+#                              'Duration_Coverage': '12*1',
+#                              'Premium': '100.00',
+#                              'coverage_max_value': '1000000',
+#                              'session_key': 'qt_dummy_session_key',
+#                          },
+#
+#                         'AdvantHealth STM': {
+#                             'Coinsurance_Percentage': '20',
+#                             'Benefit_Amount': '2000',
+#                             'Duration_Coverage': '6*6',
+#                             'Premium': '100.00',
+#                             'coverage_max_value': '1000000',
+#                             'session_key': 'qt_dummy_session_key',
+#                         },
+#
+#                         # 'Health Choice':{
+#                         #
+#                         # }
+#
+#                     }
+
+# WILL BE DONE LATER IF GOD WISHES.
+
+
 
 
 try:

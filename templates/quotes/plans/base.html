@@ -320,6 +320,36 @@
                        class="qt-plan-brochure-file">View Plan Brochure</a>
                 </div>
 
+                <h2 class="mrg-b-12">Other <i>{{ plan.Name }}</i> products in your area:</h2>
+
+                <div class="row">
+                    {% for related_plan in related_plans %}
+                        <div class="col-md-4">
+                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.general_url %}">
+                                <p class="variations-plan-name">{{ related_plan.general_plan_name }}</p>
+                                <p> Deductible - ${{ related_plan.option }}</p>
+
+                                <p class="emphasize">
+                                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                </p>
+                            {% else %}
+
+                                <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}">
+                                <p class="variations-plan-name">{{ related_plan.plan_name }}</p>
+
+                                <p> Enrollment Fee - {{ related_plan.Enrollment_Fee }}</p>
+
+                                <p class="emphasize">
+                                    ${{ related_plan.actual_premium }}{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                </p>
+
+                            {% endif %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+
                 {% if restrictions_omissions %}
                     <hr>
                     <div id="restrictions-n-omissions">
