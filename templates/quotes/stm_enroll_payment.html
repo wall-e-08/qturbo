@@ -386,16 +386,18 @@
 
                     </div>
 
-                    <div class="app-page-right-bar col-md-4">
-                        <div id="js-app-page-summary" class="app-page-summary">
+                     <div class="col-xs-12 col-md-4">
+                    <div class="side-bar-panel rounded bg-white box-shadow">
+                        <div id="js-app-page-summary" class="">
+                        <div class="border-basic rounded sidebar-each-part">
                             <div class="summary-wrapper">
-                                <p class="emphasize">Policy Summary</p>
+                                <h3 class="emphasize text-capitalize mrg-t-0 fw-700" style="margin-bottom: 20px">Policy Summary</h3>
                                 <div class="carrierLogo">
-                                    <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                    <img alt="" src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
                                 </div>
-                                <p class="policy-label">PLAN</p>
+                                <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
                                 <div class="plan-summary">
-                                    <p>{{ plan.plan_name }}</p>
+                                    <h4 class="text-primary">{{ plan.plan_name }}</h4>
                                     {% if form_data.Ins_Type == 'stm' %}
                                     <p>Deductible: ${{ plan.option|intcomma }}</p>
 
@@ -448,89 +450,92 @@
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
-								{% endcomment %}
-                            
-                            
-	                            <table class="table">
-	
+                                {% endcomment %}
+
+                                    <div class="table-responsive">
+	                            <table class="table mrg-b-0">
+
 	                                <tr>
 		                                <td>Applicant:</td>
 		                                <td>
-		                                    <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+		                                    <span class="">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
 		                                </td>
 	                                </tr>
 		                            {% if plan.Coinsurance_Percentage %}
 		                            <tr>
 		                                <td>Deductible:</td>
-		                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+		                                <td><span class="">${{ plan.option|intcomma }}</span></td>
 		                            </tr>
-		
+
 		                            <tr>
 		                                <td>Out of Pocket:</td>
-		                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+		                                <td><span class="">${{ plan.out_of_pocket_value }}</span></td>
 		                            </tr>
-		
+
 		                            <tr>
 		                                <td>Coverage Max:</td>
-		                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+		                                <td><span class="">${{ plan.coverage_max_value|intcomma }}</span></td>
 		                            </tr>
-		
+
 		                            <tr>
 		                                <td>Coinsurance:</td>
-		                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+		                                <td><span class="">{{ plan.Coinsurance_Percentage }}%</span></td>
 		                            </tr>
 		                            {% endif %}
-		
-		
+
+
 		                            <tr>
 		                                <td>Effective Date:</td>
 		                                <td>
-		                                    <span class="emphasize badge" id="app-effective-date-change">
+		                                    <span class="" id="app-effective-date-change">
 		                                        {% form_date_field_value form_data.Effective_Date %}
 		                                    </span>
 		                                </td>
 		                            </tr>
-		
-		
+
+
 		                            {% if form_data.Ins_Type == 'stm' %}
 		                            <tr>
 		                                <td>Expiration Date:</td>
 		                                <td><span>{% plan_coverage_end_date %}</span></td>
 		                            </tr>
 		                            {% endif %}
-		
-		
+
+
 		                            <tr>
 		                                <td>Monthly Premium:</td>
-		                                <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+		                                <td><span class="">${{ plan.actual_premium }}</span></td>
 		                            </tr>
 		                            <tr>
 		                                <td>Enrollment Fee:</td>
-		                                <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+		                                <td><span class="">${{ plan.Enrollment_Fee }}</span></td>
 		                            </tr>
-		
+
 		                        </table>
-                            
-                                <div class="addon-holder" id="sidebar-add-on-holder">
+                            </div>
+                            </div>
+                            </div>
+                        <hr>
+                         <div class="addon-holder border-basic rounded sidebar-each-part" id="sidebar-add-on-holder">
 			                        {% if selected_addon_plans %}
-			                        <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+			                        <h4 class="text-uppercase policy-label mrg-t-0 fw-700" style="margin-bottom: 1em">
 			                            ADD-ON PLAN
 			                        </h4>
-			
+
 			                        {% for add_on in selected_addon_plans %}
-			                        <div class="addon-single">
-			                            <h4 class="review_addon">{{ add_on.Name }}</h4>
-			
+			                        <div class="border-basic rounded mrg-b-15 addon-single">
+			                            <h5 class="review_addon">{{ add_on.Name }}</h5>
+
 			                            <div class="table-responsive">
 			                                <table class="table mrg-b-0">
 			                                    <tbody>
 			                                        <tr>
 			                                            <td>Premium</td>
-			                                            <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+			                                            <td><span class="">${{ add_on.actual_premium }}</span></td>
 			                                        </tr>
 			                                        <tr>
 			                                            <td>Enrollment Fee</td>
-			                                            <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+			                                            <td><span class="">${{ add_on.EnrollmentFee }}</span></td>
 			                                        </tr>
 			                                    </tbody>
 			                                </table>
@@ -538,7 +543,7 @@
 			                        </div>
 			                        {% endfor %}
 			                        {% endif %}
-	                                
+
 	                                {% comment %}{% if selected_addon_plans %}
 	                                    <p class="emphasize policy-label">Add-On Plan</p>
 	                                    <ul class="add-on-plan-list">
@@ -561,12 +566,11 @@
 	                                        {% endfor %}
 	                                    </ul>
                                     {% endif %}{% endcomment %}
-	                                
-			
+
+
 			                    </div>
-                            
-                            </div>
                         </div>
+                    </div>
                     </div>
                 </div>
 
