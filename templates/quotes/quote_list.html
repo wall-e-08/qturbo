@@ -157,6 +157,26 @@
         .no-coverage-error {
             margin: 0;
         }
+
+        /* best seller start */
+        .qt-each-plan.featured-plan .quote-container {
+            position: relative;
+            border: 1px solid hsl(162, 73%, 46%);
+            background: #efffe0;
+            box-shadow: 0 0 5px 1px rgba(84, 216, 170, 0.71);
+        }
+
+        .qt-each-plan.featured-plan .best-seller-badge {
+            position: absolute;
+            background-image: url("{% static 'quotes/img/best-seller.png' %}");
+            height: 100px;
+            width: 100px;
+            z-index: 5;
+            background-size: cover;
+            right: 0;
+            top: -16px;
+        }
+    /* best seller end */
     </style>
 {% endblock extra_css %}
 
@@ -585,138 +605,120 @@
 
 {% block extra_js %}
 
-{#<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>#}
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>#}
-{#<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>#}
-{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>#}
+{% comment %}<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>{% endcomment %}
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
-    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
-        <div class="quote-container">
-            <div class="">
-                <div class="qt-plan-logo">
-                    <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
-                                class="carrier-logo-image">
-
-                </div>
-                 <hr>
-                <div class="plan-single-info">
-                    <div class="fee">
-                        $[[actual_premium]]
-                        [[^upfront]]
-                        <span class="quote-plan-per-month">/mo</span>
-                        <sup style="color:#fe8829">+fee</sup>
-                        [[/upfront]]
-                    </div>
-                </div>
-                <div class="plan-single-info">
-                    <h4 class="quote-plan-details">
-                        <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
-                            [[plan_name]]
-                        </a>
-                        </h4>
-                </div>
-                <div class="plan-single-info" style="margin-top: 10px; text-align: left">
-                    <p class="deductible">Premium: $[[actual_premium]]</p>
+    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+        <div class="h-100">
+            <div class="quote-container">
                 <div class="">
-                    <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
-                </div>
-                <div class="deductible">
-                [[^TelaDoc_Fee]]
-                </div>
-                <div class="">
-                    <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
-                </div>
-                <div class="deductible">
-                [[/TelaDoc_Fee]]
-                </div>
-                </div>
-                <div class="plan-select-btn">
-                    <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
-                </div>
-            </div>
-        </div>
-                <div>
-            {% comment %}showed only in featured plan{% endcomment %}
-        [[#featured_plan]]
-            <div class="best-seller-badge"></div>
-
-        [[/featured_plan]]
-        </div>
-    </div>
-</div>
-</script>
-<script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
-    <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
-        <div class="quote-container">
-            <div class="">
-                <div class="qt-plan-logo">
-                    <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
-                            class="carrier-logo-image">
-
-                </div>
-                <hr>
-                <div class="plan-single-info">
-                    <div class="fee">
-                        $[[actual_premium]]
-                        [[^upfront]]
-                        <span class="quote-plan-per-month">/mo</span>
-                        <sup style="color:#fe8829">+fee</sup>
-                        [[/upfront]]
+                    <div class="qt-plan-logo">
+                        <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png" class="carrier-logo-image">
                     </div>
-                </div>
-                <div class="plan-single-info">
-                    <h4 class="quote-plan-details">
-                        <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
-                            [[plan_name]]
-                        </a>
-                    </h4>
-                </div>
-                <div class="plan-single-info" style="margin-top: 10px; text-align: left">
-                    <p class="deductible">Premium: $[[actual_premium]]</p>
+                     <hr>
+                    <div class="plan-single-info">
+                        <div class="fee">
+                            $[[actual_premium]]
+                            [[^upfront]]
+                            <span class="quote-plan-per-month">/mo</span>
+                            <sup style="color:#fe8829">+fee</sup>
+                            [[/upfront]]
+                        </div>
+                    </div>
+                    <div class="plan-single-info">
+                        <h4 class="quote-plan-details">
+                            <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
+                                [[plan_name]]
+                            </a>
+                            </h4>
+                    </div>
+                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                        <p class="deductible">Premium: $[[actual_premium]]</p>
                     <div class="">
                         <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
                     </div>
-                    [[#Administrative_Fee]]
-                     <div class="">
+                    <div class="deductible">
+                    [[^TelaDoc_Fee]]
+                    </div>
+                    <div class="">
                         <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
                     </div>
-                    [[/Administrative_Fee]]
-                    [[#note]]
-                    <div class="">
-                        <p class="deductible">Note: [[note]]</p>
+                    <div class="deductible">
+                    [[/TelaDoc_Fee]]
                     </div>
-                    [[/note]]
-                </div>
-                <div class="plan-select-btn">
-                    <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                    </div>
+                    <div class="plan-select-btn">
+                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                    </div>
                 </div>
             </div>
         </div>
-                <div>
-            {% comment %}showed only in featured plan{% endcomment %}
-        [[#featured_plan]]
-            <div class="best-seller-badge"></div>
-
-        [[/featured_plan]]
-        </div>
+        [[#featured_plan]]<div class="best-seller-badge"></div>[[/featured_plan]]
     </div>
-</div>
+</script>
+
+<script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
+    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+        <div class="h-100">
+            <div class="quote-container">
+                <div class="">
+                    <div class="qt-plan-logo">
+                        <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png" class="carrier-logo-image">
+                    </div>
+                    <hr>
+                    <div class="plan-single-info">
+                        <div class="fee">
+                            $[[actual_premium]]
+                            [[^upfront]]
+                            <span class="quote-plan-per-month">/mo</span>
+                            <sup style="color:#fe8829">+fee</sup>
+                            [[/upfront]]
+                        </div>
+                    </div>
+                    <div class="plan-single-info">
+                        <h4 class="quote-plan-details">
+                            <a class="js-view-details1" href="/stm/plan/[[unique_url]]">
+                                [[plan_name]]
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                        <p class="deductible">Premium: $[[actual_premium]]</p>
+                        <div class="">
+                            <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
+                        </div>
+                        [[#Administrative_Fee]]
+                         <div class="">
+                            <p class="deductible">Administrative Fee: $[[Administrative_Fee]]</p>
+                        </div>
+                        [[/Administrative_Fee]]
+                        [[#note]]
+                        <div class="">
+                            <p class="deductible">Note: [[note]]</p>
+                        </div>
+                        [[/note]]
+                    </div>
+                    <div class="plan-select-btn">
+                        <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        [[#featured_plan]]<div class="best-seller-badge"></div>[[/featured_plan]]
+    </div>
 </script>
 
 <script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
-        <div class="h-100 mb-30"{% comment %}row{% endcomment %}>
+    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+        <div class="h-100">
             <div class="quote-container">
                 <div class="">
-
                     <div class="qt-plan-logo">
-                        <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png"
-                             class="carrier-logo-image">
-
+                        <img alt="[[Name]]" src="/static/quotes/img/stm-transparent/[[plan_name_for_img]].png" class="carrier-logo-image">
                     </div>
                      <hr>
                     <div class="plan-single-info">
@@ -750,7 +752,6 @@
                             </a>
                         </p>
 
-
                     <div class="">
                         <p class="deductible">Coinsurance: [[Coinsurance_Percentage]]%
                             <span data-content="Your share of costs for a covered service, typically after you meet your deductible and copayment charges. For example, once you meet your deductible, you might pay 20% and your health insurance plan pays 80%, based on the plan you choose. Once you have met your plan's annual out-of-pocket maximum, your plan pays 100% of the costs for covered services."
@@ -780,17 +781,10 @@
                 </div>
             </div>
         </div>
-        <div>
-            {% comment %}showed only in featured plan{% endcomment %}
-        [[#featured_plan]]
-            <div class="best-seller-badge"></div>
-
-        [[/featured_plan]]
-        </div>
+        [[#featured_plan]]<div class="best-seller-badge"></div>[[/featured_plan]]
     </div>
-    </div>
-
 </script>
+
 <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
 <script>
 if (!Array.prototype.filter) {
