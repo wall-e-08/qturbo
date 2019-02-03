@@ -1281,15 +1281,15 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     print("Calling AJAX.")
     sp = []
 
-    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST.copy()
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    ins_type = quote_request_form_data['Ins_Type']
+    print(quote_request_form_data)
+
+    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST_DICT.copy()[ins_type]
 
     featured_flag_for_stm_name = {}
-    for plan in plan_name_list:
-        featured_flag_for_stm_name[plan] = False
-
-
-    quote_request_form_data = request.session.get('quote_request_form_data', {})
-    print(quote_request_form_data)
+    for matched_plan in plan_name_list:
+        featured_flag_for_stm_name[matched_plan] = False
 
     preference = request.session.get('quote_request_preference_data', {})
 
@@ -1299,19 +1299,15 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
         plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
-        for pdx, plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
-            decoded_plan = json_decoder.decode(plan.decode())
+        for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
+            decoded_plan = json_decoder.decode(matched_plan.decode())
 
             if decoded_plan == 'START':
                 print(f'{decoded_plan} of plans in redis.')
 
-            # Have we have reached the end of the loop?
-            # There are no more plans
             elif decoded_plan == "END":
                 if pdx == plan_list_length - 1:
                     print(f'We have reached the end of the list. There are {pdx-1} plans.')
-                else:
-                    continue
 
             elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
                 if (
@@ -1328,7 +1324,6 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 if decoded_plan not in ['START', 'END']:
                     plan_name = decoded_plan['Name']
 
-
                     if not featured_flag_for_stm_name[plan_name]:
                         premium = decoded_plan['Premium']
                         if float(premium) > 100:
@@ -1341,18 +1336,24 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
 
             sp.append(decoded_plan)
 
-
-
-    for plan in featured_flag_for_stm_name.items():
-        if not featured_flag_for_stm_name[plan[0]]:
+    for plan_name in featured_flag_for_stm_name:
+        if not featured_flag_for_stm_name[plan_name]:
             try:
-                plan = next(filter(lambda mp: mp['Name'] == plan[0], sp[1:len(sp)-1]))
-                sp.remove(plan)
-                plan['featured_plan'] = True
-                sp.append(plan)
-
-            except (StopIteration, TypeError, KeyError) as error:
-                print(error)
+                matched_plan = next(filter(lambda mp: mp['Name'] == plan_name, sp[1:]))
+                end = sp.pop()
+                sp.remove(matched_plan)
+                matched_plan['featured_plan'] = True
+                sp.append(matched_plan)
+                sp.append(end)
+                featured_flag_for_stm_name[matched_plan] = True
+            except StopIteration as error:
+                print("error in get_plan_quote_data_ajax:", error)
+                pass
+            except TypeError as error:
+                print("error in get_plan_quote_data_ajax:", error)
+                pass
+            except KeyError as error:
+                print("error in get_plan_quote_data_ajax:", error)
                 pass
 
 
