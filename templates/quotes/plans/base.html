@@ -332,14 +332,14 @@
                                     <p class="variations-plan-name">{{ related_plan.general_plan_name }}</p>
                                     <p> Deductible - ${{ related_plan.option }}</p>
                                     <p class="">
-                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.actual_premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.Premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
                                     </p>
                                 {% else %}
                                     <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}">
                                     <p class="variations-plan-name">{{ related_plan.plan_name }}</p>
                                     <p> Enrollment Fee - {{ related_plan.Enrollment_Fee }}</p>
                                     <p class="">
-                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.actual_premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.Premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
                                     </p>
 
                                 {% endif %}
@@ -432,9 +432,9 @@
 </script>
     <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
     <script>
-        if(performance.navigation.type === 2) {
+        if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") {
             console.log("Back button detected, reloading page");
-            location.reload(true);
+            window.location.reload()
         }
 
 
@@ -540,9 +540,6 @@
                 var $coverage_duration_dropdown = $('#alternative_plans_dropdown') ;
                 var $alternative_benefit_amount_dropdown = $('#alternative_benefit_amount_dropdown') ;
                 var $alternate_coinsurace_percentage = $('#alternate_coinsurace_percentage') ;
-                console.log($coverage_duration_dropdown.val());
-                console.log($alternative_benefit_amount_dropdown.val());
-                console.log($alternate_coinsurace_percentage.val());
                 {#location.href = $coverage_duration_dropdown.val();#}
             })
         });
@@ -706,8 +703,9 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function (json) {
-                    console.log(json)
+                    console.table(json);
                     loading_div.fadeOut();
+                    console.log(json.related_plans);
                     if (json.status === 'success') {
                         if (changed_attr == 'Duration_Coverage') {
                             location.href = json.url;
