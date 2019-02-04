@@ -1,0 +1,683 @@
+{% extends 'base_nhaquote.html' %}
+{% load i18n static humanize hp_tags %}
+{% block title %}{% trans "Payment Info" %}
+    {{ block.super }}
+{% endblock title %}
+{% block extra_css %}
+<style type="text/css"></style>
+{% endblock extra_css %}
+{% block top-menu-block %}{% endblock %}
+{% block mobile-header %}{% endblock %}
+{% block container %}
+
+<div class="app-page-status-bar">
+    <div class="container">
+        <div class="col-xs-12">
+            <ul class="app-status-list">
+                <li class="completed" id="underwriting">
+                    <span class="progress-bar-step-label">✓</span>
+                    <a href="{% url 'quotes:stm_enroll' plan_url 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li class="completed" id="applicantInfo">
+                    <span class="progress-bar-step-label">✓</span>
+                    <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" class="js-progress-bar-nav-link progress-bar-label">Applicant Info</a>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li class="current" id="payment">
+                    <span class="progress-bar-step-label">3</span>
+                    <span class="progress-bar-label">Payment &amp; Billing masum</span>
+                    <span class="progress-bar-divider"> &gt; </span>
+                </li>
+                <li id="review">
+                    <span class="progress-bar-step-label">4</span>
+                    <span class="progress-bar-label">Review &amp; Submit</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="app-page-wrapper">
+    <div id="app-page-container" class="container">
+        <div class="row">
+            <div id="application-body">
+                <div class="ms-row">
+                    <div id="js-app-page-body-content" class="app-page-body-content col-md-8">
+                        <p class="app-page-heading-required-text">* Required</p>
+                        <h3 class="bold color-base no-padding no-margin">Step 3. Payment & Billing</h3>
+                        <p class="reset">Please provide your payment and billing preferences. (<a href="#" class="js-glossary js-glossary-tellmemore" title="">tell me more</a>)</p>
+
+                        <form method="post" id="payment_method_form">
+                        {% csrf_token %}
+
+                        <div class="row section" id="select_payment_method">
+                            <div class="col-sm-12">
+                                <h3>{% trans "Payment Method" %}</h3>
+                                <div class="row" style="margin-top: 3.5rem">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-12" style="margin-bottom: 2rem">
+                                                <label class="required">{% trans "Select Your Payment Method" %}:</label>
+                                            </div>
+                                        </div>
+                                        <div class="hp-radio-parent_custom">
+	                                        <div class="row">
+	                                            <div class="col-sm-6 col-xs-12">
+	                                                <div class="hp-radio">
+	                                                    <input type="radio" id="payment_method_credit_card"
+	                                                           value="CreditCard" name="{{ payment_method_form.Payment_Method.html_name }}"
+	                                                           {% if payment_method_form.Payment_Method.value == 'CreditCard' %}
+	                                                           checked{% elif payment_method_form.Payment_Method.value != 'BankDraft' %}checked{% endif %} >
+	                                                    <label class="radio-toggle" for="payment_method_credit_card">{% trans "Credit Card" %}</label>
+	                                                </div>
+	                                                <div class="hp-radio">
+	                                                    <input type="radio" id="payment_method_bank_draft"
+	                                                           value="BankDraft" name="{{ payment_method_form.Payment_Method.html_name }}"
+	                                                           {% if payment_method_form.Payment_Method.value == 'BankDraft' %}checked{% endif %}>
+	                                                    <label class="radio-toggle" for="payment_method_bank_draft">{% trans "Bank Draft" %}</label>
+	                                                </div>
+	                                            </div>
+	                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+						<div id="payment_method_wrapper" class="mb_2rem">
+                        {# CARD INFO #}
+                        <div class="{% if payment_method_form.Payment_Method.value == 'BankDraft' %}none{% endif %}" id="card_info">
+                            <div class="row">
+
+	                            {% comment %}<div class="col-sm-6 col-sm-6-push">
+	                                <img src="{% static 'quotes/img/credit-card-info.png' %}" style="max-width: 100%;">
+	                            </div>{% endcomment %}
+	
+	                            <div class="col-sm-12 col-sm-6-card-margin-top">
+	                                <div class="row" style="margin-bottom: 2rem">
+	                                    <div class="col-sm-12">
+	                                        <label class="required">{% trans "Credit Card Number:" %}</label>
+	                                        <input type="text" class="form-control" name="{{ payment_method_form.Card_Number.html_name }}"
+	                                               value="{{ payment_method_form.Card_Number.value|default:'' }}">
+	                                        <span class="form_field_error" id="{{ payment_method_form.Card_Number.id_for_label }}_error"></span>
+	                                    </div>
+	                                </div>
+	
+	                                <div class="row" style="margin-bottom: 2rem">
+	                                    <div class="col-sm-12">
+	                                        <label class="required">{% trans "Card Expiration: (Month/Year)" %}</label>
+	                                        <div class="row">
+	                                            <div class="col-sm-6 col-xs-6">
+	                                                <select class="form-control" name="{{ payment_method_form.Card_ExpirationMonth.html_name }}">
+	                                                    {% for choice in payment_method_form.Card_ExpirationMonth.field.choices %}
+	                                                        <option value="{{ choice.0 }}"
+	                                                                {% if payment_method_form.Card_ExpirationMonth.value == choice.0 %}
+	                                                                selected{% endif %}>{{ choice.1 }}</option>
+	                                                    {% endfor %}
+	                                                </select>
+	                                            </div>
+	                                            <div class="col-sm-6 col-xs-6">
+	                                                <select class="form-control" name="{{ payment_method_form.Card_ExpirationYear.html_name }}">
+	                                                    {% for choice in payment_method_form.Card_ExpirationYear.field.choices %}
+	                                                        <option value="{{ choice.0 }}"
+	                                                                {% if payment_method_form.Card_ExpirationYear.value and payment_method_form.Card_ExpirationYear.value == choice.0 %}
+	                                                                selected
+	                                                                {% elif not payment_method_form.Card_ExpirationYear.value and choice.0 == '2020' %}selected
+	                                                                {% endif %}>{{ choice.1 }}</option>
+	                                                    {% endfor %}
+	                                                </select>
+	                                            </div>
+	                                        </div>
+	                                        <span class="form_field_error" id="{{ payment_method_form.Card_ExpirationMonth.id_for_label }}_error"></span>
+	                                        <span class="form_field_error" id="{{ payment_method_form.Card_ExpirationYear.id_for_label }}_error"></span>
+	                                    </div>
+	                                </div>
+	
+	                                <div class="form-group">
+	                                    <label class="required">{% trans "Card Holder Name:" %}</label>
+	                                    <input type="text" class="form-control"
+	                                           name="{{ payment_method_form.CardHolder_Name.html_name }}"
+	                                           value="{{ payment_method_form.CardHolder_Name.value|default:'' }}">
+	                                    <span class="form_field_error" id="{{ payment_method_form.CardHolder_Name.id_for_label }}_error"></span>
+	                                </div>
+	
+	                            </div>
+							</div>
+                        </div>
+
+
+                        {# BANK INFO #}
+                        <div class="{% if payment_method_form.Payment_Method.value != 'BankDraft' %}none{% endif %}" id="bank_info">
+                            <div class="row">
+
+	                            {% comment %}<div class="col-sm-6 col-sm-6-push">
+	                                <img src="{% static 'quotes/img/bank-draft-info.png' %}" style="max-width: 100%;">
+	                            </div>{% endcomment %}
+	
+	                            <div class="col-sm-12 col-sm-6-card-margin-top">
+	                                <div class="row">
+		                                <div class="form-group col-sm-6">
+		                                    <label class="required">{% trans "Account Holder Name:" %}</label>
+		                                    <input type="text" class="form-control"
+		                                           name="{{ payment_method_form.Bank_Account_Name.html_name }}"
+		                                           value="{{ payment_method_form.Bank_Account_Name.value|default:'' }}">
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Name.id_for_label }}_error"></span>
+		                                </div>
+		
+		                                <div class="form-group col-sm-6">
+		                                    <label class="required">{% trans "Bank Name:" %}</label>
+		                                    <input type="text" class="form-control"
+		                                           name="{{ payment_method_form.Bank_Name.html_name }}"
+		                                           value="{{ payment_method_form.Bank_Name.value|default:'' }}">
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Name.id_for_label }}_error"></span>
+		                                </div>
+	                                
+		                                <div class="form-group col-sm-6">
+		                                    <label class="required">{% trans "Routing Number" %}</label>
+		                                    <input type="text" class="form-control"
+		                                           name="{{ payment_method_form.Bank_Routing_Number.html_name }}"
+		                                           value="{{ payment_method_form.Bank_Routing_Number.value|default:'' }}" >
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Routing_Number.id_for_label }}_error"></span>
+		                                </div>
+		
+		                                <div class="form-group col-sm-6">
+		                                    <label class="required">{% trans "Account Number" %}</label>
+		                                    <input type="text" class="form-control"
+		                                           name="{{ payment_method_form.Bank_Account_Number.html_name }}"
+		                                           value="{{ payment_method_form.Bank_Account_Number.value|default:'' }}">
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Number.id_for_label }}_error"></span>
+		                                </div>
+		
+		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
+		                                    <label class="required">{% trans "Account Type:" %}</label>
+		                                
+			                                
+			                                {# using select/option (used in salesfusion) #}
+			                                <select class="form-control ms-form-control ms-round"
+			                                        id="{{ payment_method_form.Bank_Account_Type.id_for_label }}"
+			                                        name="{{ payment_method_form.Bank_Account_Type.html_name }}">
+	                                            {% for choice in payment_method_form.Bank_Account_Type.field.choices %}
+	                                                <option value="{{ choice.0 }}"
+	                                                    {% if payment_method_form.Bank_Account_Type.value == choice.0 %}selected{% endif %}>
+	                                                    {{ choice.1 }}
+	                                                </option>
+	                                            {% endfor %}
+	                                        </select>
+			                                
+		                                    {% comment %}
+		                                    <div class="row">
+		                                        <div class="col-sm-12 col-xs-12">
+		                                            <div class="hp-radio">
+		                                                <input type="radio" id="bank_account_type_personal" value="Personal"
+		                                                       name="{{ payment_method_form.Bank_Account_Type.html_name }}"
+		                                                       {% if payment_method_form.Bank_Account_Type.value == 'Personal' %}checked{% endif %}>
+		                                                <label for="bank_account_type_personal">{% trans "Personal" %}</label>
+		                                            </div>
+		                                            <div class="hp-radio">
+		                                                <input type="radio" id="bank_account_type_business" value="Business"
+		                                                       name="{{ payment_method_form.Bank_Account_Type.html_name }}"
+		                                                       {% if payment_method_form.Bank_Account_Type.value == 'Business' %}checked{% endif %}>
+		                                                <label for="bank_account_type_business">{% trans "Business" %}</label>
+		                                            </div>
+		                                        </div>
+		                                    </div>
+		                                    {% endcomment %}
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Type.id_for_label }}_error"></span>
+		                                </div>
+		
+		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
+		                                    <label class="required">{% trans "Account Class:" %}</label>
+		                                
+			                                {# using select/option (used in salesfusion) #}
+			                                <select class="form-control ms-form-control ms-round"
+			                                        id="{{ payment_method_form.Bank_Account_Class.id_for_label }}"
+			                                        name="{{ payment_method_form.Bank_Account_Class.html_name }}">
+		                                        {% for choice in payment_method_form.Bank_Account_Class.field.choices %}
+		                                            <option value="{{ choice.0 }}"
+		                                                    {% if payment_method_form.Bank_Account_Class.value == choice.0 %}selected{% endif %}>
+		                                                {{ choice.1 }}
+		                                            </option>
+		                                        {% endfor %}
+		                                    </select>
+			                                
+			                                {% comment %}
+		                                    <div class="row">
+		                                        <div class="col-sm-12 col-xs-12">
+		                                            <div class="hp-radio">
+		                                                <input type="radio" id="bank_account_class_checking" value="Checking"
+		                                                       name="{{ payment_method_form.Bank_Account_Class.html_name }}"
+		                                                       {% if payment_method_form.Bank_Account_Class.value == 'Checking' %}checked{% endif %}>
+		                                                <label for="bank_account_class_checking">{% trans "Checking" %}</label>
+		                                            </div>
+		                                            <div class="hp-radio">
+		                                                <input type="radio" id="bank_account_class_savings" value="Saving"
+		                                                       name="{{ payment_method_form.Bank_Account_Class.html_name }}"
+		                                                       {% if payment_method_form.Bank_Account_Class.value == 'Saving' %}checked{% endif %}>
+		                                                <label for="bank_account_class_savings">{% trans "Savings" %}</label>
+		                                            </div>
+		                                        </div>
+		                                    </div>
+			                                {% endcomment %}
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Account_Class.id_for_label }}_error"></span>
+		                                </div>
+		
+		
+		                                <div class="form-group col-sm-4" style="margin-bottom: 15px">
+		                                    <label class="required">{% trans "Check Number" %}</label>
+		                                    <input type="text" class="form-control"
+		                                           name="{{ payment_method_form.Bank_Check_Number.html_name }}"
+		                                           value="100">
+		                                    <span class="form_field_error" id="{{ payment_method_form.Bank_Check_Number.id_for_label }}_error"></span>
+		                                </div>
+									</div>
+	                            </div>
+							</div>
+                        </div>
+
+
+                        <div class="row" id="billing_info" style="margin-top: 2rem; margin-bottom: 2rem;">
+                            <div class="col-sm-12">
+                                <div class="row mb_2rem">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" name="{{ payment_method_form.same_as_contact_address.html_name }}"
+                                               id="{{ payment_method_form.same_as_contact_address.id_for_label}}"
+                                                {% if payment_method_form.same_as_contact_address.value %}checked{% endif %}>
+                                        <label for="{{ payment_method_form.same_as_contact_address.id_for_label}}">
+                                            {% trans "My billing address is the same as my contact information address." %}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row {% if payment_method_form.same_as_contact_address.value %}none{% endif %}"
+                                     id="billing_address_fields">
+                                    <div class="col-sm-12">
+
+                                        <div class="row">
+
+                                            <div class="col-sm-6 mb_2rem">
+                                                <label class="required">{% trans "Billing Address" %}</label>
+                                                <input type="text" class="form-control"
+                                                       name="{{ payment_method_form.Billing_Address.html_name }}"
+                                                       value="{{ payment_method_form.Billing_Address.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ payment_method_form.Billing_Address.id_for_label }}_error"></span>
+                                            </div>
+
+                                            <div class="col-sm-6 mb_2rem">
+                                                <label class="required">{% trans "City" %}</label>
+                                                <input type="text" class="form-control"
+                                                       name="{{ payment_method_form.Billing_City.html_name }}"
+                                                       value="{{ payment_method_form.Billing_City.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ payment_method_form.Billing_City.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-3 col-xs-6">
+                                                <label class="required">{% trans "State" %}</label>
+                                                <select class="form-control" name="{{ payment_method_form.Billing_State.html_name }}">
+                                                    {% for choice in payment_method_form.Billing_State.field.choices %}
+                                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <span class="form_field_error" id="{{ payment_method_form.Billing_State.id_for_label }}_error"></span>
+                                            </div>
+                                            <div class="col-sm-3 col-xs-6">
+                                                <label class="required">{% trans "Zip Code" %}</label>
+                                                <input type="text" class="form-control"
+                                                       name="{{ payment_method_form.Billing_ZipCode.html_name }}"
+                                                       value="{{ payment_method_form.Billing_ZipCode.value|default:'' }}">
+                                                <span class="form_field_error" id="{{ payment_method_form.Billing_ZipCode.id_for_label }}_error"></span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input type="checkbox" name="{{ payment_method_form.Payment_Agree.html_name }}"
+                                       id="{{ payment_method_form.Payment_Agree.id_for_label }}"
+                                       {% if payment_method_form.Payment_Agree.value %}checked{% endif %}>
+                                <label class="required" for="{{ payment_method_form.Payment_Agree.id_for_label }}">I agree with payment terms & conditions.</label>
+                                <br>
+                                <span class="form_field_error" id="{{ payment_method_form.Payment_Agree.id_for_label }}_error"></span>
+                            </div>
+                        </div>
+						
+						<div class="row" style="margin-bottom:10px;margin-top:25px;">
+                            <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+                                <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
+                                <a class="btn btn-lg btn-yellow"
+                                   id="continue_next_stage_link"
+                                   data-stage="{{ stage }}"
+                                   data-next-stage="{{ next_stage }}"
+                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                    {% trans "Continue to Step 4 - Review" %} &gt;
+                                </a>
+                            </div>
+                        </div>
+						
+						</div>
+                        </form>
+
+                        
+
+                    </div>
+
+                    <div class="app-page-right-bar col-md-4">
+                        <div id="js-app-page-summary" class="app-page-summary">
+                            <div class="summary-wrapper">
+                                <p class="emphasize">Policy Summary</p>
+                                <div class="carrierLogo">
+                                    <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                                </div>
+                                <p class="policy-label">PLAN</p>
+                                <div class="plan-summary">
+                                    <p>{{ plan.plan_name }}</p>
+                                    {% if form_data.Ins_Type == 'stm' %}
+                                    <p>Deductible: ${{ plan.option|intcomma }}</p>
+
+                                    <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                                    {% endif %}
+                                </div>
+
+                            {% comment %}
+                                <p class="policy-label">APPLICANT</p>
+                                <p id="summary-censusSummary">
+                                    {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                                </p>
+
+                                <p class="policy-label">Policy Effective Date</p>
+                                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
+
+                                {% if form_data.Ins_Type == 'stm' %}
+                                <p class="policy-label">Policy Expiration Date</p>
+                                <p>{% plan_coverage_end_date %}</p>
+                                {% endif %}
+
+                                <div class="js-price-breakdown policy-breakdown-link">
+                                    <p class="policy-label">
+                                        {% if form_data.Payment_Option == '1' %}
+                                            MONTHLY PREMIUM
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            TOTAL PREMIUM
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        {% if form_data.Payment_Option == '1' %}
+                                            ${{ plan.actual_premium }}
+                                        {% elif form_data.Payment_Option == '2' %}
+                                            ${% plan_single_premium %}
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                {% if selected_addon_plans %}
+                                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                                    <ul class="add-on-plan-list">
+                                        {% for add_on in selected_addon_plans %}
+                                        <li>
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                                            <span data-container="body" data-placement="top"
+                                          href="javascript:void(0);" data-toggle="popover"
+                                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+								{% endcomment %}
+                            
+                            
+	                            <table class="table">
+	
+	                                <tr>
+		                                <td>Applicant:</td>
+		                                <td>
+		                                    <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+		                                </td>
+	                                </tr>
+		                            {% if plan.Coinsurance_Percentage %}
+		                            <tr>
+		                                <td>Deductible:</td>
+		                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Out of Pocket:</td>
+		                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Coverage Max:</td>
+		                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+		                            </tr>
+		
+		                            <tr>
+		                                <td>Coinsurance:</td>
+		                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+		                            </tr>
+		                            {% endif %}
+		
+		
+		                            <tr>
+		                                <td>Effective Date:</td>
+		                                <td>
+		                                    <span class="emphasize badge" id="app-effective-date-change">
+		                                        {% form_date_field_value form_data.Effective_Date %}
+		                                    </span>
+		                                </td>
+		                            </tr>
+		
+		
+		                            {% if form_data.Ins_Type == 'stm' %}
+		                            <tr>
+		                                <td>Expiration Date:</td>
+		                                <td><span>{% plan_coverage_end_date %}</span></td>
+		                            </tr>
+		                            {% endif %}
+		
+		
+		                            <tr>
+		                                <td>Monthly Premium:</td>
+		                                <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+		                            </tr>
+		                            <tr>
+		                                <td>Enrollment Fee:</td>
+		                                <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+		                            </tr>
+		
+		                        </table>
+                            
+                                <div class="addon-holder" id="sidebar-add-on-holder">
+			                        {% if selected_addon_plans %}
+			                        <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+			                            ADD-ON PLAN
+			                        </h4>
+			
+			                        {% for add_on in selected_addon_plans %}
+			                        <div class="addon-single">
+			                            <h4 class="review_addon">{{ add_on.Name }}</h4>
+			
+			                            <div class="table-responsive">
+			                                <table class="table mrg-b-0">
+			                                    <tbody>
+			                                        <tr>
+			                                            <td>Premium</td>
+			                                            <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+			                                        </tr>
+			                                        <tr>
+			                                            <td>Enrollment Fee</td>
+			                                            <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+			                                        </tr>
+			                                    </tbody>
+			                                </table>
+			                            </div>
+			                        </div>
+			                        {% endfor %}
+			                        {% endif %}
+	                                
+	                                {% comment %}{% if selected_addon_plans %}
+	                                    <p class="emphasize policy-label">Add-On Plan</p>
+	                                    <ul class="add-on-plan-list">
+	                                        {% for add_on in selected_addon_plans %}
+	                                        <li>
+	                                            <span data-container="body"
+	                                                  data-placement="top"
+	                                                  data-toggle="popover"
+	                                                  data-content="Plan Name">
+		                                            {{ add_on.Name }}
+	                                            </span>
+		                                        :
+	                                            <span data-container="body"
+	                                                  data-placement="top"
+	                                                  data-toggle="popover"
+	                                                  data-content="Premium">
+		                                            ${{ add_on.actual_premium }}
+	                                            </span>
+	                                        </li>
+	                                        {% endfor %}
+	                                    </ul>
+                                    {% endif %}{% endcomment %}
+	                                
+			
+			                    </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock container %}
+{% block footer-info %}{% endblock %}
+{% block hamburger %}{% endblock %}
+{% block extra_js %}
+
+{# To be replaced by vue.js #}
+{#<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>#}
+{#<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>#}
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>#}
+
+<script type="text/javascript">
+    $(function() {
+        $('form').on('change', 'input[name="Payment_Method"]', function(ev) {
+            if ($(this).val() == "BankDraft") {
+                $("#bank_info").removeClass('none');
+                $("#card_info").addClass('none');
+            } else if ($(this).val() == "CreditCard") {
+                $("#bank_info").addClass('none');
+                $("#card_info").removeClass('none');
+            }
+        });
+    });
+
+    $(function() {
+        var $same_as_contact_address = $('input[name="same_as_contact_address"]');
+        var $billing_address_fields = $('#billing_address_fields');
+        $same_as_contact_address.click(function(e) {
+            if ($(this).prop('checked') == true) {
+                $billing_address_fields.addClass('none');
+            } else if ($(this).prop('checked') == false) {
+                $billing_address_fields.removeClass('none');
+            }
+        });
+    });
+
+    $(function() {
+        var $continue_next_stage_link = $('#continue_next_stage_link');
+        function handle_payment_errors(applicant_errors) {
+            $.each(applicant_errors, function(field_name, field_errors) {
+                $('#id_'+  field_name + '_error').html(field_errors.join(' '));
+            });
+        }
+        $continue_next_stage_link.click(function(ev) {
+            ev.preventDefault();
+            var $this = $(this);
+            var $payment_method_form = $('#payment_method_form');
+            var form_data = $payment_method_form.serialize();
+            form_data += "&question_request_name=transition&stage=" + $this.data('stage') + '&next_stage='+$this.data('next-stage');
+            $('.form_field_error').empty();
+            $.ajax({
+                url: $this.data("stage-url"),
+                beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));},
+                data: form_data, type: 'POST', dataType: 'json',
+                success: function(json) {
+                    if (json.status == 'success') {
+                        $("#payment-form-error-message-fix").addClass('none');
+                        location.href = json.redirect_url;
+                    } else if (json.status == 'error') {
+                        handle_payment_errors(json.errors);
+                        $("#payment-form-error-message-fix").removeClass('none');
+                    }
+                },
+                error: function() {alert("Internal Error; Please try again after some time.");}
+            });
+        });
+    });
+</script>
+
+{#{% if dev_debug %}#}
+{#    Amir Bhai's user info populating function#}
+<script>
+    $(function () {
+        function makeid() {
+            var text = "";
+            var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            // 'ZZ11' added to identify the values are using on test
+            return 'ZZ11' + text;
+        }
+
+        function random_account_number() {
+            var account_numebr = "";
+            var number = "0123456789";
+
+            for (var i = 0; i< 5; i++)
+                account_numebr += number.charAt(Math.floor(Math.random() * number.length));
+
+            return account_numebr
+        }
+
+
+        var payment_info_fields = [
+            'Bank_Account_Name', 'Bank_Name', 'Bank_Account_Number', 'Bank_Routing_Number', 'CardHolder_Name'
+        ];
+
+        var payment_info_fields_value = {
+            'Bank_Account_Number': random_account_number(),
+            'Bank_Routing_Number': '111000025'
+        };
+
+        $.each(payment_info_fields, function( index, value ) {
+
+            var $input_field = $('input[name="' + value + '"]');
+
+            var input_field_val = $input_field.val();
+
+            if (! input_field_val) {
+                var value = payment_info_fields_value[value];
+                if (! value) {
+                    value = makeid();
+                }
+                $input_field.val(value);
+            }
+        });
+
+    });
+</script>
+{#{% endif %}#}
+
+{% endblock extra_js %}

@@ -89,11 +89,11 @@
                 <div id="mobileMenu" class="col-xs-12"></div>
                 <div class="col-xs-12">
                     <div class="logo-container">
-                        <a href="{% url 'quotes:home' %}">
+                        <span {% comment %}href="{% url 'quotes:home' %}"{% endcomment %}>
                             {% block navbar_brand %}
                                 <img src="{% static 'img/logo.png' %}" alt="Logo"/>
                             {% endblock %}
-                        </a>
+                        </span>
                     </div>
                     {% block top-menu-block %}
                         <div class="top-menu">
@@ -193,6 +193,20 @@
         </ul>
     </nav>{% endcomment %}
 {% endblock mobile-header %}
+
+
+<div class="pad-t-20 pad-b-20 {% block show_qt_breadcrumb %}none{% endblock %}" id="qt-breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="text-center d-flex payment-progress">
+                    {% block qt_breadcrumb %}{% endblock %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% block container %}
     <div class="common-section">
         <div class="container">
@@ -210,13 +224,13 @@
         <div class="row nhaqt_footer_content">
             <div class="col-md-4">
                 <div class="hi-footer-single-item text-center">
-                    <h5 class="" style="color: #000">
+                    <h4 class="" style="color: #000">
                         {{ general_topic.copyright_text|safe }}
-                    </h5>
+                    </h4>
                 </div>
 
             </div>
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="hi-footer-single-item nhaqt_footer_content1">
                     <div class="nhaqt_footer-logo">
                         <a href="javascript:void(0);">
@@ -227,7 +241,7 @@
 
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="hi-footer-single-item nhaqt_footer_content2">
                     <div class="text-center">
                         <img src="{% static 'quotes/img/getseal.png' %}" height="50" class="mw100"

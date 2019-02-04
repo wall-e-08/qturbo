@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os, dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from typing import Dict
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -372,6 +374,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
         'TN': ['12*1', '12*3'],
         'TX': ['12*1', '12*3'],
         'VA': ['12*1', '12*3'],
+        'WV': ['12*1', '6*1'],
     },
     'AdvantHealth STM': {
         'AL': ['6*1','6*6'],
@@ -465,7 +468,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 #   Homepage Properties  +
 # -----------------------+
 
-USER_PROPERTIES = {
+USER_PROPERTIES: Dict[str, int] = {
     'min_age': 21,
     'max_age': 99,
 
@@ -478,8 +481,11 @@ USER_PROPERTIES = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
-AVAILABLE_PLAN_NAME_LIST = ['LifeShield STM', 'AdvantHealth STM', 'Health Choice', 'Vitala Care',
-             'Legion Limited Medical', 'USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+AVAILABLE_PLAN_NAME_LIST_DICT = {
+    'stm': ['LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+}
 
 
 #

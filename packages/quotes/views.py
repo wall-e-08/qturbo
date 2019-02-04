@@ -37,7 +37,7 @@ import quotes.models as qm
 
 # For type annotation
 from django.core.handlers.wsgi import WSGIRequest
-from typing import Union, List
+from typing import Union, List, Dict, Any
 
 logger = VimmLogger('quote_turbo')
 
@@ -136,13 +136,6 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
             Refractoring is needed as the whole method might be necessary. 
         """
 
-        # quote_request_form_data = request.session.get('quote_request_form_data', {})
-
-        request.session['applicant_enrolled'] = False
-        request.session.modified = True
-        if quote_request_form_data.get('applicant_is_child', True):
-            request.session['quote_request_formset_data'] = []
-
         if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
             quote_request_form_data = {}
             request.session['quote_request_form_data'] = {}
@@ -151,7 +144,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
-        d = {'monthly_plans': [], 'addon_plans': []}
+        d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
         request.session['quote_request_response_data'] = d
         request.session.modified = True
         logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
@@ -186,12 +179,9 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
                     # We are here setting up a dictionary in the session for future usage
                     print(f'Setting quote request preference data')
 
-                    # To be refactored.
-                    # We should move this back to validate_quote_form()
-                    # This only runs at the first of the quote
                     quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA
 
-                    quote_request_done_data = {
+                    quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
                         'LifeShield STM': {
                             'Duration_Coverage': [],
                         },
@@ -458,22 +448,22 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     # Changing/Filtering the related plans here
     # Here option means deductible
-    if plan['Name'] in stm_carriers:
-        related_plans = list(filter(
-            lambda mp: mp['Name'] == plan['Name'] and \
-                       mp['option'] == plan['option'] and \
-                       mp['actual_premium'] != plan['actual_premium'], sp))
-        related_plans_dict = {}
-        for i in related_plans:
-            try:
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
-            except KeyError as k:
-                print(f"Preparing stm_plan template... Creating related plan dictionary for {k} percent co-insurance")
-                related_plans_dict[i['Coinsurance_Percentage']] = []
-                related_plans_dict[i['Coinsurance_Percentage']].append(i)
 
-        related_plans = OrderedDict(sorted(related_plans_dict.items()))
-        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+    if plan['Name'] in stm_carriers:
+        try:
+            related_plans = list(filter(
+                lambda mp: mp['Name'] == plan['Name'] and \
+                           mp['option'] != plan['option'] and \
+                           mp['Plan'] == plan['Plan'] and \
+                           mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and \
+                           mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0] and \
+                           mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and \
+                           mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(sp, key=lambda x: x['Premium'])))
+        except KeyError as k:
+            print(k)
+            pass
+
+        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
@@ -1287,15 +1277,15 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
     print("Calling AJAX.")
     sp = []
 
-    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST.copy()
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    ins_type = quote_request_form_data['Ins_Type']
+    print(quote_request_form_data)
+
+    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST_DICT.copy()[ins_type]
 
     featured_flag_for_stm_name = {}
-    for plan in plan_name_list:
-        featured_flag_for_stm_name[plan] = False
-
-
-    quote_request_form_data = request.session.get('quote_request_form_data', {})
-    print(quote_request_form_data)
+    for matched_plan in plan_name_list:
+        featured_flag_for_stm_name[matched_plan] = False
 
     preference = request.session.get('quote_request_preference_data', {})
 
@@ -1305,19 +1295,15 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
         plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
-        for pdx, plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
-            decoded_plan = json_decoder.decode(plan.decode())
+        for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
+            decoded_plan = json_decoder.decode(matched_plan.decode())
 
             if decoded_plan == 'START':
                 print(f'{decoded_plan} of plans in redis.')
 
-            # Have we have reached the end of the loop?
-            # There are no more plans
             elif decoded_plan == "END":
                 if pdx == plan_list_length - 1:
                     print(f'We have reached the end of the list. There are {pdx-1} plans.')
-                else:
-                    continue
 
             elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
                 if (
@@ -1334,7 +1320,6 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 if decoded_plan not in ['START', 'END']:
                     plan_name = decoded_plan['Name']
 
-
                     if not featured_flag_for_stm_name[plan_name]:
                         premium = decoded_plan['Premium']
                         if float(premium) > 100:
@@ -1347,18 +1332,24 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
 
             sp.append(decoded_plan)
 
-
-
-    for plan in featured_flag_for_stm_name.items():
-        if not featured_flag_for_stm_name[plan[0]]:
+    for plan_name in featured_flag_for_stm_name:
+        if not featured_flag_for_stm_name[plan_name]:
             try:
-                plan = next(filter(lambda mp: mp['Name'] == plan[0], sp[1:len(sp)-1]))
-                sp.remove(plan)
-                plan['featured_plan'] = True
-                sp.append(plan)
-
-            except (StopIteration, TypeError, KeyError) as error:
-                print(error)
+                matched_plan = next(filter(lambda mp: mp['Name'] == plan_name, sp[1:]))
+                end = sp.pop()
+                sp.remove(matched_plan)
+                matched_plan['featured_plan'] = True
+                sp.append(matched_plan)
+                sp.append(end)
+                featured_flag_for_stm_name[matched_plan] = True
+            except StopIteration as error:
+                print("error in get_plan_quote_data_ajax:", error)
+                pass
+            except TypeError as error:
+                print("error in get_plan_quote_data_ajax:", error)
+                pass
+            except KeyError as error:
+                print("error in get_plan_quote_data_ajax:", error)
                 pass
 
 
@@ -1905,7 +1896,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     if not quote_request_form_data:
         return JsonResponse(None)
 
-    sp = []
+    plan_list = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
 
@@ -1923,34 +1914,39 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
-            sp.append(p)
+            plan_list.append(p)
 
-    if not sp:
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
     # We are not selecting the current plan from plan list(mp).
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
         raise Http404()
 
     form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
 
+    preference = {}
     if form.is_valid():
         print(f'Form is valid.')
         benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
         if benefit_amount == '' or None:
             benefit_amount = plan['out_of_pocket_value']
+        preference['Benefit_Amount'] = benefit_amount
 
         coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
         if coinsurance_percentage == '' or None:
             coinsurance_percentage = plan['Coinsurance_Percentage']
+        preference['Coinsurance_Percentage'] = coinsurance_percentage
+
 
         coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
         if coverage_maximum == '' or None:
             coverage_maximum = plan['Coverage_Max']
+        preference['Coverage_Max'] = coverage_maximum
 
         plan_type = form.cleaned_data.get('Plan', None)
         if plan_type == '' or None:
@@ -1958,24 +1954,24 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
         input_change = request.POST.get('changed', None)
 
-    # Let the coverage duration be the current plan coverage duration.
     coverage_duration = plan['Duration_Coverage']
 
-    # Here we shall create the selection data
-
-    available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+    available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan)
 
 
     if input_change == 'Benefit_Amount':
-        l = get_available_coins_against_benefit(sp, benefit_amount, plan)
+        l = get_available_coins_against_benefit(plan_list, benefit_amount, plan)
         if coinsurance_percentage not in l:
-            coinsurance_percentage = min(l)
+            # coinsurance_percentage = min(l)
+            preference['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
 
 
     elif input_change == 'Coinsurance_Percentage':
-        l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
+        l = get_available_benefit_against_coins(plan_list, coinsurance_percentage, plan)
         if benefit_amount not in l:
-            benefit_amount = min(l)
+            # benefit_amount = min(l)
+            preference['Benefit_Amount'] = benefit_amount = min(l)
+
 
     try:
         alternative_plan = next(filter(lambda mp: mp['option'] == plan['option'] and
@@ -1983,7 +1979,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['Coverage_Max'] == coverage_maximum and
                                                   mp['Duration_Coverage'] == coverage_duration and
-                                                  mp['Plan'] == plan_type, sp))
+                                                  mp['Plan'] == plan_type, plan_list))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')  # We need to handle this exception in template/js
         raise Http404()
@@ -2031,9 +2027,34 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'coinsurance': alternative_plan['Coinsurance_Percentage'],
             'benefit_amount': alternative_plan['out_of_pocket_value'],
             'coverage_maximum': alternative_plan['coverage_max_value'],
-            'premium': plan_actual_premium(context=None, stm_plan=alternative_plan)
+            'premium': plan_actual_premium(context=None, stm_plan=alternative_plan),
+            'related_plans' : get_related_plans(plan, preference, plan_list),
+            'plan_type': quote_request_form_data.get('Ins_Type'),
         }
     )
+
+
+def get_related_plans(plan, preference_dict, plan_list):
+    """
+
+    :return:
+    """
+    related_plans = None
+    try:
+        related_plans = list(filter(
+            lambda mp: mp['Name'] == plan['Name'] and \
+                       mp['option'] != plan['option'] and \
+                       mp['Plan'] == plan['Plan'] and \
+                       mp['Coinsurance_Percentage'] == preference_dict['Coinsurance_Percentage'] and \
+                       mp['out_of_pocket_value'] == preference_dict['Benefit_Amount'] and \
+                       mp['coverage_max_value'] == preference_dict['Coverage_Max'] and \
+                       mp['Duration_Coverage'] == plan['Duration_Coverage'], plan_list))
+    except KeyError as k:
+        print(k)
+        pass
+
+    print("related_plans:", related_plans)
+    return related_plans
 
 
 def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResponse:
@@ -2118,10 +2139,12 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
 
+    # TODO: Try catch for changed values.
+
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
-                                                  mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
-                                                  mp['coverage_max_value'] == plan['coverage_max_value'] and
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == changed_coinsurance_percentage and
+                                                  mp['out_of_pocket_value'] == changed_benefit_amount and
+                                                  mp['coverage_max_value'] == changed_coverage_maximum and
                                                   mp['Plan'] == plan['Plan'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))
     except StopIteration:

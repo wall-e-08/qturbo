@@ -420,3 +420,38 @@ a.qt-plan-brochure-file > i.fa:last-child {
         margin-right: 8px;
     }
 }
+
+/* related plan */
+#qt-related_plan {
+    text-align: center;
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: auto auto auto;
+        grid-template-columns: auto auto auto;
+}
+
+#qt-related_plan>div {
+    /* border merge hack */
+    margin-top: -1px;
+    margin-right: -1px;
+}
+
+.plan-variation-container {
+    margin: 0;
+    border-width: 1px;
+    border-radius: 0;
+    height: 100%;
+}
+
+.plan-variation-container .variations-plan-name {
+    margin: -15px -20px 15px;
+    padding: 15px 20px 10px;
+    background-color: rgba(31, 181, 173, 0.10);
+}
+
+@media (max-width: 580px) {
+    #qt-related_plan {
+        -ms-grid-columns: auto auto;
+        grid-template-columns: auto auto;
+    }
+}

@@ -113,6 +113,8 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
         for monthly_plan in res.monthly:
             monthly_plan_data = monthly_plan.get_data_as_dict()
             if redis is not None:
+                if redis.lrange(redis_key, -1, -1)[0].decode() == '"END"':
+                    redis.rpop(redis_key)
                 redis.rpush(redis_key, *[json_encoder.encode(monthly_plan_data)])
 
         # addon_plans += res.addon_plans
