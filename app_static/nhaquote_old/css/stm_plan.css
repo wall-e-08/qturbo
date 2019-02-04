@@ -440,6 +440,7 @@ a.qt-plan-brochure-file > i.fa:last-child {
     margin: 0;
     border-width: 1px;
     border-radius: 0;
+    height: 100%;
 }
 
 .plan-variation-container .variations-plan-name {
