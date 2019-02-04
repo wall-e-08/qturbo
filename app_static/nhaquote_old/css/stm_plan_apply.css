@@ -1,0 +1,105 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+.text-19{
+    color: #19B4FA;
+}
+.carrierLogo{
+    width: 220px;
+    height: auto;
+}
+.quote-price-breakdown-table .carrier-logo-image{
+    width: 100%;
+    height: auto;
+}
+.apply-right-bar-wrapper-new {
+    background: #f8f8f8;
+    padding: 8px 8px;
+    border-left: 5px solid #19b4fa;
+    border-radius: 15px;
+}
+.list-image{
+    margin-left: 10px;
+    list-style-image: url("../../quotes/img/l-icon.png");
+}
+/*#applyButton{*/
+    /*font-weight: bold;*/
+    /*background: #fe8829;*/
+    /*box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.4);*/
+    /*-webkit-transition: .4s ease-in-out;*/
+    /*-moz-transition: .4s ease-in-out;*/
+    /*-ms-transition: .4s ease-in-out;*/
+    /*-o-transition: .4s ease-in-out;*/
+    /*transition: .4s ease-in-out;*/
+/*}*/
+/*#applyButton:hover{*/
+    /*box-shadow: none;*/
+/*}*/
+#applyButton{
+    border: none;
+    position: relative;
+    border-radius: 6px !important;
+    background-color: #fe8829 !important;
+    box-shadow: 0 6px #d45f00;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+#applyButton:hover{
+    box-shadow: 0 4px #a5581a;
+    top: 2px;
+}
+#applyButton:focus{
+    background: #fe8829;
+    box-shadow: 0 0 #823a02;
+    top: 6px;
+}
+#application-body .app-page-underwriting-questions li {
+    background-color: #f8f8f8;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+#nhaqt_footer{
+    background: #f9f9f9;
+    margin-top: 40px;
+    border-top: 1px solid #e4e0e0;
+}
+.nhaqt_footer_content{
+    padding: 25px 0 10px 0;
+    color: #fff;
+}
+.nhaqt_footer-logo{
+    width: 100%;
+    /*cursor: pointer;*/
+}
+.my-30{
+    margin: 30px 0;
+}
+.my-50{
+    margin: 50px 0;
+}
+.nhaqt_footer-logo a img{
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 768px) {
+    .nhaqt_footer_content{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .nhaqt_footer-logo{
+        margin: 10px auto;
+    }
+    .carrierLogo{
+        width: 150px;
+    }
+    .apply-right-bar-wrapper{
+        margin-top: 30px;
+    }
+}

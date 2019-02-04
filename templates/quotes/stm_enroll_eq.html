@@ -1,39 +1,10 @@
 {% extends 'base_nhaquote.html' %}
-{% load i18n hp_tags %}
+{% load static i18n hp_tags %}
 {% block title %}
     {% trans "Eligibility Questions" %} | {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
-<style type="text/css">
-    body {font-size: 1.6rem;}
-    .question-col {background-color: #f1f2f4;padding: 2rem;margin-bottom: 2rem;}
-    .question-label {color: #156e95;font-size: 1.5rem;text-transform: uppercase;}
-    .question-text {line-height: 22px;}
-    .selected-ans-button {background-color: #57adef !important;color: #ffffff !important;font-weight: bold !important;}
-    .btn-default-answer {
-        background-color: #fff;
-        border-color: #ccc;
-        color: #333;
-        width: 100%;
-        margin-top: 10px;
-    }
-    .none {display: none;}
-    .wrong_ans_none {display: none;}
-    .app-page-cta-container .heading {color: #16c060}
-    .btn-default-continue {
-        background-color: #57adef;
-        border-color: #57adef;
-        border-radius: 23px;
-        color: #fff;
-        padding: 1.2rem 2.4rem;
-        font-size: 1.8rem;
-        font-weight: bold;
-    }
-    .btn-default-continue:hover {color: #c2e2f2}
-    .app-message-container.warning {border: 1px solid #ff6000;}
-    .app-message-container.warning .heading {color: #ff6000;}
-    .emphasize {font-weight: bold;}
-</style>
+    <link rel="stylesheet" href="{% static 'nhaquote_old/css/stm_eq.css' %}">
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
@@ -48,18 +19,22 @@
                             <div class="" id="underwritingQuestions">
                                 <div id="headingunderwritingQuestions">
                                     <div class="ms-row">
-                                        <div class="col-md-8 col-md-offset-2">
-                                            <h3 class="reset app-page-heading color-base bold">Eligibility Questions</h3>
+                                        <div class="text-center">
+                                            <h2 class="text-orange font-weight-bold">Eligibility
+                                                Questions</h2>
 
-                                            <p class="reset fw-400">Please answer for you and any of your dependents
-                                                applying for coverage. (<a data-placement="auto top"
-                                                                           data-sectiontitle="Eligibility Questions"
-                                                                           data-glossary="shortTerm.application.eligibility.learnmore"
-                                                                           data-toggle="popover" href="javascript:void(0)"
-                                                                           class="js-glossary js-glossary-tellmemore">tell
-                                                    me more</a>)</p>
+                                            <p class="reset fw-400" style="font-size: 20px">Please answer for you and any of your dependents
+                                                {#                                                applying for coverage.</p> (<a data-placement="auto top"#}
+                                                {#                                                                           data-sectiontitle="Eligibility Questions"#}
+                                                {#                                                                           data-glossary="shortTerm.application.eligibility.learnmore"#}
+                                                {#                                                                           data-toggle="popover" href="javascript:void(0)"#}
+                                                {#                                                                           class="js-glossary js-glossary-tellmemore">tell#}
+                                                {#                                                    me more</a>)#}
 
-                                            <p class="reset"></p></div>
+                                            <p class="reset">
+
+                                            </p>
+                                        </div>
 
                                     </div>
                                     <div class="row app-section-summary"></div>
@@ -86,8 +61,8 @@
                                                                  data-expected_answers="{{ stm_question.ExpectedAnswers }}"
                                                                  data-correct_answer="{{ stm_question.CorrectAnswer }}"
                                                                  data-question-id="{{ stm_question.ID }}">
-                                                                <p class="question-label">Question {{ forloop.counter }} of {{ stm_questions|length }}</p>
-                                                                <P class="question-text">{{ stm_question.Text|linebreaksbr }}</P>
+                                                                <p class="question-label text-center">Question {{ forloop.counter }} of {{ stm_questions|length }}</p>
+                                                                <P class="question-text text-center">{{ stm_question.Text|linebreaksbr }}</P>
 
                                                                 {# <div class="col-sm-12 question-col" data-question-id="{{ stm_question.ID }}"> #}
 
@@ -98,7 +73,7 @@
                                                                         <div class="col-sm-{{ stm_question.ExpectedAnswers|length|qeadcs }} qus-btn-col question-toggle-group"
                                                                              data-question-id="{{ stm_question.ID }}">
                                                                             <button type="button"
-                                                                                    class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button
+                                                                                    class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button btn-orange
                                                                                     q-e-a-{{ forloop.parentloop.counter }}
                                                                                     {% if stm_question.user_answer == expected_answer %}selected-ans-button{% endif %}"
                                                                                     data-action="{% url 'quotes:stm_enroll' plan_url stage %}"
@@ -127,12 +102,12 @@
                                                                 {% trans "Congratulations, you have met the eligibility requirements. Please continue on to the next step of the application." %}
                                                             </p>
                                                             <div class="button-wrapper">
-                                                                <a class="btn btn-default-continue" data-total="{{ stm_questions|length }}"
+                                                                <a class="btn btn-default-continue btn-orange" data-total="{{ stm_questions|length }}"
                                                                    id="continue_next_stage_link"
                                                                    data-stage="{{ stage }}"
                                                                    data-next-stage="{{ next_stage }}"
                                                                    data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%; background: #FE8829 !important;">
                                                                     {% trans "Continue" %}
                                                                 </a>
                                                             </div>
@@ -214,7 +189,7 @@
             });
 
             function question_form_success_handler(form_data) {
-                console.log('.question_row[data-order="'+ form_data.order  +'"]');
+                {#console.log('.question_row[data-order="'+ form_data.order  +'"]');#}
                 var $question = $('.question_row[data-order="'+ form_data.order  +'"]');
                 $question.attr('data-user_answer', form_data.answer);
 
@@ -244,17 +219,22 @@
                     if ((form_data.order + 1) < form_data.total) {
                         $('.question_row[data-order="' + (form_data.order + 1) + '"]').removeClass('none');
                         $question.siblings('.question_row')
-                                .filter(function () {return $(this).data('order') > form_data.order;})
-                                .removeClass('wrong_ans_none');
+                                .filter(function () {return $(this).data('order') > form_data.order;});
+
+                        // scroll to the next question
+                        $("html, body").animate({
+                            scrollTop: $question.siblings('.question_row').filter(function () {return $(this).data('order') > form_data.order;}).offset().top
+                        }, 600);
                     }
                 }
+                {% comment %}   {# commented by debashis, because it seems duplicate of previous block #}
                 if (!form_data.is_correct_ans) {
                     if ((form_data.order + 1) < form_data.total) {
                         $question.siblings('.question_row')
                                 .filter(function(){return $(this).data('order') > form_data.order;})
                                 .addClass('wrong_ans_none');
                     }
-                }
+                }{% endcomment %}
             }
         });
     });

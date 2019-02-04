@@ -335,7 +335,7 @@ const router = new VueRouter({
 
                                     form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
                                     form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
-                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true';
+                                    form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true' ? 'Y' : 'N';
 
                                 } else {
                                     console.error("Please insert child data correctly to see plans");

@@ -2,6 +2,11 @@
 
 /* Self explanatory */
 
+#app-page-wrapper , .apply-container{
+    /*  100 vertical height - header height - footer height  */
+    min-height: calc(100vh - 80px - 141.25px);
+}
+
 .product-type-select{
     background-color: #fe8829 ;
     border-radius: 5px;
@@ -18,9 +23,7 @@
 
 .quote-tab-info-line li.active a{
     border: 0;
-    border-bottom: 4px solid;
-    border-color: #19B4FA;
-
+    border-bottom: 4px solid #19B4FA;
 }
 
 .quote-tab-info-line li.active a:hover{
@@ -139,16 +142,18 @@
 }
 .plan-select-btn{
     text-align: center;
-    padding: 10px 5px;
     background: #28a745;
     border-radius: 28px;
     font-weight: bold;
     width: 55%;
-    margin: 10px auto;
+    margin: 10px auto 25px;
 }
-
 .plan-select-btn a{
     color: #fff;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 10px 5px;
 }
 .quote-plan-details{
     padding: 15px 10px;
@@ -312,3 +317,11 @@ body{
     width: 100%;
     border-radius: calc(5px - 1px)
 }
+
+@media (max-height: 768px) and (min-width: 992px) {
+    #qt-plan-details {
+        transform: scale(0.7);
+        top: 10px;
+    }
+}
+

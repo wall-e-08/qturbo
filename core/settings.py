@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os, dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from typing import Dict
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -372,6 +374,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
         'TN': ['12*1', '12*3'],
         'TX': ['12*1', '12*3'],
         'VA': ['12*1', '12*3'],
+        'WV': ['12*1', '6*1'],
     },
     'AdvantHealth STM': {
         'AL': ['6*1','6*6'],
@@ -394,6 +397,10 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'AdvantHealth STM': ['6*6']
 }
 
+# -----------------------------------+
+# Carrier specific plan attributes   +
+# -----------------------------------+
+
 # TODO: Quote request should use these values OR initial quote should be fully hardcoded
 CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
     'LifeShield STM': ['0', '2000', '3000', '4000', '5000'],
@@ -415,6 +422,101 @@ CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
     'AdvantHealth STM': ['250000', '500000', '1000000'],
     'LifeShield STM': ['250000', '750000', '1000000', '1500000']
 }
+
+# --------------+
+#    Income     +
+# --------------+
+
+CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM = {
+    'LifeShield STM': {
+        'low': '250000',
+        'medium': '750000',
+        'high': '1000000'
+    },
+
+    'AdvantHealth STM': {
+        'low': '250000',
+        'medium': '500000',
+        'high': '1000000'
+    }
+}
+
+# -----------------+
+# User Preference  +
+# -----------------+
+
+USER_INITIAL_PREFERENCE_DATA = {
+    # The general_url_chosen flag will be true when user goes into stm_plan page.
+    # It will be again set false when the user gets back to quote list page.
+    'general_url_chosen': False,
+    'LifeShield STM': {
+        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+        'Coverage_Max': [''],
+        'Coinsurance_Percentage': ['0', '20'],
+        'Benefit_Amount': ['0', '2000']
+    },
+
+    'AdvantHealth STM': {
+        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+        'Coverage_Max': [''],
+        'Coinsurance_Percentage': ['20'],
+        'Benefit_Amount': ['2000']
+    }
+}
+
+# -----------------------+
+#   Homepage Properties  +
+# -----------------------+
+
+USER_PROPERTIES: Dict[str, int] = {
+    'min_age': 21,
+    'max_age': 99,
+
+    'dependents_min_age': 6,
+    'dependents_max_age': 25,
+
+}
+
+# ----------------------------+
+#  Featured Plan Properties   +
+#-----------------------------+
+
+AVAILABLE_PLAN_NAME_LIST_DICT = {
+    'stm': ['LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+}
+
+
+#
+# FEATURED_PLAN_DICT = {
+#                          'LifeShield STM': {
+#                              'Coinsurance_Percentage': '20',
+#                              'Benefit_Amount': '2000',
+#                              'Duration_Coverage': '12*1',
+#                              'Premium': '100.00',
+#                              'coverage_max_value': '1000000',
+#                              'session_key': 'qt_dummy_session_key',
+#                          },
+#
+#                         'AdvantHealth STM': {
+#                             'Coinsurance_Percentage': '20',
+#                             'Benefit_Amount': '2000',
+#                             'Duration_Coverage': '6*6',
+#                             'Premium': '100.00',
+#                             'coverage_max_value': '1000000',
+#                             'session_key': 'qt_dummy_session_key',
+#                         },
+#
+#                         # 'Health Choice':{
+#                         #
+#                         # }
+#
+#                     }
+
+# WILL BE DONE LATER IF GOD WISHES.
+
+
 
 
 try:

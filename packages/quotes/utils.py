@@ -69,7 +69,7 @@ def get_initials_for_dependents_formset(initial_form_data):
         for dependent in initial_form_data["Dependents"]:
             initial.append({"Relation": "Child", "Gender": dependent["Child_Gender"],
                             "DOB": QR_DATE_PATTERN.sub(r'\3-\1-\2', dependent["Child_DOB"]),
-                            "Age": dependent["Child_Age"]})
+                            "Age": dependent["Child_Age"], "Tobacco": dependent["Child_Tobacco"]})
     return initial
 
 
@@ -612,6 +612,3 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
                 out_of_pocket_set.add(plan['Benefit_Amount'])
 
     return list(out_of_pocket_set)
-
-
-

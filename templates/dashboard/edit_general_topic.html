@@ -39,6 +39,57 @@
                     {% csrf_token %}
                     {{ form.non_field_errors }}
 
+                    <div class="p-md-3 p-2 mb-4 border border-secondary">
+                        <div class="form-group">
+                            <label for="{{ form.site_name.id_for_label }}">{{ form.site_name.label }}</label>
+                            <input type="text"
+                                   class="form-control {% if form.site_name.errors %}border-danger{% endif %}"
+                                   name="{{ form.site_name.name }}"
+                                   id="{{ form.site_name.id_for_label }}"
+                                   value="{{ form.site_name.value|default:'' }}"
+                                   placeholder="{{ form.site_name.label }}">
+
+                            {% if form.site_name.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.site_name.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.site_main_title.id_for_label }}">Site Title (main)</label>
+                            <input type="text"
+                                   class="form-control {% if form.site_main_title.errors %}border-danger{% endif %}"
+                                   name="{{ form.site_main_title.name }}"
+                                   id="{{ form.site_main_title.id_for_label }}"
+                                   value="{{ form.site_main_title.value|default:'' }}"
+                                   placeholder="{{ form.site_main_title.label }}">
+
+                            {% if form.site_main_title.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.site_main_title.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.meta_keywords.id_for_label }}">{{ form.meta_keywords.label }}(comma separated)</label>
+                            <textarea type="text"
+                                      class="form-control {% if form.meta_keywords.errors %}border-danger{% endif %}"
+                                      name="{{ form.meta_keywords.name }}"
+                                      id="{{ form.meta_keywords.id_for_label }}"
+                                      placeholder="{{ form.meta_keywords.label }}(comma separated)">{{ form.meta_keywords.value|default:'' }}</textarea>
+                            {% if form.meta_keywords.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.meta_keywords.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.meta_description.id_for_label }}">{{ form.meta_description.label }}</label>
+                            <textarea type="text"
+                                      class="form-control {% if form.meta_description.errors %}border-danger{% endif %}"
+                                      name="{{ form.meta_description.name }}"
+                                      id="{{ form.meta_description.id_for_label }}"
+                                      placeholder="{{ form.meta_description.label }}(comma separated)">{{ form.meta_description.value|default:'' }}</textarea>
+                            {% if form.meta_description.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.meta_description.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="top">
                         <div class="form-group">
                             <label for="{{ form.top_quote_heading.id_for_label }}">{{ form.top_quote_heading.label }}</label>
@@ -79,7 +130,7 @@
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_text.errors|join:" " }}</div>
                             {% endif %}
                         </div>
-                        <hr>
+                        {% comment %}<hr>
                         <div class="form-group">
                             <label for="{{ form.top_img.id_for_label }}">{{ form.top_img.label }}</label>
                             <b-form-file accept=".jpg, .png, .gif"
@@ -91,9 +142,9 @@
                             {% if form.top_img.errors %}
                                 <div class="form_field_error text-danger form-input-error">{{ form.top_img.errors|join:" " }}</div>
                             {% endif %}
-                        </div>
+                        </div>{% endcomment %}
                     </div>
-
+{% comment %}
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="service">
                         <div class="form-group">
                             <label for="{{ form.service_heading.id_for_label }}">{{ form.service_heading.label }}</label>
@@ -233,7 +284,7 @@
                             {% endif %}
                         </div>
                     </div>
-
+{% endcomment %}
                     <div class="p-md-3 p-2 mb-4 border border-secondary" aria-label="footer">
                         <div class="form-group">
                             <label for="{{ form.footer_left.id_for_label }}">Texts(including heading) at footer (left)</label>
@@ -480,6 +531,15 @@
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
     {% with selectors='#review_item_2' non_container=True multiple_instance=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#'|add:form.top_text.id_for_label non_container=True multiple_instance=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#'|add:form.footer_left.id_for_label non_container=True multiple_instance=True %}
+        {% include 'snippets/tinymc-init.html' %}
+    {% endwith %}
+    {% with selectors='#'|add:form.footer_middle.id_for_label non_container=True multiple_instance=True %}
         {% include 'snippets/tinymc-init.html' %}
     {% endwith %}
 

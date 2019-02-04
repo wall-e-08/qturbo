@@ -9,7 +9,9 @@ from .models import Menu, GeneralTopic
 class GeneralTopicForm(forms.ModelForm):
     class Meta:
         model = GeneralTopic
-        fields = '__all__'
+        fields = ['site_name', 'site_main_title', 'meta_keywords', 'meta_description',
+                  'top_quote_heading', 'top_quote_sub_heading', 'top_text',
+                  'footer_left', 'footer_middle', 'copyright_text', 'social_links',]
 
 
 class EditorMediaForm(forms.Form):

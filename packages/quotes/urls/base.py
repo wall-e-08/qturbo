@@ -29,7 +29,7 @@ urlpatterns = [
             views.stm_plan, name='stm_plan'),
 
     re_path('stm/plan/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?)/$',
+            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d{1,2}(\*\d{1,1})?p?\d?)/$',
             views.stm_plan, name='stm_plan'),
 
 
@@ -39,10 +39,10 @@ urlpatterns = [
             views.alternate_duration_coverage, name='alternate_duration_coverage'),
 
 
-    re_path('stm/ben_amount_coins_policy_max_change_action/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
+    re_path('stm/select_from_quoted_plans_ajax/(?P<plan_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM|'
             r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}'
             r'(\*\d{1,1})?p?\d?)/$',
-            views.ben_amount_coins_policy_max_change_action, name='ben_amount_coins_policy_max_change_action'),
+            views.select_from_quoted_plans_ajax, name='select_from_quoted_plans_ajax'),
 
     re_path('stm/apply/(?P<plan_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
             r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+)/$',

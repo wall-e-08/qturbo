@@ -1,3 +1,31 @@
+p {
+    word-spacing: initial;
+}
+
+h3 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+#overlay-loading {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99999;
+    position: fixed;
+    font-size: 50px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    line-height: 100vh;
+}
+
+#overlay-loading img {
+    width: 65px;
+}
+
 #qt-plan-details {
     max-width: 500px;
     position: fixed;
@@ -175,7 +203,29 @@
     top: 6px;
 }
 
-.qt-plan-brochure-file {
+.qt-plan-brochure-file:not(.card-link) {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-size: 18px;
+    transition: all 300ms;
+    line-height: 24px;
+    border-radius: 25px;
+    border: 1px solid #3333;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    color: #000;
+    background-color: #fff;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2),
+                0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                0 3px 1px -2px rgba(0, 0, 0, 0.12);
+}
+
+.qt-plan-brochure-file:not(.card-link):hover {
+    background: #e4e4e4;
+}
+
+.qt-plan-brochure-file.card-link {
     color: #da6100;
 }
 
@@ -268,6 +318,11 @@ a.qt-plan-brochure-file > i.fa:last-child {
 #qt-customize-plan .qt-customize-plan-selected-val {
     font-size: 16px;
     color: #080808;
+}
+
+#restrictions-n-omissions div,
+#restrictions-n-omissions p {
+    font-size: 11px !important;
 }
 
 .qt-each-pkg-include {
@@ -363,5 +418,40 @@ a.qt-plan-brochure-file > i.fa:last-child {
     .qt-each-pkg-img {
         width: 28px;
         margin-right: 8px;
+    }
+}
+
+/* related plan */
+#qt-related_plan {
+    text-align: center;
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: auto auto auto;
+        grid-template-columns: auto auto auto;
+}
+
+#qt-related_plan>div {
+    /* border merge hack */
+    margin-top: -1px;
+    margin-right: -1px;
+}
+
+.plan-variation-container {
+    margin: 0;
+    border-width: 1px;
+    border-radius: 0;
+    height: 100%;
+}
+
+.plan-variation-container .variations-plan-name {
+    margin: -15px -20px 15px;
+    padding: 15px 20px 10px;
+    background-color: rgba(31, 181, 173, 0.10);
+}
+
+@media (max-width: 580px) {
+    #qt-related_plan {
+        -ms-grid-columns: auto auto;
+        grid-template-columns: auto auto;
     }
 }

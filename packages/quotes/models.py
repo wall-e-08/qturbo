@@ -698,6 +698,10 @@ class StmPlanBase(models.Model):
 
     unique_url = models.TextField()
 
+    general_url = models.TextField()
+
+    general_plan_name = models.TextField()
+
     Premium = models.DecimalField(
         max_digits=20,
         decimal_places=2
@@ -734,7 +738,9 @@ class StmPlanBase(models.Model):
         return {'vimm_enroll_id': self.vimm_enroll_id,
                 'Name': self.Name,
                 'plan_name': self.plan_name,
+                'general_plan_name': self.general_plan_name,
                 'unique_url': self.unique_url,
+                'general_url': self.general_url,
                 'Premium': str(self.Premium),
                 'actual_premium': str(self.actual_premium),
                 'option': self.option,
