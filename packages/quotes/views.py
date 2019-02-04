@@ -2025,7 +2025,8 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'benefit_amount': alternative_plan['out_of_pocket_value'],
             'coverage_maximum': alternative_plan['coverage_max_value'],
             'premium': plan_actual_premium(context=None, stm_plan=alternative_plan),
-            'related_plans' : get_related_plans(plan, preference, plan_list)
+            'related_plans' : get_related_plans(plan, preference, plan_list),
+            'plan_type': quote_request_form_data.get('Ins_Type'),
         }
     )
 

@@ -703,9 +703,9 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function (json) {
-                    console.table(json);
+                    // console.table(json);
                     loading_div.fadeOut();
-                    console.log(json.related_plans);
+                    // console.log(json.related_plans);
                     if (json.status === 'success') {
                         if (changed_attr == 'Duration_Coverage') {
                             location.href = json.url;
@@ -734,6 +734,38 @@
                             customize_item_plan_array[e][0].html(customize_item_plan_array[e][1]).parents('button').siblings().children('.active').removeClass('active')
                                 .siblings('[data-value="' + customize_item_plan_array[e][1] + '"]').addClass('active');
                         });
+
+                        if (json.related_plans) {
+                            let rel_plan_html = '';
+                            if (json.plan_type === 'stm') {
+                                for (let i = 0; i < json.related_plans.length; i++) {
+                                    rel_plan_html += `
+                                        <div>
+                                            <a class="plan-variation-container" href="/stm/plan/${json.related_plans[i].general_url}">
+                                                <p class="variations-plan-name">${json.related_plans[i].general_plan_name}</p>
+                                                <p> Deductible - $${json.related_plans[i].option}</p>
+                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].Premium}</span>/mo</p>
+                                            </a>
+                                        </div>
+                                    `
+                                }
+                            } else if (json.plan_type === 'anc' || json.plan_type === 'lim') {
+                                for (let i = 0; i < json.related_plans.length; i++) {
+                                    rel_plan_html += `
+                                        <div>
+                                            <a class="plan-variation-container" href="/stm/plan/${json.related_plans[i].unique_url}">
+                                                <p class="variations-plan-name">${json.related_plans[i].plan_name}</p>
+                                                <p> Enrollment Fee - $${json.related_plans[i].Enrollment_Fee}</p>
+                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].Premium}</span>/mo</p>
+                                            </a>
+                                        </div>
+                                    `
+                                }
+                            }
+                            if (rel_plan_html) {
+                                $('#qt-related_plan').html(rel_plan_html)
+                            }
+                        }
                     } else {
                         location.reload();
                         {# TODO HANDLE THIS #}
