@@ -1896,7 +1896,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     if not quote_request_form_data:
         return JsonResponse(None)
 
-    sp = []
+    plan_list = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
 
@@ -1914,34 +1914,39 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
-            sp.append(p)
+            plan_list.append(p)
 
-    if not sp:
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
     # We are not selecting the current plan from plan list(mp).
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
         raise Http404()
 
     form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
 
+    preference = {}
     if form.is_valid():
         print(f'Form is valid.')
         benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
         if benefit_amount == '' or None:
             benefit_amount = plan['out_of_pocket_value']
+        preference['Benefit_Amount'] = benefit_amount
 
         coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
         if coinsurance_percentage == '' or None:
             coinsurance_percentage = plan['Coinsurance_Percentage']
+        preference['Coinsurance_Percentage'] = coinsurance_percentage
+
 
         coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
         if coverage_maximum == '' or None:
             coverage_maximum = plan['Coverage_Max']
+        preference['Coverage_Max'] = coverage_maximum
 
         plan_type = form.cleaned_data.get('Plan', None)
         if plan_type == '' or None:
@@ -1949,22 +1954,19 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
         input_change = request.POST.get('changed', None)
 
-    # Let the coverage duration be the current plan coverage duration.
     coverage_duration = plan['Duration_Coverage']
 
-    # Here we shall create the selection data
-
-    available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan)
+    available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan)
 
 
     if input_change == 'Benefit_Amount':
-        l = get_available_coins_against_benefit(sp, benefit_amount, plan)
+        l = get_available_coins_against_benefit(plan_list, benefit_amount, plan)
         if coinsurance_percentage not in l:
             coinsurance_percentage = min(l)
 
 
     elif input_change == 'Coinsurance_Percentage':
-        l = get_available_benefit_against_coins(sp, coinsurance_percentage, plan)
+        l = get_available_benefit_against_coins(plan_list, coinsurance_percentage, plan)
         if benefit_amount not in l:
             benefit_amount = min(l)
 
@@ -1974,7 +1976,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
                                                   mp['out_of_pocket_value'] == benefit_amount and
                                                   mp['Coverage_Max'] == coverage_maximum and
                                                   mp['Duration_Coverage'] == coverage_duration and
-                                                  mp['Plan'] == plan_type, sp))
+                                                  mp['Plan'] == plan_type, plan_list))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')  # We need to handle this exception in template/js
         raise Http404()
@@ -2022,9 +2024,33 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'coinsurance': alternative_plan['Coinsurance_Percentage'],
             'benefit_amount': alternative_plan['out_of_pocket_value'],
             'coverage_maximum': alternative_plan['coverage_max_value'],
-            'premium': plan_actual_premium(context=None, stm_plan=alternative_plan)
+            'premium': plan_actual_premium(context=None, stm_plan=alternative_plan),
+            'related_plans' : get_related_plans(plan, preference, plan_list)
         }
     )
+
+
+def get_related_plans(plan, preference_dict, plan_list):
+    """
+
+    :return:
+    """
+    related_plans = None
+    try:
+        related_plans = list(filter(
+            lambda mp: mp['Name'] == plan['Name'] and \
+                       mp['option'] != plan['option'] and \
+                       mp['Plan'] == plan['Plan'] and \
+                       mp['Coinsurance_Percentage'] == preference_dict['Coinsurance_Percentage'] and \
+                       mp['out_of_pocket_value'] == preference_dict['Benefit_Amount'] and \
+                       mp['coverage_max_value'] == preference_dict['Coverage_Max'] and \
+                       mp['Duration_Coverage'] == plan['Duration_Coverage'], plan_list))
+    except KeyError as k:
+        print(k)
+        pass
+
+    print("related_plans:", related_plans)
+    return related_plans
 
 
 def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResponse:
