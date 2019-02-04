@@ -1962,13 +1962,16 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     if input_change == 'Benefit_Amount':
         l = get_available_coins_against_benefit(plan_list, benefit_amount, plan)
         if coinsurance_percentage not in l:
-            coinsurance_percentage = min(l)
+            # coinsurance_percentage = min(l)
+            preference['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
 
 
     elif input_change == 'Coinsurance_Percentage':
         l = get_available_benefit_against_coins(plan_list, coinsurance_percentage, plan)
         if benefit_amount not in l:
-            benefit_amount = min(l)
+            # benefit_amount = min(l)
+            preference['Benefit_Amount'] = benefit_amount = min(l)
+
 
     try:
         alternative_plan = next(filter(lambda mp: mp['option'] == plan['option'] and
