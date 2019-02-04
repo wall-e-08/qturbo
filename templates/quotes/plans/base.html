@@ -432,9 +432,9 @@
 </script>
     <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
     <script>
-        if(performance.navigation.type === 2) {
+        if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") {
             console.log("Back button detected, reloading page");
-            location.reload(true);
+            window.location.reload()
         }
 
 
