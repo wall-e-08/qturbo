@@ -54,9 +54,9 @@ body {
     font-weight: bold;
 }
 
-.btn-default-continue:hover {
-    color: #c2e2f2
-}
+/*.btn-default-continue:hover {*/
+    /*color: #c2e2f2*/
+/*}*/
 
 .app-message-container.warning {
     border: 1px solid #ff6000;

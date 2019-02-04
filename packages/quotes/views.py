@@ -37,7 +37,7 @@ import quotes.models as qm
 
 # For type annotation
 from django.core.handlers.wsgi import WSGIRequest
-from typing import Union, List
+from typing import Union, List, Dict, Any
 
 logger = VimmLogger('quote_turbo')
 
@@ -136,13 +136,6 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
             Refractoring is needed as the whole method might be necessary. 
         """
 
-        # quote_request_form_data = request.session.get('quote_request_form_data', {})
-
-        request.session['applicant_enrolled'] = False
-        request.session.modified = True
-        if quote_request_form_data.get('applicant_is_child', True):
-            request.session['quote_request_formset_data'] = []
-
         if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
             quote_request_form_data = {}
             request.session['quote_request_form_data'] = {}
@@ -151,7 +144,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
-        d = {'monthly_plans': [], 'addon_plans': []}
+        d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
         request.session['quote_request_response_data'] = d
         request.session.modified = True
         logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
@@ -186,12 +179,9 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
                     # We are here setting up a dictionary in the session for future usage
                     print(f'Setting quote request preference data')
 
-                    # To be refactored.
-                    # We should move this back to validate_quote_form()
-                    # This only runs at the first of the quote
                     quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA
 
-                    quote_request_done_data = {
+                    quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
                         'LifeShield STM': {
                             'Duration_Coverage': [],
                         },
@@ -458,14 +448,20 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     # Changing/Filtering the related plans here
     # Here option means deductible
+
     if plan['Name'] in stm_carriers:
-        related_plans = list(filter(
-            lambda mp: mp['Name'] == plan['Name'] and \
-                       mp['option'] != plan['option'] and \
-                       mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and \
-                       mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and \
-                       mp['coverage_max_value'] == plan['coverage_max_value'] and \
-                       mp['Plan'] == plan['Plan'], sp))
+        try:
+            related_plans = list(filter(
+                lambda mp: mp['Name'] == plan['Name'] and \
+                           mp['option'] != plan['option'] and \
+                           mp['Plan'] == plan['Plan'] and \
+                           mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and \
+                           mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0] and \
+                           mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and \
+                           mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(sp, key=lambda x: x['Premium'])))
+        except KeyError as k:
+            print(k)
+            pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
@@ -2113,10 +2109,12 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
     # coverage_duration
 
+    # TODO: Try catch for changed values.
+
     try:
-        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == plan['Coinsurance_Percentage'] and
-                                                  mp['out_of_pocket_value'] == plan['out_of_pocket_value'] and
-                                                  mp['coverage_max_value'] == plan['coverage_max_value'] and
+        alternative_plan = next(filter(lambda mp: mp['Coinsurance_Percentage'] == changed_coinsurance_percentage and
+                                                  mp['out_of_pocket_value'] == changed_benefit_amount and
+                                                  mp['coverage_max_value'] == changed_coverage_maximum and
                                                   mp['Plan'] == plan['Plan'] and
                                                   mp['Duration_Coverage'] == coverage_duration, sp))
     except StopIteration:

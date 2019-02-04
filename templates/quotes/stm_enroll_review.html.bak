@@ -5,7 +5,6 @@
 {% endblock title %}
 {% load i18n hp_tags %}
 {% block extra_css %}
-    <link href="{% static 'nhaquote_old/css/stm_enroll_info.css' %}" rel="stylesheet">
     <style type="text/css">
         body {line-height: 1.42857; font-size: 1.6rem;}
         @media (max-width: 760px) {
@@ -13,12 +12,12 @@
         }
         #application-body ul {margin: 0px; padding: 0px;}
         #application-body li {list-style-type: none;}
-        #application-body {}
+        #application-body {color: #949494;}
         .app_body_panel {
-            background-color: #fff;
+            background-color: #eff6ff;
             box-shadow: 0 0 6px rgba(0, 0, 10, 0.8);
-            margin-bottom: 30px;
-            border: 1px solid #19b4fa;
+            margin-bottom: 1.5rem;
+            color: rgba(0, 0, 0, 0.6);
         }
         #payment-form-error-message-fix {
             color: #ff6500;
@@ -29,36 +28,14 @@
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
 {% block mobile-header %}{% endblock %}
-{% block show_qt_breadcrumb %}{% endblock %}
-{% block qt_breadcrumb %}
-    <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
-            <span class="tooltip">Eligibility</span>
-        </a>
-    </li>
-    <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 2 %}">
-            <span class="tooltip">Applicant Info</span>
-        </a>
-    </li>
-    <li class="active ">
-    <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 3 %}">
-        <span class="tooltip">Payment & Billing</span>
-    </a>
-    </li>
-    <li class="active current">
-        <span class="tooltip">Review & Submit</span>
-    </li>
-{% endblock %}
 {% block content %}
 
     <div class="row" style="margin-top: 1rem;">
-        <div id="application-body" class="col-xs-12 col-md-8">
-            <div class="">
+        <div id="application-body" class="col-sm-7">
+            <div class="row">
                 <div class="col-sm-12 app_body_panel">
-                <div class="">
                     <h3>
-                        <span style="text-transform: uppercase;" class="fo">{% trans "Applicant Info" %}</span>
+                        <span style="text-transform: uppercase;">{% trans "Applicant Info" %}</span>
                         {% if not esign_req_sent %}
                         <small><a href="{% url 'quotes:stm_enroll' plan_url 2 %}">Edit</a></small>
                         {% endif %}
@@ -91,10 +68,9 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
 
-            <div class="">
+            <div class="row">
                 <div class="col-sm-12 app_body_panel">
                     <h3>
                         <span style="text-transform: uppercase;">{% trans "Payment & Billing Info" %}</span>
@@ -152,8 +128,8 @@
 
 
             {% if not esign_req_sent %}
-            <div class="">
-                <div class="col-sm-12 app_body_panel">
+            <div class="row">
+                <div class="col-sm-12" style="box-shadow: 0 0 4px rgba(0, 0, 0, 0.5); margin-bottom: 7rem;">
                     <h3 style="text-transform: uppercase;">Review & Submit</h3>
                     <p>Please review the information of your application before submitting for approval.</p>
                     <p style="color: #000; font-weight: bold;">Consent to Electronic Transactions</p>
@@ -184,7 +160,7 @@
                 </div>
             </div>
             {% else %}
-            <div class="">
+            <div class="row">
 {#                        <div class="col-sm-10, col-sm-offset-2" style="padding-left: 0px;">#}
                             <span class="form_field_error" id="consent_error"></span>
 {#                        </div>#}
@@ -208,29 +184,29 @@
             {#                </div>#}
 
             {% if not esign_req_sent %}
-                <div class="" style="margin-bottom:30px;margin-top:30px;">
-                    <div class="" style="margin-bottom:30px;margin-top:30px;">
+                <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                    <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
                         <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
-                        <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn btn-orange"
+                        <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn"
                                 id="send_e_sign_link_btn"
                                 data-verification="{{ verification|default:'' }}"
-                                data-action="{% url 'quotes:e_signature_enrollment' stm_enroll_obj.vimm_enroll_id %}" style="display: block;width: 50%; margin: 0 auto">
+                                data-action="{% url 'quotes:e_signature_enrollment' stm_enroll_obj.vimm_enroll_id %}">
                             <h4>Send E-Sign Link</h4>
                         </button>
                         <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}" alt="">
                     </div>
                 </div>
             {% else %}
-                <h4 class=""color="Blue">An email from <em> echosign@echosign.com </em>
+                <h4 class="row"color="Blue">An email from <em> echosign@echosign.com </em>
                     containing the instructions for signing your {{ plan.Name }} application has been sent to your email address.
                     Please check your email {{ applicant_info.Email }}.
                 </h4>
-                <div class="" style="margin-bottom:30px;margin-top:30px;">
-                <div class="">
-                    <button type="button" class="btn btn-lg btn-yellow hii_esign_enroll_action_btn btn-orange"
+                <div class="row" style="margin-bottom:30px;margin-top:30px;">
+                <div class="col-md-2 col-md-offset-4">
+                    <button type="button" class="btn btn-lg btn-yellow hii_esign_enroll_action_btn"
                             id = "hii_esign_enroll_action_btn"
                             data-action="enroll"
-                            data-url="{% url 'quotes:esign_verification_payment' stm_enroll_obj.vimm_enroll_id %}" style="display: block;width: 50%; margin: 0 auto">
+                            data-url="{% url 'quotes:esign_verification_payment' stm_enroll_obj.vimm_enroll_id %}">
                         <h4>Check Signed</h4>
                     </button>
                     <img class="submit-ajax-loader" style="display: none" src="{% static 'quotes/img/ajax-loader-stripe-002.gif' %}" alt="">
@@ -307,215 +283,189 @@
         </div>
     </div>{% endcomment %}
 
-       <div class="col-xs-12 col-md-4">
-                        <div class="side-bar-panel rounded bg-white box-shadow">
-                            <div id="js-app-page-summary" class="">
-                                <div class="border-basic rounded sidebar-each-part">
-                                    <div class="summary-wrapper">
-                                        <h3 class="emphasize text-capitalize mrg-t-0 fw-700"
-                                            style="margin-bottom: 20px">Policy Summary</h3>
-                                        <div class="carrierLogo">
-                                            <img alt=""
-                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
-                                                 class="carrier-logo-image">
-                                        </div>
-                                        <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
-                                        <div class="plan-summary">
-                                            <h4 class="text-primary">{{ plan.plan_name }}</h4>
-                                            {% if form_data.Ins_Type == 'stm' %}
-                                                <p>Deductible: ${{ plan.option|intcomma }}</p>
+        <div class="app-page-right-bar col-md-4 col-sm-offset-1">
+            <div id="js-app-page-summary" class="app-page-summary">
+                <div class="summary-wrapper">
+                    <p class="emphasize">Policy Summary</p>
+                    <div class="carrierLogo">
+                        <img alt="" src="/static/quotes/img/stm/{{ plan.Name|plan_name_for_img }}.png" class="carrier-logo-image">
+                    </div>
+                    <p class="policy-label">PLAN</p>
+                    <div class="plan-summary">
+                        <p>{{ plan.plan_name }}</p>
+                        {% if form_data.Ins_Type == 'stm' %}
+                            <p>Deductible: ${{ plan.option|intcomma }}</p>
 
-                                                <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
-                                            {% endif %}
-                                        </div>
+                            <p>Coinsurance: {{ plan.Coinsurance_Percentage }}%</p>
+                        {% endif %}
+                    </div>
 
-                                        {% comment %}
-                                <p class="policy-label">APPLICANT</p>
-                                <p id="summary-censusSummary">
-                                    {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
-                                </p>
+                    {% comment %}
+                <p class="policy-label">APPLICANT</p>
+                <p id="summary-censusSummary">
+                    {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                </p>
 
-                                <p class="policy-label">Policy Effective Date</p>
-                                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
+                <p class="policy-label">Policy Effective Date</p>
+                <p id="policy-date">{% form_date_field_value form_data.Effective_Date %}</p>
 
-                                {% if form_data.Ins_Type == 'stm' %}
-                                <p class="policy-label">Policy Expiration Date</p>
-                                <p>{% plan_coverage_end_date %}</p>
-                                {% endif %}
+                {% if form_data.Ins_Type == 'stm' %}
+                <p class="policy-label">Policy Expiration Date</p>
+                <p>{% plan_coverage_end_date %}</p>
+                {% endif %}
 
-                                <div class="js-price-breakdown policy-breakdown-link">
-                                    <p class="policy-label">
-                                        {% if form_data.Payment_Option == '1' %}
-                                            MONTHLY PREMIUM
-                                        {% elif form_data.Payment_Option == '2' %}
-                                            TOTAL PREMIUM
-                                        {% endif %}
-                                    </p>
-                                    <p>
-                                        {% if form_data.Payment_Option == '1' %}
-                                            ${{ plan.actual_premium }}
-                                        {% elif form_data.Payment_Option == '2' %}
-                                            ${% plan_single_premium %}
-                                        {% endif %}
-                                    </p>
-                                </div>
+                <div class="js-price-breakdown policy-breakdown-link">
+                    <p class="policy-label">
+                        {% if form_data.Payment_Option == '1' %}
+                            MONTHLY PREMIUM
+                        {% elif form_data.Payment_Option == '2' %}
+                            TOTAL PREMIUM
+                        {% endif %}
+                    </p>
+                    <p>
+                        {% if form_data.Payment_Option == '1' %}
+                            ${{ plan.actual_premium }}
+                        {% elif form_data.Payment_Option == '2' %}
+                            ${% plan_single_premium %}
+                        {% endif %}
+                    </p>
+                </div>
 
-                                {% if selected_addon_plans %}
-                                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
-                                    <ul class="add-on-plan-list">
-                                        {% for add_on in selected_addon_plans %}
-                                        <li>
-                                            <span data-container="body" data-placement="top"
-                                          href="javascript:void(0);" data-toggle="popover"
-                                          data-content="Plan Name">{{ add_on.Name }}</span>:
-                                            <span data-container="body" data-placement="top"
-                                          href="javascript:void(0);" data-toggle="popover"
-                                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                                {% endcomment %}
-
-                                        <div class="table-responsive">
-                                            <table class="table mrg-b-0">
-
-                                                <tr>
-                                                    <td>Applicant:</td>
-                                                    <td>
-                                                        <span class="">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
-                                                    </td>
-                                                </tr>
-                                                {% if plan.Coinsurance_Percentage %}
-                                                    <tr>
-                                                        <td>Deductible:</td>
-                                                        <td>
-                                                            <span class="">${{ plan.option|intcomma }}</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>Out of Pocket:</td>
-                                                        <td>
-                                                            <span class="">${{ plan.out_of_pocket_value }}</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>Coverage Max:</td>
-                                                        <td>
-                                                            <span class="">${{ plan.coverage_max_value|intcomma }}</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>Coinsurance:</td>
-                                                        <td>
-                                                            <span class="">{{ plan.Coinsurance_Percentage }}%</span>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
+                {% if selected_addon_plans %}
+                    <p class="emphasize add-on-plan-premium-info">Add-On Plan</p>
+                    <ul class="add-on-plan-list">
+                        {% for add_on in selected_addon_plans %}
+                        <li>
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Plan Name">{{ add_on.Name }}</span>:
+                            <span data-container="body" data-placement="top"
+                          href="javascript:void(0);" data-toggle="popover"
+                          data-content="Premium">${{ add_on.actual_premium }}</span></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+				{% endcomment %}
 
 
-                                                <tr>
-                                                    <td>Effective Date:</td>
-                                                    <td>
-		                                    <span class="" id="app-effective-date-change">
-		                                        {% form_date_field_value form_data.Effective_Date %}
-		                                    </span>
-                                                    </td>
-                                                </tr>
+                    <table class="table">
+
+                        <tr>
+                            <td>Applicant:</td>
+                            <td>
+                                <span class="emphasize badge">{{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}</span>
+                            </td>
+                        </tr>
+                        {% if plan.Coinsurance_Percentage %}
+                            <tr>
+                                <td>Deductible:</td>
+                                <td><span class="emphasize badge">${{ plan.option|intcomma }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Out of Pocket:</td>
+                                <td><span class="emphasize badge">${{ plan.out_of_pocket_value }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Coverage Max:</td>
+                                <td><span class="emphasize badge">${{ plan.coverage_max_value|intcomma }}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Coinsurance:</td>
+                                <td><span class="emphasize badge">{{ plan.Coinsurance_Percentage }}%</span></td>
+                            </tr>
+                        {% endif %}
 
 
-                                                {% if form_data.Ins_Type == 'stm' %}
-                                                    <tr>
-                                                        <td>Expiration Date:</td>
-                                                        <td>
-                                                            <span>{% plan_coverage_end_date %}</span>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
+                        <tr>
+                            <td>Effective Date:</td>
+                            <td>
+                            <span class="emphasize badge" id="app-effective-date-change">
+                                {% form_date_field_value form_data.Effective_Date %}
+                            </span>
+                            </td>
+                        </tr>
 
 
-                                                <tr>
-                                                    <td>Monthly Premium:</td>
-                                                    <td>
-                                                        <span class="">${{ plan.actual_premium }}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Enrollment Fee:</td>
-                                                    <td>
-                                                        <span class="">${{ plan.Enrollment_Fee }}</span>
-                                                    </td>
-                                                </tr>
+                        {% if form_data.Ins_Type == 'stm' %}
+                            <tr>
+                                <td>Expiration Date:</td>
+                                <td><span>{% plan_coverage_end_date %}</span></td>
+                            </tr>
+                        {% endif %}
 
-                                            </table>
-                                        </div>
+
+                        <tr>
+                            <td>Monthly Premium:</td>
+                            <td><span class="emphasize badge">${{ plan.actual_premium }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Enrollment Fee:</td>
+                            <td><span class="emphasize badge">${{ plan.Enrollment_Fee }}</span></td>
+                        </tr>
+
+                    </table>
+
+                    <div class="addon-holder" id="sidebar-add-on-holder">
+                        {% if selected_addon_plans %}
+                            <h4 class="text-uppercase policy-label" style="margin-bottom: 1em">
+                                ADD-ON PLAN
+                            </h4>
+
+                            {% for add_on in selected_addon_plans %}
+                                <div class="addon-single">
+                                    <h4 class="review_addon">{{ add_on.Name }}</h4>
+
+                                    <div class="table-responsive">
+                                        <table class="table mrg-b-0">
+                                            <tbody>
+                                            <tr>
+                                                <td>Premium</td>
+                                                <td><span class="badge">${{ add_on.actual_premium }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Enrollment Fee</td>
+                                                <td><span class="badge">${{ add_on.EnrollmentFee }}</span></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                                <hr>
-                                <div class="addon-holder border-basic rounded sidebar-each-part"
-                                     id="sidebar-add-on-holder">
-                                    {% if selected_addon_plans %}
-                                        <h4 class="text-uppercase policy-label mrg-t-0 fw-700"
-                                            style="margin-bottom: 1em">
-                                            ADD-ON PLAN
-                                        </h4>
-
-                                        {% for add_on in selected_addon_plans %}
-                                            <div class="border-basic rounded mrg-b-15 addon-single">
-                                                <h5 class="review_addon">{{ add_on.Name }}</h5>
-
-                                                <div class="table-responsive">
-                                                    <table class="table mrg-b-0">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td>Premium</td>
-                                                            <td>
-                                                                <span class="">${{ add_on.actual_premium }}</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Enrollment Fee</td>
-                                                            <td>
-                                                                <span class="">${{ add_on.EnrollmentFee }}</span>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    {% endif %}
-
-                                    {% comment %}{% if selected_addon_plans %}
-	                                    <p class="emphasize policy-label">Add-On Plan</p>
-	                                    <ul class="add-on-plan-list">
-	                                        {% for add_on in selected_addon_plans %}
-	                                        <li>
-	                                            <span data-container="body"
-	                                                  data-placement="top"
-	                                                  data-toggle="popover"
-	                                                  data-content="Plan Name">
-		                                            {{ add_on.Name }}
-	                                            </span>
-		                                        :
-	                                            <span data-container="body"
-	                                                  data-placement="top"
-	                                                  data-toggle="popover"
-	                                                  data-content="Premium">
-		                                            ${{ add_on.actual_premium }}
-	                                            </span>
-	                                        </li>
-	                                        {% endfor %}
-	                                    </ul>
-                                    {% endif %}{% endcomment %}
-
-
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                    </div>
+                        {% endif %}
+
+                        {% comment %}{% if selected_addon_plans %}
+                        <p class="emphasize policy-label">Add-On Plan</p>
+                        <ul class="add-on-plan-list">
+                            {% for add_on in selected_addon_plans %}
+                            <li>
+                                <span data-container="body"
+                                      data-placement="top"
+                                      data-toggle="popover"
+                                      data-content="Plan Name">
+                                    {{ add_on.Name }}
+                                </span>
+                                :
+                                <span data-container="body"
+                                      data-placement="top"
+                                      data-toggle="popover"
+                                      data-content="Premium">
+                                    ${{ add_on.actual_premium }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}{% endcomment %}
+
+
+{#                    </div>      This breaks the dom structure#}
+
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}
 
