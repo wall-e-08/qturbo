@@ -584,11 +584,12 @@ def stm_apply(request, plan_url) -> HttpResponse:
         request.session.get(
             '{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'], plan['unique_url'], "addon-plans"), [])
     )
+    add_on_list_as_dict = [s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]
     logger.info("PLAN: {0}".format(plan))
-    logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
+    logger.info("ADD-ON: {0}".format(add_on_list_as_dict))
     return render(request, 'quotes/stm_plan_apply.html',
                   {'plan': plan, 'quote_request_form_data': quote_request_form_data,
-                   'selected_addon_plans': selected_addon_plans})
+                   'selected_addon_plans': add_on_list_as_dict})
 
 
 @require_POST
