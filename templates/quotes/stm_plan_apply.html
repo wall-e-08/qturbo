@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n hp_tags %}
 {% block title %}
-    Apply For Plan {{ plan.plan_name }} |  {{ block.super }}
+    Apply For Plan {{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
     <style type="text/css">
@@ -27,6 +27,30 @@
             margin-top: 40px;
         }
     }
+    .show-plan-cost-details + tr {
+        position: absolute;
+        z-index: 50;
+        overflow: hidden;
+    }
+    .show-plan-cost-details + tr > td > table {
+        background: #fff;
+        margin-top: -100%;
+        -webkit-transition: all 200ms;
+        -moz-transition: all 200ms;
+        -ms-transition: all 200ms;
+        -o-transition: all 200ms;
+        transition: all 200ms;
+    }
+    .show-plan-cost-details:hover + tr {
+        box-shadow: 0 0 7px 0px rgba(0, 0, 0, 0.7);
+    }
+    .show-plan-cost-details:hover + tr > td {
+        background-color: #fff;
+        padding: 20px;
+    }
+    .show-plan-cost-details:hover + tr > td > table {
+        margin-top: 0 !important;
+    }
     </style>
 {% endblock extra_css %}
 {% block container %}
@@ -46,10 +70,10 @@
             <p>Please review the following information before starting your application.</p>
         </div>
         <div class="row my-50">
-            <div class="col-md-8">
+            <div class="col-lg-8">
                 <div style="font-weight: 500" class="apply-details-summary js-apply-details-summary">
                     <div class="row">
-                        <div class="col-sm-6 col-xs-12 apply-details-plan-summary first-div">
+                        <div class="col-sm-6 col-xs-12 apply-details-plan-summary first-div" style="border-right: 1px solid #c2c2c2;margin-right: -1px">
                             <table class="table quote-price-breakdown-table">
                                 <tbody>
                                 <tr>
@@ -65,26 +89,150 @@
                                     <td colspan="2">
                                         {% if quote_request_form_data.Ins_Type == 'stm' %}
                                             <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
                                                 (Details)
                                             </a>
                                         {% else %}
                                             <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
                                                 (Details)
                                             </a>
                                         {% endif %}
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr class="cur-p show-plan-cost-details">
                                     <td>
-                                        {% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:
+                                        <span style="border-bottom: 1px dashed #999">{% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:</span>
+                                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="font-size: 13px;"></span>
                                     </td>
-                                    <td class="text-right">${% plan_actual_premium %}</td>
+                                    {% comment %}<td class="text-right emphasize">${% plan_actual_premium %}</td>{% endcomment %}
+                                    <td class="text-right emphasize">${{ plan.actual_premium }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <table class="w100">
+                                            <tr>
+                                                <td>Plan Premium:</td>
+                                                <td class="text-right emphasize">${{ plan.Premium }}</td>
+                                            </tr>
+                                            {% if plan.Association_Fee and plan.Association_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>Association Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.Association_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.administration_fee %}
+                                                <tr>
+                                                    <td>Administration Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.administration_fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.Administrative_Fee %}
+                                                <tr>
+                                                    <td>Administrative Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.Administrative_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.monthly_network_fee %}
+                                                <tr>
+                                                    <td>Network Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.monthly_network_fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.TelaDoc_Fee %}
+                                                <tr>
+                                                    <td>TelaDoc Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.TelaDoc_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.RxAdvocacy_Fee %}
+                                                <tr>
+                                                    <td>Rx Advocacy Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.RxAdvocacy_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.ChoiceValueSavings_Fee and plan.ChoiceValueSavings_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>Choice Value Savings Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.ChoiceValueSavings_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.ChoiceValue_AdminFee and plan.ChoiceValue_AdminFee != '0.00' %}
+                                                <tr>
+                                                    <td>Choice Value Admin Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.ChoiceValue_AdminFee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.RealValueSavings_Fee and plan.RealValueSavings_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>Real Value Savings Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.RealValueSavings_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.RealValueSavings_AdminFee and plan.RealValueSavings_AdminFee != '0.00' %}
+                                                <tr>
+                                                    <td>Real Value Savings Admin Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.RealValueSavings_AdminFee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.VBP_Fee and plan.VBP_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>VBP Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.VBP_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.Medsense_Fee and plan.Medsense_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>Medsense Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.Medsense_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.GapAffordPlus_Fee and plan.GapAffordPlus_Fee != '0.00' %}
+                                                <tr>
+                                                    <td>Gap Afford Plus Fee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.GapAffordPlus_Fee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if plan.GapAffordPlus_AdminFee and plan.GapAffordPlus_AdminFee != '0.00' %}
+                                                <tr>
+                                                    <td>Gap Afford Plus AdminFee:</td>
+                                                    <td class="text-right emphasize">
+                                                        <span>${{ plan.GapAffordPlus_AdminFee }}</span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        </table>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee:</td>
-                                    <td class="text-right">${{ plan.Enrollment_Fee }}</td>
+                                    <td class="text-right emphasize">${{ plan.Enrollment_Fee }}</td>
                                 </tr>
 
                                 </tbody>
@@ -177,7 +325,7 @@
                                             </h4>
                                             <div class="row">
                                                 <div class="col-sm-12">
-                                                    <span class="">Premium</span>
+                                                    <span>Premium</span>
                                                     : ${{ add_on.actual_premium }}
                                                 </div>
                                             </div>
@@ -254,7 +402,7 @@
         </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 {% comment %}<div class="apply-right-bar-wrapper-new">
                     <div class="apply-what-to-know"><h3 class="text-19">Swift &amp; Easy Application</h3>
                         <ul class="list-image">
