@@ -2092,23 +2092,6 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
 
     # TODO: Set an expiration timer for plans in redis.
 
-    # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
-
-    if plan_url[:4].lower() == 'life':  # Lifeshield
-        stm_name = 'LifeShield STM'
-    else:
-        stm_name = 'AdvantHealth STM'
-
-    # Here we shall create the selection data
-    selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
-
-    if not redis_conn.exists(redis_key):
-        print("Redis connection does not exist for redis key")
-    elif not selection_data:
-        print(f'Already quoted alternative plans.')
-    else:
-        threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
-
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
@@ -2124,6 +2107,19 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     except StopIteration:
         logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
         raise Http404()
+
+    stm_name = plan['Name']
+
+    # Here we shall create the selection data
+    selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
+
+    if not redis_conn.exists(redis_key):
+        print("Redis connection does not exist for redis key")
+    elif not selection_data:
+        print(f'Already quoted alternative plans.')
+    else:
+        threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
+
 
     # We are selecting the alternative duration coverage
     # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
