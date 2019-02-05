@@ -438,7 +438,7 @@
                                         </div>
                                         <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
                                         <div class="plan-summary">
-                                            <h4 class="text-primary">{{ plan.plan_name }}</h4>
+                                            <h4 class="text-primary">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</h4>
                                             {% if form_data.Ins_Type == 'stm' %}
                                                 <p>Deductible: ${{ plan.option|intcomma }}</p>
 
