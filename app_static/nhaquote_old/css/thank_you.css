@@ -1,0 +1,18 @@
+.plan-info{
+    max-width: 450px;
+    margin: 25px auto;
+}
+.final-plan-info {
+    background-color: rgba(139, 180, 192, 0.02);
+    border-radius: 8px;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border: 1px solid #19b4fa;
+}
+
+.final-plan-info p{
+    color: #19b4fa;
+    background-color: rgba(31, 181, 173, 0.10);
+    position: relative;
+    padding: 5px;
+}

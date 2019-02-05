@@ -60,7 +60,9 @@
                     <h3>
                         <span style="text-transform: uppercase;" class="fo">{% trans "Applicant Info" %}</span>
                         {% if not esign_req_sent %}
-                        <small><a href="{% url 'quotes:stm_enroll' plan_url 2 %}">Edit</a></small>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" data-toggle="tooltip" title="Edit Applicant Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
@@ -99,7 +101,9 @@
                     <h3>
                         <span style="text-transform: uppercase;">{% trans "Payment & Billing Info" %}</span>
                         {% if not esign_req_sent %}
-                        <small><a href="{% url 'quotes:stm_enroll' plan_url 3 %}">Edit</a></small>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 3 %}" data-toggle="tooltip" title="Edit Payment & Billing Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
@@ -126,23 +130,23 @@
                             </ul>
                         </div>
                         <div class="col-sm-12">
-                            <p style="margin-top: 10px;"><span style="font-weight: bold;">Total Payment</span>: ${% plan_total_payment %}</p>
+                            <p style="margin-top: 10px;" class="review_addon"><span style="font-weight: bold;">Total Payment</span>: ${% plan_total_payment %}</p>
                             {% if form_data.Payment_Option == '2' %}
-                                <p>
+                                <p class="review_addon">
                                     <span style="font-weight: bold;">{{ plan.Name }}</span> with an effective date of
                                     {% form_date_field_value form_data.Effective_Date %}. Cost: ${{ plan.actual_premium }}
                                 </p>
                             {% else %}
-                                <p>
+                                <p class="review_addon">
                                     <span style="font-weight: bold;">{{ plan.Name }}</span> with an effective date of
                                     {% form_date_field_value form_data.Effective_Date %}. Monthly Cost: ${{ plan.actual_premium }}
                                 </p>
-                                <p>
+                                <p class="review_addon">
                                     Note: One time Enrollment Fee ${{ plan.Enrollment_Fee }}
                                 </p>
                             {% endif %}
                             {% for add_on_plan in selected_addon_plans %}
-                                <p><span style="font-weight: bold;">{{ add_on_plan.carrier_name }}</span>
+                                <p class="review_addon"><span style="font-weight: bold">{{ add_on_plan.carrier_name }}</span>
                                     Premium: ${{ add_on_plan.actual_premium }}</p>
                             {% endfor %}
                         </div>
@@ -157,7 +161,7 @@
                     <h3 style="text-transform: uppercase;">Review & Submit</h3>
                     <p>Please review the information of your application before submitting for approval.</p>
                     <p style="color: #000; font-weight: bold;">Consent to Electronic Transactions</p>
-                    <div class="row">
+                    <div class="">
                         <div class="col-sm-2" style="vertical-align: middle; display: table-cell; float: none;">
                             <form id="consent_form">
                                 {% csrf_token %}
@@ -176,7 +180,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="">
                         <div class="col-sm-10, col-sm-offset-2" style="padding-left: 37px;">
                             <span class="form_field_error" id="consent_error"></span>
                         </div>
@@ -453,10 +457,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            {% if selected_addon_plans %}
                                 <hr>
                                 <div class="addon-holder border-basic rounded sidebar-each-part"
                                      id="sidebar-add-on-holder">
-                                    {% if selected_addon_plans %}
+
                                         <h4 class="text-uppercase policy-label mrg-t-0 fw-700"
                                             style="margin-bottom: 1em">
                                             ADD-ON PLAN
