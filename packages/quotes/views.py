@@ -322,17 +322,6 @@ def reset_preference(request) -> None:
 def plan_quote(request, ins_type):
     """Show a large list of plans to to the user.
 
-    # Update 01/27/2019 - ds87
-    I have put the whole function in validate_quote_form function. And I have removed
-    the celery function call from the end of the function. So, when the method is called,
-    it only renders the HttpResponse to render the plan list.
-
-    That happens when user gives annual income in the set_annual_income_and_redirect_to_plans
-    method. It redirects to plans page.
-
-    Note: some modification might be in order as the function has been changed. Espicially
-    in the later part of the application.
-
     :param request: Django request object
     :param ins_type: stm/lim/anc
     :return: Django HttpResponse Object
@@ -1280,17 +1269,11 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
     :return: JsonResponse
     """
     print("Calling AJAX.")
-    sp = []
+    plan_list = []
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     ins_type = quote_request_form_data['Ins_Type']
     print(quote_request_form_data)
-
-    plan_name_list = settings.AVAILABLE_PLAN_NAME_LIST_DICT.copy()[ins_type]
-
-    featured_flag_for_stm_name = {}
-    for matched_plan in plan_name_list:
-        featured_flag_for_stm_name[matched_plan] = False
 
     preference = request.session.get('quote_request_preference_data', {})
 
@@ -1319,49 +1302,57 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
                 ):
                     continue
 
+            plan_list.append(decoded_plan)
+
+    carrier_list = set(x['Name'] for x in plan_list[1:-1])
+
+    for carrier_name in carrier_list:
+        featured_plan = get_featured_plan(carrier_name, plan_list, ins_type)
+        if featured_plan:
+            featured_plan['featured_plan'] = True
+            plan_list[plan_list.index(featured_plan)] = featured_plan
+        else:
+            print("Featured plan not found")
 
 
-            try:
-                if decoded_plan not in ['START', 'END']:
-                    plan_name = decoded_plan['Name']
-
-                    if not featured_flag_for_stm_name[plan_name]:
-                        premium = decoded_plan['Premium']
-                        if float(premium) > 100:
-                            decoded_plan['featured_plan'] = True
-                            featured_flag_for_stm_name[plan_name] = True
-
-            except Exception as e:
-                logger.warning(e)
-                pass
-
-            sp.append(decoded_plan)
-
-    for plan_name in featured_flag_for_stm_name:
-        if not featured_flag_for_stm_name[plan_name]:
-            try:
-                matched_plan = next(filter(lambda mp: mp['Name'] == plan_name, sp[1:]))
-                end = sp.pop()
-                sp.remove(matched_plan)
-                matched_plan['featured_plan'] = True
-                sp.append(matched_plan)
-                sp.append(end)
-                featured_flag_for_stm_name[matched_plan] = True
-            except StopIteration as error:
-                print("We have selected the featured plan for {0}".format(plan_name), error)
-                pass
-            except TypeError as error:
-                print("TypeError:", error)
-                pass
-            except KeyError as error:
-                print("KeyError:", error)
-                pass
-
-
-    logger.info(f"get_plan_quote_data_ajax: {len(sp)}")
+    logger.info(f"get_plan_quote_data_ajax: {len(plan_list)}")
     return JsonResponse({
-        'monthly_plans': sp,
+        'monthly_plans': plan_list,
     })
+
+
+
+def get_featured_plan(carrier_name, plan_list, ins_type):
+    """
+
+    :return:
+    """
+
+    plans = None
+
+    try:
+        featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
+        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
+    except KeyError:
+        print(f'Featured plan attribute not found for {carrier_name}')
+        return
+
+    eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
+                                                  x['Name'] == carrier_name, plan_list[1:-1]))
+
+    if len(eligible_plans) == 0:
+        eligible_plans = plan_list[1:-1]
+
+    for attr in featured_plan_attr:
+        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
+        if len (plans) > 0:
+            eligible_plans = plans
+        else:
+            return eligible_plans[0]
+
+
+    if plans:
+        return plans[0]
 
 
 def e_signature_enrollment(request, vimm_enroll_id):
