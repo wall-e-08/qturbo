@@ -16,8 +16,8 @@ from core import settings
 from quotes.templatetags.hp_tags import plan_actual_premium
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
-                    ChildInfoFormSet, LeadForm, Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
-                    Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form, Duration_Coverage_Form)
+                    ChildInfoFormSet, LeadForm, AjaxRequestAttrChangeForm,
+                    AjaxRequestAttrChangeForm, DurationCoverageForm)
 from .question_request import get_stm_questions
 from .quote_thread import addon_plans_from_dict, addon_plans_from_json_data, threaded_request
 from .redisqueue import redis_connect
@@ -37,7 +37,7 @@ import quotes.models as qm
 
 # For type annotation
 from django.core.handlers.wsgi import WSGIRequest
-from typing import Union, List, Dict, Any
+from typing import Union, List, Dict, Any, Optional
 
 logger = VimmLogger('quote_turbo')
 
@@ -541,8 +541,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_coinsurace_percentage': alternate_coinsurace_percentage,
                    'alternate_coverage_max': alternate_coverage_max,
                    'alternate_plan': alternate_plan,
-                   'benefit_amount_coinsurance_coverage_max_form': Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form,
-                   'duration_coverage_form': Duration_Coverage_Form,
+                   'benefit_amount_coinsurance_coverage_max_form': AjaxRequestAttrChangeForm,
+                   'duration_coverage_form': DurationCoverageForm,
                    'benefit_coverage': qm.BenefitsAndCoverage.objects.filter(plan=carrier),
                    'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier),
                    })
@@ -1845,41 +1845,17 @@ legal_page_info = [
 
 @require_POST
 def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonResponse:
+    """ Switch user to alternative plan containing alternate coinsurance
+    percentage, coverage_max and benefit amount.
+
+    Note: Benefit amount and max out of pocket are the same thing.
+    
     """
-    This is executed on ajax request from the stm_plan page.
-
-    request post data dict:
-        {
-
-        }
-
-    response json data dict:
-        1.
-            {
-                'errors': ['list of error messages'] # TODO
-            }
-
-        2.
-            {
-                # TODO
-            }
-
-    # UPDATE: Insteam of plan url we are returning apply url.
-
-    :param request:
-    :return: json data
-    """
-
     response = {
         'errors': [],
         'providers': []  # TODO
     }
 
-    """ Switch user to alternative coverage benefit plan
-
-    Note: Benefit amount and max out of pocket are the same thing.
-    
-    """
 
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
@@ -1904,13 +1880,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     # TODO: Set an expiration timer for plans in redis.
 
-    # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
-
-    if plan_url[:4].lower() == 'life':  # Lifeshield
-        stm_name = 'LifeShield STM'
-    else:
-        stm_name = 'AdvantHealth STM'
-
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
@@ -1923,40 +1892,25 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     # We are not selecting the current plan from plan list(mp).
     try:
         plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
+        stm_name = plan['Name']
     except StopIteration:
         logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
         raise Http404()
 
-    form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
+    form = AjaxRequestAttrChangeForm(request.POST)
 
-    preference = {}
-    if form.is_valid():
-        print(f'Form is valid.')
-        benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
-        if benefit_amount == '' or None:
-            benefit_amount = plan['out_of_pocket_value']
-        preference['Benefit_Amount'] = benefit_amount
-
-        coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
-        if coinsurance_percentage == '' or None:
-            coinsurance_percentage = plan['Coinsurance_Percentage']
-        preference['Coinsurance_Percentage'] = coinsurance_percentage
-
-
-        coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
-        if coverage_maximum == '' or None:
-            coverage_maximum = plan['Coverage_Max']
-        preference['Coverage_Max'] = coverage_maximum
-
-        plan_type = form.cleaned_data.get('Plan', None)
-        if plan_type == '' or None:
-            plan_type = plan['Plan']
-
-        input_change = request.POST.get('changed', None)
 
     coverage_duration = plan['Duration_Coverage']
 
-    available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan)
+    try:
+        preference : Optional[Dict]  = get_user_preference(request, form, plan)
+        coinsurance_percentage = preference['Coinsurance_Percentage']
+        benefit_amount = preference['Benefit_Amount']
+        coverage_maximum = preference['Coverage_Max']
+        input_change = preference['input_change']
+        plan_type = preference['plan_type']
+    except TypeError as t:
+        print(t)
 
 
     if input_change == 'Benefit_Amount':
@@ -2036,7 +1990,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
 def get_related_plans(plan, preference_dict, plan_list):
     """
-
     :return:
     """
     related_plans = None
@@ -2057,9 +2010,41 @@ def get_related_plans(plan, preference_dict, plan_list):
     return related_plans
 
 
+def get_user_preference(request: WSGIRequest, form: AjaxRequestAttrChangeForm, plan: Dict) -> Union[Dict, None]:
+    preference = {}
+    if form.is_valid():
+        benefit_amount = form.cleaned_data.get('Benefit_Amount', None)
+        if benefit_amount == '' or None:
+            benefit_amount = plan['out_of_pocket_value']
+        preference['Benefit_Amount'] = benefit_amount
+
+        coinsurance_percentage = form.cleaned_data.get('Coinsurance_Percentage', None)
+        if coinsurance_percentage == '' or None:
+            coinsurance_percentage = plan['Coinsurance_Percentage']
+        preference['Coinsurance_Percentage'] = coinsurance_percentage
+
+        coverage_maximum = form.cleaned_data.get('Coverage_Max', None)
+        if coverage_maximum == '' or None:
+            coverage_maximum = plan['Coverage_Max']
+        preference['Coverage_Max'] = coverage_maximum
+
+        plan_type = form.cleaned_data.get('Plan', None)
+        if plan_type == '' or None:
+            plan_type = plan['Plan']
+            preference['plan_type'] = plan_type
+
+        input_change = request.POST.get('changed', None)
+        preference['input_change'] = input_change
+
+        return preference
+
+    else:
+        return None
+
+
 def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResponse:
-    duration_coverage_form = Duration_Coverage_Form(request.POST)
-    ajax_attr_form = Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(request.POST)
+    duration_coverage_form = DurationCoverageForm(request.POST)
+    ajax_attr_form = AjaxRequestAttrChangeForm(request.POST)
 
     if duration_coverage_form.is_valid():
         print(f'Form is valid.')

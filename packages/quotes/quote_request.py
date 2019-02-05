@@ -1149,11 +1149,6 @@ def get_xml_requests(form_data: dict, selection_data: dict) -> List[QRXmlBase]:
             print(f"{xml_cls.Name} is available in state: {app_state}")
             if form_data['Ins_Type'] == 'stm':
                 print(f'Setting alternative coverage options for {xml_cls.Name}')
-
-                # What will be sel dat? Let see, there is coverage.
-
-
-
                 xml_cls.set_alternative_attr(app_state, selection_data[xml_cls.Name])
             xml_requests += xml_cls.all(form_data)
         else:
