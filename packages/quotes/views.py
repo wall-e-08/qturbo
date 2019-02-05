@@ -86,6 +86,9 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
 @require_POST
 def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     """
+    Returns success if successfully started celery.
+    Errors if there are form errors.
+
     :param request: Django request object
     :return: Django JsonResponse Object
     """
@@ -128,47 +131,65 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         # Saving Lead Form Info
         save_lead_info(qm.Leads, lead_form.cleaned_data)
+        
+        start_celery_return_code = start_celery(request, quote_request_form_data)
 
+        if start_celery_return_code:
+            return JsonResponse({
+                'status': 'success',
+            })
+
+    else:
+        print(form.errors)
+        print(formset.errors)
+        return JsonResponse(
+            {
+                'status': 'false',
+                'error': "Failed",
+                "errors": dict(form.errors.items()),
+                "error_keys": list(form.errors.keys()),
+                "formset_errors": formset.errors
+            }
+        )
+
+
+def start_celery(request: WSGIRequest, form_data) -> True:
         """
-            # Start Celery
-            
-            Instead of starting celery in the plan_quote method, I have copied the whole plan quote in this method. 
-            Refractoring is needed as the whole method might be necessary. 
         """
 
-        if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
-            quote_request_form_data = {}
+        if form_data and form_data_is_valid(form_data) == False:
+            form_data = {}
             request.session['quote_request_form_data'] = {}
             request.session['quote_request_formset_data'] = []
             request.session['quote_request_response_data'] = {}
 
-        logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
+        logger.info("Plan Quote For Data: {0}".format(form_data))
 
         d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
         request.session['quote_request_response_data'] = d
         request.session.modified = True
-        logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
+        logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
 
         # Changing quote store key regarding insurance type
         for ins_type in ['lim', 'stm', 'anc']:
             if ins_type == "stm":
-                quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
-                quote_request_form_data['Ins_Type'] = 'stm'
+                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'stm'
+                form_data['Ins_Type'] = 'stm'
             elif ins_type == "lim":
-                quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
-                quote_request_form_data['Ins_Type'] = 'lim'
+                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'lim'
+                form_data['Ins_Type'] = 'lim'
             elif ins_type == "anc":
-                quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
-                quote_request_form_data['Ins_Type'] = 'anc'
+                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'anc'
+                form_data['Ins_Type'] = 'anc'
 
             # Calling celery for populating quote list
             redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                         quote_request_form_data['quote_store_key'])
+                                         form_data['quote_store_key'])
             print(f"Calling celery task for ins_type: {ins_type}")
             print(f"redis_key: {redis_key}")
 
             print('------------------------\nquote_request_form_data: \n------------------------')
-            print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
+            print(json.dumps(form_data, indent=4, sort_keys=True))
             if not redis_conn.exists(redis_key):
                 print("Redis connection does not exist for redis key")
                 redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
@@ -195,31 +216,15 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
                     redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
 
-                    StmPlanTask.delay(request.session.session_key, quote_request_form_data,
+                    StmPlanTask.delay(request.session.session_key, form_data,
                                       quote_request_preference_data)
 
                 elif ins_type == 'lim':
-                    LimPlanTask.delay(request.session.session_key, quote_request_form_data)
+                    LimPlanTask.delay(request.session.session_key, form_data)
                 elif ins_type == 'anc':
-                    AncPlanTask.delay(request.session.session_key, quote_request_form_data)
+                    AncPlanTask.delay(request.session.session_key, form_data)
 
-        return JsonResponse({
-            'status': 'success',
-        })
-
-    else:
-        print(form.errors)
-        print(formset.errors)
-        # changed 'fail' to 'false'
-    return JsonResponse(
-        {
-            'status': 'false',
-            'error': "Failed",
-            "errors": dict(form.errors.items()),
-            "error_keys": list(form.errors.keys()),
-            "formset_errors": formset.errors
-        }
-    )
+        return True
 
 
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
