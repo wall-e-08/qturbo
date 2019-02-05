@@ -170,6 +170,9 @@ def start_celery(request: WSGIRequest, form_data) -> True:
         request.session.modified = True
         logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
 
+        print('------------------------\nquote_request_form_data: \n------------------------')
+        print(json.dumps(form_data, indent=4, sort_keys=True))
+
         # Changing quote store key regarding insurance type
         for ins_type in ['lim', 'stm', 'anc']:
             if ins_type == "stm":
@@ -188,8 +191,6 @@ def start_celery(request: WSGIRequest, form_data) -> True:
             print(f"Calling celery task for ins_type: {ins_type}")
             print(f"redis_key: {redis_key}")
 
-            print('------------------------\nquote_request_form_data: \n------------------------')
-            print(json.dumps(form_data, indent=4, sort_keys=True))
             if not redis_conn.exists(redis_key):
                 print("Redis connection does not exist for redis key")
                 redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
@@ -200,7 +201,7 @@ def start_celery(request: WSGIRequest, form_data) -> True:
                     # We are here setting up a dictionary in the session for future usage
                     print(f'Setting quote request preference data')
 
-                    quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA
+                    quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA.copy()
 
                     quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
                         'LifeShield STM': {
@@ -308,7 +309,7 @@ def reset_preference(request) -> None:
     for carrier in stm_carriers:
         duration_coverage[carrier] = preference[carrier]['Duration_Coverage']
         coverage_max[carrier] = preference[carrier]['Coverage_Max']
-    preference = settings.USER_INITIAL_PREFERENCE_DATA
+    preference = settings.USER_INITIAL_PREFERENCE_DATA.copy()
 
     for carrier in stm_carriers:
         preference[carrier]['Duration_Coverage'] = duration_coverage[carrier]
