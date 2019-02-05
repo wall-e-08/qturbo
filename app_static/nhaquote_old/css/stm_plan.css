@@ -397,6 +397,7 @@ a.qt-plan-brochure-file > i.fa:last-child {
     #qt-plan-details {
         position: relative !important;
         margin: 50px auto !important;
+        left: initial !important;
     }
 }
 

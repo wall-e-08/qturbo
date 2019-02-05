@@ -545,6 +545,16 @@
         });
 
         $(document).ready(function () {
+            let center_selected_plan_div = function () {
+                let qt_plan_details = $('#qt-plan-details')
+                qt_plan_details.css('left',($(window).outerWidth() / 2 - qt_plan_details.width()) / 2);
+            };
+            center_selected_plan_div(); // run at first
+            $( window ).resize(function() {
+                console.log("GG")
+                center_selected_plan_div(); // run when changes width
+            });
+
             Grouping ();
             $('[data-clickResult]').hide();
 
