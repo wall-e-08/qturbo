@@ -8,6 +8,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -766,12 +767,18 @@ def stm_enroll(request, plan_url, stage=None, template=None):
 
         Also in near future, we shall replace it with a html page.
         """
-        html = """<html> 
-                    <body> 
-                        <h1>Already submitted from this quote. ID #{0}</h1> 
-                        <a href={1}>Click here to go to application review</a>
-                    </body> 
-               </html>""".format(quote_id, (reverse('quotes:stm_enroll', args=[plan_url, 4])))
+        # html = """<html>
+        #             <body>
+        #                 <h1>Already submitted from this quote. ID #{0}</h1>
+        #                 <a href={1}>Click here to go to application review</a>
+        #             </body>
+        #        </html>""".format(quote_id, (reverse('quotes:stm_enroll', args=[plan_url, 4])))
+
+        html = render_to_string('quotes/quote_error.html', {
+            "quote_id": quote_id,
+            "url": reverse('quotes:stm_enroll', args=[plan_url, 4])
+        })
+        print(html)
         return html
 
     stm_enroll_obj = None
