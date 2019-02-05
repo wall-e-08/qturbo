@@ -1975,9 +1975,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     logger.info(f'PLAN: {alternative_plan}')
     logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
-    # return render(request, 'quotes/stm_plan_apply.html',
-    #               {'plan': alternative_plan, 'quote_request_form_data': quote_request_form_data,
-    #                'selected_addon_plans': selected_addon_plans})
 
     return JsonResponse(
         {
