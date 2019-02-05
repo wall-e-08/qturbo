@@ -1272,7 +1272,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     return render(request, template, ctx)
 
 
-def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
+def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
     """This page is called from the plan_list_lim.html the first time the page
     is loaded. This function returns the plans.
 
@@ -1348,13 +1348,13 @@ def get_plan_quote_data_ajax(request: HttpRequest) -> JsonResponse:
                 sp.append(end)
                 featured_flag_for_stm_name[matched_plan] = True
             except StopIteration as error:
-                print("error in get_plan_quote_data_ajax:", error)
+                print("We have selected the featured plan for {0}".format(plan_name), error)
                 pass
             except TypeError as error:
-                print("error in get_plan_quote_data_ajax:", error)
+                print("TypeError:", error)
                 pass
             except KeyError as error:
-                print("error in get_plan_quote_data_ajax:", error)
+                print("KeyError:", error)
                 pass
 
 
