@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n hp_tags %}
 {% block title %}
-    Apply For Plan {{ plan.plan_name }} |  {{ block.super }}
+    Apply For Plan {{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
     <style type="text/css">
@@ -65,12 +65,12 @@
                                     <td colspan="2">
                                         {% if quote_request_form_data.Ins_Type == 'stm' %}
                                             <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
                                                 (Details)
                                             </a>
                                         {% else %}
                                             <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
+                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
                                                 (Details)
                                             </a>
                                         {% endif %}

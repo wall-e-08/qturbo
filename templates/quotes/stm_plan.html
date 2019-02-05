@@ -1,6 +1,6 @@
 {% extends 'base_nhaquote.html' %}
 {% load i18n hp_tags static %}
-{% block title %}{{ plan.plan_name }} |
+{% block title %}{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %} |
     {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
