@@ -60,7 +60,9 @@
                     <h3>
                         <span style="text-transform: uppercase;" class="fo">{% trans "Applicant Info" %}</span>
                         {% if not esign_req_sent %}
-                        <span><a href="{% url 'quotes:stm_enroll' plan_url 2 %}"><i class="fa fa-edit"></i></a></span>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" data-toggle="tooltip" title="Edit Applicant Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
@@ -99,7 +101,9 @@
                     <h3>
                         <span style="text-transform: uppercase;">{% trans "Payment & Billing Info" %}</span>
                         {% if not esign_req_sent %}
-                        <span><a href="{% url 'quotes:stm_enroll' plan_url 3 %}"><i class="fa fa-edit"></i></a></span>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 3 %}" data-toggle="tooltip" title="Edit Payment & Billing Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
@@ -453,10 +457,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            {% if selected_addon_plans %}
                                 <hr>
                                 <div class="addon-holder border-basic rounded sidebar-each-part"
                                      id="sidebar-add-on-holder">
-                                    {% if selected_addon_plans %}
+
                                         <h4 class="text-uppercase policy-label mrg-t-0 fw-700"
                                             style="margin-bottom: 1em">
                                             ADD-ON PLAN
