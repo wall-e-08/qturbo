@@ -340,7 +340,7 @@ def plan_quote(request, ins_type):
     try:
         if ins_type == 'stm':
             reset_preference(request)
-            # request.session['quote_request_preference_data']['general_url_chosen'] = False
+            request.session['stm_general_url_chosen'] = False
     except KeyError:
         print("User preference not found")
         pass
@@ -432,7 +432,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         if ins_type == 'stm':
             stm_plan_unique_url = request.COOKIES.get('current-plan-unique-url')
             stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
-            if quote_request_preference_data['general_url_chosen'] == False and stm_plan_general_url == plan_url:
+            if request.session['stm_general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
             else:
                 # When page is refreshed or duration coverage is changed.
@@ -441,7 +441,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
                         mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and
                         mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0], sp))
-                request.session['quote_request_preference_data']['general_url_chosen'] = True
+                request.session['stm_general_url_chosen'] = True
         else:
             plan = next(filter(lambda mp: mp['unique_url'] == plan_url , sp))
     except StopIteration:
@@ -1952,7 +1952,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
     quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
-    quote_request_preference_data['general_url_chosen'] = True
+    request.session['stm_general_url_chosen'] = True
 
     print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
