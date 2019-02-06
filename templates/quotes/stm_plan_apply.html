@@ -51,30 +51,35 @@
     .show-plan-cost-details:hover + tr > td > table {
         margin-top: 0 !important;
     }
-    .third-div {
-        width: 90%;
-        background: rgba(25, 180, 250, 0.06);
-        border-radius: 19px;
-        margin: 25px 20px 0;
-        padding: 0 30px 10px;
-        box-shadow: 0 0 15px rgba(102, 16, 242, 0.48);
-        -webkit-box-shadow: 0 0 15px rgba(102, 16, 242, 0.48);
-        -ms-box-shadow: 0 0 15px rgba(102, 16, 242, 0.48);
-        -moz-box-shadow: 0 0 15px rgba(102, 16, 242, 0.48);
+    .carrierLogo {
+        padding: 10px;
+        box-shadow: 0 0 6px #000;
     }
-    .apply-add-on-plan-heading {
-        margin: 0 -30px;
-        padding: 10px 30px;
-        background-color: rgba(102, 16, 242, 0.12);
-        border-top-left-radius: 19px;
-        border-top-right-radius: 19px;
-    }
-    .apply-add-on-plan-heading > span {
+    .apply-add-on-plan-heading > a {
         text-decoration: none;
         font-weight: 700;
     }
     .individual-add-on-plan {
-        border-color: #000;
+        border: none;
+        padding-left: 20px;
+        position: relative;
+        margin-bottom: 25px;
+    }
+    .individual-add-on-plan:after {
+        content: '';
+        display: block;
+        height: 100%;
+        width: 6px;
+        border-radius: 0;
+        background: #ddd;
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        transform: translateY(-50%);
     }
     </style>
 {% endblock extra_css %}
@@ -319,16 +324,19 @@
                         </div>
 
                         {% if selected_addon_plans %}
+                            <div class="col-sm-12">
+                                <hr style="border-top: 3px dotted #c5c5c5; margin-bottom: 7px;">
+                            </div>
                             <div class="col-sm-12 col-xs-12 third-div">
-                                <h3 class="apply-add-on-plan-heading">
-                                    <span data-container="body" data-placement="top"
+                                <h3 class="mrg-b-20 apply-add-on-plan-heading">
+                                    <a data-container="body" data-placement="top"
                                           href="javascript:void(0);" data-toggle="popover"
                                           data-content="Add-on Policy is billed separately.
                                           if the main STM policy terminates or is canceled,
                                           it will not automatically cancel your Add-on Policy,
                                           unless requested by you.">
                                         Add-On Plan{{ selected_addon_plans|pluralize }}
-                                    </span>
+                                    </a>
                                     {% if quote_request_form_data.Ins_Type == 'stm' %}
                                         <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container"
                                            style="font-size: 16px;">
@@ -336,12 +344,12 @@
                                         <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container"
                                            style="font-size: 16px;">
                                     {% endif %}
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                    {% comment %}<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>{% endcomment %}
                                     </a>
                                 </h3>
                                 {% for add_on in selected_addon_plans %}
-                                    <div class="row">
-                                        <div class="col-sm-12 {% if not forloop.last %}individual-add-on-plan{% endif %}">
+                                    {# <div class=""> #}
+                                        <div class="individual-add-on-plan">
                                             <h4 class="add-on-plan-name ">
                                                 {{ add_on.Name }}
                                                 <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
@@ -349,14 +357,14 @@
                                                     <small>(details)</small>
                                                 </a>
                                             </h4>
-                                            <div class="row">
-                                                <div class="col-sm-12">
+                                            {# <div class=""> #}
+                                                <div class="">
                                                     <span>Premium</span>
                                                     : ${{ add_on.actual_premium }}
                                                 </div>
-                                            </div>
+                                            {# </div> #}
                                         </div>
-                                    </div>
+                                    {# </div> #}
                                 {% endfor %}
                             </div>
                         {% endif %}
