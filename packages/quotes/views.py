@@ -1,8 +1,8 @@
 import copy
 import json
-from collections import OrderedDict
-
 import requests
+
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
@@ -1285,18 +1285,16 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     :param request: Django HttpRequest
     :return: JsonResponse
     """
-    print("Calling AJAX.")
+    print(f'Calling AJAX. Time: {datetime.now().strftime("%H:%M:%S")}')
     plan_list = []
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     ins_type = quote_request_form_data['Ins_Type']
-    print(quote_request_form_data)
 
     preference = request.session.get('quote_request_preference_data', {})
 
     request.session.modified = True
     if quote_request_form_data:
-        print("quote_request_form_data['quote_store_key']", quote_request_form_data['quote_store_key'])
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
         plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
@@ -1305,7 +1303,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
             decoded_plan = json_decoder.decode(matched_plan.decode())
 
             if decoded_plan == 'START':
-                print(f'{decoded_plan} of plans in redis.')
+                pass
 
             elif decoded_plan == "END":
                 if pdx == plan_list_length - 1:
@@ -1337,7 +1335,6 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
             'monthly_plans': ['START', 'END'] # TODO: Properly handle error
         })
 
-    logger.info(f"get_plan_quote_data_ajax: {len(plan_list)}")
     return JsonResponse({
         'monthly_plans': plan_list,
     })
