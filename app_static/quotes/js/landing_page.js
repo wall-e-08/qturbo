@@ -244,6 +244,7 @@ const router = new VueRouter({
             name: v_all_routes_name.quote,
             component: {
                 template: v_templates.survey_member,
+                delimiters: ['[[', ']]'],
                 components: {
                     'survey-card': v_survey_card,
                 },
@@ -262,6 +263,7 @@ const router = new VueRouter({
                             tobacco: '',
                         },
                         dependents: [],
+                        dependents_data_correct: false,
                         max_dependents: 9,
                     }
                 },
@@ -375,6 +377,22 @@ const router = new VueRouter({
                     spouse_input: function () {
                         this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
                     },
+                    dependents: {
+                        handler() {
+                            let _t = this;
+                            for (let i = 0; i < _t.dependents.length; i++) {
+                                _t.dependents_data_correct = Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k]);
+                            }
+                        },
+                        deep: true
+                    }
+                },
+                computed: {
+                    is_all_data_valid: function () {
+                        return this.own_input.dob && this.own_input.gender && this.own_input.tobacco &&
+                            (!this.spouse || (this.spouse_input.dob && this.spouse_input.gender && this.spouse_input.tobacco)) &&
+                            ((!this.dependents.length) || this.dependents_data_correct);
+                    }
                 },
                 created() {
                     let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
