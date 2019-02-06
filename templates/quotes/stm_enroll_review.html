@@ -54,7 +54,8 @@
 
     <div class="row" style="margin-top: 1rem;">
         <div id="application-body" class="col-xs-12 col-md-8">
-            {% comment %}<div class="">
+            {% if not esign_req_sent %}
+            <div class="">
                 <div class="col-sm-12 app_body_panel">
                 <div class="">
                     <h3>
@@ -94,7 +95,8 @@
                     </div>
                 </div>
                 </div>
-            </div>{% endcomment %}
+            </div>
+            {% endif %}
 
             <div class="">
                 <div class="col-sm-12 app_body_panel">
@@ -107,7 +109,8 @@
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
-                        {% comment %}<div class="col-sm-6">
+                        {% if not esign_req_sent %}
+                        <div class="col-sm-6">
                             <ul>
                                 <li>{{ payment_info.Payment_Method }}</li>
                                 {% if payment_info.Payment_Method == 'BankDraft' %}
@@ -128,7 +131,8 @@
                                 <li>{{ payment_info.Billing_Address }}</li>
                                 <li>{{ payment_info.Billing_City }}, {{ payment_info.Billing_State }} {{ payment_info.Billing_ZipCode }}</li>
                             </ul>
-                        </div>{% endcomment %}
+                        </div>
+                        {% endif %}
                         <div class="col-sm-12 pad-l-0">
                             <p style="margin-top: 10px;" class="review_addon"><span style="font-weight: bold;">Total Payment</span>: ${% plan_total_payment %}</p>
                             {% if form_data.Payment_Option == '2' %}
@@ -183,7 +187,7 @@
                             <label for="consent_checkbox_custom">
                                 <p>
                                     I have read the
-                                    <a href="{% url 'quotes:legal' 'terms-of-use' %}" target="_blank">NationsHealthInsurance Terms and Agreements</a>
+                                    <a href="{% url 'quotes:legal' 'terms-of-use' %}" target="_blank">HealthInsurance.fm Terms and Agreements</a>
                                     and I agree that by using this site, my agreement and consent will be legally binding and enforcable and the legal equivalent of my handwritten signature.
                                     <sup style="color: #ff0000;">*</sup>
                                 </p>
