@@ -127,6 +127,7 @@ const v_survey_card = {
             } //else console.log("Else")
         },
         auto_slash_insert: function (e) {
+            this.$parent.dob_err = '';
             this.current_stage = survey_card_stages[0];
             if (e.keyCode === 8 || e.keyCode === 46) {
                 // if "backspace" or "del" button pressed
@@ -142,8 +143,6 @@ const v_survey_card = {
             }
         },
         check_age: function () {
-            //Your age must be under 99 years old
-            // Your age must be at least 21
             var dob = new Date(this.inputs.dob);
             if (dob == 'Invalid Date') {
                 console.warn("invalid date");
@@ -151,10 +150,11 @@ const v_survey_card = {
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
             if (age > this.prop_max_age) {
-                console.warn("your age must be under " + this.prop_max_age +" years old !!")
+                this.$parent.dob_err = "Your age must be under " + this.prop_max_age +" years old !";
             } else if (age < this.prop_min_age) {
-                console.warn("your age must be at least " + this.prop_min_age);
+                this.$parent.dob_err = "Your age must be at least " + this.prop_min_age + " years !";
             } else {
+                this.$parent.dob_err = '';
                 this.current_stage = survey_card_stages[1];
                 if (this.inputs.gender) this.current_stage = survey_card_stages[2];
             }
@@ -244,12 +244,14 @@ const router = new VueRouter({
             name: v_all_routes_name.quote,
             component: {
                 template: v_templates.survey_member,
+                delimiters: ['[[', ']]'],
                 components: {
                     'survey-card': v_survey_card,
                 },
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
+                        dob_err: '',
                         own_input: {
                             dob: '',
                             gender: '',
@@ -262,6 +264,7 @@ const router = new VueRouter({
                             tobacco: '',
                         },
                         dependents: [],
+                        dependents_data_correct: false,
                         max_dependents: 9,
                     }
                 },
@@ -375,6 +378,22 @@ const router = new VueRouter({
                     spouse_input: function () {
                         this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
                     },
+                    dependents: {
+                        handler() {
+                            let _t = this;
+                            for (let i = 0; i < _t.dependents.length; i++) {
+                                _t.dependents_data_correct = Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k]);
+                            }
+                        },
+                        deep: true
+                    }
+                },
+                computed: {
+                    is_all_data_valid: function () {
+                        return this.own_input.dob && this.own_input.gender && this.own_input.tobacco &&
+                            (!this.spouse || (this.spouse_input.dob && this.spouse_input.gender && this.spouse_input.tobacco)) &&
+                            ((!this.dependents.length) || this.dependents_data_correct);
+                    }
                 },
                 created() {
                     let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
