@@ -391,6 +391,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
     }
 }
 
+# TODO: CREATE SEPARATE DEFAULTS FOR SEPARATE STATES
 STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
@@ -448,14 +449,14 @@ USER_INITIAL_PREFERENCE_DATA = {
     # The general_url_chosen flag will be true when user goes into stm_plan page.
     # It will be again set false when the user gets back to quote list page.
     'LifeShield STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'].copy(),
+        'Duration_Coverage': ['12*1'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['0', '20'],
         'Benefit_Amount': ['0', '2000']
     },
 
     'AdvantHealth STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'].copy(),
+        'Duration_Coverage': ['6*6'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['20'],
         'Benefit_Amount': ['2000']

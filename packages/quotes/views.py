@@ -201,7 +201,7 @@ def start_celery(request: WSGIRequest, form_data) -> True:
                     # We are here setting up a dictionary in the session for future usage
                     print(f'Setting quote request preference data')
 
-                    quote_request_preference_data = settings.USER_INITIAL_PREFERENCE_DATA.copy()
+                    quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
                     quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
                         'LifeShield STM': {
@@ -309,7 +309,7 @@ def reset_preference(request) -> None:
     for carrier in stm_carriers:
         duration_coverage[carrier] = preference[carrier]['Duration_Coverage']
         coverage_max[carrier] = preference[carrier]['Coverage_Max']
-    preference = settings.USER_INITIAL_PREFERENCE_DATA.copy()
+    preference = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
     for carrier in stm_carriers:
         preference[carrier]['Duration_Coverage'] = duration_coverage[carrier]
@@ -2081,25 +2081,13 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
 
     # TODO: Set an expiration timer for plans in redis.
 
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            sp.append(p)
+    # Temporary hack to find out stm_name from plan_url. Will be repalced by a function later.
 
-    if not sp:
-        logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
-        raise Http404()
+    if plan_url[:4].lower() == 'life':  # Lifeshield
+        stm_name = 'LifeShield STM'
+    else:
+        stm_name = 'AdvantHealth STM'
 
-    # We are not selecting the current plan from plan list(mp).
-    try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
-    except StopIteration:
-        logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
-        raise Http404()
-
-    stm_name = plan['Name']
-
-    # Here we shall create the selection data
     selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
 
     if not redis_conn.exists(redis_key):
@@ -2109,10 +2097,21 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     else:
         threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
 
+    for plan in redis_conn.lrange(redis_key, 0, -1):
+        p = json_decoder.decode(plan.decode())
+        if not isinstance(p, str):
+            sp.append(p)
 
-    # We are selecting the alternative duration coverage
-    # for the same Coinsurance_Percentage/out_of_pocket_value/coverage_max_value
-    # coverage_duration
+    if not sp:
+        logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
+        raise Http404()
+
+    try:
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+    except StopIteration:
+        logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
+        raise Http404()
+
 
     # TODO: Try catch for changed values.
 
