@@ -108,10 +108,10 @@ class Enroll(object):
 
     def _make_request(self):
         pretty_xml = minidom.parseString(self.toXML().decode("iso-8859-1")).toprettyxml()
-        print(f'\n------------------------------\n'
-              f'HII_New_Business request XML :\n'
-              f'------------------------------\n'
-              f'{pretty_xml}')
+        # print(f'\n------------------------------\n'
+        #       f'HII_New_Business request XML :\n'
+        #       f'------------------------------\n'
+        #       f'{pretty_xml}')
         return requests.post(self._url, data={'HII_New_Business': self.toXML().decode('iso-8859-1')})
 
     def _get_value(self, r):
@@ -190,7 +190,7 @@ class Response(object):
         self.applicant['Add_ons'] = addons
 
     def process_message(self, message_tree):
-        print(dir(message_tree))
+        # print(dir(message_tree))
         if message_tree.text:
             self.applicant['Message'] = message_tree.text
         for child in message_tree:
@@ -262,5 +262,5 @@ class ESignVerificationEnroll(object):
         response = self._make_request()
         logger.info("ESign Verification Enroll response (formatted) from HII server, EnrollResponse_XML:{0}, user_info:{1}".format(response.text, self.request))
 
-        print("response.text: ", response.text)
+        # print("response.text: ", response.text)
         return XML_ENCODING_PATTERN.sub('', html.unescape(response.text), 1)
