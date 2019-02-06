@@ -54,7 +54,7 @@
   .custom-select {
     .was-validated &:#{$state},
     &.is-#{$state} {
-      border-color: $color;
+      border-color: $color !important;
 
       &:focus {
         border-color: $color;
