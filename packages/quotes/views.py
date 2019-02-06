@@ -303,13 +303,21 @@ def reset_preference(request) -> None:
     :return:
     """
     preference =  request.session.get('quote_request_preference_data', None)
+
+    form_data = request.session.get('quote_request_form_data', None)
+    income = int(form_data['Annual_Income'])
+
     if preference is None:
         return
-    stm_carriers = ['LifeShield STM', 'AdvantHealth STM']
+    stm_carriers = ['LifeShield STM', 'AdvantHealth STM'] # TODO: USE SETTINGS VAR
     duration_coverage, coverage_max = {}, {}
     for carrier in stm_carriers:
         duration_coverage[carrier] = preference[carrier]['Duration_Coverage']
-        coverage_max[carrier] = preference[carrier]['Coverage_Max']
+        try:
+            coverage_max[carrier] = [policy_max_from_income(income, carrier)]
+        except KeyError as k:
+            coverage_max[carrier] = [preference[carrier]['Coverage_Max']]
+
     preference = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
     for carrier in stm_carriers:
@@ -1270,7 +1278,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     return render(request, template, ctx)
 
 
-def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
+def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpResponseRedirect]:
     """This page is called from the plan_list_lim.html the first time the page
     is loaded. This function returns the plans.
 
@@ -1292,6 +1300,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
         plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
+
         for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
             decoded_plan = json_decoder.decode(matched_plan.decode())
 
@@ -1323,6 +1332,10 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> JsonResponse:
         else:
             print("Featured plan not found")
 
+    if plan_list_length == 0:
+        return JsonResponse({
+            'monthly_plans': ['START', 'END'] # TODO: Properly handle error
+        })
 
     logger.info(f"get_plan_quote_data_ajax: {len(plan_list)}")
     return JsonResponse({
@@ -2078,7 +2091,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    sp = []
+    plan_list = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
 
@@ -2108,14 +2121,14 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
-            sp.append(p)
+            plan_list.append(p)
 
-    if not sp:
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning(f'No Plan Found: {plan_url}; there are no plan for this session')
         raise Http404()
@@ -2128,7 +2141,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
                                                   mp['out_of_pocket_value'] == changed_benefit_amount and
                                                   mp['coverage_max_value'] == changed_coverage_maximum and
                                                   mp['Plan'] == plan['Plan'] and
-                                                  mp['Duration_Coverage'] == coverage_duration, sp))
+                                                  mp['Duration_Coverage'] == coverage_duration, plan_list))
     except StopIteration:
         logger.warning(f'No alternative plan for {plan_url}')  # We need to handle this exception in template/js
         raise Http404()
