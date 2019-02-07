@@ -94,6 +94,7 @@ const v_survey_card = {
     },
     data: function () {
         return {
+            dob_err: '',
             current_stage: this.prop_current_stage,
         }
     },
@@ -127,7 +128,7 @@ const v_survey_card = {
             } //else console.log("Else")
         },
         auto_slash_insert: function (e) {
-            this.$parent.dob_err = '';
+            this.dob_err = '';
             this.current_stage = survey_card_stages[0];
             if (e.keyCode === 8 || e.keyCode === 46) {
                 // if "backspace" or "del" button pressed
@@ -145,16 +146,17 @@ const v_survey_card = {
         check_age: function () {
             var dob = new Date(this.inputs.dob);
             if (dob == 'Invalid Date') {
+                this.dob_err = this.inputs.dob ? 'Invalid Date' : '';   // don't show error if input is empty
                 console.warn("invalid date");
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
             if (age > this.prop_max_age) {
-                this.$parent.dob_err = "Your age must be under " + this.prop_max_age +" years old !";
+                this.dob_err = "Your age must be under " + this.prop_max_age +" years old !";
             } else if (age < this.prop_min_age) {
-                this.$parent.dob_err = "Your age must be at least " + this.prop_min_age + " years !";
+                this.dob_err = "Your age must be at least " + this.prop_min_age + " years !";
             } else {
-                this.$parent.dob_err = '';
+                this.dob_err = '';
                 this.current_stage = survey_card_stages[1];
                 if (this.inputs.gender) this.current_stage = survey_card_stages[2];
             }
@@ -251,7 +253,7 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
-                        dob_err: '',
+                        // dob_err: '',
                         own_input: {
                             dob: '',
                             gender: '',
