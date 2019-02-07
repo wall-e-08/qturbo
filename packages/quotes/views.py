@@ -1339,7 +1339,6 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     })
 
 
-
 def get_featured_plan(carrier_name, plan_list, ins_type):
     """
 
