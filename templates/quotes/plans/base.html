@@ -334,14 +334,14 @@
                                     <p class="variations-plan-name">{{ related_plan.general_plan_name }}</p>
                                     <p> Deductible - ${{ related_plan.option }}</p>
                                     <p class="">
-                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.Premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.actual_premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
                                     </p>
                                 {% else %}
                                     <a class="plan-variation-container" href="{% url 'quotes:stm_plan' related_plan.unique_url %}">
                                     <p class="variations-plan-name">{{ related_plan.plan_name }}</p>
                                     <p> Enrollment Fee - {{ related_plan.Enrollment_Fee }}</p>
                                     <p class="">
-                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.Premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
+                                        <span class="emphasize" style="font-size: 30px;">${{ related_plan.actual_premium }}</span>{% if plan.Payment_Option != '2' %}/mo{% endif %}
                                     </p>
 
                                 {% endif %}
@@ -756,7 +756,7 @@
                                             <a class="plan-variation-container" href="/stm/plan/${json.related_plans[i].general_url}">
                                                 <p class="variations-plan-name">${json.related_plans[i].general_plan_name}</p>
                                                 <p> Deductible - $${json.related_plans[i].option}</p>
-                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].Premium}</span>/mo</p>
+                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].actual_premium}</span>/mo</p>
                                             </a>
                                         </div>
                                     `
@@ -768,7 +768,7 @@
                                             <a class="plan-variation-container" href="/stm/plan/${json.related_plans[i].unique_url}">
                                                 <p class="variations-plan-name">${json.related_plans[i].plan_name}</p>
                                                 <p> Enrollment Fee - $${json.related_plans[i].Enrollment_Fee}</p>
-                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].Premium}</span>/mo</p>
+                                                <p><span class="emphasize" style="font-size: 30px;">$${json.related_plans[i].actual_premium}</span>/mo</p>
                                             </a>
                                         </div>
                                     `
