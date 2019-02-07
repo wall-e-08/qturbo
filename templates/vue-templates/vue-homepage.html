@@ -68,11 +68,11 @@
                                         Code
                                     </label>
                                     <div class="position-relative">
-                                        <input type="text" id="home-zip-code"
+                                        <input type="tel" id="home-zip-code"
                                                class="font-md border-0 outline-0 w-100"
                                                :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
                                                v-on:keydown="validate_zip($event)">
-                                        <div class="position-absolute vertical-center" style="left:99%"
+                                        <div class="position-absolute vertical-center" style="left:96%"
                                              v-html="current_marker"></div>
                                     </div>
                                     <div class="home-zc-err"></div>
@@ -118,7 +118,7 @@
            {% comment %} <span class="border border-secondary rounded-circle cur-p qt-tooltip"
                   v-if="survey_type == 'me'">?</span>{% endcomment %}
         </p>
-        <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
+        <input type="tel" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
                @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
                :class="{
                     'is-invalid': $parent.dob_err,
