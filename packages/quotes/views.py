@@ -1823,12 +1823,11 @@ def thank_you(request, vimm_enroll_id):
 
     # Destroying session vimm_enroll_id
     applicant_enrolled = request.session.get('applicant_enrolled', False)
-    plan_url = applicant_enrolled['plan_url']
-    del request.session[plan_url]['vimm_enroll_id']
-    logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
+    if applicant_enrolled:
+        plan_url = applicant_enrolled['plan_url']
+        del request.session[plan_url]['vimm_enroll_id']
+        logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
 
-    # res = request.session.get('applicant_info_{0}'.format(plan_url), '')
-    # res = stm_enroll_obj.enrolled_plan_res
     res = json_decoder.decode(stm_enroll_obj.enrolled_plan_res or '{}')
     formatted_enroll_response = res and EnrollResponse(res)
     return render(request, 'quotes/thank_you.html',
