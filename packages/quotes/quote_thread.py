@@ -139,10 +139,8 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
         try:
             done_data = json.loads(redis.get(redis_key_done_data))
             for i in selection_data:
-                print(done_data)
-                if i != 'general_url_chosen':
-                    for j in done_data[i]:
-                        done_data[i][j].extend(selection_data[i][j])
+                for j in done_data[i]:
+                    done_data[i][j].extend(selection_data[i][j])
 
 
         except KeyError as k:

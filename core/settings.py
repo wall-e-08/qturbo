@@ -391,7 +391,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
     }
 }
 
-# 3*2 is not working right now 01/21/19
+# TODO: CREATE SEPARATE DEFAULTS FOR SEPARATE STATES
 STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
@@ -448,16 +448,15 @@ CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM = {
 USER_INITIAL_PREFERENCE_DATA = {
     # The general_url_chosen flag will be true when user goes into stm_plan page.
     # It will be again set false when the user gets back to quote list page.
-    'general_url_chosen': False,
     'LifeShield STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+        'Duration_Coverage': ['12*1'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['0', '20'],
         'Benefit_Amount': ['0', '2000']
     },
 
     'AdvantHealth STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+        'Duration_Coverage': ['6*6'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['20'],
         'Benefit_Amount': ['2000']
@@ -488,33 +487,51 @@ AVAILABLE_PLAN_NAME_LIST_DICT = {
 }
 
 
-#
-# FEATURED_PLAN_DICT = {
-#                          'LifeShield STM': {
-#                              'Coinsurance_Percentage': '20',
-#                              'Benefit_Amount': '2000',
-#                              'Duration_Coverage': '12*1',
-#                              'Premium': '100.00',
-#                              'coverage_max_value': '1000000',
-#                              'session_key': 'qt_dummy_session_key',
-#                          },
-#
-#                         'AdvantHealth STM': {
-#                             'Coinsurance_Percentage': '20',
-#                             'Benefit_Amount': '2000',
-#                             'Duration_Coverage': '6*6',
-#                             'Premium': '100.00',
-#                             'coverage_max_value': '1000000',
-#                             'session_key': 'qt_dummy_session_key',
-#                         },
-#
-#                         # 'Health Choice':{
-#                         #
-#                         # }
-#
-#                     }
 
-# WILL BE DONE LATER IF GOD WISHES.
+FEATURED_PLAN_DICT = {
+    'LifeShield STM': {
+        'option': '5000',
+        'Coinsurance_Percentage': '20',
+        'Benefit_Amount': '3000',
+    },
+
+    'AdvantHealth STM': {
+        'option': '2500',
+        'Coinsurance_Percentage': '20',
+        'Benefit_Amount': '2000',
+    },
+
+    'Health Choice':{
+        'Lim_Plan_Name': 'Plan_100'
+    },
+
+    'Vitala Care':{
+        'Lim_Plan_Name': 'Plan_100'
+    },
+
+    'Legion Limited Medical': {
+        'Lim_Plan_Name': 'Plan_3'
+    },
+
+    'USA Dental': {
+        'Lim_Plan_Name': 'Access_III'
+    },
+
+    'Safeguard Critical Illness': {
+        'Lim_Plan_Name': 'Option5000',
+    },
+
+    'Freedom Spirit Plus':{
+        'Lim_Plan_Name': 'SPIRITPLUS_100000',
+    }
+}
+
+FEATURED_PLAN_PREMIUM_DICT = {
+    'stm': 100.0,
+    'lim': 100.0,
+    'anc': 25.0
+}
+
 
 
 
