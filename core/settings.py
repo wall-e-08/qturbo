@@ -502,27 +502,27 @@ FEATURED_PLAN_DICT = {
     },
 
     'Health Choice':{
-        'Lim_Plan_Name': 'Plan_100'
+        'Plan_Name': 'Plan_100'
     },
 
     'Vitala Care':{
-        'Lim_Plan_Name': 'Plan_100'
+        'Plan_Name': 'Plan_100'
     },
 
     'Legion Limited Medical': {
-        'Lim_Plan_Name': 'Plan_3'
+        'Plan_Name': 'Plan_3'
     },
 
     'USA Dental': {
-        'Lim_Plan_Name': 'Access_III'
+        'Plan_Name': 'Access_III'
     },
 
     'Safeguard Critical Illness': {
-        'Lim_Plan_Name': 'Option5000',
+        'Plan_Name': 'Option5000',
     },
 
     'Freedom Spirit Plus':{
-        'Lim_Plan_Name': 'SPIRITPLUS_100000',
+        'Plan_Name': 'SPIRITPLUS_100000',
     }
 }
 

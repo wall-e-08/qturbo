@@ -1323,7 +1323,7 @@ class MainPlan(models.Model):
             Lim_Plan_Name -> Plan_Name
     """
 
-    stm_enroll = models.OneToOneField(
+    stm_enroll = models.ForeignKey(
         StmEnroll,
         on_delete=models.CASCADE,
         verbose_name=_("Enroll"),
@@ -1601,7 +1601,8 @@ class MainPlan(models.Model):
             'Plan_Name': self.Plan_Name,
             'plan_name_for_img': self.plan_name_for_img,
             'plan_name': self.plan_name,
-            'plan_number': self.Plan,
+            'Plan': self.Plan,
+            'ins_type': self.ins_type,
             'unique_url': self.unique_url,
             'Premium': str(self.Premium),
             'EnrollmentFee': str(self.EnrollmentFee),

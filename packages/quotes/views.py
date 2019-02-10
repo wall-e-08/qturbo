@@ -789,10 +789,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     stm_addon_plan_objs = None
     try:
         stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
-        if stm_enroll_obj.stm_name in settings.ANCILLARIES_PLANS:
-            stm_plan_model = getattr(qm, 'StandAloneAddonPlan')
-        else:
-            stm_plan_model = getattr(qm, stm_enroll_obj.stm_name.title().replace(' ', ''))
+        stm_plan_model = getattr(qm, 'MainPlan')
         stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
         stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
         stm_addon_plan_objs = qm.AddonPlan.objects.filter(vimm_enroll_id=vimm_enroll_id)
@@ -1078,7 +1075,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                     update_application_stage(stm_enroll_obj, stage)
                 if stm_plan_obj is None:
                     logger.info("Saving Plan Info.")
-                    save_stm_plan(qm, plan, stm_enroll_obj)
+                    stm_plan_obj = save_stm_plan(qm, plan, stm_enroll_obj)
                 if stm_dependent_objs is None and has_dependents:
                     logger.info("Saving dependents Info.")
                     save_dependent_info(qm.Dependent, dependent_info_form_data, plan, stm_enroll_obj)

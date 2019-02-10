@@ -498,6 +498,7 @@ class LimitedPlan(object):
         self.Access_Token = Access_Token
         self.Plan_ID = Plan_ID
         self.Plan_Name = Plan_Name
+        self.Ins_Type = 'lim'
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -524,7 +525,8 @@ class LimitedPlan(object):
 
     def get_data_as_dict(self):
         data = {'Name': self.Name,
-                'Lim_Plan_Name': self.Plan_Name,
+                'Plan_Name': self.Plan_Name,
+                'ins_type': self.Ins_Type,
                 'Premium': self.Premium,
                 'unique_url': self.get_unique_url(),
                 'plan_name': self.get_plan_name(),
