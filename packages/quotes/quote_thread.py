@@ -13,6 +13,8 @@ from quotes.quote_request import get_xml_requests
 from quotes.quote_response import AddonPlan
 from quotes.addon_properties import properties as add_on_properties
 
+from core import settings
+
 json_encoder = json.JSONEncoder()
 json_decoder = json.JSONDecoder()
 
@@ -91,7 +93,7 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
     redis_key = "{0}:{1}".format(session_key, form_data['quote_store_key'])
     print('redis_key: ', redis_key)
 
-    print(f'Creating threaded requests.')
+    print(f'Creating threaded requests. Quote Request URL is {settings.QUOTE_REQUEST_URL}')
 
     print(f'Selection data is: {selection_data}.')
     tasks = get_xml_requests(form_data, selection_data)

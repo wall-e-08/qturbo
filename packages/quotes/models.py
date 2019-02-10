@@ -1398,11 +1398,12 @@ class MainPlan(models.Model):
         decimal_places=2
     )
 
-    # Effective_Date = models.DateField(
+    # Effective_Date = models.ForeignKey(
+    #     to=StmEnroll.Effective_Date,
     #     verbose_name=_("Effective Date"),
+    #     null=True, blank=True,
     #     db_index=True
-    # ) # TODO
-
+    # )
 
     EnrollmentFee = models.DecimalField(
         max_digits=20,
@@ -1526,6 +1527,12 @@ class MainPlan(models.Model):
 
     Coinsurance_Percentage = models.TextField(blank=True, null=True)
 
+    Benefit_Amount = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
     out_of_pocket_value = models.DecimalField(
         max_digits=20,
         decimal_places=2,
@@ -1538,19 +1545,17 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
+    Coverage_Max = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
 
     Duration_Coverage = models.TextField(blank=True, null=True)
 
     Deductible_Option = models.TextField(blank=True, null=True)
 
     Payment_Option = models.TextField(
-        blank=True, null=True
-    )
-
-
-    Benefit_Amount = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
         blank=True, null=True
     )
 
@@ -1579,7 +1584,7 @@ class MainPlan(models.Model):
         default=False
     )
 
-    Note = models.TextField(
+    note = models.TextField(
         blank=True, null=True
     )
 
@@ -1636,7 +1641,7 @@ class MainPlan(models.Model):
             'copay': self.copay,
             'copay_text': self.copay_text,
             'Payment_Option': self.Payment_Option,
-            'Note': self.Note
+            'note': self.note
         }
 
         return data

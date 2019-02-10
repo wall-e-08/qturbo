@@ -6,6 +6,7 @@ import copy
 import decimal
 import xml.etree.ElementTree as ET
 
+from core import settings
 from quotes.addon_properties import properties as add_on_properties, carrier_id as add_on_carrier_id
 
 
@@ -113,6 +114,8 @@ class AncillariesQuoteResponse(object):
         self.Plan_ID = plan_id
         self.quote_request_timestamp = quote_request_timestamp
         self.quote_store_key = quote_store_key # Is this needed
+
+        self.Ins_Type = 'anc'
 
         self.escaped_xml_text = xml_text.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&#39;')
         print("Parsed and Formatted Quote Plan XML response for {1}:\n AncillariesQuoteResponse_XML:{0}".format(self.escaped_xml_text, self.stm_name))
@@ -611,28 +614,39 @@ class LimitedPlan(object):
                                     decimal.Decimal(data['ChoiceValue_AdminFee']) +
                                     decimal.Decimal(data['ChoiceValueSavings_Fee']))
 
-        if self.Name == 'USA Dental':
+        # For standalone ancillaries
+
+        if self.Name in copy.deepcopy(settings.ANCILLARIES_PLANS):
+            self.Ins_Type = 'anc'
+            self.stand_alone_addon_plan = True
+
             data.update({
-                'Enrollment_Fee': getattr(self, 'EnrollmentFee', '0.00'),
-                'EnrollmentFee': getattr(self, 'EnrollmentFee', '0.00'),
-                'note': getattr(self, 'note', None)
+                'ins_type': self.Ins_Type,
+                'stand_alone_addon_plan': self.stand_alone_addon_plan
             })
 
-        if self.Name == 'Safeguard Critical Illness':
-            data.update({
-                'AdministrativeFee': getattr(self, 'AdministrativeFee', '0.00'),
-                'Administrative_Fee': getattr(self, 'AdministrativeFee', '0.00'),
-            })
-            self.actual_premium += (decimal.Decimal(data['AdministrativeFee']))
+            if self.Name == 'USA Dental':
+                data.update({
+                    'Enrollment_Fee': getattr(self, 'EnrollmentFee', '0.00'),
+                    'EnrollmentFee': getattr(self, 'EnrollmentFee', '0.00'),
+                    'note': getattr(self, 'note', None)
+                })
 
-        if self.Name == 'Freedom Spirit Plus':
-            data.update({
-                'AdministrativeFee': getattr(self, 'AdministrativeFee', '0.00'),
-                'Administrative_Fee': getattr(self, 'AdministrativeFee', '0.00'),
-                'Enrollment_Fee': getattr(self, 'EnrollmentFee', '0.00'),
-                'EnrollmentFee': getattr(self, 'EnrollmentFee', '0.00'),
-            })
-            self.actual_premium += (decimal.Decimal(data['AdministrativeFee']))
+            if self.Name == 'Safeguard Critical Illness':
+                data.update({
+                    'AdministrativeFee': getattr(self, 'AdministrativeFee', '0.00'),
+                    'Administrative_Fee': getattr(self, 'AdministrativeFee', '0.00'),
+                })
+                self.actual_premium += (decimal.Decimal(data['AdministrativeFee']))
+
+            if self.Name == 'Freedom Spirit Plus':
+                data.update({
+                    'AdministrativeFee': getattr(self, 'AdministrativeFee', '0.00'),
+                    'Administrative_Fee': getattr(self, 'AdministrativeFee', '0.00'),
+                    'Enrollment_Fee': getattr(self, 'EnrollmentFee', '0.00'),
+                    'EnrollmentFee': getattr(self, 'EnrollmentFee', '0.00'),
+                })
+                self.actual_premium += (decimal.Decimal(data['AdministrativeFee']))
 
 
         data['actual_premium'] = str(self.actual_premium)
@@ -777,7 +791,6 @@ class AddonPlan(object):
             AdministrativeFee=self.AdministrativeFee,
             EnrollmentFee=self.EnrollmentFee,
             MedsenseFee=self.MedsenseFee,
-            Embeded=self.Embeded,
             actual_premium=self.actual_premium,
         )
         if int(self.addon_id) == 38:
@@ -820,6 +833,8 @@ class StmPlan(object):
 
         self.Quote_ID = None
         self.Access_Token = None
+
+        self.Ins_Type = 'stm'
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -883,7 +898,7 @@ class StmPlan(object):
                 'out_of_pocket_value': self.get_out_of_pocket(), 'coverage_max_value': self.get_coverage_max(),
                 'Quote_ID': self.Quote_ID, 'Access_Token': self.Access_Token, 'Plan_ID': self.Plan_ID,
                 'Duration_Coverage': self.Duration_Coverage, 'quote_request_timestamp': self.quote_request_timestamp,
-                'copay': self.copay, 'copay_text': self.copay_text,
+                'copay': self.copay, 'copay_text': self.copay_text, 'ins_type': self.Ins_Type,
                 'plan_name_for_img': self.Name.lower().replace(' ', '-')}
 
         self.actual_premium = decimal.Decimal(data['Premium'])

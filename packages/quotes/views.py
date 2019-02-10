@@ -1075,7 +1075,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                     update_application_stage(stm_enroll_obj, stage)
                 if stm_plan_obj is None:
                     logger.info("Saving Plan Info.")
-                    stm_plan_obj = save_stm_plan(qm, plan, stm_enroll_obj)
+                    save_stm_plan(qm, plan, stm_enroll_obj)
                 if stm_dependent_objs is None and has_dependents:
                     logger.info("Saving dependents Info.")
                     save_dependent_info(qm.Dependent, dependent_info_form_data, plan, stm_enroll_obj)
