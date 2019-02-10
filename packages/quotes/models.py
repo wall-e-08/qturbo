@@ -1314,33 +1314,11 @@ class MainPlan(models.Model):
         previous -> current
         --------------------
 
-        plan_name -> plan_name_long
-        Plan_Type -> plan_type
-
-        For previous Hii (stm) model:
-            plan_name -> plan_name_long
-            Name -> stm_name
-            coverage_max_value -> Coverage_Max
-            Plan_Name -> sub_plan_name
-            Plan -> plan_number
-
         For previous Hii (lim) model:
-            Plan_Type -> plan_type
             Lim_Plan_Name -> sub_plan_name
-            Name -> stm_name
-            plan_name -> plan_name_long
-
-        For previous A1 model (MainPlan model):
-            premium -> Premium
-            Product_Plan_Name -> stm_name
-            Name -> stm_name
-            enrollment_fee -> Enrollment_Fee/EnrollmentFee
-            administration_fee -> Administrative_Fee/AdministrativeFee
 
         For previous Ancillaries plan model (StandAlonePlan):
-            plan_name -> plan_name_long
             Lim_Plan_Name -> sub_plan_name
-            Name -> stm_name
     """
 
     stm_enroll = models.ForeignKey(
@@ -1371,8 +1349,6 @@ class MainPlan(models.Model):
     plan_name_for_img = models.CharField(
         max_length=600
     )
-
-
 
     ins_type = models.CharField(
         max_length=200,
@@ -1522,7 +1498,7 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-    
+
     # GapAffordPlus_Fee = models.DecimalField(
     #     max_digits=20,
     #     decimal_places=2,
@@ -1534,9 +1510,11 @@ class MainPlan(models.Model):
     #     decimal_places=2,
     #     blank=True, null=True
     # )
-
-    # stm plan
-
+    
+    #   --------
+    #   stm plan
+    #   --------
+    
     general_url = models.TextField()
 
     general_plan_name = models.TextField()
@@ -1598,8 +1576,6 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-
-
     copay = models.TextField(
         blank=True, null=True
     )
@@ -1621,44 +1597,6 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-    # A1 plan
-    processed = models.BooleanField(
-        default=False
-    )
-
-    product_type = models.CharField(
-        max_length=500,
-        blank=True, null=True
-    )
-
-    sub_product_id = models.CharField(
-        max_length=500,
-        blank=True, null=True
-    )
-
-    covered_person = models.CharField(
-        max_length=500,
-        blank=True, null=True
-    )
-
-    time_created = models.DateTimeField(
-        auto_now_add=True
-    )
-
-    deductible = models.TextField(
-        blank=True, null=True
-    )
-
-    member_id = models.CharField(
-        max_length=500,
-        blank=True, null=True
-    )
-
-    unique_id = models.CharField(
-        max_length=20,
-        null=True, blank=True
-    )
-
     # only for Pivot Choice
     # administration_fee = models.DecimalField(
     #     blank=True, null=True,
@@ -1674,45 +1612,14 @@ class MainPlan(models.Model):
     #     blank=True, null=True
     # )
 
-    # for a1 plans, enrollment_fees, administration_fees may need in future
-    enrollment_fees = models.TextField(blank=True, null=True)
-
-    administration_fees = models.TextField(blank=True, null=True)
-
-    # a1 changed enrollment fee
-    a1_changed_enrollment_fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-    )
-
     # stand alone ancillaries/add-on plan flag
     stand_alone_addon_plan = models.BooleanField(
         default=False
     )
 
-    enrolled = models.BooleanField(
-        default=False
-    )
-
-    discarded = models.BooleanField(
-        default=False
-    )
-
-    api_key = models.CharField(
-        max_length=200,
-        blank=True, null=True
-    )
-
-
-
-
-
-
-    policy_number = models.CharField(
-        max_length=20,
-        null=True, blank=True
-    )
+    # enrolled = models.BooleanField(
+    #     default=False
+    # ) # TODO
 
     class Meta:
         db_table = 'main_plan'
