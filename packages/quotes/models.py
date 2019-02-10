@@ -1323,7 +1323,7 @@ class MainPlan(models.Model):
             Lim_Plan_Name -> Plan_Name
     """
 
-    stm_enroll = models.ForeignKey(
+    stm_enroll = models.OneToOneField(
         StmEnroll,
         on_delete=models.CASCADE,
         verbose_name=_("Enroll"),
@@ -1515,12 +1515,10 @@ class MainPlan(models.Model):
     ) # TODO: sub_plan_name
 
 
-
     month = models.CharField(
         max_length=600,
         blank=True, null=True
     )
-
 
     option = models.TextField(
         blank=True, null=True
