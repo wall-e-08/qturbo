@@ -1396,14 +1396,10 @@ class MainPlan(models.Model):
         decimal_places=2
     )
 
-    # has_post_date_api = models.BooleanField(
-    #     default=True
-    # )
-
     # Effective_Date = models.DateField(
     #     verbose_name=_("Effective Date"),
     #     db_index=True
-    # )
+    # ) # TODO
 
 
     EnrollmentFee = models.DecimalField(
@@ -1497,19 +1493,6 @@ class MainPlan(models.Model):
         decimal_places=2,
         blank=True, null=True
     )
-
-
-    # GapAffordPlus_Fee = models.DecimalField(
-    #     max_digits=20,
-    #     decimal_places=2,
-    #     blank=True, null=True
-    # )
-    #
-    # GapAffordPlus_AdminFee = models.DecimalField(
-    #     max_digits=20,
-    #     decimal_places=2,
-    #     blank=True, null=True
-    # )
     
     #   --------
     #   stm plan
@@ -1560,11 +1543,6 @@ class MainPlan(models.Model):
 
     Deductible_Option = models.TextField(blank=True, null=True)
 
-    # may be not required - have to check
-    # Coinsurance_Limit = models.TextField(
-    #     blank=True, null=True
-    # )
-
     Payment_Option = models.TextField(
         blank=True, null=True
     )
@@ -1593,28 +1571,16 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-    Note = models.TextField(
-        blank=True, null=True
-    )
 
-    # only for Pivot Choice
-    # administration_fee = models.DecimalField(
-    #     blank=True, null=True,
-    #     max_digits=20, decimal_places=2
-    # )
-    #
-    # monthly_network_fee = models.DecimalField(
-    #     blank=True, null=True,
-    #     max_digits=20, decimal_places=2
-    # )
-    #
-    # monthly_network_fees = models.TextField(
-    #     blank=True, null=True
-    # )
-
+    # ------------------------------------------
     # stand alone ancillaries/add-on plan flag
+    # ------------------------------------------
     stand_alone_addon_plan = models.BooleanField(
         default=False
+    )
+
+    Note = models.TextField(
+        blank=True, null=True
     )
 
     # enrolled = models.BooleanField(
