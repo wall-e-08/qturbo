@@ -403,44 +403,6 @@ class StmEnroll(models.Model):
         return "{0} {1}".format(self.First_Name, self.Last_Name)
 
     def get_stm_plan(self):
-        ancillaries_plans = settings.ANCILLARIES_PLANS
-        # a1_plans = ['Apex Limited Medical', 'AdvancedHealth Limited Medical']
-        # a1_ancillaries_plans = ["Discount Dental", "Amplified AD-D", "OneCare AME + CI", "Amplified CI", "TeleMedicine",
-        #                         ]
-        # agentra_plans = ['Smart Health Pass', "MEC", "Accidental Death & Dismemberment",
-        #                  "Paul Revere Group Critical Care", "Colonial Life Group Critical Care",
-        #                  "Paul Revere Group Accident", "Colonial Life Group Accident", "Bright Idea Dental"]
-
-        # if self.stm_name == 'Everest STM':
-        #     return self.evereststm_set.get()
-        # if self.stm_name == 'LifeShield STM':
-        #     return self.lifeshieldstm_set.get()
-        # if self.stm_name == 'Premier STM':
-        #     return self.premierstm_set.get()
-        # if self.stm_name == 'AdvantHealth STM':
-        #     return self.advanthealthstm_set.get()
-        # if self.stm_name == 'Unified Health One':
-        #     return self.unifiedlimited_set.get()
-        # if self.stm_name == 'Principle Advantage':
-        #     return self.principlelimited_set.get()
-        # if self.stm_name == 'Rx Card':
-        #     return self.rxcardplan_set.get()
-        # if self.stm_name == 'Cardinal Choice':
-        #     return self.cardinalchoice_set.get()
-        # if self.stm_name == 'Vitala Care':
-        #     return self.vitalacare_set.get()
-        # if self.stm_name == 'Health Choice':
-        #     return self.healthchoice_set.get()
-        # if self.stm_name == 'Legion Limited Medical':
-        #     return self.legionlimitedmedical_set.get()
-        # if self.stm_name == 'Protector 360':
-        #     return self.protector360_set.get()
-        # if self.stm_name in ancillaries_plans:
-        #     return self.standaloneaddonplan_set.get()
-
-
-        # elif self.stm_name in a1_plans or self.stm_name in a1_ancillaries_plans:
-        #     return self.mainplan_set.get()
         return self.mainplan_set.get()
 
     def get_applicant_parent_info(self):
