@@ -1302,6 +1302,520 @@ class LegionLimitedMedical(LimitedBase):
         db_table = 'legion_limited_medical'
 
 
+# --- Unified Model for all main plans ---
+
+class MainPlan(models.Model):
+    """
+    Merged plan model for all main plan. Some of the fields have been added here cutting from previous StmEnroll model.
+    Besides, all the individual plan models are merged here for hii and a1 plans.
+
+    Changed Field:
+        --------------------
+        previous -> current
+        --------------------
+
+        plan_name -> plan_name_long
+        Plan_Type -> plan_type
+
+        For previous Hii (stm) model:
+            plan_name -> plan_name_long
+            Name -> stm_name
+            coverage_max_value -> Coverage_Max
+            Plan_Name -> sub_plan_name
+            Plan -> plan_number
+
+        For previous Hii (lim) model:
+            Plan_Type -> plan_type
+            Lim_Plan_Name -> sub_plan_name
+            Name -> stm_name
+            plan_name -> plan_name_long
+
+        For previous A1 model (MainPlan model):
+            premium -> Premium
+            Product_Plan_Name -> stm_name
+            Name -> stm_name
+            enrollment_fee -> Enrollment_Fee/EnrollmentFee
+            administration_fee -> Administrative_Fee/AdministrativeFee
+
+        For previous Ancillaries plan model (StandAlonePlan):
+            plan_name -> plan_name_long
+            Lim_Plan_Name -> sub_plan_name
+            Name -> stm_name
+    """
+
+    stm_enroll = models.ForeignKey(
+        StmEnroll,
+        on_delete=models.CASCADE,
+        verbose_name=_("Enroll"),
+        unique=True,
+    )
+
+    vimm_enroll_id = models.CharField(
+        max_length=20,
+        db_index=True
+    )
+
+    Plan_ID = models.CharField(
+        verbose_name=_("Plan ID"),
+        max_length=600,
+        db_index=True
+    )
+
+    Name = models.CharField(
+        verbose_name=_("Main Plan"),
+        max_length=100,
+        choices=settings.MAIN_PLANS,
+        db_index=True
+    )
+
+
+    ins_type = models.CharField(
+        max_length=200,
+        choices=(
+            ('stm', 'STM'),
+            ('lim', 'Limited'),
+            ('ancillaries', 'ANCILLARIES'),
+        ),
+        verbose_name=_("Insurance Type"),
+    )
+
+    plan_name_for_img = models.CharField(
+        max_length=600
+    )
+
+
+
+
+    Plan = models.CharField(
+        max_length=300,
+    ) # TODO: sub_plan_name
+
+    plan_name = models.CharField(
+        verbose_name=_("Plan name with details"),
+        max_length=300,
+    ) # TODO: plan_name_long
+
+    plan_number = models.CharField(
+        verbose_name=_("Main Plan sub category number"),
+        max_length=300,
+        blank=True, null=True
+    )
+
+
+    carrier_plan_id = models.CharField(
+        blank=True, null=True,
+        max_length=100
+    )
+
+
+    plan_type = models.CharField(
+        max_length=500,
+        choices=(
+            ('Single Member', 'Single Member'),
+            ('Member+1', 'Member+1'),
+            ('Family', 'Family'),
+
+        ),
+        blank=True, null=True
+    )
+
+    api_source = models.CharField(
+        max_length=50,
+        choices=(
+            ('hii', 'HII Quote API'),
+            ('a1', 'A1 HealthCare API'),
+        ),
+        default='hii'
+    )
+
+    verification_weight = models.IntegerField(
+        blank=True, null=True
+    )
+
+    has_post_date_api = models.BooleanField(
+        default=True
+    )
+
+    Effective_Date = models.DateField(
+        verbose_name=_("Effective Date"),
+        db_index=True
+    )
+
+    Premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    EnrollmentFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    Enrollment_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    actual_premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    TelaDocFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    TelaDoc_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    RxAdvocacy_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    RxAdvocacyFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    ChoiceValue_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    ChoiceValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Administrative_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    AdministrativeFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    VBP_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Medsense_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Association_Fee = models.DecimalField(
+        default=0,
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+
+    )
+
+    GapAffordPlus_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    GapAffordPlus_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    RealValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    RealValueSavings_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    # stm plan
+
+    month = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    Coinsurance_Percentage = models.TextField(blank=True, null=True)
+
+    Out_Of_Pocket = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    out_of_pocket_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Duration_Coverage = models.TextField(blank=True, null=True)
+
+    Deductible_Option = models.TextField(blank=True, null=True)
+
+    # may be not required - have to check
+    Coinsurance_Limit = models.TextField(
+        blank=True, null=True
+    )
+
+    Payment_Option = models.TextField(
+        blank=True, null=True
+    )
+
+    coverage_max_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Coverage_Max = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Benefit_Amount = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+
+    option = models.TextField(
+        blank=True, null=True
+    )
+
+    copay = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_text = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_2 = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_2_text = models.CharField(
+        max_length=1000,
+        blank=True, null=True
+    )
+
+    Note = models.TextField(
+        blank=True, null=True
+    )
+
+    # A1 plan
+    processed = models.BooleanField(
+        default=False
+    )
+
+    product_type = models.CharField(
+        max_length=500,
+        blank=True, null=True
+    )
+
+    sub_product_id = models.CharField(
+        max_length=500,
+        blank=True, null=True
+    )
+
+    covered_person = models.CharField(
+        max_length=500,
+        blank=True, null=True
+    )
+
+    time_created = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    deductible = models.TextField(
+        blank=True, null=True
+    )
+
+    member_id = models.CharField(
+        max_length=500,
+        blank=True, null=True
+    )
+
+    unique_id = models.CharField(
+        max_length=20,
+        null=True, blank=True
+    )
+
+    # only for Pivot Choice
+    administration_fee = models.DecimalField(
+        blank=True, null=True,
+        max_digits=20, decimal_places=2
+    )
+
+    monthly_network_fee = models.DecimalField(
+        blank=True, null=True,
+        max_digits=20, decimal_places=2
+    )
+
+    monthly_network_fees = models.TextField(
+        blank=True, null=True
+    )
+
+    # for a1 plans, enrollment_fees, administration_fees may need in future
+    enrollment_fees = models.TextField(blank=True, null=True)
+
+    administration_fees = models.TextField(blank=True, null=True)
+
+    # a1 changed enrollment fee
+    a1_changed_enrollment_fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    # stand alone ancillaries/add-on plan flag
+    stand_alone_addon_plan = models.BooleanField(
+        default=False
+    )
+
+    enrolled = models.BooleanField(
+        default=False
+    )
+
+    discarded = models.BooleanField(
+        default=False
+    )
+
+    api_key = models.CharField(
+        max_length=200,
+        blank=True, null=True
+    )
+
+    unique_url = models.CharField(
+        max_length=700,
+        db_index=True,
+        blank=True, null=True
+    )
+
+    Quote_ID = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    Access_Token = models.CharField(
+        max_length=700,
+        blank=True, null=True
+    )
+
+    quote_request_timestamp = models.IntegerField(
+        blank=True, null=True
+    )
+
+    policy_number = models.CharField(
+        max_length=20,
+        null=True, blank=True
+    )
+
+    class Meta:
+        db_table = 'main_plan'
+
+    def __str__(self):
+        return "{0}-{1}".format(self.vimm_enroll_id, getattr(self, 'plan_name_long', ''))
+
+    def get_json_data(self):
+        data = {
+            'vimm_enroll_id': self.vimm_enroll_id,
+            'Plan_ID': self.Plan_ID,
+            'stm_name': self.stm_name,
+            'sub_plan_name': self.sub_plan_name,
+            'plan_name_for_img': self.plan_name_for_img,
+            # 'plan_name': self.plan_name_long,
+            'plan_name_long': self.plan_name_long,
+            'unique_url': self.unique_url,
+            'api_source': self.api_source,
+            'Premium': str(self.Premium),
+            'EnrollmentFee': str(self.EnrollmentFee),
+            'Enrollment_Fee': str(self.Enrollment_Fee),
+            'actual_premium': str(self.actual_premium),
+            'quote_request_timestamp': self.quote_request_timestamp,
+            'Quote_ID': self.Quote_ID,
+            'Access_Token': self.Access_Token,
+            'Plan_Type': self.plan_type,
+            'TelaDocFee': str(getattr(self, 'TelaDocFee', '0.0')),
+            'TelaDoc_Fee': str(getattr(self, 'TelaDoc_Fee', '0.0')),
+            'RxAdvocacyFee': str(getattr(self, 'RxAdvocacyFee', '0.0')),
+            'RxAdvocacy_Fee': str(getattr(self, 'RxAdvocacy_Fee', '0.0')),
+            'ChoiceValue_AdminFee': str(getattr(self, 'ChoiceValue_AdminFee', '0.0')),
+            'ChoiceValueSavings_Fee': str(getattr(self, 'ChoiceValueSavings_Fee', '0.0')),
+            'VBP_Fee': str(getattr(self, 'VBP_Fee', '0.0')),
+            'Medsense_Fee': str(getattr(self, 'Medsense_Fee', '0.0')),
+            'Association_Fee': str(getattr(self, 'Association_Fee', '0.0')),
+            'product_id': self.Plan_ID,
+            'sub_product_id': self.sub_product_id,
+            'Product_Plan_Name': self.stm_name,
+            'premium': str(self.Premium),
+            'enrollment_fees': json_decoder.decode(self.enrollment_fees or '[]'),
+            'Administrative_Fee': str(getattr(self, 'Administrative_Fee', '0.0')),
+            'AdministrativeFee': str(getattr(self, 'AdministrativeFee', '0.0')),
+            'GapAffordPlus_Fee': str(getattr(self, 'GapAffordPlus_Fee', '0.0')),
+            'GapAffordPlus_AdminFee': str(getattr(self, 'GapAffordPlus_AdminFee', '0.0')),
+            'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+            'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+            'month': self.month,
+            'option': self.option,
+            'Coverage_Max': str(self.Coverage_Max),
+            'Benefit_Amount': str(self.Benefit_Amount),
+            'Out_Of_Pocket': str(self.Out_Of_Pocket),
+            'Coinsurance_Percentage': self.Coinsurance_Percentage,
+            'out_of_pocket_value': str(self.out_of_pocket_value),
+            'coverage_max_value': str(self.Coverage_Max),
+            'Duration_Coverage': self.Duration_Coverage,
+            'Deductible_Option': self.Deductible_Option,
+            'copay': self.copay,
+            'copay_text': self.copay_text,
+            'plan_number': self.plan_number,
+            'Payment_Option': self.Payment_Option,
+            'Note': self.Note
+        }
+        if (self.api_source == settings.API_PROVIDER_NAME_HII and
+                self.stm_name in settings.HII_PLAN_INFORMATION.keys()):
+            data['hii_plan_information'] = settings.HII_PLAN_INFORMATION[self.stm_name]
+
+        if self.stm_name == 'Pivot':
+            data.update({
+                'coverage_max': self.Coverage_Max,
+                'deductible': self.deductible,
+                'administration_fee': str(
+                    getattr(self, 'AdministrativeFee', getattr(self, 'Administrative_Fee', '0.0'))),
+                'administration_fees': json_decoder.decode(self.administration_fees or '[]'),
+            })
+
+        return data
+
+
 class AddonPlan(models.Model):
 
     stm_enroll = models.ForeignKey(
