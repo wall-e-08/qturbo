@@ -317,19 +317,20 @@ def get_plan_type_principle_limited(form_data):
     return 'Single Member'
 
 
-def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
-    ancillaries_plans = settings.ANCILLARIES_PLANS
+def save_stm_plan(qm, plan, stm_enroll_obj):
+    # ancillaries_plans = settings.ANCILLARIES_PLANS
 
-    if plan['Name'] == 'Principle Advantage':
-        plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
+    # if plan['Name'] == 'Principle Advantage':
+    #     plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
 
-    elif plan['Name'] in ancillaries_plans:
-        stm_plan_model = hm.StandAloneAddonPlan
-        stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
-        stm_plan_obj.save()
-        return  stm_plan_obj
+    # elif plan['Name'] in ancillaries_plans:
+    #     stm_plan_model = hm.StandAloneAddonPlan
+    #     stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
+    #     stm_plan_obj.save()
+    #     return  stm_plan_obj
 
-    stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
+    # stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
+    stm_plan_model = getattr(qm, 'MainPlan')
     stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
     stm_plan_obj.save()
     return stm_plan_obj
