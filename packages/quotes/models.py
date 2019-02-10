@@ -1368,6 +1368,11 @@ class MainPlan(models.Model):
         db_index=True
     )
 
+    plan_name_for_img = models.CharField(
+        max_length=600
+    )
+
+
 
     ins_type = models.CharField(
         max_length=200,
@@ -1379,72 +1384,51 @@ class MainPlan(models.Model):
         verbose_name=_("Insurance Type"),
     )
 
-    plan_name_for_img = models.CharField(
-        max_length=600
-    )
-
-
-
-
-    Plan = models.CharField(
-        max_length=300,
-    ) # TODO: sub_plan_name
-
     plan_name = models.CharField(
         verbose_name=_("Plan name with details"),
         max_length=300,
     ) # TODO: plan_name_long
 
-    plan_number = models.CharField(
-        verbose_name=_("Main Plan sub category number"),
-        max_length=300,
+
+    unique_url = models.CharField(
+        max_length=700,
+        db_index=True,
         blank=True, null=True
     )
 
-
-    carrier_plan_id = models.CharField(
-        blank=True, null=True,
-        max_length=100
-    )
-
-
-    plan_type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        ),
+    quote_request_timestamp = models.IntegerField(
         blank=True, null=True
     )
 
-    api_source = models.CharField(
-        max_length=50,
-        choices=(
-            ('hii', 'HII Quote API'),
-            ('a1', 'A1 HealthCare API'),
-        ),
-        default='hii'
-    )
-
-    verification_weight = models.IntegerField(
+    Quote_ID = models.CharField(
+        max_length=600,
         blank=True, null=True
     )
 
-    has_post_date_api = models.BooleanField(
-        default=True
-    )
-
-    Effective_Date = models.DateField(
-        verbose_name=_("Effective Date"),
-        db_index=True
+    Access_Token = models.CharField(
+        max_length=700,
+        blank=True, null=True
     )
 
     Premium = models.DecimalField(
         max_digits=20,
         decimal_places=2
     )
+
+    actual_premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    # has_post_date_api = models.BooleanField(
+    #     default=True
+    # )
+
+    # Effective_Date = models.DateField(
+    #     verbose_name=_("Effective Date"),
+    #     db_index=True
+    # )
+
 
     EnrollmentFee = models.DecimalField(
         max_digits=20,
@@ -1456,10 +1440,6 @@ class MainPlan(models.Model):
         decimal_places=2
     )
 
-    actual_premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
 
     TelaDocFee = models.DecimalField(
         max_digits=20,
@@ -1529,17 +1509,6 @@ class MainPlan(models.Model):
 
     )
 
-    GapAffordPlus_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-    )
-
-    GapAffordPlus_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-    )
 
     RealValueSavings_Fee = models.DecimalField(
         max_digits=20,
@@ -1553,37 +1522,52 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
+    
+    # GapAffordPlus_Fee = models.DecimalField(
+    #     max_digits=20,
+    #     decimal_places=2,
+    #     blank=True, null=True
+    # )
+    #
+    # GapAffordPlus_AdminFee = models.DecimalField(
+    #     max_digits=20,
+    #     decimal_places=2,
+    #     blank=True, null=True
+    # )
+
     # stm plan
+
+    general_url = models.TextField()
+
+    general_plan_name = models.TextField()
+
+    Plan = models.CharField(
+        verbose_name=_("Main Plan sub category number"),
+        max_length=300,
+        blank=True, null=True
+    ) # TODO: plan_number
+
+    Plan_Name = models.CharField(
+        max_length=300,
+    ) # TODO: sub_plan_name
+
+
 
     month = models.CharField(
         max_length=600,
         blank=True, null=True
     )
 
-    Coinsurance_Percentage = models.TextField(blank=True, null=True)
 
-    Out_Of_Pocket = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
+    option = models.TextField(
         blank=True, null=True
     )
+
+    Coinsurance_Percentage = models.TextField(blank=True, null=True)
 
     out_of_pocket_value = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        blank=True, null=True
-    )
-
-    Duration_Coverage = models.TextField(blank=True, null=True)
-
-    Deductible_Option = models.TextField(blank=True, null=True)
-
-    # may be not required - have to check
-    Coinsurance_Limit = models.TextField(
-        blank=True, null=True
-    )
-
-    Payment_Option = models.TextField(
         blank=True, null=True
     )
 
@@ -1593,11 +1577,20 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-    Coverage_Max = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
+
+    Duration_Coverage = models.TextField(blank=True, null=True)
+
+    Deductible_Option = models.TextField(blank=True, null=True)
+
+    # may be not required - have to check
+    # Coinsurance_Limit = models.TextField(
+    #     blank=True, null=True
+    # )
+
+    Payment_Option = models.TextField(
         blank=True, null=True
     )
+
 
     Benefit_Amount = models.DecimalField(
         max_digits=20,
@@ -1606,9 +1599,6 @@ class MainPlan(models.Model):
     )
 
 
-    option = models.TextField(
-        blank=True, null=True
-    )
 
     copay = models.TextField(
         blank=True, null=True
@@ -1670,19 +1660,19 @@ class MainPlan(models.Model):
     )
 
     # only for Pivot Choice
-    administration_fee = models.DecimalField(
-        blank=True, null=True,
-        max_digits=20, decimal_places=2
-    )
-
-    monthly_network_fee = models.DecimalField(
-        blank=True, null=True,
-        max_digits=20, decimal_places=2
-    )
-
-    monthly_network_fees = models.TextField(
-        blank=True, null=True
-    )
+    # administration_fee = models.DecimalField(
+    #     blank=True, null=True,
+    #     max_digits=20, decimal_places=2
+    # )
+    #
+    # monthly_network_fee = models.DecimalField(
+    #     blank=True, null=True,
+    #     max_digits=20, decimal_places=2
+    # )
+    #
+    # monthly_network_fees = models.TextField(
+    #     blank=True, null=True
+    # )
 
     # for a1 plans, enrollment_fees, administration_fees may need in future
     enrollment_fees = models.TextField(blank=True, null=True)
@@ -1714,25 +1704,10 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
-    unique_url = models.CharField(
-        max_length=700,
-        db_index=True,
-        blank=True, null=True
-    )
 
-    Quote_ID = models.CharField(
-        max_length=600,
-        blank=True, null=True
-    )
 
-    Access_Token = models.CharField(
-        max_length=700,
-        blank=True, null=True
-    )
 
-    quote_request_timestamp = models.IntegerField(
-        blank=True, null=True
-    )
+
 
     policy_number = models.CharField(
         max_length=20,
