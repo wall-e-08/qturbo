@@ -1315,10 +1315,10 @@ class MainPlan(models.Model):
         --------------------
 
         For previous Hii (lim) model:
-            Lim_Plan_Name -> sub_plan_name
+            Lim_Plan_Name -> Plan_Name
 
         For previous Ancillaries plan model (StandAlonePlan):
-            Lim_Plan_Name -> sub_plan_name
+            Lim_Plan_Name -> Plan_Name
     """
 
     stm_enroll = models.ForeignKey(
@@ -1597,13 +1597,12 @@ class MainPlan(models.Model):
         data = {
             'vimm_enroll_id': self.vimm_enroll_id,
             'Plan_ID': self.Plan_ID,
-            'stm_name': self.stm_name,
-            'sub_plan_name': self.sub_plan_name,
+            'Name': self.Name,
+            'Plan_Name': self.Plan_Name,
             'plan_name_for_img': self.plan_name_for_img,
-            # 'plan_name': self.plan_name_long,
-            'plan_name_long': self.plan_name_long,
+            'plan_name': self.plan_name,
+            'plan_number': self.Plan,
             'unique_url': self.unique_url,
-            'api_source': self.api_source,
             'Premium': str(self.Premium),
             'EnrollmentFee': str(self.EnrollmentFee),
             'Enrollment_Fee': str(self.Enrollment_Fee),
@@ -1611,7 +1610,6 @@ class MainPlan(models.Model):
             'quote_request_timestamp': self.quote_request_timestamp,
             'Quote_ID': self.Quote_ID,
             'Access_Token': self.Access_Token,
-            'Plan_Type': self.plan_type,
             'TelaDocFee': str(getattr(self, 'TelaDocFee', '0.0')),
             'TelaDoc_Fee': str(getattr(self, 'TelaDoc_Fee', '0.0')),
             'RxAdvocacyFee': str(getattr(self, 'RxAdvocacyFee', '0.0')),
@@ -1622,44 +1620,23 @@ class MainPlan(models.Model):
             'Medsense_Fee': str(getattr(self, 'Medsense_Fee', '0.0')),
             'Association_Fee': str(getattr(self, 'Association_Fee', '0.0')),
             'product_id': self.Plan_ID,
-            'sub_product_id': self.sub_product_id,
-            'Product_Plan_Name': self.stm_name,
             'premium': str(self.Premium),
-            'enrollment_fees': json_decoder.decode(self.enrollment_fees or '[]'),
             'Administrative_Fee': str(getattr(self, 'Administrative_Fee', '0.0')),
             'AdministrativeFee': str(getattr(self, 'AdministrativeFee', '0.0')),
-            'GapAffordPlus_Fee': str(getattr(self, 'GapAffordPlus_Fee', '0.0')),
-            'GapAffordPlus_AdminFee': str(getattr(self, 'GapAffordPlus_AdminFee', '0.0')),
             'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
             'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
             'month': self.month,
             'option': self.option,
-            'Coverage_Max': str(self.Coverage_Max),
             'Benefit_Amount': str(self.Benefit_Amount),
-            'Out_Of_Pocket': str(self.Out_Of_Pocket),
             'Coinsurance_Percentage': self.Coinsurance_Percentage,
             'out_of_pocket_value': str(self.out_of_pocket_value),
-            'coverage_max_value': str(self.Coverage_Max),
             'Duration_Coverage': self.Duration_Coverage,
             'Deductible_Option': self.Deductible_Option,
             'copay': self.copay,
             'copay_text': self.copay_text,
-            'plan_number': self.plan_number,
             'Payment_Option': self.Payment_Option,
             'Note': self.Note
         }
-        if (self.api_source == settings.API_PROVIDER_NAME_HII and
-                self.stm_name in settings.HII_PLAN_INFORMATION.keys()):
-            data['hii_plan_information'] = settings.HII_PLAN_INFORMATION[self.stm_name]
-
-        if self.stm_name == 'Pivot':
-            data.update({
-                'coverage_max': self.Coverage_Max,
-                'deductible': self.deductible,
-                'administration_fee': str(
-                    getattr(self, 'AdministrativeFee', getattr(self, 'Administrative_Fee', '0.0'))),
-                'administration_fees': json_decoder.decode(self.administration_fees or '[]'),
-            })
 
         return data
 
