@@ -398,7 +398,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param plan_url: Unique url for plan that sits in plan_data
     :return: HttpResponse
     """
-    stm_carriers = ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']
+    stm_carriers = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
 
     logger.info(f"Plan details: {plan_url}")
     quote_request_form_data = request.session.get('quote_request_form_data', {})

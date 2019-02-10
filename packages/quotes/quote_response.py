@@ -616,7 +616,7 @@ class LimitedPlan(object):
 
         # For standalone ancillaries
 
-        if self.Name in copy.deepcopy(settings.ANCILLARIES_PLANS):
+        if self.Name in copy.deepcopy(settings.TYPEWISE_PLAN_LIST['anc']):
             self.Ins_Type = 'anc'
             self.stand_alone_addon_plan = True
 

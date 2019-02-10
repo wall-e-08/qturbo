@@ -336,7 +336,16 @@ MAIN_PLANS = (
     ('Legion Limited Medical', 'Legion Limited Medical'),
 )
 
-ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
+
+TYPEWISE_PLAN_LIST = {
+    'stm': ['Everest STM', 'LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Principle Advantage', 'Cardinal Choice', 'Vitala Care', 'Health Choice', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness', 'Foundation Dental']
+}
+
+# ---------------------+
+#    Dashboard CMS     +
+# ---------------------+
 
 SHORTCODE_PREFIX = '{{'
 SHORTCODE_POSTFIX = '}}'
@@ -480,11 +489,6 @@ USER_PROPERTIES: Dict[str, int] = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
-AVAILABLE_PLAN_NAME_LIST_DICT = {
-    'stm': ['LifeShield STM', 'AdvantHealth STM'],
-    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
-    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
-}
 
 
 

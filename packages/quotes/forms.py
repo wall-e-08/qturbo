@@ -1587,10 +1587,12 @@ class STDependentInfoForm(forms.Form):
     Weight = forms.IntegerField(required=False, label=_("Weight"))
 
     def clean(self):
+        stm_plans = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
+
         super().clean()
+
         relation = self.cleaned_data.get('Relation', '')
-        if relation == 'Spouse' and self.plan['Name'] not in ['Principle Advantage', 'Cardinal Choice',
-                                                              'Vitala Care', 'Health Choice', 'Legion Limited Medical']:
+        if relation == 'Spouse' and self.plan['Name'] in stm_plans :
             for field in ['Feet', 'Inch', 'Weight']:
                 if not self.cleaned_data.get(field, ''):
                     self.add_error(field, forms.ValidationError("{0} is required".format(field), code='required'))
