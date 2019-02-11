@@ -8,7 +8,7 @@ import string
 import random
 import hashlib
 import datetime
-from typing import Union
+from typing import Union, Dict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -585,7 +585,7 @@ def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, se
     return list(coins_set)
 
 
-def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> dict:
+def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> list:
 
     out_of_pocket_set = set()
 
@@ -604,3 +604,44 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
                 out_of_pocket_set.add(plan['Benefit_Amount'])
 
     return list(out_of_pocket_set)
+
+
+
+def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=True):
+    if string_at_list_boundaries == True:
+        plan_list = plan_list[-1:-1]
+
+    return {
+        'carrier' : set(x['Name'] for x in plan_list),
+        'coinsurance_percentage' : set(x['Coinsurance_Percentage'] for x in plan_list),
+        'benefit_amount' : set(x['Benefit_Amount'] for x in plan_list),
+        'duration_coverage' : set(x['Benefit_Amount'] for x in plan_list),
+        'option' : set(x['option'] for x in plan_list),
+        'coverage_maximum' : set(x['Coverage_Max'] for x in plan_list)
+    }
+
+def get_neighbour_plans_and_attrs(plan: dict, plan_list: list):
+
+    def neighbour(plan: Dict, key: str, val: str):
+        copy_plan = copy.deepcopy(plan)
+        copy_plan[key] = val
+        if copy_plan in plan_list:
+            return True
+        return False
+
+    try:
+        eligible_plans = list(filter(
+            lambda x: x['Name'] == plan['Name'] and
+                      x['Plan'] == plan['Plan'], plan_list))
+
+        neighbours = list(filter(lambda x: neighbour(x, 'Coverage_Max', plan['Coverage_Max']) == True or
+                                           neighbour(x, 'Coinsurance_Percentage', plan['Coinsurance_Percentage']) == True or
+                                           neighbour(x, 'Benefit_Amount', plan['Benefit_Amount'] == True), eligible_plans))
+
+    except KeyError as k:
+        print(f"KeyError: {k}")
+
+    return neighbours, available_dict_from_plan_list(neighbours, string_at_list_boundaries=False)
+
+
+

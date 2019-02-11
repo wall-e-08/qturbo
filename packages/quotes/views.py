@@ -29,7 +29,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
-                    get_available_benefit_against_coins)
+                    get_available_benefit_against_coins, get_neighbour_plans_and_attrs)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -497,21 +497,26 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
 
+    neighbour_list, neighbour_attrs = get_neighbour_plans_and_attrs(plan, plan_list)
+
     try:
         alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
-        alternate_benefit_amount = copy.deepcopy(settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name])
-        alternate_coinsurace_percentage = copy.deepcopy(settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name])
+
+        alternate_benefit_amount = list(neighbour_attrs['benefit_amount'])
+        alternate_benefit_amount.sort(key=int)
+
+        alternate_coinsurace_percentage = list(neighbour_attrs['coinsurance_percentage'])
+        alternate_coinsurace_percentage.sort(key=int)
 
         # Edge case 50 percent coinsurance for plan type 2
-        # TODO: Make this dynamic
-        if plan_name == 'LifeShield STM':
-            if plan['Plan'] == '1':
-                if '50' in alternate_coinsurace_percentage:
-                    alternate_coinsurace_percentage.remove('50')
-                if '5000' in alternate_benefit_amount:
-                    alternate_benefit_amount.remove('5000')
+        # if plan_name == 'LifeShield STM':
+        #     if plan['Plan'] == '1':
+        #         if '50' in alternate_coinsurace_percentage:
+        #             alternate_coinsurace_percentage.remove('50')
+        #         if '5000' in alternate_benefit_amount:
+        #             alternate_benefit_amount.remove('5000')
 
-        alternate_coverage_max = list(available_alternatives_as_set['alternate_coverage_max'])
+        alternate_coverage_max = list(neighbour_attrs['coverage_maximum'])
         alternate_coverage_max.sort(key=int)
 
         alternate_plan_set = available_alternatives_as_set['alternate_plan'] - {plan['Plan']}
