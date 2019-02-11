@@ -1741,6 +1741,10 @@ def esign_verification_payment(request, vimm_enroll_id):
         stm_enroll_obj.save(update_fields=fields_to_update_on_hii_enrollment)
         save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant, enrolled=True)
 
+        stm_plan_obj = qm.MainPlan.objects.get(vimm_enroll_id=vimm_enroll_id)
+        stm_plan_obj.paid = True
+        stm_plan_obj.save()
+
         # TODO: Need to implement loader from salesfusion django/templates/loader
         # enroll_info_panel_body = loader.render_to_string(
         #     'stm/render/app_stage_5_enroll_info.html',

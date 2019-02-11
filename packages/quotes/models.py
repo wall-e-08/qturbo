@@ -1345,6 +1345,10 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
+    paid = models.BooleanField(
+        default=False
+    )
+
     Access_Token = models.CharField(
         max_length=700,
         blank=True, null=True
@@ -1446,7 +1450,6 @@ class MainPlan(models.Model):
 
     )
 
-
     RealValueSavings_Fee = models.DecimalField(
         max_digits=20,
         decimal_places=2,
@@ -1487,7 +1490,9 @@ class MainPlan(models.Model):
         blank=True, null=True
     )
 
+
     Coinsurance_Percentage = models.TextField(blank=True, null=True)
+
 
     Benefit_Amount = models.DecimalField(
         max_digits=20,
