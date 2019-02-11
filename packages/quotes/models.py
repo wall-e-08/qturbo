@@ -1014,75 +1014,75 @@ class LimitedBase(models.Model):
         abstract = True
 
 
-class CardinalChoice(LimitedBase):
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    TelaDocFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacyFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    def get_json_data(self):
-        data = super(CardinalChoice, self).get_json_data()
-        data.update({
-            'Plan_Type': self.Plan_Type,
-            'TelaDocFee': str(self.TelaDocFee),
-            'TelaDoc_Fee': str(self.TelaDoc_Fee),
-            'RxAdvocacyFee': str(self.RxAdvocacyFee),
-            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-            'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
-            'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
-        })
-        return data
-
-    class Meta:
-        db_table = 'cardinal_choice'
+# class CardinalChoice(LimitedBase):
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     TelaDocFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacyFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     def get_json_data(self):
+#         data = super(CardinalChoice, self).get_json_data()
+#         data.update({
+#             'Plan_Type': self.Plan_Type,
+#             'TelaDocFee': str(self.TelaDocFee),
+#             'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#             'RxAdvocacyFee': str(self.RxAdvocacyFee),
+#             'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#             'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#             'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#             'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+#             'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+#         })
+#         return data
+#
+#     class Meta:
+#         db_table = 'cardinal_choice'
 
 
 # class VitalaCare(LimitedBase):
