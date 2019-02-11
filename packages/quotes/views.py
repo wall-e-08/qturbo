@@ -476,6 +476,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan) # TODO: Make it a part of separate function or at least modularize branching.
+        neighbour_list, neighbour_attrs = get_neighbour_plans_and_attrs(plan, plan_list)
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], plan_list))
@@ -496,8 +497,6 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     # Duration coverage set literal. I shall move this to settings file or carrier model later.
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
-
-    neighbour_list, neighbour_attrs = get_neighbour_plans_and_attrs(plan, plan_list)
 
     try:
         alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
