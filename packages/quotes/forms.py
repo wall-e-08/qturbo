@@ -407,7 +407,7 @@ class ApplicantInfoForm(forms.Form):
         return age(dob)
 
 
-class Duration_Coverage_Form(forms.Form):
+class DurationCoverageForm(forms.Form):
     Duration_Coverage = forms.CharField(
         label=_("Select Minimum"),
         error_messages={"required": _("Duration Coverage is required.")},
@@ -425,7 +425,11 @@ class Duration_Coverage_Form(forms.Form):
         return self.cleaned_data
 
 
-class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
+class AjaxRequestAttrChangeForm(forms.Form):
+    """
+    Form to change plan Benefit_Amount, Coinsurance_Percentage and Coverage_Max
+    using Ajax.
+    """
 
     Benefit_Amount = forms.CharField(
         label=_("Select Max Out Of Pocket"),
