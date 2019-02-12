@@ -640,86 +640,86 @@ class Dependent(models.Model):
                 'SSN': self.SSN}
 
 
-class StmPlanBase(models.Model):
-
-    stm_enroll = models.ForeignKey(
-        to=StmEnroll,
-        verbose_name=_("Enroll"),
-        on_delete=models.CASCADE
-    )
-
-    vimm_enroll_id = models.CharField(max_length=20)
-
-    Plan_ID = models.TextField()
-
-    Name = models.TextField()
-
-    plan_name_for_img = models.TextField()
-
-    month = models.TextField()
-
-    plan_name = models.TextField()
-
-    unique_url = models.TextField()
-
-    general_url = models.TextField()
-
-    general_plan_name = models.TextField()
-
-    Premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    actual_premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    option = models.TextField()
-
-    Coinsurance_Percentage = models.TextField()
-
-    out_of_pocket_value = models.TextField()
-
-    coverage_max_value = models.TextField()
-
-    Duration_Coverage = models.TextField()
-
-    Deductible_Option = models.TextField()
-
-    quote_request_timestamp = models.IntegerField()
-
-    copay = models.TextField()
-
-    copay_text = models.TextField()
-
-    Quote_ID = models.TextField()
-
-    Access_Token = models.TextField()
-
-    def get_json_data(self):
-        return {'vimm_enroll_id': self.vimm_enroll_id,
-                'Name': self.Name,
-                'plan_name': self.plan_name,
-                'general_plan_name': self.general_plan_name,
-                'unique_url': self.unique_url,
-                'general_url': self.general_url,
-                'Premium': str(self.Premium),
-                'actual_premium': str(self.actual_premium),
-                'option': self.option,
-                'Coinsurance_Percentage': self.Coinsurance_Percentage,
-                'out_of_pocket_value': self.out_of_pocket_value,
-                'coverage_max_value': self.coverage_max_value,
-                'Duration_Coverage': self.Duration_Coverage,
-                'Deductible_Option': self.Deductible_Option,
-                'quote_request_timestamp': self.quote_request_timestamp,
-                'Quote_ID': self.Quote_ID,
-                'Access_Token': self.Access_Token,
-                'Plan_ID': self.Plan_ID}
-
-    class Meta:
-        abstract = True
+# class StmPlanBase(models.Model):
+#
+#     stm_enroll = models.ForeignKey(
+#         to=StmEnroll,
+#         verbose_name=_("Enroll"),
+#         on_delete=models.CASCADE
+#     )
+#
+#     vimm_enroll_id = models.CharField(max_length=20)
+#
+#     Plan_ID = models.TextField()
+#
+#     Name = models.TextField()
+#
+#     plan_name_for_img = models.TextField()
+#
+#     month = models.TextField()
+#
+#     plan_name = models.TextField()
+#
+#     unique_url = models.TextField()
+#
+#     general_url = models.TextField()
+#
+#     general_plan_name = models.TextField()
+#
+#     Premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     actual_premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     option = models.TextField()
+#
+#     Coinsurance_Percentage = models.TextField()
+#
+#     out_of_pocket_value = models.TextField()
+#
+#     coverage_max_value = models.TextField()
+#
+#     Duration_Coverage = models.TextField()
+#
+#     Deductible_Option = models.TextField()
+#
+#     quote_request_timestamp = models.IntegerField()
+#
+#     copay = models.TextField()
+#
+#     copay_text = models.TextField()
+#
+#     Quote_ID = models.TextField()
+#
+#     Access_Token = models.TextField()
+#
+#     def get_json_data(self):
+#         return {'vimm_enroll_id': self.vimm_enroll_id,
+#                 'Name': self.Name,
+#                 'plan_name': self.plan_name,
+#                 'general_plan_name': self.general_plan_name,
+#                 'unique_url': self.unique_url,
+#                 'general_url': self.general_url,
+#                 'Premium': str(self.Premium),
+#                 'actual_premium': str(self.actual_premium),
+#                 'option': self.option,
+#                 'Coinsurance_Percentage': self.Coinsurance_Percentage,
+#                 'out_of_pocket_value': self.out_of_pocket_value,
+#                 'coverage_max_value': self.coverage_max_value,
+#                 'Duration_Coverage': self.Duration_Coverage,
+#                 'Deductible_Option': self.Deductible_Option,
+#                 'quote_request_timestamp': self.quote_request_timestamp,
+#                 'Quote_ID': self.Quote_ID,
+#                 'Access_Token': self.Access_Token,
+#                 'Plan_ID': self.Plan_ID}
+#
+#     class Meta:
+#         abstract = True
 
 
 # class LifeshieldStm(StmPlanBase):
@@ -918,100 +918,100 @@ class StmPlanBase(models.Model):
 #         return data
 
 
-class LimitedBase(models.Model):
-
-    stm_enroll = models.ForeignKey(
-        to=StmEnroll,
-        verbose_name=_("Enroll"),
-        on_delete=models.CASCADE
-    )
-
-    vimm_enroll_id = models.CharField(
-        max_length=20,
-        unique=True,
-        db_index=True
-    )
-
-    Plan_ID = models.CharField(
-        verbose_name=_("Plan ID"),
-        max_length=600,
-        db_index=True
-    )
-
-    Name = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    Lim_Plan_Name = models.CharField(
-        max_length=200,
-        db_index=True
-    )
-
-    plan_name_for_img = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    plan_name = models.CharField(
-        max_length=600
-    )
-
-    unique_url = models.CharField(
-        max_length=700,
-        db_index=True
-    )
-
-    Premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    EnrollmentFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Enrollment_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    actual_premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Quote_ID = models.CharField(
-        max_length=600
-    )
-
-    Access_Token = models.CharField(
-        max_length=700
-    )
-
-    quote_request_timestamp = models.IntegerField()
-
-    def get_json_data(self):
-        return {
-            'vimm_enroll_id': self.vimm_enroll_id,
-            'Plan_ID': self.Plan_ID,
-            'Name': self.Name,
-            'Lim_Plan_Name': self.Lim_Plan_Name,
-            'plan_name_for_img': self.plan_name_for_img,
-            'plan_name': self.plan_name,
-            'unique_url': self.unique_url,
-            'Premium': str(self.Premium),
-            'EnrollmentFee': str(self.EnrollmentFee),
-            'Enrollment_Fee': str(self.Enrollment_Fee),
-            'actual_premium': str(self.actual_premium),
-            'quote_request_timestamp': self.quote_request_timestamp,
-            'Quote_ID': self.Quote_ID,
-            'Access_Token': self.Access_Token,
-        }
-
-    class Meta:
-        abstract = True
+# class LimitedBase(models.Model):
+#
+#     stm_enroll = models.ForeignKey(
+#         to=StmEnroll,
+#         verbose_name=_("Enroll"),
+#         on_delete=models.CASCADE
+#     )
+#
+#     vimm_enroll_id = models.CharField(
+#         max_length=20,
+#         unique=True,
+#         db_index=True
+#     )
+#
+#     Plan_ID = models.CharField(
+#         verbose_name=_("Plan ID"),
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Name = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Lim_Plan_Name = models.CharField(
+#         max_length=200,
+#         db_index=True
+#     )
+#
+#     plan_name_for_img = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     plan_name = models.CharField(
+#         max_length=600
+#     )
+#
+#     unique_url = models.CharField(
+#         max_length=700,
+#         db_index=True
+#     )
+#
+#     Premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     EnrollmentFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Enrollment_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     actual_premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Quote_ID = models.CharField(
+#         max_length=600
+#     )
+#
+#     Access_Token = models.CharField(
+#         max_length=700
+#     )
+#
+#     quote_request_timestamp = models.IntegerField()
+#
+#     def get_json_data(self):
+#         return {
+#             'vimm_enroll_id': self.vimm_enroll_id,
+#             'Plan_ID': self.Plan_ID,
+#             'Name': self.Name,
+#             'Lim_Plan_Name': self.Lim_Plan_Name,
+#             'plan_name_for_img': self.plan_name_for_img,
+#             'plan_name': self.plan_name,
+#             'unique_url': self.unique_url,
+#             'Premium': str(self.Premium),
+#             'EnrollmentFee': str(self.EnrollmentFee),
+#             'Enrollment_Fee': str(self.Enrollment_Fee),
+#             'actual_premium': str(self.actual_premium),
+#             'quote_request_timestamp': self.quote_request_timestamp,
+#             'Quote_ID': self.Quote_ID,
+#             'Access_Token': self.Access_Token,
+#         }
+#
+#     class Meta:
+#         abstract = True
 
 
 # class CardinalChoice(LimitedBase):
