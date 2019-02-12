@@ -1,15 +1,7 @@
-{% extends 'root_base.html' %}
-{% load static %}
+{% if not is_dev %}
+    <div id="container-id"></div>
+    <div>
+        <script id="strife" src="https://strife.back9ins.com/production/strife.js" data-strife-key="bxHJDYxO4ywL-Che" data-strife-container-id="container-id"></script>
+    </div>
+{% endif %}
 
-{% block main_content %}
-    Life Insurance Demo !
-{% endblock %}
-
-{% block bottom_js %}
-    {% if not is_dev %}
-        <div id="container-id"></div>
-        <div>
-            <script id="strife" src="https://strife.back9ins.com/production/strife.js" data-strife-key="bxHJDYxO4ywL-Che" data-strife-container-id="container-id"></script>
-        </div>
-    {% endif %}
-{% endblock %}
