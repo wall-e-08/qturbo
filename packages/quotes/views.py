@@ -2236,3 +2236,8 @@ def legal(request, slug):
         return template_response
 
     return template_response
+
+
+def life_insurance(request):
+    return render(request, 'quotes/lifeinsurance.html')
+
