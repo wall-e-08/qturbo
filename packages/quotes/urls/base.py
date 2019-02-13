@@ -118,4 +118,6 @@ urlpatterns = [
 
     re_path(r'^pages/legal/(?P<slug>[a-z\-]+)/$', views.legal, name='legal'),
 
+    path('li-demo/', views.life_insurance, name='life_insurance'),
+
 ]
