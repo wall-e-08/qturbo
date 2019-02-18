@@ -322,7 +322,7 @@
                        class="qt-plan-brochure-file">View Plan Brochure</a>
                 </div>
 
-                {% if related_plans %}
+                {% comment %}{% if related_plans %}
                     <hr>
                     <h2 class="mrg-b-40">Other <i>{{ plan.Name }}</i> products in your area:</h2>
 
@@ -349,7 +349,7 @@
                             </div>
                         {% endfor %}
                     </div>
-                {% endif %}
+                {% endif %}{% endcomment %}
 
                 {% if restrictions_omissions %}
                     <hr>
