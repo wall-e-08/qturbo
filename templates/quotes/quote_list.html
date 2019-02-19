@@ -611,7 +611,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>{% endcomment %}
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
-<script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
+<script id="limited_plan_template" data-plans="" type="x-tmpl-mustache">
     <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
@@ -625,7 +625,7 @@
                             $[[actual_premium]]
                             [[^upfront]]
                             <span class="quote-plan-per-month">/mo</span>
-                            <sup style="color:#fe8829">+fee</sup>
+{#                            <sup style="color:#fe8829">+fee</sup>#}
                             [[/upfront]]
                         </div>
                     </div>
@@ -661,7 +661,7 @@
     </div>
 </script>
 
-<script id="anc_plan_template_usa_dental" data-plans="" type="x-tmpl-mustache">
+<script id="anc_plan_template" data-plans="" type="x-tmpl-mustache">
     <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
@@ -712,7 +712,7 @@
     </div>
 </script>
 
-<script id="stm_plan_template_lifeshield" data-plans="" type="x-tmpl-mustache">
+<script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
     <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
@@ -726,7 +726,7 @@
                             $[[actual_premium]]
                             [[^upfront]]
                             <span class="quote-plan-per-month">/mo</span>
-                            <sup style="color:#fe8829">+fee</sup>
+{#                            <sup style="color:#fe8829">+fee</sup>#}
                             [[/upfront]]
                         </div>
                     </div>
@@ -821,12 +821,12 @@ if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_
 <script>
 $(function() {
     Mustache.tags = ['[[', ']]'];
+    var limited_plan_template = $('#limited_plan_template').html();
     var stm_plan_template = $('#stm_plan_template').html();
-    var stm_plan_template_lifeshield = $('#stm_plan_template_lifeshield').html();
-    var anc_plan_template_usa_dental = $('#anc_plan_template_usa_dental').html();
+    var anc_plan_template = $('#anc_plan_template').html();
+    Mustache.parse(limited_plan_template);
     Mustache.parse(stm_plan_template);
-    Mustache.parse(stm_plan_template_lifeshield);
-    Mustache.parse(anc_plan_template_usa_dental);
+    Mustache.parse(anc_plan_template);
 
     var action_url = '/get_plan_quote_data_ajax/';
 
@@ -1187,12 +1187,12 @@ $(function() {
                     'note': plan.note
                 };
                 if (plan.out_of_pocket_value) {
-                    var rendered = Mustache.to_html(stm_plan_template_lifeshield, data);
+                    var rendered = Mustache.to_html(stm_plan_template, data);
                 } else if(plan.Name == 'USA Dental' || plan.Name == 'Freedom Spirit Plus' ||
                     plan.Name == 'Safeguard Critical Illness') { {# TODO: for torsho: need plan type here #}
-                    var rendered = Mustache.to_html(anc_plan_template_usa_dental, data);
+                    var rendered = Mustache.to_html(anc_plan_template, data);
                 } else {
-                    var rendered = Mustache.to_html(stm_plan_template, data);
+                    var rendered = Mustache.to_html(limited_plan_template, data);
                 } //test
 
                 //featured plan will be showed in top
@@ -1276,7 +1276,7 @@ $(function() {
                 } else {
                     {#console.log("There are no more plans");#}
 
-                    $('#stm_plan_template').attr('data-plans', JSON.stringify(json));
+                    $('#limited_plan_template').attr('data-plans', JSON.stringify(json));
                     $('#plan_sorting_options').attr('data-status', 'done');     // Is not being used at the moment.
                     $('.filter_input').attr('data-status', 'done');
 
@@ -1296,7 +1296,7 @@ $(function() {
     $('.sorting_option').on('click', function(e) {
         var status = $('#plan_sorting_options').attr('data-status');
         if (status == 'done') {
-            var json = JSON.parse($('#stm_plan_template').attr('data-plans'));
+            var json = JSON.parse($('#limited_plan_template').attr('data-plans'));
             success_handler(json, $(this).attr('data-key'), $(this).attr('data-reverse'));
         }
     });
@@ -1310,7 +1310,7 @@ $(function() {
         setTimeout(function() {
             if (_this.attr('data-status') == 'done') {
                 console.log("1295:\nFiltering Done");
-                var json = JSON.parse($('#stm_plan_template').attr('data-plans'));
+                var json = JSON.parse($('#limited_plan_template').attr('data-plans'));
                 success_handler(json);
             }
         }, 1000);
