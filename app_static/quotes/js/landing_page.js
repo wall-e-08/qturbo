@@ -5,11 +5,13 @@ const v_all_routes_name = {
     zip: 'zip-code',
     survey: 'survey',
     quote: 'survey-member',
+    plan_type: 'survey-plan',
     income: 'survey-income',
 };
 
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
+    plan_type: "qt_plan_type",
     own_input: "qt_own_input",
     spouse_input: "qt_spouse_input",
     dependents: "qt_dependents"
@@ -21,7 +23,8 @@ const v_templates = {
     zip_code: '#zipcode-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
-    monthly_income: '#monthly-income-template',
+    plan_type: '#plan-type-template',
+    annual_income: '#annual-income-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -360,7 +363,7 @@ const router = new VueRouter({
                             data: form_data,
                             success: function (data) {
                                 // console.log("Initial success");
-                                console.table(data);
+                                // console.table(data);
                                 if (data.status === "false"){
                                     // console.log("Error in form data");
                                     console.error(data.errors);
@@ -432,11 +435,28 @@ const router = new VueRouter({
                 }
             },
         },{
+            path: 'plan',
+            name: v_all_routes_name.plan_type,
+            component: {
+                template: v_templates.plan_type,
+                data: function () {
+                    return {
+                        plan_type: '',
+                    }
+                },
+                methods: {
+                    choose_plan_type: function(plan) {
+                        this.plan_type = plan;
+                        this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
+                        router.push({name: v_all_routes_name.income});
+                    },
+                }
+            }
+        },{
             path: 'income',
             name: v_all_routes_name.income,
             component: {
-                // TODO: Make this annual income
-                template: v_templates.monthly_income,
+                template: v_templates.annual_income,
                 data: function () {
                     return {
                         income: '',

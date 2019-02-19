@@ -1,5 +1,7 @@
 import copy
 import json
+from urllib import request
+
 import requests
 
 from datetime import datetime
@@ -154,7 +156,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-def start_celery(request: WSGIRequest, form_data) -> True:
+def start_celery(request: WSGIRequest, form_data: Dict) -> True:
         """
         """
 
@@ -175,20 +177,13 @@ def start_celery(request: WSGIRequest, form_data) -> True:
         print(json.dumps(form_data, indent=4, sort_keys=True))
 
         # Changing quote store key regarding insurance type
-        for ins_type in ['lim', 'stm', 'anc']:
-            if ins_type == "stm":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'stm'
-                form_data['Ins_Type'] = 'stm'
-            elif ins_type == "lim":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'lim'
-                form_data['Ins_Type'] = 'lim'
-            elif ins_type == "anc":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'anc'
-                form_data['Ins_Type'] = 'anc'
+        for ins_type in ['lim', 'stm']:
+        #     ins_type = get_ins_type(request)
+            change_quote_store_key(request, ins_type)
+            form_data['Ins_Type'] = ins_type
 
             # Calling celery for populating quote list
-            redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                         form_data['quote_store_key'])
+            redis_key = get_redis_key(request, ins_type)
             print(f"Calling celery task for ins_type: {ins_type}")
             print(f"redis_key: {redis_key}")
 
@@ -223,10 +218,25 @@ def start_celery(request: WSGIRequest, form_data) -> True:
 
                 elif ins_type == 'lim':
                     LimPlanTask.delay(request.session.session_key, form_data)
-                elif ins_type == 'anc':
-                    AncPlanTask.delay(request.session.session_key, form_data)
 
         return True
+
+
+def get_ins_type(request: WSGIRequest) -> str:
+    ins_type = request.COOKIES.get('qt_plan_type', None)
+
+    if not ins_type:
+        ins_type = 'lim'
+
+    return ins_type
+
+
+def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
+    quote_request_form_data = request.session.get('quote_request_form_data', None)
+    quote_request_form_data['Ins_Type'] = ins_type
+    request.session['quote_request_form_data'].update(quote_request_form_data)
+
+    return
 
 
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
@@ -235,7 +245,8 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     :return: JsonResponse containing the url
     """
     quote_request_form_data = request.session.get('quote_request_form_data')
-    ins_type = 'lim'
+    ins_type = get_ins_type(request)
+    set_ins_type_in_session(request, ins_type)
 
     print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
@@ -361,7 +372,6 @@ def plan_quote(request, ins_type):
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    quote_request_form_data['Ins_Type'] = ins_type
     logger.info("Plan Quote For Data: {0}".format(quote_request_form_data))
 
     d = {'monthly_plans': [], 'addon_plans': []}
@@ -369,19 +379,11 @@ def plan_quote(request, ins_type):
     request.session.modified = True
     logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
-    # Changing quote store key regarding insurance type
-    if ins_type == "stm":
-        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'stm'
-    elif ins_type == "lim":
-        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'lim'
-    elif ins_type == "anc":
-        quote_request_form_data['quote_store_key'] = quote_request_form_data['quote_store_key'][:-3] + 'anc'
 
-    # Calling celery for populating quote list
-    redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                 quote_request_form_data['quote_store_key'])
-    print(f"Calling celery task for ins_type: {ins_type}")
-    print(f"redis_key: {redis_key}")
+    change_quote_store_key(request, ins_type)
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+
+    request.session['quote_request_form_data']['Ins_Type'] = ins_type # TODO: functionify
 
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
@@ -389,6 +391,25 @@ def plan_quote(request, ins_type):
     return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d
     })
+
+
+def change_quote_store_key(request: WSGIRequest, ins_type: str) -> None:
+    """
+    Changing quote store key regarding insurance type
+    NOT currently being used.
+    """
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    if not quote_request_form_data:
+        return
+    quote_store_key = quote_request_form_data['quote_store_key']
+
+    if is_ins_type_valid(ins_type):
+        quote_store_key = quote_store_key[:-3] + ins_type
+        quote_request_form_data['quote_store_key'] = quote_store_key
+
+    request.session['quote_request_form_data'].update(quote_request_form_data)
+
+    return None
 
 
 def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
@@ -401,8 +422,13 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     stm_carriers = ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']
 
     logger.info(f"Plan details: {plan_url}")
+
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
+    ins_type = quote_request_form_data.get('Ins_Type', None)
+    request.session['quote_request_form_data'].update(quote_request_form_data)
+
     request.session['applicant_enrolled'] = False
     if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
         quote_request_form_data = {}
@@ -413,17 +439,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    ins_type = quote_request_form_data['Ins_Type']
-
-    sp = []
-    redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                 quote_request_form_data['quote_store_key'])
+    plan_list = []
+    redis_key = get_redis_key(request, ins_type)
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
-            sp.append(p)
+            plan_list.append(p)
 
-    if not sp:
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
@@ -432,17 +455,17 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             stm_plan_unique_url = request.COOKIES.get('current-plan-unique-url')
             stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
             if request.session['stm_general_url_chosen'] == False and stm_plan_general_url == plan_url:
-                plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, sp))
+                plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, plan_list))
             else:
                 # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
                     lambda mp: mp['general_url'] == plan_url and
                         mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and
                         mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and
-                        mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0], sp))
+                        mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0], plan_list))
                 request.session['stm_general_url_chosen'] = True
         else:
-            plan = next(filter(lambda mp: mp['unique_url'] == plan_url , sp))
+            plan = next(filter(lambda mp: mp['unique_url'] == plan_url , plan_list))
     except StopIteration:
         logger.warning("No Plan Found: {0}; there are plans for this session".format(plan_url))
         raise Http404()
@@ -462,15 +485,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                            mp['Coinsurance_Percentage'] == quote_request_preference_data[mp['Name']]['Coinsurance_Percentage'][0] and \
                            mp['out_of_pocket_value'] == quote_request_preference_data[mp['Name']]['Benefit_Amount'][0] and \
                            mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and \
-                           mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(sp, key=lambda x: x['Premium'])))
+                           mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(plan_list, key=lambda x: x['Premium'])))
         except KeyError as k:
             print(k)
             pass
 
-        available_alternatives_as_set = get_dict_for_available_alternate_plans(sp, plan) # TODO: Make it a part of separate function or at least modularize branching.
+        available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan) # TODO: Make it a part of separate function or at least modularize branching.
     else:
         related_plans = list(
-            filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], sp))
+            filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], plan_list))
 
     logger.info(f'Number of RELATED PLANS: {len(related_plans)}')
     print('PLAN: ', plan)
@@ -591,9 +614,18 @@ def stm_apply(request, plan_url) -> HttpResponse:
     add_on_list_as_dict = [s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]
     logger.info("PLAN: {0}".format(plan))
     logger.info("ADD-ON: {0}".format(add_on_list_as_dict))
+
+    # addon plans
+    logger.info("no of selected addon plans: {0}, for plan: {1}".format(len(selected_addon_plans), plan['unique_url']))
+    addon_plans_redis_key = "{0}:{1}".format(redis_key, plan['plan_name_for_img'])
+    addon_plans = addon_plans_from_json_data(redis_conn.lrange(addon_plans_redis_key, 0, -1))
+    remaining_addon_plans = addon_plans.difference(selected_addon_plans)
+
     return render(request, 'quotes/stm_plan_apply.html',
                   {'plan': plan, 'quote_request_form_data': quote_request_form_data,
-                   'selected_addon_plans': add_on_list_as_dict})
+                   'addon_plans': addon_plans,
+                   'selected_addon_plans': selected_addon_plans,
+                   'remaining_addon_plans': remaining_addon_plans,})
 
 
 @require_POST
@@ -1286,58 +1318,79 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     :return: JsonResponse
     """
     print(f'Calling AJAX. Time: {datetime.now().strftime("%H:%M:%S")}')
-    plan_list = []
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    ins_type = quote_request_form_data['Ins_Type']
+    ins_type = quote_request_form_data.get('Ins_Type', None)
 
     preference = request.session.get('quote_request_preference_data', {})
-
     request.session.modified = True
-    if quote_request_form_data:
-        redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                     quote_request_form_data['quote_store_key'])
-        plan_list_length = len(redis_conn.lrange(redis_key, 0, -1))
 
-        for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
-            decoded_plan = json_decoder.decode(matched_plan.decode())
+    plan_list = []
 
-            if decoded_plan == 'START':
-                pass
+    redis_key = get_redis_key(request, ins_type)
 
-            elif decoded_plan == "END":
-                if pdx == plan_list_length - 1:
-                    print(f'We have reached the end of the list. There are {pdx-1} plans.')
-
-            elif quote_request_form_data['Ins_Type'] == 'stm' and decoded_plan['Name'] in [*preference]:
-                if (
-                        decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or
-                        decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max'] or
-                        decoded_plan['Coinsurance_Percentage'] not in preference[decoded_plan['Name']]['Coinsurance_Percentage'] or
-                        decoded_plan['Benefit_Amount'] not in preference[decoded_plan['Name']]['Benefit_Amount']
-                ):
-                    continue
-
-            plan_list.append(decoded_plan)
-
-    carrier_list = set(x['Name'] for x in plan_list[1:-1])
-
-    for carrier_name in carrier_list:
-        featured_plan = get_featured_plan(carrier_name, plan_list, ins_type)
-        if featured_plan:
-            featured_plan['featured_plan'] = True
-            plan_list[plan_list.index(featured_plan)] = featured_plan
-        else:
-            print("Featured plan not found")
-
-    if plan_list_length == 0:
+    if not quote_request_form_data or not redis_conn.exists(redis_key):
+        plan_list = ['START', 'END']
         return JsonResponse({
-            'monthly_plans': ['START', 'END'] # TODO: Properly handle error
-        })
+        'monthly_plans': plan_list # TODO: Properly handle error
+    })
+
+
+    for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
+        decoded_plan = json_decoder.decode(matched_plan.decode())
+
+        if decoded_plan == 'START':
+            pass
+
+        elif decoded_plan == 'END':
+            carrier_list = set(x['Name'] for x in plan_list[1:-1])
+
+            for carrier_name in carrier_list:
+                featured_plan = get_featured_plan(carrier_name, plan_list, ins_type)
+                if featured_plan:
+                    featured_plan['featured_plan'] = True
+                    plan_list[plan_list.index(featured_plan)] = featured_plan
+                else:
+                    print(f'Featured plan not found for {carrier_name}')
+
+        elif ins_type == 'stm' and decoded_plan['Name'] in [*preference]:
+            if (
+                    decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or
+                    decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max'] or
+                    decoded_plan['Coinsurance_Percentage'] not in preference[decoded_plan['Name']]['Coinsurance_Percentage'] or
+                    decoded_plan['Benefit_Amount'] not in preference[decoded_plan['Name']]['Benefit_Amount']
+            ):
+                continue
+
+        plan_list.append(decoded_plan)
+
 
     return JsonResponse({
         'monthly_plans': plan_list,
     })
+
+
+def is_ins_type_valid(ins_type) -> bool:
+    if ins_type in ['stm', 'lim', 'anc']:
+        return True
+    return False
+
+
+
+def get_redis_key(request: WSGIRequest, ins_type: str) -> str:
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    quote_store_key = quote_request_form_data['quote_store_key']
+
+
+    if is_ins_type_valid(ins_type):
+        quote_store_key = quote_store_key[:-3] + ins_type
+
+
+    redis_key = "{0}:{1}".format(request.session._get_session_key(), quote_store_key)
+
+    return redis_key
+
+
 
 
 
