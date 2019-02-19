@@ -1,5 +1,7 @@
 import copy
 import json
+from urllib import request
+
 import requests
 
 from datetime import datetime
@@ -154,7 +156,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-def start_celery(request: WSGIRequest, form_data) -> True:
+def start_celery(request: WSGIRequest, form_data: Dict) -> True:
         """
         """
 
@@ -175,20 +177,13 @@ def start_celery(request: WSGIRequest, form_data) -> True:
         print(json.dumps(form_data, indent=4, sort_keys=True))
 
         # Changing quote store key regarding insurance type
-        for ins_type in ['lim', 'stm', 'anc']:
-            if ins_type == "stm":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'stm'
-                form_data['Ins_Type'] = 'stm'
-            elif ins_type == "lim":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'lim'
-                form_data['Ins_Type'] = 'lim'
-            elif ins_type == "anc":
-                form_data['quote_store_key'] = form_data['quote_store_key'][:-3] + 'anc'
-                form_data['Ins_Type'] = 'anc'
+        for ins_type in ['lim', 'stm']:
+        #     ins_type = get_ins_type(request)
+            change_quote_store_key(request, ins_type)
+            form_data['Ins_Type'] = ins_type
 
             # Calling celery for populating quote list
-            redis_key = "{0}:{1}".format(request.session._get_session_key(),
-                                         form_data['quote_store_key'])
+            redis_key = get_redis_key(request, ins_type)
             print(f"Calling celery task for ins_type: {ins_type}")
             print(f"redis_key: {redis_key}")
 
@@ -223,10 +218,25 @@ def start_celery(request: WSGIRequest, form_data) -> True:
 
                 elif ins_type == 'lim':
                     LimPlanTask.delay(request.session.session_key, form_data)
-                elif ins_type == 'anc':
-                    AncPlanTask.delay(request.session.session_key, form_data)
 
         return True
+
+
+def get_ins_type(request: WSGIRequest) -> str:
+    ins_type = request.COOKIES.get('qt_plan_type', None)
+
+    if not ins_type:
+        ins_type = 'lim'
+
+    return ins_type
+
+
+def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
+    quote_request_form_data = request.session.get('quote_request_form_data', None)
+    quote_request_form_data['Ins_Type'] = ins_type
+    request.session['quote_request_form_data'].update(quote_request_form_data)
+
+    return
 
 
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
@@ -235,7 +245,8 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     :return: JsonResponse containing the url
     """
     quote_request_form_data = request.session.get('quote_request_form_data')
-    ins_type = 'lim'
+    ins_type = get_ins_type(request)
+    set_ins_type_in_session(request, ins_type)
 
     print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
@@ -369,9 +380,10 @@ def plan_quote(request, ins_type):
     logger.info("PLAN QUOTE LIST - form data: {0}".format(quote_request_form_data))
 
 
-    quote_request_form_data = change_quote_store_key(quote_request_form_data, ins_type)
-    request.session['quote_request_form_data'] = quote_request_form_data
-    request.session['quote_request_form_data']['Ins_Type'] = ins_type
+    change_quote_store_key(request, ins_type)
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+
+    request.session['quote_request_form_data']['Ins_Type'] = ins_type # TODO: functionify
 
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
@@ -381,18 +393,23 @@ def plan_quote(request, ins_type):
     })
 
 
-def change_quote_store_key(quote_request_form_data: Dict, ins_type: str) -> Dict:
+def change_quote_store_key(request: WSGIRequest, ins_type: str) -> None:
     """
     Changing quote store key regarding insurance type
     NOT currently being used.
     """
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    if not quote_request_form_data:
+        return
     quote_store_key = quote_request_form_data['quote_store_key']
 
     if is_ins_type_valid(ins_type):
         quote_store_key = quote_store_key[:-3] + ins_type
         quote_request_form_data['quote_store_key'] = quote_store_key
 
-    return quote_request_form_data
+    request.session['quote_request_form_data'].update(quote_request_form_data)
+
+    return None
 
 
 def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
@@ -1301,13 +1318,14 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
 
     plan_list = []
 
-    if not quote_request_form_data:
+    redis_key = get_redis_key(request, ins_type)
+
+    if not quote_request_form_data or not redis_conn.exists(redis_key):
         plan_list = ['START', 'END']
         return JsonResponse({
         'monthly_plans': plan_list # TODO: Properly handle error
     })
 
-    redis_key = get_redis_key(request, ins_type)
 
     for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
         decoded_plan = json_decoder.decode(matched_plan.decode())
@@ -1336,8 +1354,6 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
                 continue
 
         plan_list.append(decoded_plan)
-
-
 
 
     return JsonResponse({

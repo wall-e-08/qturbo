@@ -3,14 +3,16 @@
 {% load i18n static humanize hp_tags %}
 
 {% block title %}
-    {% if form_data.Ins_Type == 'stm' %}
+   {% comment %} {% if form_data.Ins_Type == 'stm' %}
         {% trans 'STM Plans' %}
     {% elif form_data.Ins_Type == 'lim' %}
         {% trans 'LIM Plans' %}
     {% elif form_data.Ins_Type == 'anc' %}
         {% trans 'Ancilliary Plans' %}
     {% endif %}
-    | {{ block.super }}
+    |
+    {% endcomment %}
+    {{ block.super }}
 {% endblock title %}
 
 {% block extra_css %}
@@ -186,13 +188,18 @@
             <div class="">
                 <div class="quote-tab-info-wrapper">
                     <ul class="nav nav-tabs quote-tab-info-line">
+                    {% comment %}
                         <li class="{% if form_data.Ins_Type == 'lim' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='lim' %}">Limited Insurances</a></li>
                         <li class="{% if form_data.Ins_Type == 'stm' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='stm' %}">STM Insurances</a></li>
                         <li class="{% if form_data.Ins_Type == 'anc' %}active{% endif %}"><a href="{% url 'quotes:plan_quote' ins_type='anc' %}">Ancillary Insurances</a></li>
+                    {% endcomment %}
                     </ul>
                     <div class="quote-info-inner" style="padding: 10px 15px;font-size: 15px;">
+                    {% comment %}
                         {% if form_data.Ins_Type == 'lim' %}Limited{% elif form_data.Ins_Type == 'anc' %}Ancillary{% else %}STM{% endif %}
-                        / {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
+                        /
+                    {% endcomment %}
+                        {{ form_data.State }} / {{ form_data.Applicant_Gender }} / {{ form_data.Applicant_Age }}
                         &nbsp;<a title="Get Health Insurance Quotes" href="/#/health-insurance/member" class="js-change-info">(edit)</a>
                     </div>
                 </div>
