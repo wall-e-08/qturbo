@@ -6,81 +6,166 @@
 {% endblock title %}
 {% block extra_css %}
     <style type="text/css">
-    .apply-details-summary{
-        min-height: auto;
-        background: #f8f8f8;
-        border-left: 7px solid #19b4fa;
-        border-bottom: 7px solid #19b4fa;
-        border-radius: 15px;
-        box-shadow: 3px -3px 10px 0px rgba(0, 0, 0, 0.4);
-        -webkit-transition: .4s ease-in-out;
-        -moz-transition: .4s ease-in-out;
-        -ms-transition: .4s ease-in-out;
-        -o-transition: .4s ease-in-out;
-        transition: .4s ease-in-out;
+        .apply-details-summary {
+            min-height: auto;
+            background: #f8f8f8;
+            border-left: 7px solid #19b4fa;
+            border-bottom: 7px solid #19b4fa;
+            border-radius: 15px;
+            box-shadow: 3px -3px 10px 0px rgba(0, 0, 0, 0.4);
+            -webkit-transition: .4s ease-in-out;
+            -moz-transition: .4s ease-in-out;
+            -ms-transition: .4s ease-in-out;
+            -o-transition: .4s ease-in-out;
+            transition: .4s ease-in-out;
         }
-    {% comment %}.apply-details-summary:hover{
-        box-shadow: none;
-    }{% endcomment %}
-    @media (max-width: 992px) {
-        .img-margin{
-            margin-top: 40px;
+        @media (max-width: 992px) {
+            .img-margin {
+                margin-top: 40px;
+            }
         }
-    }
-    .show-plan-cost-details + tr {
-        position: absolute;
-        z-index: 50;
-        overflow: hidden;
-    }
-    .show-plan-cost-details + tr > td > table {
-        background: #fff;
-        margin-top: -100%;
-        -webkit-transition: all 200ms;
-        -moz-transition: all 200ms;
-        -ms-transition: all 200ms;
-        -o-transition: all 200ms;
-        transition: all 200ms;
-    }
-    .show-plan-cost-details:hover + tr {
-        box-shadow: 0 0 7px 0px rgba(0, 0, 0, 0.7);
-    }
-    .show-plan-cost-details:hover + tr > td {
-        background-color: #fff;
-        padding: 20px;
-    }
-    .show-plan-cost-details:hover + tr > td > table {
-        margin-top: 0 !important;
-    }
-    .carrierLogo {
-        padding: 10px;
-        box-shadow: 0 0 6px #000;
-    }
-    .apply-add-on-plan-heading > a {
-        text-decoration: none;
-        font-weight: 700;
-    }
-    .individual-add-on-plan {
-        border: none;
-        padding-left: 20px;
-        position: relative;
-        margin-bottom: 25px;
-    }
-    .individual-add-on-plan:after {
-        content: '';
-        display: block;
-        height: 100%;
-        width: 6px;
-        border-radius: 0;
-        background: #ddd;
-        position: absolute;
-        left: 8px;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-        -moz-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        -o-transform: translateY(-50%);
-        transform: translateY(-50%);
-    }
+        .show-plan-cost-details + tr {
+            position: absolute;
+            z-index: 50;
+            overflow: hidden;
+        }
+        .show-plan-cost-details + tr > td > table {
+            background: #fff;
+            margin-top: -100%;
+            -webkit-transition: all 200ms;
+            -moz-transition: all 200ms;
+            -ms-transition: all 200ms;
+            -o-transition: all 200ms;
+            transition: all 200ms;
+        }
+        .show-plan-cost-details:hover + tr {
+            box-shadow: 0 0 7px 0px rgba(0, 0, 0, 0.7);
+        }
+        .show-plan-cost-details:hover + tr > td {
+            background-color: #fff;
+            padding: 20px;
+        }
+        .show-plan-cost-details:hover + tr > td > table {
+            margin-top: 0 !important;
+        }
+        .carrierLogo {
+            padding: 10px;
+            box-shadow: 0 0 6px #000;
+        }
+        .apply-add-on-plan-heading > a {
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .individual-add-on-plan {
+            border: none;
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .individual-add-on-plan:after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 6px;
+            border-radius: 0;
+            background: #ddd;
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            -webkit-transform: translateY(-50%);
+            -moz-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            -o-transform: translateY(-50%);
+            transform: translateY(-50%);
+        }
+        #applyCta {
+            margin: 40px 0 0;
+        }
+        
+        {# addon styling #}
+        .addon_row {
+            box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.36);
+            border: 1px solid #333;
+            border-radius: 5px;
+            margin-top: 10px;
+            padding: 20px 5px;
+        }
+        .addon_name {
+            position: relative;
+            margin: 5px 0 5px 15px;
+            font-weight:600;
+        }
+        .addon_name:before {
+            content: '';
+            height: 8px;
+            width: 8px;
+            display: block;
+            background-color: #000;
+            position: absolute;
+            left: -17px;
+            top: 50%;
+            transform: translateY(-50%) rotateZ(-45deg);
+        }
+        .addon_dropdown-btn {
+            margin: 0;
+            float: right;
+            background: transparent !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            box-shadow: none !important;
+        }
+        .addon_result_wrapper {
+            border: 1px solid #ddd;
+            border-left: 4px solid #888;
+            border-bottom-color: #888;
+            border-radius: 5px;
+            margin-top: 15px;
+            padding: 5px 13px;
+            cursor: pointer;
+            background-color: #f7f7f7;
+            -webkit-transition: background 0.4s linear;
+            -moz-transition: background 0.4s linear;
+            -ms-transition: background 0.4s linear;
+            -o-transition: background 0.4s linear;
+            transition: background 0.4s linear;
+        }
+        .addon_result_wrapper > .row {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+        }
+        .addon_result_wrapper:hover {
+            background-color: #f0f0f0;
+        }
+        .panel.panel-default.ms-panel-adon {
+            background: initial;
+            border: none;
+            box-shadow: none;
+            padding-left: 0;
+        }
+        .action_addon_plan_button {
+            padding: 6px 12px !important;
+            border-radius: 50%;
+            font-size: 13px;
+            line-height: 1.7;
+            -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+            -ms-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+            -o-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.4);
+        }
+        .action_addon_plan_button:hover {
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            -ms-box-shadow: none;
+            -o-box-shadow: none;
+            box-shadow: none;
+        }
+        @media (max-width: 580px) {
+            .addon_name {
+                font-size: 20px;
+            }
+        }
     </style>
 {% endblock extra_css %}
 {% block top-menu-block %}{% endblock %}
@@ -323,51 +408,93 @@
                             </table>
                         </div>
 
-                        {% if selected_addon_plans %}
-                            <div class="col-sm-12">
-                                <hr style="border-top: 3px dotted #c5c5c5; margin-bottom: 7px;">
-                            </div>
-                            <div class="col-sm-12 col-xs-12 third-div">
-                                <h3 class="mrg-b-20 apply-add-on-plan-heading">
-                                    <a data-container="body" data-placement="top"
-                                       href="javascript:void(0);" data-toggle="popover"
-                                       data-content="Add-on Policy is billed separately.
-                                          if the main STM policy terminates or is canceled,
-                                          it will not automatically cancel your Add-on Policy,
-                                          unless requested by you.">
-                                        Add-On Plan{{ selected_addon_plans|pluralize }}
-                                    </a>
-                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                        <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container"
-                                           style="font-size: 16px;">
-                                    {% else %}
-                                        <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container"
-                                           style="font-size: 16px;">
-                                    {% endif %}
-                                    {% comment %}<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>{% endcomment %}
-                                    </a>
-                                </h3>
-                                {% for add_on in selected_addon_plans %}
+                        {% comment %}{% if selected_addon_plans %}{% endcomment %}
+                        <div class="col-sm-12">
+                            <hr style="border-top: 3px dotted #c5c5c5; margin-bottom: 7px;">
+                        </div>
+                        <div class="col-sm-12 col-xs-12 third-div">
+                            {% comment %}<h3 class="mrg-b-20 apply-add-on-plan-heading">
+                                <a data-container="body" data-placement="top"
+                                   href="javascript:void(0);" data-toggle="popover"
+                                   data-content="Add-on Policy is billed separately.
+                                      if the main STM policy terminates or is canceled,
+                                      it will not automatically cancel your Add-on Policy,
+                                      unless requested by you.">
+                                    Add-On Plan{{ selected_addon_plans|pluralize }}
+                                </a>
+                                {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                    <a href="{% url 'quotes:stm_plan' plan.general_url %}#add-on-plan-container"
+                                       style="font-size: 16px;">
+                                {% else %}
+                                    <a href="{% url 'quotes:stm_plan' plan.unique_url %}#add-on-plan-container"
+                                       style="font-size: 16px;">
+                                {% endif %}{% endcomment %}
+                                {% comment %}<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>{% endcomment %}
+                                {% comment %}</a>
+                            </h3>{% endcomment %}
+                           {% comment %} {% for add_on in selected_addon_plans %}
+                                {# <div class=""> #}
+                                <div class="individual-add-on-plan">
+                                    <h4 class="add-on-plan-name ">
+                                        {{ add_on.Name }}
+                                        <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
+                                           target="_blank">
+                                            <small>(details)</small>
+                                        </a>
+                                    </h4>
                                     {# <div class=""> #}
-                                    <div class="individual-add-on-plan">
-                                        <h4 class="add-on-plan-name ">
-                                            {{ add_on.Name }}
-                                            <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
-                                               target="_blank">
-                                                <small>(details)</small>
-                                            </a>
-                                        </h4>
-                                        {# <div class=""> #}
-                                        <div class="">
-                                            <span>Premium</span>
-                                            : ${{ add_on.actual_premium }}
-                                        </div>
-                                        {# </div> #}
+                                    <div class="">
+                                        <span>Premium</span>
+                                        : ${{ add_on.actual_premium }}
                                     </div>
                                     {# </div> #}
-                                {% endfor %}
+                                </div>
+                                {# </div> #}
+                            {% endfor %}{% endcomment %}
+                            <div id="selected-add-on">
+                                <div class="panel panel-default ms-panel-adon">
+                                    <div class="panel-heading pad-l-0">
+                                        <h3 class="panel-title bold">Add-on{{ selected_addon_plans|pluralize }}</h3>
+                                    </div>
+                                    <div class="panel-body addon_plans_panel addon_plans_panel_selected">
+                                        {% for addon_plan in selected_addon_plans %}
+                                            <div class="addon_result_wrapper">
+                                                <div class="row">
+                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
+                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                Premium: ${{ addon_plan.actual_premium }} / mo
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a class="add_on_plan_brochure"
+                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                                   target="_blank">
+                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 text-right" style="flex: 1;">
+                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                        <button class="btn btn-danger action_addon_plan_button" type="button"
+                                                                style="top: 25%; position: relative;"
+                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
+                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                            <span class="fa fa-remove"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% empty %}
+                                            <h4>No Add-on Plan</h4>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
-                        {% endif %}
+                        </div>
+                        {% comment %}{% endif %}{% endcomment %}
 
                         <div class="col-xs-12 apply-details-census-summary apply-info-bottom hidden-sm hidden-md hidden-lg">
                             <table class="table apply-census-table">
@@ -424,103 +551,9 @@
                     </div>
                 </div>
 
-                {% if quote_request_form_data.Ins_Type != 'anc' %}
-                    <div class="add-on-section">
-                        <div class="mrg-t-20" id="add-on-plan-container">
-                            {% csrf_token %}
-                            <h2>Plan Enhancements</h2>
-                            <div class="row">
-                                <div class="col-sm-12 addon_plan_action_message"></div>
-                                <div class="col-sm-12" id="available-add-on">
-                                    <div class="panel panel-default ms-panel-adon">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title bold">Available Add-on plans</h3>
-                                        </div>
-                                        <div class="panel-body addon_plans_panel addon_plans_panel_available">
-                                            {% for addon_plan in remaining_addon_plans %}
-                                                <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row"
-                                                     style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
-                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                                        <h4>{{ addon_plan.Name }}</h4>
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                Premium: ${{ addon_plan.actual_premium }} / mo
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <a class="add_on_plan_brochure"
-                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                                   target="_blank">
-                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3 text-right" style="flex: 1;">
-                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
-                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                                        <button class="btn btn-success action_addon_plan_button" type="button"
-                                                                style="top: 25%; position: relative;"
-                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
-                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                                            <span class="fa fa-plus"></span> Add
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12" id="selected-add-on">
-                                    <div class="panel panel-default ms-panel-adon">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title bold">Selected Add-on Plans</h3>
-                                        </div>
-                                        <div class="panel-body addon_plans_panel addon_plans_panel_selected">
-                                            {% for addon_plan in selected_addon_plans %}
-                                                <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;  margin-top: 5px; padding: 5px; display: flex;">
-                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-                                                        <h4>{{ addon_plan.Name }}</h4>
-                                                        <div class="row">
-                                                            <div class="col-sm-6">
-                                                                Premium: ${{ addon_plan.actual_premium }} / mo
-                                                            </div>
-                                                            <div class="col-sm-6">
-                                                                <a class="add_on_plan_brochure"
-                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                                   target="_blank">
-                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-3 text-right" style="flex: 1;">
-                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
-                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
-                                                        <button class="btn btn-warning action_addon_plan_button" type="button"
-                                                                style="top: 25%; position: relative;"
-                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
-                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
-                                                            <span class="fa fa-remove"> Remove</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {% empty %}
-                                                <h4>No Add-on Plan</h4>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-                <div id="applyCta" style="margin-top: 70px">
+                <div id="applyCta">
                     <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
-                            {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
-                            {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
-                            {#                            {% else %}#}
                        href="{% url 'quotes:stm_application' plan.unique_url %}">
-                        {#                            {% endif %}#}
                         <span class="fa fa-lock"></span>
                         <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
                     </a>
@@ -528,95 +561,72 @@
             </div>
 
             <div class="col-lg-4">
-                {% comment %}<div class="apply-right-bar-wrapper-new">
-                    <div class="apply-what-to-know"><h3 class="text-19">Swift &amp; Easy Application</h3>
-                        <ul class="list-image">
-                            <li>Check for eligibility in seconds</li>
-                            <li>Get approval in minutes</li>
-                            <li>Be enrolled today!</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="apply-guarantee">
-                    <div class="row" id="nations-guarantee">
-                        <div class="nations-guarantee-text hccadvantage">
-                            <p>
-                                <span class="emphasize">10 day Risk Free Cancellation</span>
-                                <br>
-                                <small>30 days Risk Free Cancellation for USA+ Dental</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>{% endcomment %}
-                <div class="w100 text-center img-margin">
+                <div class="w100 text-center img-margin hidden-xs">
                     <img src="{% static 'quotes/img/swift_easy.png' %}" alt="">
                     <img src="{% static 'quotes/img/risk-free.png' %}" alt="" style="margin: 50px auto 0" height="200px">
                 </div>
             </div>
-
         </div>
-        <!------Xtraaaaaaa------>
-       {% comment %} <div class="row">
-            <div class="col-md-8">
-                <div class="apply-right-bar-wrapper-new">
-                    <div class="" style="display: flex;flex-direction: row;padding: 20px 10px">
-                        <div style="display: flex;flex-direction: column;width: 50%">
-                            <div class="carrierLogo">
-                                            <img alt="{{ plan.Name }}"
-                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
-                                                 class="carrier-logo-image">
+
+    
+        {% if quote_request_form_data.Ins_Type != 'anc' %}
+            <hr class="mrg-t-35 mrg-b-35">
+            <div class="add-on-section">
+                <div class="mrg-t-20" id="add-on-plan-container">
+                    {% csrf_token %}
+                    <h2>Plan Enhancements</h2>
+                    <div class="row">
+                        <div class="col-sm-12 addon_plan_action_message"></div>
+                        <div class="col-sm-8" id="available-add-on">
+                            <div class="panel panel-default ms-panel-adon" style="padding: 0;">
+                                {% comment %}<div class="panel-heading">
+                                    <h3 class="panel-title bold">Available Add-on plans</h3>
+                                </div>{% endcomment %}
+                                <div class="panel-body addon_plans_panel addon_plans_panel_available">
+                                    {% for addon_plan in remaining_addon_plans %}
+                                        <div data-carrier_name="{{ addon_plan.carrier_name }}" class="addon_result_wrapper">
+                                            <div class="row">
+                                                <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
+                                                    <h4>{{ addon_plan.Name }}</h4>
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            Premium: ${{ addon_plan.actual_premium }} / mo
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <a class="add_on_plan_brochure"
+                                                               href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                               target="_blank">
+                                                                <span class="fa fa-file-pdf-o"></span> Brochure
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3 text-right" style="flex: 1;">
+                                                    <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                         src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                    <button class="btn btn-success action_addon_plan_button" type="button"
+                                                            style="top: 25%; position: relative;"
+                                                            data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
+                                                            data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                        <span class="fa fa-plus"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                            <div class="">
-                                <h3>
-                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
-                                                (Details)
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
-                                                <span class="emphasize">{{ plan.plan_name }}</span>
-                                                (Details)
-                                            </a>
-                                        {% endif %}
-                                </h3>
-                                <p>{% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium: ${% plan_actual_premium %}</p>
-                                <p>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee: ${{ plan.Enrollment_Fee }}</p>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                        <div style="display: flex;flex-direction: column; width: 50%">
-                            <p>Location: {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}</p>
-                            <p>Primary Applicant: {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}</p>
-                            <p>Coverage Start: {% form_date_field_value quote_request_form_data.Effective_Date %}</p>
-                            {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                    <p id="js-apply-effectiveEnd">
-                                        <span class="info-label">Coverage End</span>
-                                        <span class="info-value">
-                                        <span id="js-apply-original-effectiveEnd">
-                                            {% plan_coverage_end_date %}
-                                        </span>
-                                        </span>
-                                    </p>
-                                {% endif %}
-                            <p>Coverage End: {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}</p>
-                            <p>Payment Options: {% if quote_request_form_data.Payment_Option == '1' %}
-                                            {% trans "Monthly" %}
-                                        {% elif quote_request_form_data.Payment_Option == '2' %}
-                                            {% trans "Single Up Front" %}
-                                        {% endif %}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>{% endcomment %}
-         <!------Xtraaaaaaa------>
+        {% endif %}
 
         <p class="apply-disclaimer font-small pad-t-20">AFFORDABLE CARE ACT TAX. Term health insurance is not
             considered “minimum essential coverage” and you may be subject to the Affordable Care Act uninsured tax
             if you do not qualify for an exemption. To learn more about the tax and how consumers can determine if
             the combination of the tax and a Term Health Insurance premium can be cheaper than traditional insurance
-            for their circumstances.
-        </p>
+            for their circumstances.</p>
         <br/>
     </div>
 
@@ -628,37 +638,39 @@
     <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
     {# addon calculation #}
     <script id="addon_plan_template_available" type="x-tmpl-mustache">
-    <div data-carrier_name="[[ carrier_name ]]" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
-        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
-            <h4>[[Name]]</h4>
-            <div class="row">
-                <div class="col-sm-6">
-                    Premium: $[[actual_premium]] / mo
-                </div>
-                <div class="col-sm-6">
-                    <a class="add_on_plan_brochure"
-                       href="/static/quotes/add_on_brochure/[[add_on_name_for_brochure]].pdf"
-                       target="_blank">
-                        <span class="fa fa-file-pdf-o"></span> Brochure
-                    </a>
+    <div data-carrier_name="[[ carrier_name ]]" class="addon_result_wrapper">
+        <div class="row">
+            <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent">
+                <h4>[[Name]]</h4>
+                <div class="row">
+                    <div class="col-sm-6">
+                        Premium: $[[actual_premium]] / mo
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="add_on_plan_brochure"
+                           href="/static/quotes/add_on_brochure/[[add_on_name_for_brochure]].pdf"
+                           target="_blank">
+                            <span class="fa fa-file-pdf-o"></span> Brochure
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-3 text-right" style="flex: 1;">
-            <img width="35px" style="top: 25%; position: relative;" class="none"
-                 src="{% static 'quotes/img/ajax-loader.gif' %}">
-            <button class="btn btn-success action_addon_plan_button" type="button"
-                    style="top: 25%; position: relative;"
-                    data-action="[[include_action]]"
-                    data-addon-plan="[[data_as_json]]">
-                <span class="fa fa-plus"></span> Add
-            </button>
+            <div class="col-sm-3 text-right" style="flex: 1;">
+                <img width="35px" style="top: 25%; position: relative;" class="none"
+                     src="{% static 'quotes/img/ajax-loader.gif' %}">
+                <button class="btn btn-success action_addon_plan_button" type="button"
+                        style="top: 25%; position: relative;"
+                        data-action="[[include_action]]"
+                        data-addon-plan="[[data_as_json]]">
+                    <span class="fa fa-plus"></span>
+                </button>
+            </div>
         </div>
     </div>
 </script>
     <script id="addon_plan_template_selected" type="x-tmpl-mustache">
     <div class="row" style="border: 1px solid #dddddd; border-radius: 5px; margin-top: 5px; padding: 5px; display: flex;">
-        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+        <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
             <h4>[[Name]]</h4>
             <div class="row">
                 <div class="col-sm-6">
@@ -676,11 +688,11 @@
         <div class="col-sm-3 text-right" style="flex: 1;">
             <img width="35px" style="top: 25%; position: relative;" class="none"
                  src="{% static 'quotes/img/ajax-loader.gif' %}">
-            <button class="btn btn-warning action_addon_plan_button" type="button"
+            <button class="btn btn-danger action_addon_plan_button" type="button"
                     style="top: 25%; position: relative;"
                     data-action="[[remove_action]]"
                     data-addon-plan="[[data_as_json]]">
-                <span class="fa fa-remove"></span> Remove
+                <span class="fa fa-remove"></span>
             </button>
         </div>
     </div>
@@ -824,20 +836,20 @@
                 for (var j = 0; j < carriers.length; j++) {
                     if (carriers[j].attr('data-carrier_name') === group_carrier[i]) {
                         carrier_html +=
-                            ('<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">' +
+                            ('<div class="addon_result_wrapper">' +
                                 carriers[j].html() +
                                 '</div>');
                     }
                 }
                 var html =
-                    '<div class="row" style="border: 1px solid #333; border-radius: 5px;margin-top: 10px; padding: 5px;">' +
+                    '<div class="row addon_row">' +
                     '<div class="col-xs-12 cur-p" data-clickTarget=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + '>' +
                     '<div class="row">' +
-                    '<div class="col-xs-9">' +
-                    '<h3 style="margin:10px 10px;font-weight:600">' + group_carrier[i] + '</h3>' +
+                    '<div class="col-xs-10">' +
+                    '<h3 class="addon_name">' + group_carrier[i] + '</h3>' +
                     '</div>' +
-                    '<div class="col-xs-3">' +
-                    '<button style="margin-left:auto;float:right;margin-top:6px" class="btn"><i class="fa fa-chevron-down"></i></button>' + //button for navigate group's child
+                    '<div class="col-xs-2">' +
+                    '<button class="btn addon_dropdown-btn"><i class="fa fa-chevron-down"></i></button>' + //button for navigate group's child
                     '</div>' +
                     '</div>' +
                     '</div>' +
