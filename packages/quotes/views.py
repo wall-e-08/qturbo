@@ -177,54 +177,53 @@ def start_celery(request: WSGIRequest, form_data: Dict) -> True:
         print(json.dumps(form_data, indent=4, sort_keys=True))
 
         # Changing quote store key regarding insurance type
-    # for ins_type in ['lim', 'stm', 'anc']:
-        ins_type = get_ins_type(request)
-        change_quote_store_key(request, ins_type)
+        for ins_type in ['lim', 'stm']:
+        #     ins_type = get_ins_type(request)
+            change_quote_store_key(request, ins_type)
+            form_data['Ins_Type'] = ins_type
 
-        # Calling celery for populating quote list
-        redis_key = get_redis_key(request, ins_type)
-        print(f"Calling celery task for ins_type: {ins_type}")
-        print(f"redis_key: {redis_key}")
+            # Calling celery for populating quote list
+            redis_key = get_redis_key(request, ins_type)
+            print(f"Calling celery task for ins_type: {ins_type}")
+            print(f"redis_key: {redis_key}")
 
-        if not redis_conn.exists(redis_key):
-            print("Redis connection does not exist for redis key")
-            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+            if not redis_conn.exists(redis_key):
+                print("Redis connection does not exist for redis key")
+                redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
 
-            print(f"Insurance type is {ins_type}")
-            if ins_type == 'stm':
-                redis_key_done_data = f'{redis_key}:done_data'
-                # We are here setting up a dictionary in the session for future usage
-                print(f'Setting quote request preference data')
+                print(f"Insurance type is {ins_type}")
+                if ins_type == 'stm':
+                    redis_key_done_data = f'{redis_key}:done_data'
+                    # We are here setting up a dictionary in the session for future usage
+                    print(f'Setting quote request preference data')
 
-                quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
+                    quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
-                quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
-                    'LifeShield STM': {
-                        'Duration_Coverage': [],
-                    },
+                    quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
+                        'LifeShield STM': {
+                            'Duration_Coverage': [],
+                        },
 
-                    'AdvantHealth STM': {
-                        'Duration_Coverage': []
+                        'AdvantHealth STM': {
+                            'Duration_Coverage': []
+                        }
                     }
-                }
 
-                request.session['quote_request_preference_data'] = quote_request_preference_data
+                    request.session['quote_request_preference_data'] = quote_request_preference_data
 
-                redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+                    redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
 
-                StmPlanTask.delay(request.session.session_key, form_data,
-                                  quote_request_preference_data)
+                    StmPlanTask.delay(request.session.session_key, form_data,
+                                      quote_request_preference_data)
 
-            elif ins_type == 'lim':
-                LimPlanTask.delay(request.session.session_key, form_data)
-            elif ins_type == 'anc':
-                AncPlanTask.delay(request.session.session_key, form_data)
+                elif ins_type == 'lim':
+                    LimPlanTask.delay(request.session.session_key, form_data)
 
         return True
 
 
 def get_ins_type(request: WSGIRequest) -> str:
-    ins_type = request.COOKIES.get('Ins_Type', None)
+    ins_type = request.COOKIES.get('qt_plan_type', None)
 
     if not ins_type:
         ins_type = 'lim'
