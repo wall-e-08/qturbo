@@ -107,164 +107,164 @@
                         <div class="col-sm-6 col-xs-12 apply-details-plan-summary first-div" style="border-right: 1px solid #c2c2c2;margin-right: -1px">
                             <table class="table quote-price-breakdown-table">
                                 <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="carrierLogo">
-                                            <img alt="{{ plan.Name }}"
-                                                 src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
-                                                 class="carrier-logo-image">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                            <a href="{% url 'quotes:stm_plan' plan.general_url %}">
-                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
-                                                (Details)
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
-                                                <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
-                                                (Details)
-                                            </a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr class="cur-p show-plan-cost-details">
-                                    <td>
-                                        <span style="border-bottom: 1px dashed #999">{% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:</span>
-                                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="font-size: 13px;"></span>
-                                    </td>
-                                    {% comment %}<td class="text-right emphasize">${% plan_actual_premium %}</td>{% endcomment %}
-                                    <td class="text-right emphasize">${{ plan.actual_premium }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <table class="w100">
-                                            <tr>
-                                                <td>Plan Premium:</td>
-                                                <td class="text-right emphasize">${{ plan.Premium }}</td>
-                                            </tr>
-                                            {% if plan.Association_Fee and plan.Association_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>Association Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.Association_Fee }}</span>
-                                                    </td>
-                                                </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="carrierLogo">
+                                                <img alt="{{ plan.Name }}"
+                                                     src="/static/quotes/img/stm-transparent/{{ plan.Name|plan_name_for_img }}.png"
+                                                     class="carrier-logo-image">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                                <a href="{% url 'quotes:stm_plan' plan.general_url %}">
+                                                    <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
+                                                    (Details)
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'quotes:stm_plan' plan.unique_url %}">
+                                                    <span class="emphasize">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</span>
+                                                    (Details)
+                                                </a>
                                             {% endif %}
-                                            {% if plan.administration_fee %}
+                                        </td>
+                                    </tr>
+                                    <tr class="cur-p show-plan-cost-details">
+                                        <td>
+                                            <span style="border-bottom: 1px dashed #999">{% if plan.Payment_Option != "2" %}Monthly{% endif %} Premium:</span>
+                                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="font-size: 13px;"></span>
+                                        </td>
+                                        {% comment %}<td class="text-right emphasize">${% plan_actual_premium %}</td>{% endcomment %}
+                                        <td class="text-right emphasize">${{ plan.actual_premium }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <table class="w100">
                                                 <tr>
-                                                    <td>Administration Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.administration_fee }}</span>
-                                                    </td>
+                                                    <td>Plan Premium:</td>
+                                                    <td class="text-right emphasize">${{ plan.Premium }}</td>
                                                 </tr>
-                                            {% endif %}
-                                            {% if plan.Administrative_Fee %}
-                                                <tr>
-                                                    <td>Administrative Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.Administrative_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.monthly_network_fee %}
-                                                <tr>
-                                                    <td>Network Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.monthly_network_fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.TelaDoc_Fee %}
-                                                <tr>
-                                                    <td>TelaDoc Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.TelaDoc_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.RxAdvocacy_Fee %}
-                                                <tr>
-                                                    <td>Rx Advocacy Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.RxAdvocacy_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.ChoiceValueSavings_Fee and plan.ChoiceValueSavings_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>Choice Value Savings Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.ChoiceValueSavings_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.ChoiceValue_AdminFee and plan.ChoiceValue_AdminFee != '0.00' %}
-                                                <tr>
-                                                    <td>Choice Value Admin Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.ChoiceValue_AdminFee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.RealValueSavings_Fee and plan.RealValueSavings_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>Real Value Savings Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.RealValueSavings_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.RealValueSavings_AdminFee and plan.RealValueSavings_AdminFee != '0.00' %}
-                                                <tr>
-                                                    <td>Real Value Savings Admin Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.RealValueSavings_AdminFee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.VBP_Fee and plan.VBP_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>VBP Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.VBP_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.Medsense_Fee and plan.Medsense_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>Medsense Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.Medsense_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.GapAffordPlus_Fee and plan.GapAffordPlus_Fee != '0.00' %}
-                                                <tr>
-                                                    <td>Gap Afford Plus Fee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.GapAffordPlus_Fee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                            {% if plan.GapAffordPlus_AdminFee and plan.GapAffordPlus_AdminFee != '0.00' %}
-                                                <tr>
-                                                    <td>Gap Afford Plus AdminFee:</td>
-                                                    <td class="text-right emphasize">
-                                                        <span>${{ plan.GapAffordPlus_AdminFee }}</span>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee:</td>
-                                    <td class="text-right emphasize">${{ plan.Enrollment_Fee }}</td>
-                                </tr>
+                                                {% if plan.Association_Fee and plan.Association_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>Association Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.Association_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.administration_fee %}
+                                                    <tr>
+                                                        <td>Administration Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.administration_fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.Administrative_Fee %}
+                                                    <tr>
+                                                        <td>Administrative Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.Administrative_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.monthly_network_fee %}
+                                                    <tr>
+                                                        <td>Network Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.monthly_network_fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.TelaDoc_Fee %}
+                                                    <tr>
+                                                        <td>TelaDoc Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.TelaDoc_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.RxAdvocacy_Fee %}
+                                                    <tr>
+                                                        <td>Rx Advocacy Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.RxAdvocacy_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.ChoiceValueSavings_Fee and plan.ChoiceValueSavings_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>Choice Value Savings Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.ChoiceValueSavings_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.ChoiceValue_AdminFee and plan.ChoiceValue_AdminFee != '0.00' %}
+                                                    <tr>
+                                                        <td>Choice Value Admin Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.ChoiceValue_AdminFee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.RealValueSavings_Fee and plan.RealValueSavings_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>Real Value Savings Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.RealValueSavings_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.RealValueSavings_AdminFee and plan.RealValueSavings_AdminFee != '0.00' %}
+                                                    <tr>
+                                                        <td>Real Value Savings Admin Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.RealValueSavings_AdminFee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.VBP_Fee and plan.VBP_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>VBP Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.VBP_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.Medsense_Fee and plan.Medsense_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>Medsense Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.Medsense_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.GapAffordPlus_Fee and plan.GapAffordPlus_Fee != '0.00' %}
+                                                    <tr>
+                                                        <td>Gap Afford Plus Fee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.GapAffordPlus_Fee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if plan.GapAffordPlus_AdminFee and plan.GapAffordPlus_AdminFee != '0.00' %}
+                                                    <tr>
+                                                        <td>Gap Afford Plus AdminFee:</td>
+                                                        <td class="text-right emphasize">
+                                                            <span>${{ plan.GapAffordPlus_AdminFee }}</span>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if plan.Payment_Option != "2" %}One Time{% endif %} Enrollment Fee:</td>
+                                        <td class="text-right emphasize">${{ plan.Enrollment_Fee }}</td>
+                                    </tr>
 
                                 </tbody>
                                 <tfoot></tfoot>
@@ -273,52 +273,52 @@
                         <div class="col-sm-6 col-xs-12 apply-details-census-summary hidden-xs">
                             <table class="table apply-census-table">
                                 <tbody>
-                                <tr>
-                                    <td class="info-label">Location</td>
-                                    <td class="info-value">
-                                        {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="info-label">Primary Applicant</td>
-                                    <td class="info-value">
-                                        {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="info-label">Coverage Start</td>
-                                    <td class="info-value">
-                                        {% form_date_field_value quote_request_form_data.Effective_Date %}
-                                    </td>
-                                </tr>
-                                {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                    <tr id="js-apply-effectiveEnd">
-                                        <td class="info-label">Coverage End</td>
+                                    <tr>
+                                        <td class="info-label">Location</td>
                                         <td class="info-value">
+                                            {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="info-label">Primary Applicant</td>
+                                        <td class="info-value">
+                                            {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="info-label">Coverage Start</td>
+                                        <td class="info-value">
+                                            {% form_date_field_value quote_request_form_data.Effective_Date %}
+                                        </td>
+                                    </tr>
+                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                        <tr id="js-apply-effectiveEnd">
+                                            <td class="info-label">Coverage End</td>
+                                            <td class="info-value">
                                         <span id="js-apply-original-effectiveEnd">
                                             {% plan_coverage_end_date %}
                                         </span>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td class="info-label">Payment Options</td>
+                                        <td class="info-value">
+                                            {% if quote_request_form_data.Payment_Option == '1' %}
+                                                {% trans "Monthly" %}
+                                            {% elif quote_request_form_data.Payment_Option == '2' %}
+                                                {% trans "Single Up Front" %}
+                                            {% endif %}
                                         </td>
                                     </tr>
-                                {% endif %}
-                                <tr>
-                                    <td class="info-label">Payment Options</td>
-                                    <td class="info-value">
-                                        {% if quote_request_form_data.Payment_Option == '1' %}
-                                            {% trans "Monthly" %}
-                                        {% elif quote_request_form_data.Payment_Option == '2' %}
-                                            {% trans "Single Up Front" %}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-{#                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">Change Info#}
-{#                                            <i class="fa fa-angle-double-right" aria-hidden="true"></i>#}
-{#                                        </a>#}
-                                    </td>
-                                    <td></td>
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            {#                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">Change Info#}
+                                            {#                                            <i class="fa fa-angle-double-right" aria-hidden="true"></i>#}
+                                            {#                                        </a>#}
+                                        </td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -330,8 +330,8 @@
                             <div class="col-sm-12 col-xs-12 third-div">
                                 <h3 class="mrg-b-20 apply-add-on-plan-heading">
                                     <a data-container="body" data-placement="top"
-                                          href="javascript:void(0);" data-toggle="popover"
-                                          data-content="Add-on Policy is billed separately.
+                                       href="javascript:void(0);" data-toggle="popover"
+                                       data-content="Add-on Policy is billed separately.
                                           if the main STM policy terminates or is canceled,
                                           it will not automatically cancel your Add-on Policy,
                                           unless requested by you.">
@@ -349,21 +349,21 @@
                                 </h3>
                                 {% for add_on in selected_addon_plans %}
                                     {# <div class=""> #}
-                                        <div class="individual-add-on-plan">
-                                            <h4 class="add-on-plan-name ">
-                                                {{ add_on.Name }}
-                                                <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
-                                                   target="_blank">
-                                                    <small>(details)</small>
-                                                </a>
-                                            </h4>
-                                            {# <div class=""> #}
-                                                <div class="">
-                                                    <span>Premium</span>
-                                                    : ${{ add_on.actual_premium }}
-                                                </div>
-                                            {# </div> #}
+                                    <div class="individual-add-on-plan">
+                                        <h4 class="add-on-plan-name ">
+                                            {{ add_on.Name }}
+                                            <a href="/static/quotes/add_on_brochure/{{ add_on.carrier_name|add_on_name_for_brochure }}.pdf"
+                                               target="_blank">
+                                                <small>(details)</small>
+                                            </a>
+                                        </h4>
+                                        {# <div class=""> #}
+                                        <div class="">
+                                            <span>Premium</span>
+                                            : ${{ add_on.actual_premium }}
                                         </div>
+                                        {# </div> #}
+                                    </div>
                                     {# </div> #}
                                 {% endfor %}
                             </div>
@@ -372,68 +372,159 @@
                         <div class="col-xs-12 apply-details-census-summary apply-info-bottom hidden-sm hidden-md hidden-lg">
                             <table class="table apply-census-table">
                                 <tbody>
-                                <tr>
-                                    <td class="info-label">Location</td>
-                                    <td class="info-value">
-                                        {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="info-label">Primary Applicant</td>
-                                    <td class="info-value">
-                                        {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="info-label">Coverage Start</td>
-                                    <td class="info-value">
-                                        {% form_date_field_value quote_request_form_data.Effective_Date %}
-                                    </td>
-                                </tr>
-
-                                {% if quote_request_form_data.Ins_Type == 'stm' %}
-                                    <tr id="js-apply-effectiveEnd">
-                                        <td class="info-label">Coverage End</td>
+                                    <tr>
+                                        <td class="info-label">Location</td>
                                         <td class="info-value">
+                                            {{ quote_request_form_data.Zip_Code }}/{{ quote_request_form_data.State }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="info-label">Primary Applicant</td>
+                                        <td class="info-value">
+                                            {% form_date_field_value quote_request_form_data.Applicant_DOB %} {{ quote_request_form_data.Applicant_Gender }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="info-label">Coverage Start</td>
+                                        <td class="info-value">
+                                            {% form_date_field_value quote_request_form_data.Effective_Date %}
+                                        </td>
+                                    </tr>
+
+                                    {% if quote_request_form_data.Ins_Type == 'stm' %}
+                                        <tr id="js-apply-effectiveEnd">
+                                            <td class="info-label">Coverage End</td>
+                                            <td class="info-value">
                                         <span id="js-apply-original-effectiveEnd">
                                             {% plan_coverage_end_date %}
                                         </span>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td class="info-label">Payment Options</td>
+                                        <td class="info-value">
+                                            {% if quote_request_form_data.Payment_Option == '1' %}
+                                                {% trans "Monthly" %}
+                                            {% elif quote_request_form_data.Payment_Option == '2' %}
+                                                {% trans "Single Up Front" %}
+                                            {% endif %}
                                         </td>
                                     </tr>
-                                {% endif %}
-                                <tr>
-                                    <td class="info-label">Payment Options</td>
-                                    <td class="info-value">
-                                        {% if quote_request_form_data.Payment_Option == '1' %}
-                                            {% trans "Monthly" %}
-                                        {% elif quote_request_form_data.Payment_Option == '2' %}
-                                            {% trans "Single Up Front" %}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">CHANGE INFO</a>
-                                    </td>
-                                    <td></td>
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'quotes:plans' %}" id="#js-apply-change-info">CHANGE INFO</a>
+                                        </td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
 
                     </div>
                 </div>
-             <div id="applyCta" style="margin-top: 70px">
-            <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
-                    {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
-                    {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
-                    {#                            {% else %}#}
-               href="{% url 'quotes:stm_application' plan.unique_url %}">
-                {#                            {% endif %}#}
-                <span class="fa fa-lock"></span>
-                <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
-            </a>
-        </div>
+
+                {% if quote_request_form_data.Ins_Type != 'anc' %}
+                    <div class="add-on-section">
+                        <div class="mrg-t-20" id="add-on-plan-container">
+                            {% csrf_token %}
+                            <h2>Plan Enhancements</h2>
+                            <div class="row">
+                                <div class="col-sm-12 addon_plan_action_message"></div>
+                                <div class="col-sm-12" id="available-add-on">
+                                    <div class="panel panel-default ms-panel-adon">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title bold">Available Add-on plans</h3>
+                                        </div>
+                                        <div class="panel-body addon_plans_panel addon_plans_panel_available">
+                                            {% for addon_plan in remaining_addon_plans %}
+                                                <div data-carrier_name="{{ addon_plan.carrier_name }}" class="row"
+                                                     style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
+                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                Premium: ${{ addon_plan.actual_premium }} / mo
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a class="add_on_plan_brochure"
+                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                                   target="_blank">
+                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 text-right" style="flex: 1;">
+                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                        <button class="btn btn-success action_addon_plan_button" type="button"
+                                                                style="top: 25%; position: relative;"
+                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'include' %}"
+                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                            <span class="fa fa-plus"></span> Add
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="selected-add-on">
+                                    <div class="panel panel-default ms-panel-adon">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title bold">Selected Add-on Plans</h3>
+                                        </div>
+                                        <div class="panel-body addon_plans_panel addon_plans_panel_selected">
+                                            {% for addon_plan in selected_addon_plans %}
+                                                <div class="row" style="border: 1px solid #dddddd; border-radius: 5px;  margin-top: 5px; padding: 5px; display: flex;">
+                                                    <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                Premium: ${{ addon_plan.actual_premium }} / mo
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <a class="add_on_plan_brochure"
+                                                                   href="/static/quotes/add_on_brochure/{{ addon_plan.carrier_name|add_on_name_for_brochure }}.pdf"
+                                                                   target="_blank">
+                                                                    <span class="fa fa-file-pdf-o"></span> Brochure
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3 text-right" style="flex: 1;">
+                                                        <img width="35px" style="top: 25%; position: relative;" class="none"
+                                                             src="{% static 'quotes/img/ajax-loader.gif' %}">
+                                                        <button class="btn btn-warning action_addon_plan_button" type="button"
+                                                                style="top: 25%; position: relative;"
+                                                                data-action="{% url 'quotes:stm_plan_addon_action' plan.unique_url 'remove' %}"
+                                                                data-addon-plan="{{ addon_plan.data_as_dict|jsonify }}">
+                                                            <span class="fa fa-remove"> Remove</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% empty %}
+                                                <h4>No Add-on Plan</h4>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div id="applyCta" style="margin-top: 70px">
+                    <a class="btn btn-default js-apply-button vimm-nim-width-btn btn-orange" id="applyButton"
+                            {#                            {% if quote_request_form_data.Ins_Type == 'stm' %}#}
+                            {#                               href="{% url 'quotes:stm_application' plan.general_url %}">#}
+                            {#                            {% else %}#}
+                       href="{% url 'quotes:stm_application' plan.unique_url %}">
+                        {#                            {% endif %}#}
+                        <span class="fa fa-lock"></span>
+                        <span class="js-apply-text apply-button-text font-weight-bold">Start Secure Application</span>
+                    </a>
+                </div>
             </div>
 
             <div class="col-lg-4">
@@ -534,6 +625,245 @@
     {% endif %}
 {% endblock container %}
 {% block extra_js %}
+    <script type="text/javascript" src="{% static 'nhaquote_old/js/plugins/mustache.min.js' %}"></script>
+    {# addon calculation #}
+    <script id="addon_plan_template_available" type="x-tmpl-mustache">
+    <div data-carrier_name="[[ carrier_name ]]" class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">
+        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+            <h4>[[Name]]</h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    Premium: $[[actual_premium]] / mo
+                </div>
+                <div class="col-sm-6">
+                    <a class="add_on_plan_brochure"
+                       href="/static/quotes/add_on_brochure/[[add_on_name_for_brochure]].pdf"
+                       target="_blank">
+                        <span class="fa fa-file-pdf-o"></span> Brochure
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 text-right" style="flex: 1;">
+            <img width="35px" style="top: 25%; position: relative;" class="none"
+                 src="{% static 'quotes/img/ajax-loader.gif' %}">
+            <button class="btn btn-success action_addon_plan_button" type="button"
+                    style="top: 25%; position: relative;"
+                    data-action="[[include_action]]"
+                    data-addon-plan="[[data_as_json]]">
+                <span class="fa fa-plus"></span> Add
+            </button>
+        </div>
+    </div>
+</script>
+    <script id="addon_plan_template_selected" type="x-tmpl-mustache">
+    <div class="row" style="border: 1px solid #dddddd; border-radius: 5px; margin-top: 5px; padding: 5px; display: flex;">
+        <div class="col-sm-9" style="flex: 3; border-right: 1px solid #dddddd;">
+            <h4>[[Name]]</h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    Premium: $[[actual_premium]] / mo
+                </div>
+                <div class="col-sm-6">
+                    <a class="add_on_plan_brochure"
+                       href="/static/quotes/add_on_brochure/[[add_on_name_for_brochure]].pdf"
+                       target="_blank">
+                        <span class="fa fa-file-pdf-o"></span> Brochure
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 text-right" style="flex: 1;">
+            <img width="35px" style="top: 25%; position: relative;" class="none"
+                 src="{% static 'quotes/img/ajax-loader.gif' %}">
+            <button class="btn btn-warning action_addon_plan_button" type="button"
+                    style="top: 25%; position: relative;"
+                    data-action="[[remove_action]]"
+                    data-addon-plan="[[data_as_json]]">
+                <span class="fa fa-remove"></span> Remove
+            </button>
+        </div>
+    </div>
+</script>
+
+    <script>
+        $(function () {
+            var plansDisplay = [];
+            Mustache.tags = ['[[', ']]'];
+            var replace_re = RegExp(/ /g);
+            var addon_plan_template_available = $('#addon_plan_template_available').html();
+            var addon_plan_template_selected = $('#addon_plan_template_selected').html();
+            Mustache.parse(addon_plan_template_available);
+            Mustache.parse(addon_plan_template_selected);
+
+            var $addon_plans_panel_available = $('.addon_plans_panel_available');
+            var refresh_available_addon_plans = function (remaining_addon_plans, include_action) {
+                $addon_plans_panel_available.empty();
+                var addon_plan, rendered;
+                for (var i = 0; i < remaining_addon_plans.length; i++) {
+                    addon_plan = remaining_addon_plans[i];
+                    addon_plan['data_as_json'] = JSON.stringify(addon_plan);
+                    addon_plan['include_action'] = include_action;
+                    addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
+                    rendered = Mustache.to_html(addon_plan_template_available, addon_plan);
+                    $addon_plans_panel_available.append(rendered);
+                }
+                Grouping();
+                executeData();
+            };
+
+            var $addon_plans_panel_selected = $('.addon_plans_panel_selected');
+            var refresh_selected_addon_plans = function (selected_addon_plans, remove_action) {
+                $addon_plans_panel_selected.empty();
+                var addon_plan, rendered;
+                for (var i = 0; i < selected_addon_plans.length; i++) {
+                    addon_plan = selected_addon_plans[i];
+                    addon_plan['data_as_json'] = JSON.stringify(addon_plan);
+                    addon_plan['remove_action'] = remove_action;
+                    addon_plan['add_on_name_for_brochure'] = replace_re[Symbol.replace](addon_plan.carrier_name, "-");
+                    rendered = Mustache.to_html(addon_plan_template_selected, addon_plan);
+                    $addon_plans_panel_selected.append(rendered);
+                }
+                Grouping();
+            };
+
+            var $addon_plan_action_message = $('.addon_plan_action_message');
+            var echo_addon_plan_action_message = function (json) {
+                var msg;
+                if (json.status === 'success') {
+                    msg = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<strong>Done! </strong> ' +
+                        " addon plan " + '"' + json.related_addon.Name + '"' +
+                        (json.action === 'include' ? " added" : " removed") +
+                        '</div>';
+                } else {
+                    var all_errors = [];
+                    for (var i = 0; i < json.error_keys.length; i++) {
+                        all_errors = all_errors.concat(json.errors[json.error_keys[i]]);
+                    }
+                    msg = '<div class="alert alert-warning alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<strong>Warning! </strong> ' +
+                        " failed to " + (json.action === 'include' ? "add" : "remove") + " addon plan " +
+                        '"' + json.related_addon.Name + '"' + '<br>' + all_errors.join(' ') +
+                        '</div>';
+                }
+                $addon_plan_action_message.html(msg);
+            };
+
+            $('.addon_plans_panel').on('click', '.action_addon_plan_button', function (e) {
+                var $that_button = $(this);
+                e.preventDefault();
+                saveData();
+                var $that_img = $that_button.siblings('img');
+                $that_img.removeClass('none');
+                $that_button.addClass("none");
+
+                var csrftoken = $.cookie('csrftoken');
+                $.ajax({
+                    url: $that_button.attr("data-action"),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    data: JSON.parse($that_button.attr('data-addon-plan')), type: 'POST', dataType: 'json',
+                    success: function (json) {
+                        $that_img.addClass('none');
+                        $that_button.removeClass("none");
+                        echo_addon_plan_action_message(json);
+                        if (json.status === 'success') {
+                            refresh_available_addon_plans(json.remaining_addon_plans, json.include_action);
+                            refresh_selected_addon_plans(json.selected_addon_plans, json.remove_action);
+                        }
+                    },
+                    error: function () {
+                        $that_img.addClass('none');
+                        $that_button.removeClass("none");
+                        alert("Something Went wrong, please try again after some time.");
+                    }
+                });
+            });
+            function executeData() {    {% comment %}set the div's display state{% endcomment %}
+                $('[data-clickResult]').each(function () {
+                    var _this = $(this);
+                    var _temp = plansDisplay[_this.attr('data-clickResult')];
+                    _this.css('display', _temp === undefined ? 'none' : _temp);
+                });
+            }
+            function saveData() {   {% comment %}saving the div's display state{% endcomment %}
+                $('[data-clickResult]').each(function () {
+                    var _this = $(this);
+                    plansDisplay[_this.attr('data-clickResult')] = _this.css('display');
+                });
+            }
+        });
+
+        function Grouping () {
+            var addonParent = $('.addon_plans_panel_available');
+            var carriers = [];
+            var group_carrier = [];
+            $('[data-carrier_name]').each(function () {
+                var _this = $(this);
+                carriers.push(_this);
+                {# saving all elements #}
+                group_carrier.push(_this.attr('data-carrier_name'));
+                {# saving "carrier_name" value which is coming by python #}
+                _this.remove();
+                {# removing the element after saving #}
+            });
+
+            // group_carrier = jQuery.unique( group_carrier );
+            var uniqueCarrier = Array.from(new Set(group_carrier));
+            group_carrier = uniqueCarrier;
+            group_carrier.sort();
+
+            for (var i = 0; i < group_carrier.length; i++) {
+                var carrier_html = '';
+                for (var j = 0; j < carriers.length; j++) {
+                    if (carriers[j].attr('data-carrier_name') === group_carrier[i]) {
+                        carrier_html +=
+                            ('<div class="row" style="border: 1px solid #dddddd; border-radius: 5px;margin-top: 5px; padding: 5px; display: flex;">' +
+                                carriers[j].html() +
+                                '</div>');
+                    }
+                }
+                var html =
+                    '<div class="row" style="border: 1px solid #333; border-radius: 5px;margin-top: 10px; padding: 5px;">' +
+                    '<div class="col-xs-12 cur-p" data-clickTarget=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + '>' +
+                    '<div class="row">' +
+                    '<div class="col-xs-9">' +
+                    '<h3 style="margin:10px 10px;font-weight:600">' + group_carrier[i] + '</h3>' +
+                    '</div>' +
+                    '<div class="col-xs-3">' +
+                    '<button style="margin-left:auto;float:right;margin-top:6px" class="btn"><i class="fa fa-chevron-down"></i></button>' + //button for navigate group's child
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div data-clickResult=' + group_carrier[i].toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-") + ' class="col-xs-12">' +
+                    carrier_html +
+                    '</div>' +
+                    '</div>';
+                addonParent.append(html);
+            }
+
+            $('[data-clickTarget]').off().click(function (e) {
+                e.preventDefault();
+                var _this = $(this);
+                var _val = _this.attr('data-clickTarget');
+                $('[data-clickResult=' + _val + ']').slideToggle();
+            });
+        }
+
+        $(document).ready(function () {
+            Grouping();
+            $('[data-clickResult]').hide();
+        });
+    </script>
+    {# addon calculation :END #}
+
+
     <script>
         {#$(document).ready(function($) {#}
         {#    console.log('Page loaded: /stm/apply.');#}

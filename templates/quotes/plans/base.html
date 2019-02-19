@@ -211,6 +211,7 @@
                     </div>
                 {% endif %}
 
+                {% comment %}
                 {% if quote_request_form_data.Ins_Type != 'anc' %}
                     <hr>
                     <div class="add-on-section">
@@ -302,6 +303,7 @@
                         </div>
                     </div>
                 {% endif %}
+                {% endcomment %}
 
                 <hr>
                 <div>
@@ -554,7 +556,6 @@
             };
             center_selected_plan_div(); // run at first
             $( window ).resize(function() {
-                console.log("GG")
                 center_selected_plan_div(); // run when changes width
             });
 

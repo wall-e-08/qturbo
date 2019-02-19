@@ -614,9 +614,18 @@ def stm_apply(request, plan_url) -> HttpResponse:
     add_on_list_as_dict = [s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]
     logger.info("PLAN: {0}".format(plan))
     logger.info("ADD-ON: {0}".format(add_on_list_as_dict))
+
+    # addon plans
+    logger.info("no of selected addon plans: {0}, for plan: {1}".format(len(selected_addon_plans), plan['unique_url']))
+    addon_plans_redis_key = "{0}:{1}".format(redis_key, plan['plan_name_for_img'])
+    addon_plans = addon_plans_from_json_data(redis_conn.lrange(addon_plans_redis_key, 0, -1))
+    remaining_addon_plans = addon_plans.difference(selected_addon_plans)
+
     return render(request, 'quotes/stm_plan_apply.html',
                   {'plan': plan, 'quote_request_form_data': quote_request_form_data,
-                   'selected_addon_plans': add_on_list_as_dict})
+                   'addon_plans': addon_plans,
+                   'selected_addon_plans': selected_addon_plans,
+                   'remaining_addon_plans': remaining_addon_plans,})
 
 
 @require_POST
