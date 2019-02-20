@@ -2294,3 +2294,18 @@ def legal(request, slug):
 def life_insurance(request):
     return render(request, 'quotes/lifeinsurance.html')
 
+
+def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
+    stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
+    stm_dict_values = stm_dictionary.values()
+    stm_available_states = set().union(*[*stm_dict_values])
+
+    form_data = request.session.get('quote_request_form_data', None)
+    if form_data is not None:
+        user_state = form_data['State']
+        if user_state in stm_available_states:
+            return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'fail'})
+
+
