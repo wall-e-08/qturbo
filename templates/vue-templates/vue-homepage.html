@@ -236,7 +236,7 @@
                                          @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</router-link>
                             <template v-else>
                                 <button class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
-                                <div class="alert alert-info border-info mt-3" role="alert">
+                                <div class="alert alert-info border-info mt-3" role="alert" v-if="show_error">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="info" style="width: 18px !important;height: 18px !important;margin-top: -2px;">
                                         <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.033
                                                 16.01c.564-1.789 1.632-3.932 1.821-4.474.273-.787-.211-1.136-1.74.209l-.34-.64c1.744-1.897 5.335-2.326
