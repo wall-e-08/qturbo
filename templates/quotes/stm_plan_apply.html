@@ -461,7 +461,7 @@
                                             <div class="addon_result_wrapper">
                                                 <div class="row">
                                                     <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
-                                                        <h4>{{ addon_plan.Name }}</h4>
+                                                        <h4 class="addon_plan_name_h4">{{ addon_plan.Name }}</h4>
                                                         <div class="row">
                                                             <div class="col-sm-6">
                                                                 Premium: ${{ addon_plan.actual_premium }} / mo
@@ -587,7 +587,7 @@
                                         <div data-carrier_name="{{ addon_plan.carrier_name }}" class="addon_result_wrapper">
                                             <div class="row">
                                                 <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
-                                                    <h4>{{ addon_plan.Name }}</h4>
+                                                    <h4 class="addon_plan_name_h4">{{ addon_plan.Name }}</h4>
                                                     <div class="row">
                                                         <div class="col-sm-6">
                                                             Premium: ${{ addon_plan.actual_premium }} / mo
@@ -641,7 +641,7 @@
     <div data-carrier_name="[[ carrier_name ]]" class="addon_result_wrapper">
         <div class="row">
             <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent">
-                <h4>[[Name]]</h4>
+                <h4 class="addon_plan_name_h4">[[Name]]</h4>
                 <div class="row">
                     <div class="col-sm-6">
                         Premium: $[[actual_premium]] / mo
@@ -671,7 +671,7 @@
     <script id="addon_plan_template_selected" type="x-tmpl-mustache">
     <div class="row" style="border: 1px solid #dddddd; border-radius: 5px; margin-top: 5px; padding: 5px; display: flex;">
         <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
-            <h4>[[Name]]</h4>
+            <h4 class="addon_plan_name_h4">[[Name]]</h4>
             <div class="row">
                 <div class="col-sm-6">
                     Premium: $[[actual_premium]] / mo
@@ -866,6 +866,10 @@
                 var _val = _this.attr('data-clickTarget');
                 $('[data-clickResult=' + _val + ']').slideToggle();
             });
+
+             $(".addon_plan_name_h4").each(function (i, el) {
+                 $(el).html($(el).html().replace('~~', ' - '))
+             })
         }
 
         $(document).ready(function () {
