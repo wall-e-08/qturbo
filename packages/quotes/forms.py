@@ -1190,7 +1190,7 @@ class STApplicantInfoForm(forms.Form):
                 self.cleaned_data['SOC'] = ssn_format(soc)
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship',
                           'Contingent_First_Name', 'Contingent_Last_Name', 'Contingent_Relationship']:
                 self.cleaned_data[field] = ''
@@ -1201,7 +1201,7 @@ class STApplicantInfoForm(forms.Form):
         if self.plan['Name'] == 'Principle Advantage':
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
             self.cleaned_data['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(self.initial_form_data))
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship',
                           'Contingent_First_Name', 'Contingent_Last_Name', 'Contingent_Relationship']:
@@ -1220,7 +1220,7 @@ class STApplicantInfoForm(forms.Form):
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee',
                           'RealValueSavings_Fee', 'RealValueSavings_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1264,7 +1264,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1308,7 +1308,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1351,7 +1351,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1393,7 +1393,7 @@ class STApplicantInfoForm(forms.Form):
         if self.plan['Name'] == 'USA Dental':
             for field in ['Premium', 'Enrollment_Fee']: # Administrative_Fee is included in Premium
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             self.cleaned_data['Payment_Agree'] = '1'
             self.cleaned_data['Applicant_Agree'] = '1'
@@ -1404,7 +1404,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             self.cleaned_data['Payment_Agree'] = '1'
             self.cleaned_data['Medsense_Agree'] = '1'
@@ -1415,7 +1415,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1452,7 +1452,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1587,10 +1587,12 @@ class STDependentInfoForm(forms.Form):
     Weight = forms.IntegerField(required=False, label=_("Weight"))
 
     def clean(self):
+        stm_plans = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
+
         super().clean()
+
         relation = self.cleaned_data.get('Relation', '')
-        if relation == 'Spouse' and self.plan['Name'] not in ['Principle Advantage', 'Cardinal Choice',
-                                                              'Vitala Care', 'Health Choice', 'Legion Limited Medical']:
+        if relation == 'Spouse' and self.plan['Name'] in stm_plans :
             for field in ['Feet', 'Inch', 'Weight']:
                 if not self.cleaned_data.get(field, ''):
                     self.add_error(field, forms.ValidationError("{0} is required".format(field), code='required'))

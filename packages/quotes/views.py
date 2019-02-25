@@ -32,7 +32,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
-                    get_available_benefit_against_coins)
+                    get_available_benefit_against_coins, get_neighbour_plans_and_attrs)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -248,11 +248,12 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     quote_request_form_data = request.session.get('quote_request_form_data')
     ins_type = get_ins_type(request)
     set_ins_type_in_session(request, ins_type)
+    quote_request_form_data = request.session.get('quote_request_form_data', None)
 
     print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
 
-    if annual_income:
+    if annual_income and quote_request_form_data:
         quote_request_form_data['Annual_Income'] = annual_income
 
         quote_request_preference_data = request.session.get('quote_request_preference_data', None)
@@ -420,7 +421,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param plan_url: Unique url for plan that sits in plan_data
     :return: HttpResponse
     """
-    stm_carriers = ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']
+    stm_carriers = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
 
     logger.info(f"Plan details: {plan_url}")
 
@@ -442,6 +443,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     plan_list = []
     redis_key = get_redis_key(request, ins_type)
+
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
@@ -457,6 +459,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
             if request.session['stm_general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, plan_list))
+
+                update_session_preferenced_data(
+                    request=request,
+                    stm_name=plan['Name'],
+                    preference_for_current_stm=None,
+                    coverage_duration=plan['Duration_Coverage'],
+                    plan=plan
+                )
             else:
                 # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
@@ -492,6 +502,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan) # TODO: Make it a part of separate function or at least modularize branching.
+        neighbour_list, neighbour_attrs = get_neighbour_plans_and_attrs(plan, plan_list)
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], plan_list))
@@ -514,33 +525,27 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name].copy()
-        # alternate_coverage_duration = list(alternate_coverage_duration_set)
+        alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
 
-        # All of them
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name].copy()
-        # alternate_benefit_amount = list(alternate_benefit_amount_set)
+        alternate_benefit_amount = list(neighbour_attrs['benefit_amount'])
+        alternate_benefit_amount.sort(key=int)
 
-        # All of them
-        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name].copy()
-        # alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
+        alternate_coinsurace_percentage = list(neighbour_attrs['coinsurance_percentage'])
+        alternate_coinsurace_percentage.sort(key=int)
 
         # Edge case 50 percent coinsurance for plan type 2
-        # TODO: Make this dynamic
-        if plan_name == 'LifeShield STM':
-            if plan['Plan'] == '1':
-                if '50' in alternate_coinsurace_percentage:
-                    alternate_coinsurace_percentage.remove('50')
-                if '5000' in alternate_benefit_amount:
-                    alternate_benefit_amount.remove('5000')
+        # if plan_name == 'LifeShield STM':
+        #     if plan['Plan'] == '1':
+        #         if '50' in alternate_coinsurace_percentage:
+        #             alternate_coinsurace_percentage.remove('50')
+        #         if '5000' in alternate_benefit_amount:
+        #             alternate_benefit_amount.remove('5000')
 
-        alternate_coverage_max = list(available_alternatives_as_set['alternate_coverage_max'])
+        alternate_coverage_max = list(neighbour_attrs['coverage_maximum'])
         alternate_coverage_max.sort(key=int)
-        # alternate_coverage_max = list(alternate_coverage_max_set)
 
         alternate_plan_set = available_alternatives_as_set['alternate_plan'] - {plan['Plan']}
         alternate_plan = list(alternate_plan_set)
-
 
 
     except KeyError as k:
@@ -956,10 +961,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
     stm_addon_plan_objs = None
     try:
         stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
-        if stm_enroll_obj.stm_name in settings.ANCILLARIES_PLANS:
-            stm_plan_model = getattr(qm, 'StandAloneAddonPlan')
-        else:
-            stm_plan_model = getattr(qm, stm_enroll_obj.stm_name.title().replace(' ', ''))
+        stm_plan_model = getattr(qm, 'MainPlan')
         stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
         stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
         stm_addon_plan_objs = qm.AddonPlan.objects.filter(vimm_enroll_id=vimm_enroll_id)
@@ -1246,7 +1248,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
                     update_application_stage(stm_enroll_obj, stage)
                 if stm_plan_obj is None:
                     logger.info("Saving Plan Info.")
-                    save_stm_plan(qm, plan, stm_enroll_obj, quote_request_form_data)
+                    save_stm_plan(qm, plan, stm_enroll_obj)
                 if stm_dependent_objs is None and has_dependents:
                     logger.info("Saving dependents Info.")
                     save_dependent_info(qm.Dependent, dependent_info_form_data, plan, stm_enroll_obj)
@@ -1934,6 +1936,10 @@ def esign_verification_payment(request, vimm_enroll_id):
         stm_enroll_obj.save(update_fields=fields_to_update_on_hii_enrollment)
         save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant, enrolled=True)
 
+        stm_plan_obj = qm.MainPlan.objects.get(vimm_enroll_id=vimm_enroll_id)
+        stm_plan_obj.paid = True
+        stm_plan_obj.save()
+
         # TODO: Need to implement loader from salesfusion django/templates/loader
         # enroll_info_panel_body = loader.render_to_string(
         #     'stm/render/app_stage_5_enroll_info.html',
@@ -2016,12 +2022,11 @@ def thank_you(request, vimm_enroll_id):
 
     # Destroying session vimm_enroll_id
     applicant_enrolled = request.session.get('applicant_enrolled', False)
-    plan_url = applicant_enrolled['plan_url']
-    del request.session[plan_url]['vimm_enroll_id']
-    logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
+    if applicant_enrolled:
+        plan_url = applicant_enrolled['plan_url']
+        del request.session[plan_url]['vimm_enroll_id']
+        logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
 
-    # res = request.session.get('applicant_info_{0}'.format(plan_url), '')
-    # res = stm_enroll_obj.enrolled_plan_res
     res = json_decoder.decode(stm_enroll_obj.enrolled_plan_res or '{}')
     formatted_enroll_response = res and EnrollResponse(res)
     return render(request, 'quotes/thank_you.html',
@@ -2068,7 +2073,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
 
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -2111,12 +2115,12 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     coverage_duration = plan['Duration_Coverage']
 
     try:
-        preference : Optional[Dict]  = get_user_preference(request, form, plan)
-        coinsurance_percentage = preference['Coinsurance_Percentage']
-        benefit_amount = preference['Benefit_Amount']
-        coverage_maximum = preference['Coverage_Max']
-        input_change = preference['input_change']
-        plan_type = preference['plan_type']
+        preference_for_current_stm : Optional[Dict]  = get_user_preference(request, form, plan)
+        coinsurance_percentage = preference_for_current_stm['Coinsurance_Percentage']
+        benefit_amount = preference_for_current_stm['Benefit_Amount']
+        coverage_maximum = preference_for_current_stm['Coverage_Max']
+        input_change = preference_for_current_stm['input_change']
+        plan_type = preference_for_current_stm['plan_type']
     except TypeError as t:
         print(t)
 
@@ -2125,14 +2129,14 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         l = get_available_coins_against_benefit(plan_list, benefit_amount, plan)
         if coinsurance_percentage not in l:
             # coinsurance_percentage = min(l)
-            preference['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
+            preference_for_current_stm['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
 
 
     elif input_change == 'Coinsurance_Percentage':
         l = get_available_benefit_against_coins(plan_list, coinsurance_percentage, plan)
         if benefit_amount not in l:
             # benefit_amount = min(l)
-            preference['Benefit_Amount'] = benefit_amount = min(l)
+            preference_for_current_stm['Benefit_Amount'] = benefit_amount = min(l)
 
 
     try:
@@ -2148,12 +2152,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     # Alternate plan found
     alternative_plan_url = alternative_plan['unique_url']
-
-    # Setting preference data
-    quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
-    quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
-    quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
-    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
     request.session['stm_general_url_chosen'] = True
 
@@ -2174,7 +2172,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
-    request.session['quote_request_preference_data'] = quote_request_preference_data
+    update_session_preferenced_data(request, stm_name, preference_for_current_stm, coverage_duration)
 
     logger.info(f'PLAN: {alternative_plan}')
     logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
@@ -2187,10 +2185,41 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'benefit_amount': alternative_plan['out_of_pocket_value'],
             'coverage_maximum': alternative_plan['coverage_max_value'],
             'premium': plan_actual_premium(context=None, stm_plan=alternative_plan),
-            'related_plans' : get_related_plans(plan, preference, plan_list),
+            'related_plans' : get_related_plans(plan, preference_for_current_stm, plan_list),
             'plan_type': quote_request_form_data.get('Ins_Type'),
         }
     )
+
+
+def update_session_preferenced_data(request: WSGIRequest,
+                                    stm_name: str,
+                                    preference_for_current_stm: Union[dict, None],
+                                    coverage_duration: str,
+                                    plan: Dict = None) -> None:
+    """ Setting preference data. Note: preference has a input changed field that is unchanged. """
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
+    try:
+        if plan is not None:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+
+        elif preference_for_current_stm is not None:
+            coinsurance_percentage = preference_for_current_stm['Coinsurance_Percentage']
+            benefit_amount = preference_for_current_stm['Benefit_Amount']
+            coverage_maximum = preference_for_current_stm['Coverage_Max']
+
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
+        quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
+    except KeyError as k:
+        logger.warning(k)
+
+    request.session['quote_request_preference_data'] = quote_request_preference_data
+
+    return
 
 
 def get_related_plans(plan, preference_dict, plan_list):

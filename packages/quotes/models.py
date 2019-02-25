@@ -407,43 +407,7 @@ class StmEnroll(models.Model):
         return "{0} {1}".format(self.First_Name, self.Last_Name)
 
     def get_stm_plan(self):
-        ancillaries_plans = settings.ANCILLARIES_PLANS
-        # a1_plans = ['Apex Limited Medical', 'AdvancedHealth Limited Medical']
-        # a1_ancillaries_plans = ["Discount Dental", "Amplified AD-D", "OneCare AME + CI", "Amplified CI", "TeleMedicine",
-        #                         ]
-        # agentra_plans = ['Smart Health Pass', "MEC", "Accidental Death & Dismemberment",
-        #                  "Paul Revere Group Critical Care", "Colonial Life Group Critical Care",
-        #                  "Paul Revere Group Accident", "Colonial Life Group Accident", "Bright Idea Dental"]
-
-        if self.stm_name == 'Everest STM':
-            return self.evereststm_set.get()
-        if self.stm_name == 'LifeShield STM':
-            return self.lifeshieldstm_set.get()
-        if self.stm_name == 'Premier STM':
-            return self.premierstm_set.get()
-        if self.stm_name == 'AdvantHealth STM':
-            return self.advanthealthstm_set.get()
-        if self.stm_name == 'Unified Health One':
-            return self.unifiedlimited_set.get()
-        if self.stm_name == 'Principle Advantage':
-            return self.principlelimited_set.get()
-        if self.stm_name == 'Rx Card':
-            return self.rxcardplan_set.get()
-        if self.stm_name == 'Cardinal Choice':
-            return self.cardinalchoice_set.get()
-        if self.stm_name == 'Vitala Care':
-            return self.vitalacare_set.get()
-        if self.stm_name == 'Health Choice':
-            return self.healthchoice_set.get()
-        if self.stm_name == 'Legion Limited Medical':
-            return self.legionlimitedmedical_set.get()
-        if self.stm_name == 'Protector 360':
-            return self.protector360_set.get()
-        if self.stm_name in ancillaries_plans:
-            return self.standaloneaddonplan_set.get()
-        # elif self.stm_name in a1_plans or self.stm_name in a1_ancillaries_plans:
-        #     return self.mainplan_set.get()
-        return None
+        return self.mainplan_set.get()
 
     def get_applicant_parent_info(self):
         if not self.Applicant_is_Child:
@@ -680,295 +644,660 @@ class Dependent(models.Model):
                 'SSN': self.SSN}
 
 
-class StmPlanBase(models.Model):
+# class StmPlanBase(models.Model):
+#
+#     stm_enroll = models.ForeignKey(
+#         to=StmEnroll,
+#         verbose_name=_("Enroll"),
+#         on_delete=models.CASCADE
+#     )
+#
+#     vimm_enroll_id = models.CharField(max_length=20)
+#
+#     Plan_ID = models.TextField()
+#
+#     Name = models.TextField()
+#
+#     plan_name_for_img = models.TextField()
+#
+#     month = models.TextField()
+#
+#     plan_name = models.TextField()
+#
+#     unique_url = models.TextField()
+#
+#     general_url = models.TextField()
+#
+#     general_plan_name = models.TextField()
+#
+#     Premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     actual_premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     option = models.TextField()
+#
+#     Coinsurance_Percentage = models.TextField()
+#
+#     out_of_pocket_value = models.TextField()
+#
+#     coverage_max_value = models.TextField()
+#
+#     Duration_Coverage = models.TextField()
+#
+#     Deductible_Option = models.TextField()
+#
+#     quote_request_timestamp = models.IntegerField()
+#
+#     copay = models.TextField()
+#
+#     copay_text = models.TextField()
+#
+#     Quote_ID = models.TextField()
+#
+#     Access_Token = models.TextField()
+#
+#     def get_json_data(self):
+#         return {'vimm_enroll_id': self.vimm_enroll_id,
+#                 'Name': self.Name,
+#                 'plan_name': self.plan_name,
+#                 'general_plan_name': self.general_plan_name,
+#                 'unique_url': self.unique_url,
+#                 'general_url': self.general_url,
+#                 'Premium': str(self.Premium),
+#                 'actual_premium': str(self.actual_premium),
+#                 'option': self.option,
+#                 'Coinsurance_Percentage': self.Coinsurance_Percentage,
+#                 'out_of_pocket_value': self.out_of_pocket_value,
+#                 'coverage_max_value': self.coverage_max_value,
+#                 'Duration_Coverage': self.Duration_Coverage,
+#                 'Deductible_Option': self.Deductible_Option,
+#                 'quote_request_timestamp': self.quote_request_timestamp,
+#                 'Quote_ID': self.Quote_ID,
+#                 'Access_Token': self.Access_Token,
+#                 'Plan_ID': self.Plan_ID}
+#
+#     class Meta:
+#         abstract = True
+
+
+# class LifeshieldStm(StmPlanBase):
+#
+#     Plan = models.TextField()
+#
+#     Plan_Name = models.TextField(db_column='everest_plan_name')
+#
+#     Coinsurance_Limit = models.TextField()
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     RealValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     VBP_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     EnrollmentFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Medsense_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Enrollment_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Payment_Option = models.TextField()
+#
+#     Coverage_Max = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Benefit_Amount = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     copay_2 = models.TextField()
+#
+#     copay_2_text = models.TextField()
+#
+#     def get_json_data(self):
+#         data = super().get_json_data()
+#         data.update({'Plan': self.Plan,
+#                      'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#                      'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#                      'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+#                      'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+#                      'VBP_Fee': str(self.VBP_Fee),
+#                      'EnrollmentFee': str(self.EnrollmentFee),
+#                      'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#                      'Medsense_Fee': str(self.Medsense_Fee),
+#                      'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#                      'Enrollment_Fee': str(self.Enrollment_Fee),
+#                      'Payment_Option': self.Payment_Option,
+#                      'Plan_Name': self.Plan_Name,
+#                      'Coverage_Max': str(self.Coverage_Max),
+#                      'Benefit_Amount': str(self.Benefit_Amount)})
+#         return data
+
+
+# class AdvanthealthStm(StmPlanBase):
+#
+#     Plan = models.TextField()
+#
+#     Plan_Name = models.TextField(db_column='everest_plan_name')
+#
+#     Coinsurance_Limit = models.TextField()
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     RealValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     VBP_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     EnrollmentFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Medsense_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Association_Fee = models.DecimalField(
+#         default=0,
+#         max_digits=20,
+#         decimal_places=2,
+#         blank=True, null=True
+#
+#     )
+#
+#     Enrollment_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Payment_Option = models.TextField()
+#
+#     Coverage_Max = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Benefit_Amount = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     copay_2 = models.TextField()
+#
+#     copay_2_text = models.TextField()
+#
+#     def get_json_data(self):
+#         data = super().get_json_data()
+#         data.update({'Plan': self.Plan,
+#                      'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#                      'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#                      'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+#                      'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+#                      'VBP_Fee': str(self.VBP_Fee),
+#                      'EnrollmentFee': str(self.EnrollmentFee),
+#                      'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#                      'Medsense_Fee': str(self.Medsense_Fee),
+#                      'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#                      'Enrollment_Fee': str(self.Enrollment_Fee),
+#                      'Payment_Option': self.Payment_Option,
+#                      'Plan_Name': self.Plan_Name,
+#                      'Coverage_Max': str(self.Coverage_Max),
+#                      'Benefit_Amount': str(self.Benefit_Amount)})
+#         return data
+
+
+# class LimitedBase(models.Model):
+#
+#     stm_enroll = models.ForeignKey(
+#         to=StmEnroll,
+#         verbose_name=_("Enroll"),
+#         on_delete=models.CASCADE
+#     )
+#
+#     vimm_enroll_id = models.CharField(
+#         max_length=20,
+#         unique=True,
+#         db_index=True
+#     )
+#
+#     Plan_ID = models.CharField(
+#         verbose_name=_("Plan ID"),
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Name = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Lim_Plan_Name = models.CharField(
+#         max_length=200,
+#         db_index=True
+#     )
+#
+#     plan_name_for_img = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     plan_name = models.CharField(
+#         max_length=600
+#     )
+#
+#     unique_url = models.CharField(
+#         max_length=700,
+#         db_index=True
+#     )
+#
+#     Premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     EnrollmentFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Enrollment_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     actual_premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Quote_ID = models.CharField(
+#         max_length=600
+#     )
+#
+#     Access_Token = models.CharField(
+#         max_length=700
+#     )
+#
+#     quote_request_timestamp = models.IntegerField()
+#
+#     def get_json_data(self):
+#         return {
+#             'vimm_enroll_id': self.vimm_enroll_id,
+#             'Plan_ID': self.Plan_ID,
+#             'Name': self.Name,
+#             'Lim_Plan_Name': self.Lim_Plan_Name,
+#             'plan_name_for_img': self.plan_name_for_img,
+#             'plan_name': self.plan_name,
+#             'unique_url': self.unique_url,
+#             'Premium': str(self.Premium),
+#             'EnrollmentFee': str(self.EnrollmentFee),
+#             'Enrollment_Fee': str(self.Enrollment_Fee),
+#             'actual_premium': str(self.actual_premium),
+#             'quote_request_timestamp': self.quote_request_timestamp,
+#             'Quote_ID': self.Quote_ID,
+#             'Access_Token': self.Access_Token,
+#         }
+#
+#     class Meta:
+#         abstract = True
+
+
+# class CardinalChoice(LimitedBase):
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     TelaDocFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacyFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RealValueSavings_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     def get_json_data(self):
+#         data = super(CardinalChoice, self).get_json_data()
+#         data.update({
+#             'Plan_Type': self.Plan_Type,
+#             'TelaDocFee': str(self.TelaDocFee),
+#             'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#             'RxAdvocacyFee': str(self.RxAdvocacyFee),
+#             'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#             'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#             'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#             'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
+#             'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
+#         })
+#         return data
+#
+#     class Meta:
+#         db_table = 'cardinal_choice'
+
+
+# class VitalaCare(LimitedBase):
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     TelaDocFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacyFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     # quote_request_timestamp = models.IntegerField(
+#     #     blank=True, null=True
+#     # ) # Not in nhaquotedb
+#
+#     def get_json_data(self):
+#         data = super(VitalaCare, self).get_json_data()
+#         data.update({
+#             'Plan_Type': self.Plan_Type,
+#             'TelaDocFee': str(self.TelaDocFee),
+#             'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#             'RxAdvocacyFee': str(self.RxAdvocacyFee),
+#             'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#             'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#             'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#         })
+#         return data
+#
+#     class Meta:
+#         db_table = 'vitala_care'
+
+
+# class HealthChoice(LimitedBase):
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     TelaDocFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacyFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     def get_json_data(self):
+#         data = super(HealthChoice, self).get_json_data()
+#         data.update({
+#             'Plan_Type': self.Plan_Type,
+#             'TelaDocFee': str(self.TelaDocFee),
+#             'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#             'RxAdvocacyFee': str(self.RxAdvocacyFee),
+#             'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#             'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#             'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#         })
+#         return data
+#
+#     class Meta:
+#         db_table = 'health_choice'
+
+
+# class LegionLimitedMedical(LimitedBase):
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     TelaDocFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     TelaDoc_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacy_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     RxAdvocacyFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     ChoiceValue_AdminFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     ChoiceValueSavings_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#     )
+#
+#     def get_json_data(self):
+#         data = super(LegionLimitedMedical, self).get_json_data()
+#         data.update({
+#             'Plan_Type': self.Plan_Type,
+#             'TelaDocFee': str(self.TelaDocFee),
+#             'TelaDoc_Fee': str(self.TelaDoc_Fee),
+#             'RxAdvocacyFee': str(self.RxAdvocacyFee),
+#             'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
+#             'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
+#             'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+#         })
+#         return data
+#
+#     class Meta:
+#         db_table = 'legion_limited_medical'
+
+
+# --- Unified Model for all main plans ---
+
+class MainPlan(models.Model):
+    """
+    Merged plan model for all main plan. Some of the fields have been added here cutting from previous StmEnroll model.
+    Besides, all the individual plan models are merged here for hii and a1 plans.
+
+    Changed Field:
+        --------------------
+        previous -> current
+        --------------------
+
+        For previous Hii (lim) model:
+            Lim_Plan_Name -> Plan_Name
+
+        For previous Ancillaries plan model (StandAlonePlan):
+            Lim_Plan_Name -> Plan_Name
+    """
 
     stm_enroll = models.ForeignKey(
-        to=StmEnroll,
+        StmEnroll,
+        on_delete=models.CASCADE,
         verbose_name=_("Enroll"),
-        on_delete=models.CASCADE
-    )
-
-    vimm_enroll_id = models.CharField(max_length=20)
-
-    Plan_ID = models.TextField()
-
-    Name = models.TextField()
-
-    plan_name_for_img = models.TextField()
-
-    month = models.TextField()
-
-    plan_name = models.TextField()
-
-    unique_url = models.TextField()
-
-    general_url = models.TextField()
-
-    general_plan_name = models.TextField()
-
-    Premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    actual_premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    option = models.TextField()
-
-    Coinsurance_Percentage = models.TextField()
-
-    out_of_pocket_value = models.TextField()
-
-    coverage_max_value = models.TextField()
-
-    Duration_Coverage = models.TextField()
-
-    Deductible_Option = models.TextField()
-
-    quote_request_timestamp = models.IntegerField()
-
-    copay = models.TextField()
-
-    copay_text = models.TextField()
-
-    Quote_ID = models.TextField()
-
-    Access_Token = models.TextField()
-
-    def get_json_data(self):
-        return {'vimm_enroll_id': self.vimm_enroll_id,
-                'Name': self.Name,
-                'plan_name': self.plan_name,
-                'general_plan_name': self.general_plan_name,
-                'unique_url': self.unique_url,
-                'general_url': self.general_url,
-                'Premium': str(self.Premium),
-                'actual_premium': str(self.actual_premium),
-                'option': self.option,
-                'Coinsurance_Percentage': self.Coinsurance_Percentage,
-                'out_of_pocket_value': self.out_of_pocket_value,
-                'coverage_max_value': self.coverage_max_value,
-                'Duration_Coverage': self.Duration_Coverage,
-                'Deductible_Option': self.Deductible_Option,
-                'quote_request_timestamp': self.quote_request_timestamp,
-                'Quote_ID': self.Quote_ID,
-                'Access_Token': self.Access_Token,
-                'Plan_ID': self.Plan_ID}
-
-    class Meta:
-        abstract = True
-
-
-class LifeshieldStm(StmPlanBase):
-
-    Plan = models.TextField()
-
-    Plan_Name = models.TextField(db_column='everest_plan_name')
-
-    Coinsurance_Limit = models.TextField()
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    RealValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    VBP_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    EnrollmentFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Medsense_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Enrollment_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Payment_Option = models.TextField()
-
-    Coverage_Max = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Benefit_Amount = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    copay_2 = models.TextField()
-
-    copay_2_text = models.TextField()
-
-    def get_json_data(self):
-        data = super().get_json_data()
-        data.update({'Plan': self.Plan,
-                     'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-                     'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-                     'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
-                     'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
-                     'VBP_Fee': str(self.VBP_Fee),
-                     'EnrollmentFee': str(self.EnrollmentFee),
-                     'TelaDoc_Fee': str(self.TelaDoc_Fee),
-                     'Medsense_Fee': str(self.Medsense_Fee),
-                     'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-                     'Enrollment_Fee': str(self.Enrollment_Fee),
-                     'Payment_Option': self.Payment_Option,
-                     'Plan_Name': self.Plan_Name,
-                     'Coverage_Max': str(self.Coverage_Max),
-                     'Benefit_Amount': str(self.Benefit_Amount)})
-        return data
-
-
-class AdvanthealthStm(StmPlanBase):
-
-    Plan = models.TextField()
-
-    Plan_Name = models.TextField(db_column='everest_plan_name')
-
-    Coinsurance_Limit = models.TextField()
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    RealValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    VBP_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    EnrollmentFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Medsense_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Association_Fee = models.DecimalField(
-        default=0,
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-
-    )
-
-    Enrollment_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Payment_Option = models.TextField()
-
-    Coverage_Max = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Benefit_Amount = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    copay_2 = models.TextField()
-
-    copay_2_text = models.TextField()
-
-    def get_json_data(self):
-        data = super().get_json_data()
-        data.update({'Plan': self.Plan,
-                     'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-                     'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-                     'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
-                     'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
-                     'VBP_Fee': str(self.VBP_Fee),
-                     'EnrollmentFee': str(self.EnrollmentFee),
-                     'TelaDoc_Fee': str(self.TelaDoc_Fee),
-                     'Medsense_Fee': str(self.Medsense_Fee),
-                     'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-                     'Enrollment_Fee': str(self.Enrollment_Fee),
-                     'Payment_Option': self.Payment_Option,
-                     'Plan_Name': self.Plan_Name,
-                     'Coverage_Max': str(self.Coverage_Max),
-                     'Benefit_Amount': str(self.Benefit_Amount)})
-        return data
-
-
-class LimitedBase(models.Model):
-
-    stm_enroll = models.ForeignKey(
-        to=StmEnroll,
-        verbose_name=_("Enroll"),
-        on_delete=models.CASCADE
+        unique=True,
     )
 
     vimm_enroll_id = models.CharField(
         max_length=20,
-        unique=True,
         db_index=True
     )
 
@@ -979,33 +1308,72 @@ class LimitedBase(models.Model):
     )
 
     Name = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    Lim_Plan_Name = models.CharField(
-        max_length=200,
+        verbose_name=_("Main Plan"),
+        max_length=100,
+        choices=settings.MAIN_PLANS,
         db_index=True
     )
 
     plan_name_for_img = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    plan_name = models.CharField(
         max_length=600
     )
 
+    ins_type = models.CharField(
+        max_length=200,
+        choices=(
+            ('stm', 'STM'),
+            ('lim', 'Limited'),
+            ('ancillaries', 'ANCILLARIES'),
+        ),
+        verbose_name=_("Insurance Type"),
+    )
+
+    plan_name = models.CharField(
+        verbose_name=_("Plan name with details"),
+        max_length=300,
+    ) # TODO: plan_name_long
+
+
     unique_url = models.CharField(
         max_length=700,
-        db_index=True
+        db_index=True,
+        blank=True, null=True
+    )
+
+    quote_request_timestamp = models.IntegerField(
+        blank=True, null=True
+    )
+
+    Quote_ID = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    paid = models.BooleanField(
+        default=False
+    )
+
+    Access_Token = models.CharField(
+        max_length=700,
+        blank=True, null=True
     )
 
     Premium = models.DecimalField(
         max_digits=20,
         decimal_places=2
     )
+
+    actual_premium = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+
+    # Effective_Date = models.ForeignKey(
+    #     to=StmEnroll.Effective_Date,
+    #     verbose_name=_("Effective Date"),
+    #     null=True, blank=True,
+    #     db_index=True
+    # )
 
     EnrollmentFee = models.DecimalField(
         max_digits=20,
@@ -1017,29 +1385,200 @@ class LimitedBase(models.Model):
         decimal_places=2
     )
 
-    actual_premium = models.DecimalField(
+
+    TelaDocFee = models.DecimalField(
         max_digits=20,
-        decimal_places=2
+        decimal_places=2,
+        blank=True, null=True
     )
 
-    Quote_ID = models.CharField(
-        max_length=600
+    TelaDoc_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
     )
 
-    Access_Token = models.CharField(
-        max_length=700
+    RxAdvocacy_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
     )
 
-    quote_request_timestamp = models.IntegerField()
+    RxAdvocacyFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    ChoiceValue_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    ChoiceValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Administrative_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    AdministrativeFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    VBP_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Medsense_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Association_Fee = models.DecimalField(
+        default=0,
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+
+    )
+
+    RealValueSavings_Fee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    RealValueSavings_AdminFee = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+    
+    #   --------
+    #   stm plan
+    #   --------
+    
+    general_url = models.TextField()
+
+    general_plan_name = models.TextField()
+
+    Plan = models.CharField(
+        verbose_name=_("Main Plan sub category number"),
+        max_length=300,
+        blank=True, null=True
+    ) # TODO: plan_number
+
+    Plan_Name = models.CharField(
+        max_length=300,
+    ) # TODO: sub_plan_name
+
+
+    month = models.CharField(
+        max_length=600,
+        blank=True, null=True
+    )
+
+    option = models.TextField(
+        blank=True, null=True
+    )
+
+
+    Coinsurance_Percentage = models.TextField(blank=True, null=True)
+
+
+    Benefit_Amount = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    out_of_pocket_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    coverage_max_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Coverage_Max = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, null=True
+    )
+
+    Duration_Coverage = models.TextField(blank=True, null=True)
+
+    Deductible_Option = models.TextField(blank=True, null=True)
+
+    Payment_Option = models.TextField(
+        blank=True, null=True
+    )
+
+    copay = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_text = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_2 = models.TextField(
+        blank=True, null=True
+    )
+
+    copay_2_text = models.CharField(
+        max_length=1000,
+        blank=True, null=True
+    )
+
+
+    # ------------------------------------------
+    # stand alone ancillaries/add-on plan flag
+    # ------------------------------------------
+    stand_alone_addon_plan = models.BooleanField(
+        default=False
+    )
+
+    note = models.TextField(
+        blank=True, null=True
+    )
+
+    # enrolled = models.BooleanField(
+    #     default=False
+    # ) # TODO
+
+    class Meta:
+        db_table = 'main_plan'
+
+    def __str__(self):
+        return "{0}-{1}".format(self.vimm_enroll_id, getattr(self, 'plan_name_long', ''))
 
     def get_json_data(self):
-        return {
+        data = {
             'vimm_enroll_id': self.vimm_enroll_id,
             'Plan_ID': self.Plan_ID,
             'Name': self.Name,
-            'Lim_Plan_Name': self.Lim_Plan_Name,
+            'Plan_Name': self.Plan_Name,
             'plan_name_for_img': self.plan_name_for_img,
             'plan_name': self.plan_name,
+            'Plan': self.Plan,
+            'ins_type': self.ins_type,
             'unique_url': self.unique_url,
             'Premium': str(self.Premium),
             'EnrollmentFee': str(self.EnrollmentFee),
@@ -1048,262 +1587,35 @@ class LimitedBase(models.Model):
             'quote_request_timestamp': self.quote_request_timestamp,
             'Quote_ID': self.Quote_ID,
             'Access_Token': self.Access_Token,
-        }
-
-    class Meta:
-        abstract = True
-
-
-class CardinalChoice(LimitedBase):
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    TelaDocFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacyFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RealValueSavings_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    def get_json_data(self):
-        data = super(CardinalChoice, self).get_json_data()
-        data.update({
-            'Plan_Type': self.Plan_Type,
-            'TelaDocFee': str(self.TelaDocFee),
-            'TelaDoc_Fee': str(self.TelaDoc_Fee),
-            'RxAdvocacyFee': str(self.RxAdvocacyFee),
-            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
+            'TelaDocFee': str(getattr(self, 'TelaDocFee', '0.0')),
+            'TelaDoc_Fee': str(getattr(self, 'TelaDoc_Fee', '0.0')),
+            'RxAdvocacyFee': str(getattr(self, 'RxAdvocacyFee', '0.0')),
+            'RxAdvocacy_Fee': str(getattr(self, 'RxAdvocacy_Fee', '0.0')),
+            'ChoiceValue_AdminFee': str(getattr(self, 'ChoiceValue_AdminFee', '0.0')),
+            'ChoiceValueSavings_Fee': str(getattr(self, 'ChoiceValueSavings_Fee', '0.0')),
+            'VBP_Fee': str(getattr(self, 'VBP_Fee', '0.0')),
+            'Medsense_Fee': str(getattr(self, 'Medsense_Fee', '0.0')),
+            'Association_Fee': str(getattr(self, 'Association_Fee', '0.0')),
+            'product_id': self.Plan_ID,
+            'premium': str(self.Premium),
+            'Administrative_Fee': str(getattr(self, 'Administrative_Fee', '0.0')),
+            'AdministrativeFee': str(getattr(self, 'AdministrativeFee', '0.0')),
             'RealValueSavings_Fee': str(self.RealValueSavings_Fee),
             'RealValueSavings_AdminFee': str(self.RealValueSavings_AdminFee),
-        })
+            'month': self.month,
+            'option': self.option,
+            'Benefit_Amount': str(self.Benefit_Amount),
+            'Coinsurance_Percentage': self.Coinsurance_Percentage,
+            'out_of_pocket_value': str(self.out_of_pocket_value),
+            'Duration_Coverage': self.Duration_Coverage,
+            'Deductible_Option': self.Deductible_Option,
+            'copay': self.copay,
+            'copay_text': self.copay_text,
+            'Payment_Option': self.Payment_Option,
+            'note': self.note
+        }
+
         return data
-
-    class Meta:
-        db_table = 'cardinal_choice'
-
-
-class VitalaCare(LimitedBase):
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    TelaDocFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacyFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    # quote_request_timestamp = models.IntegerField(
-    #     blank=True, null=True
-    # ) # Not in nhaquotedb
-
-    def get_json_data(self):
-        data = super(VitalaCare, self).get_json_data()
-        data.update({
-            'Plan_Type': self.Plan_Type,
-            'TelaDocFee': str(self.TelaDocFee),
-            'TelaDoc_Fee': str(self.TelaDoc_Fee),
-            'RxAdvocacyFee': str(self.RxAdvocacyFee),
-            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-        })
-        return data
-
-    class Meta:
-        db_table = 'vitala_care'
-
-
-class HealthChoice(LimitedBase):
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    TelaDocFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacyFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    def get_json_data(self):
-        data = super(HealthChoice, self).get_json_data()
-        data.update({
-            'Plan_Type': self.Plan_Type,
-            'TelaDocFee': str(self.TelaDocFee),
-            'TelaDoc_Fee': str(self.TelaDoc_Fee),
-            'RxAdvocacyFee': str(self.RxAdvocacyFee),
-            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-        })
-        return data
-
-    class Meta:
-        db_table = 'health_choice'
-
-
-class LegionLimitedMedical(LimitedBase):
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    TelaDocFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    TelaDoc_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacy_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    RxAdvocacyFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    ChoiceValue_AdminFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    ChoiceValueSavings_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-    )
-
-    def get_json_data(self):
-        data = super(LegionLimitedMedical, self).get_json_data()
-        data.update({
-            'Plan_Type': self.Plan_Type,
-            'TelaDocFee': str(self.TelaDocFee),
-            'TelaDoc_Fee': str(self.TelaDoc_Fee),
-            'RxAdvocacyFee': str(self.RxAdvocacyFee),
-            'RxAdvocacy_Fee': str(self.RxAdvocacy_Fee),
-            'ChoiceValue_AdminFee': str(self.ChoiceValue_AdminFee),
-            'ChoiceValueSavings_Fee': str(self.ChoiceValueSavings_Fee),
-        })
-        return data
-
-    class Meta:
-        db_table = 'legion_limited_medical'
 
 
 class AddonPlan(models.Model):
@@ -1409,137 +1721,137 @@ class AddonPlan(models.Model):
         return self.data_as_dict()
 
 
-class StandAloneAddonPlan(models.Model):
-
-    stm_enroll = models.ForeignKey(
-        StmEnroll,
-        on_delete=models.CASCADE,
-        verbose_name=_("Enroll"),
-    )
-
-    vimm_enroll_id = models.CharField(
-        max_length=20,
-        unique=True,
-        db_index=True
-    )
-
-    Plan_ID = models.CharField(
-        verbose_name=_("Plan ID"),
-        max_length=600,
-        db_index=True
-    )
-
-    Plan_Type = models.CharField(
-        max_length=500,
-        choices=(
-            ('Single Member', 'Single Member'),
-            ('Member+1', 'Member+1'),
-            ('Family', 'Family'),
-
-        )
-    )
-
-    Name = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    Lim_Plan_Name = models.CharField(
-        max_length=200,
-        db_index=True
-    )
-
-    plan_name_for_img = models.CharField(
-        max_length=600,
-        db_index=True
-    )
-
-    plan_name = models.CharField(
-        max_length=600,
-        blank=True, null=True
-    )
-
-    unique_url = models.CharField(
-        max_length=700,
-        db_index=True,
-        blank=True, null=True
-    )
-
-    Premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    EnrollmentFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Enrollment_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Administrative_Fee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-
-    )
-
-    AdministrativeFee = models.DecimalField(
-        max_digits=20,
-        decimal_places=2,
-        blank=True, null=True
-
-    )
-
-    actual_premium = models.DecimalField(
-        max_digits=20,
-        decimal_places=2
-    )
-
-    Quote_ID = models.CharField(
-        max_length=600,
-        blank=True, null=True
-    )
-
-    Access_Token = models.CharField(
-        max_length=700,
-        blank=True, null=True
-    )
-
-    quote_request_timestamp = models.IntegerField(
-        blank=True, null=True
-    )
-
-    note = models.TextField(
-        blank=True, null=True
-    )
-
-    def get_json_data(self):
-        return {
-            'vimm_enroll_id': self.vimm_enroll_id,
-            'Plan_ID': self.Plan_ID,
-            'Name': self.Name,
-            'Lim_Plan_Name': self.Lim_Plan_Name,
-            'plan_name_for_img': self.plan_name_for_img,
-            'plan_name': self.plan_name,
-            'unique_url': self.unique_url,
-            'Premium': str(self.Premium),
-            'EnrollmentFee': str(self.EnrollmentFee),
-            'Enrollment_Fee': str(self.Enrollment_Fee),
-            'AdministrativeFee': str(self.AdministrativeFee),
-            'Administrative_Fee': str(self.Administrative_Fee),
-            'actual_premium': str(self.actual_premium),
-            'quote_request_timestamp': self.quote_request_timestamp,
-            'Quote_ID': self.Quote_ID,
-            'Access_Token': self.Access_Token,
-            'note': self.note
-        }
-
-    class Meta:
-        db_table = 'stand_alone_addon_plan'
+# class StandAloneAddonPlan(models.Model):
+#
+#     stm_enroll = models.ForeignKey(
+#         StmEnroll,
+#         on_delete=models.CASCADE,
+#         verbose_name=_("Enroll"),
+#     )
+#
+#     vimm_enroll_id = models.CharField(
+#         max_length=20,
+#         unique=True,
+#         db_index=True
+#     )
+#
+#     Plan_ID = models.CharField(
+#         verbose_name=_("Plan ID"),
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Plan_Type = models.CharField(
+#         max_length=500,
+#         choices=(
+#             ('Single Member', 'Single Member'),
+#             ('Member+1', 'Member+1'),
+#             ('Family', 'Family'),
+#
+#         )
+#     )
+#
+#     Name = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     Lim_Plan_Name = models.CharField(
+#         max_length=200,
+#         db_index=True
+#     )
+#
+#     plan_name_for_img = models.CharField(
+#         max_length=600,
+#         db_index=True
+#     )
+#
+#     plan_name = models.CharField(
+#         max_length=600,
+#         blank=True, null=True
+#     )
+#
+#     unique_url = models.CharField(
+#         max_length=700,
+#         db_index=True,
+#         blank=True, null=True
+#     )
+#
+#     Premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     EnrollmentFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Enrollment_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Administrative_Fee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#         blank=True, null=True
+#
+#     )
+#
+#     AdministrativeFee = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2,
+#         blank=True, null=True
+#
+#     )
+#
+#     actual_premium = models.DecimalField(
+#         max_digits=20,
+#         decimal_places=2
+#     )
+#
+#     Quote_ID = models.CharField(
+#         max_length=600,
+#         blank=True, null=True
+#     )
+#
+#     Access_Token = models.CharField(
+#         max_length=700,
+#         blank=True, null=True
+#     )
+#
+#     quote_request_timestamp = models.IntegerField(
+#         blank=True, null=True
+#     )
+#
+#     note = models.TextField(
+#         blank=True, null=True
+#     )
+#
+#     def get_json_data(self):
+#         return {
+#             'vimm_enroll_id': self.vimm_enroll_id,
+#             'Plan_ID': self.Plan_ID,
+#             'Name': self.Name,
+#             'Lim_Plan_Name': self.Lim_Plan_Name,
+#             'plan_name_for_img': self.plan_name_for_img,
+#             'plan_name': self.plan_name,
+#             'unique_url': self.unique_url,
+#             'Premium': str(self.Premium),
+#             'EnrollmentFee': str(self.EnrollmentFee),
+#             'Enrollment_Fee': str(self.Enrollment_Fee),
+#             'AdministrativeFee': str(self.AdministrativeFee),
+#             'Administrative_Fee': str(self.Administrative_Fee),
+#             'actual_premium': str(self.actual_premium),
+#             'quote_request_timestamp': self.quote_request_timestamp,
+#             'Quote_ID': self.Quote_ID,
+#             'Access_Token': self.Access_Token,
+#             'note': self.note
+#         }
+#
+#     class Meta:
+#         db_table = 'stand_alone_addon_plan'
 
 
 class Feature(models.Model):

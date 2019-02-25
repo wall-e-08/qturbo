@@ -820,7 +820,7 @@ if (!Array.prototype.filter) {
 }
 
 // For showing preferred plans
-if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") {
+if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") { {% comment %}Not in firefox{% endcomment %}
     console.log("Back button detected, reloading page");
     location.reload();
 }

@@ -8,7 +8,7 @@ import string
 import random
 import hashlib
 import datetime
-from typing import Union
+from typing import Union, Dict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -317,19 +317,11 @@ def get_plan_type_principle_limited(form_data):
     return 'Single Member'
 
 
-def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
-    ancillaries_plans = settings.ANCILLARIES_PLANS
+def save_stm_plan(qm, plan, stm_enroll_obj):
+    # if plan['Name'] == 'Principle Advantage':
+    #     plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
 
-    if plan['Name'] == 'Principle Advantage':
-        plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
-
-    elif plan['Name'] in ancillaries_plans:
-        stm_plan_model = hm.StandAloneAddonPlan
-        stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
-        stm_plan_obj.save()
-        return  stm_plan_obj
-
-    stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
+    stm_plan_model = getattr(qm, 'MainPlan')
     stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
     stm_plan_obj.save()
     return stm_plan_obj
@@ -593,7 +585,7 @@ def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, se
     return list(coins_set)
 
 
-def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> dict:
+def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> list:
 
     out_of_pocket_set = set()
 
@@ -612,3 +604,44 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
                 out_of_pocket_set.add(plan['Benefit_Amount'])
 
     return list(out_of_pocket_set)
+
+
+
+def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=True):
+    if string_at_list_boundaries == True:
+        plan_list = plan_list[-1:-1]
+
+    return {
+        'carrier' : set(x['Name'] for x in plan_list),
+        'coinsurance_percentage' : set(x['Coinsurance_Percentage'] for x in plan_list),
+        'benefit_amount' : set(x['Benefit_Amount'] for x in plan_list),
+        'duration_coverage' : set(x['Benefit_Amount'] for x in plan_list),
+        'option' : set(x['option'] for x in plan_list),
+        'coverage_maximum' : set(x['Coverage_Max'] for x in plan_list)
+    }
+
+def get_neighbour_plans_and_attrs(plan: dict, plan_list: list):
+
+    def neighbour(plan: Dict, key: str, val: str):
+        copy_plan = copy.deepcopy(plan)
+        copy_plan[key] = val
+        if copy_plan in plan_list:
+            return True
+        return False
+
+    try:
+        eligible_plans = list(filter(
+            lambda x: x['Name'] == plan['Name'] and
+                      x['Plan'] == plan['Plan'], plan_list))
+
+        neighbours = list(filter(lambda x: neighbour(x, 'Coverage_Max', plan['Coverage_Max']) == True or
+                                           neighbour(x, 'Coinsurance_Percentage', plan['Coinsurance_Percentage']) == True or
+                                           neighbour(x, 'Benefit_Amount', plan['Benefit_Amount'] == True), eligible_plans))
+
+    except KeyError as k:
+        print(f"KeyError: {k}")
+
+    return neighbours, available_dict_from_plan_list(neighbours, string_at_list_boundaries=False)
+
+
+
