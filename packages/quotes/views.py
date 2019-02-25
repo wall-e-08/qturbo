@@ -460,13 +460,13 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             if request.session['stm_general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, plan_list))
 
-                update_session_preferenced_data(
-                    request=request,
-                    stm_name=plan['Name'],
-                    preference_for_current_stm=None,
-                    coverage_duration=plan['Duration_Coverage'],
-                    plan=plan
-                )
+                # update_session_preferenced_data(
+                #     request=request,
+                #     stm_name=plan['Name'],
+                #     preference_for_current_stm=None,
+                #     coverage_duration=plan['Duration_Coverage'],
+                #     plan=plan
+                # )
             else:
                 # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
@@ -865,7 +865,7 @@ def save_to_db(plan: Dict,
 
         if stm_plan_obj is None:
             logger.info("Saving Plan Info.")
-            stm_plan_model = getattr(qm, plan['Name'].title().replace(' ', ''))
+            stm_plan_model = qm.MainPlan
             stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
             stm_plan_obj.save()
 
@@ -2172,7 +2172,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
-    update_session_preferenced_data(request, stm_name, preference_for_current_stm, coverage_duration)
+    # update_session_preferenced_data(request, stm_name, preference_for_current_stm, coverage_duration)
 
     logger.info(f'PLAN: {alternative_plan}')
     logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
