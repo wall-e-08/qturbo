@@ -791,6 +791,7 @@ class AddonPlan(object):
             AdministrativeFee=self.AdministrativeFee,
             EnrollmentFee=self.EnrollmentFee,
             MedsenseFee=self.MedsenseFee,
+            Embeded=self.Embeded,
             actual_premium=self.actual_premium,
         )
         if int(self.addon_id) == 38:
