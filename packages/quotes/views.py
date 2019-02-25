@@ -388,8 +388,14 @@ def plan_quote(request, ins_type):
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
+    bncq = qm.BenefitsAndCoverage.objects.filter(plan__ins_type=ins_type)
+    bnc_for_return = []
+    for b in bncq:
+        if b.self == None:
+            bnc_for_return.append(b)
     return render(request, 'quotes/quote_list.html', {
-        'form_data': quote_request_form_data, 'xml_res': d
+        'form_data': quote_request_form_data, 'xml_res': d,
+        'benefits': bnc_for_return,
     })
 
 
