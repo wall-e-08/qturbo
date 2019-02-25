@@ -814,7 +814,7 @@ def get_enroll_object(vimm_enroll_id):
 
 def get_plan_object(stm_enroll_obj, vimm_enroll_id):
     try:
-        stm_plan_model = getattr(qm, stm_enroll_obj.stm_name.title().replace(' ', ''))
+        stm_plan_model = qm.MainPlan
         stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
         return stm_plan_obj
     except ObjectDoesNotExist:
