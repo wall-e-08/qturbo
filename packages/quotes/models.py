@@ -148,7 +148,8 @@ class StmEnroll(models.Model):
     # applicant information
     First_Name = models.CharField(
         max_length=500,
-        verbose_name=_("First Name")
+        verbose_name=_("First Name"),
+        blank=True, null=True
     )
 
     Middle_Name = models.CharField(
@@ -159,7 +160,8 @@ class StmEnroll(models.Model):
 
     Last_Name = models.CharField(
         max_length=500,
-        verbose_name=_("Last Name")
+        verbose_name=_("Last Name"),
+        blank=True, null=True
     )
 
     Gender = models.CharField(
@@ -185,9 +187,9 @@ class StmEnroll(models.Model):
 
     Weight = models.IntegerField(blank=True, null=True)
 
-    Address = models.TextField()
+    Address = models.TextField(blank=True, null=True)
 
-    City = models.TextField()
+    City = models.TextField(blank=True, null=True)
 
     State = models.CharField(
         max_length=2,
@@ -200,25 +202,27 @@ class StmEnroll(models.Model):
     )
 
     Email = models.EmailField(
-        db_index=True
+        db_index=True,
+        blank=True, null=True
     )
 
-    DayPhone = models.TextField()
+    DayPhone = models.TextField(blank=True, null=True)
 
-    CellPhone = models.TextField()
+    CellPhone = models.TextField(blank=True, null=True)
 
-    Mailing_Name = models.TextField()
+    Mailing_Name = models.TextField(blank=True, null=True)
 
-    Mailing_Address = models.TextField()
+    Mailing_Address = models.TextField(blank=True, null=True)
 
-    Mailing_City = models.TextField()
+    Mailing_City = models.TextField(blank=True, null=True)
 
     Mailing_State = models.CharField(
         max_length=2,
-        choices=states
+        choices=states,
+        blank=True, null=True
     )
 
-    Mailing_ZipCode = models.CharField(max_length=5)
+    Mailing_ZipCode = models.CharField(max_length=5, blank=True, null=True)
 
     Applicant_is_Child = models.BooleanField(default=False)
 
@@ -232,9 +236,9 @@ class StmEnroll(models.Model):
     # enroll info
     Name_Enroll = models.TextField()
 
-    Name_Auth = models.TextField()
+    Name_Auth = models.TextField(blank=True, null=True)
 
-    IP_Address = models.TextField()
+    IP_Address = models.TextField(blank=True, null=True)
 
     Effective_Date = models.DateField(
         verbose_name = _("Effective Date")
@@ -634,11 +638,11 @@ class Dependent(models.Model):
         choices=(('Spouse', 'Spouse'), ('Child', 'Child'))
     )
 
-    First_Name = models.TextField()
+    First_Name = models.TextField(blank=True, null=True)
 
     Middle_Name = models.TextField(blank=True, null=True)
 
-    Last_Name = models.TextField()
+    Last_Name = models.TextField(blank=True, null=True)
 
     Gender = models.CharField(
         max_length=50,
