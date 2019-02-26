@@ -706,7 +706,6 @@
         location.reload();
     }
 
-
     $(function () {
         var plansDisplay = [];
         Mustache.tags = ['[[', ']]'];
@@ -754,10 +753,10 @@
                 msg = '<div class="alert alert-success alert-dismissible" role="alert">' +
                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                     '<span aria-hidden="true">&times;</span></button>' +
-                        '<strong>Done! </strong> <span class="addon_plan_name_h4">' +
+                    '<strong>Done! </strong> <span class="addon_plan_name_h4">' +
                     " addon plan " + '"' + json.related_addon.Name + '"' +
                     (json.action === 'include' ? " added" : " removed") +
-                        '</span></div>';
+                    '</span></div>';
             } else {
                 var all_errors = [];
                 for (var i = 0; i < json.error_keys.length; i++) {
@@ -875,9 +874,9 @@
             $('[data-clickResult=' + _val + ']').slideToggle();
         });
 
-             $(".addon_plan_name_h4").each(function (i, el) {
-                 $(el).html($(el).html().replace('~~', ' - '))
-             })
+         $(".addon_plan_name_h4").each(function (i, el) {
+             $(el).html($(el).html().replace('~~', ' - '))
+         })
     }
 
     $(document).ready(function () {
