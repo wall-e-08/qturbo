@@ -135,13 +135,10 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         # Saving Lead Form Info
         save_lead_info(qm.Leads, lead_form.cleaned_data)
-        
-        start_celery_return_code = start_celery(request, quote_request_form_data)
+        return JsonResponse({
+            'status': 'success',
+        })
 
-        if start_celery_return_code:
-            return JsonResponse({
-                'status': 'success',
-            })
 
     else:
         print(form.errors)
@@ -157,9 +154,10 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-def start_celery(request: WSGIRequest, form_data: Dict) -> True:
+def start_celery(request: WSGIRequest) -> True:
         """
         """
+        form_data = request.session.get('quote_request_form_data', None)
 
         if form_data and form_data_is_valid(form_data) == False:
             form_data = {}
@@ -178,53 +176,54 @@ def start_celery(request: WSGIRequest, form_data: Dict) -> True:
         print(json.dumps(form_data, indent=4, sort_keys=True))
 
         # Changing quote store key regarding insurance type
-        for ins_type in ['lim', 'stm']:
-        #     ins_type = get_ins_type(request)
-            change_quote_store_key(request, ins_type)
-            form_data['Ins_Type'] = ins_type
+    # for ins_type in ['lim', 'stm']:
+        ins_type = get_ins_type(request)
+        change_quote_store_key(request, ins_type)
+        form_data['Ins_Type'] = ins_type
 
-            # Calling celery for populating quote list
-            redis_key = get_redis_key(request, ins_type)
-            print(f"Calling celery task for ins_type: {ins_type}")
-            print(f"redis_key: {redis_key}")
+        # Calling celery for populating quote list
+        redis_key = get_redis_key(request, ins_type)
+        print(f"Calling celery task for ins_type: {ins_type}")
+        print(f"redis_key: {redis_key}")
 
-            if not redis_conn.exists(redis_key):
-                print("Redis connection does not exist for redis key")
-                redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+        if not redis_conn.exists(redis_key):
+            print("Redis connection does not exist for redis key")
+            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
 
-                print(f"Insurance type is {ins_type}")
-                if ins_type == 'stm':
-                    redis_key_done_data = f'{redis_key}:done_data'
-                    # We are here setting up a dictionary in the session for future usage
-                    print(f'Setting quote request preference data')
+            print(f"Insurance type is {ins_type}")
+            if ins_type == 'stm':
+                redis_key_done_data = f'{redis_key}:done_data'
+                # We are here setting up a dictionary in the session for future usage
+                print(f'Setting quote request preference data')
 
-                    quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
+                quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
-                    quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
-                        'LifeShield STM': {
-                            'Duration_Coverage': [],
-                        },
+                quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
+                    'LifeShield STM': {
+                        'Duration_Coverage': [],
+                    },
 
-                        'AdvantHealth STM': {
-                            'Duration_Coverage': []
-                        }
+                    'AdvantHealth STM': {
+                        'Duration_Coverage': []
                     }
+                }
 
-                    request.session['quote_request_preference_data'] = quote_request_preference_data
+                request.session['quote_request_preference_data'] = quote_request_preference_data
 
-                    redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+                redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
 
-                    StmPlanTask.delay(request.session.session_key, form_data,
-                                      quote_request_preference_data)
+                StmPlanTask.delay(request.session.session_key, form_data,
+                                  quote_request_preference_data)
 
-                elif ins_type == 'lim':
-                    LimPlanTask.delay(request.session.session_key, form_data)
+            elif ins_type == 'lim':
+                LimPlanTask.delay(request.session.session_key, form_data)
 
         return True
 
 
 def get_ins_type(request: WSGIRequest) -> str:
-    ins_type = request.COOKIES.get('qt_plan_type', None)
+    form_data = request.session.get('quote_request_form_data')
+    ins_type = form_data.get('Ins_Type', None)
 
     if not ins_type:
         ins_type = 'lim'
@@ -245,7 +244,6 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
 
     :return: JsonResponse containing the url
     """
-    quote_request_form_data = request.session.get('quote_request_form_data')
     ins_type = get_ins_type(request)
     set_ins_type_in_session(request, ins_type)
     quote_request_form_data = request.session.get('quote_request_form_data', None)
@@ -276,6 +274,28 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         }
 
     return JsonResponse(response)
+
+
+def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
+    print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
+    ins_type = request.POST.get('Ins_Type', None)
+
+    if ins_type and request.session['quote_request_form_data']:
+        set_ins_type_in_session(request, ins_type)
+        change_quote_store_key(request, ins_type)
+
+        start_celery_return_code = start_celery(request)
+
+        if start_celery_return_code:
+            return JsonResponse({'status': 'success'})
+
+    else:
+        return JsonResponse({
+            'status': 'fail',
+            'error': "Failed",
+        })
+
+
 
 
 def survey_members(request):
@@ -952,7 +972,6 @@ def stm_enroll(request, application_url, stage=None, template=None):
             "quote_id": quote_id,
             "url": reverse('quotes:stm_enroll', args=[application_url, 4])
         })
-        print(html)
         return html
 
     stm_enroll_obj = None
@@ -1784,6 +1803,14 @@ def e_signature_enrollment(request, vimm_enroll_id):
             'main_api_source': 'hii'
         })
 
+        # Deleting quote key
+        redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
+                                           quote_request_form_data['quote_store_key']))
+
+        # Deleting vimm_enroll_id stored aginst plan_url in session
+        plan_url = application_url.rsplit('-', 1)[0]
+        request.session.pop(f'{plan_url}_vimm_enroll_id', None)
+
     if not hii_formatted_enroll_response.error:
         stm_enroll_obj.esign_verification_starts = True
         stm_enroll_obj.esign_verification_pending = True
@@ -1798,13 +1825,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
                                                                                       'applicant_info_{0}'.format(
                                                                                           stm_enroll_obj.app_url)))))
 
-    # Deleting quote key
-    redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
-                                       quote_request_form_data['quote_store_key']))
 
-    # Deleting vimm_enroll_id stored aginst plan_url in session
-    plan_url = application_url.rsplit('-', 1)[0]
-    del request.session[f'{plan_url}_vimm_enroll_id']
 
     return JsonResponse(final_response)
 

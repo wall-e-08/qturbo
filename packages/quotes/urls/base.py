@@ -14,6 +14,8 @@ urlpatterns = [
 
     path('health-insurance/validate_quote_form/', views.validate_quote_form, name='validate_quote_form'),
 
+    path('health-insurance/set_ins_type/', views.set_ins_type_and_start_celery, name='set_ins_type'),
+
     path('health-insurance/redirect_to_plans/', views.set_annual_income_and_redirect_to_plans, name='redirect_to_plans'),
 
     path('li-demo/', views.life_insurance, name='life_insurance'),

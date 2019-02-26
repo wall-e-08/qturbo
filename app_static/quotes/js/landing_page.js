@@ -457,10 +457,33 @@ const router = new VueRouter({
                     }
                 },
                 methods: {
-                    choose_plan_type: function(plan) {
-                        this.plan_type = plan;
-                        this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
-                        router.push({name: v_all_routes_name.income});
+                    choose_plan_type: function(redirect_url, csrf_token, plan_type) {
+                        let _t = this;
+                        _t.plan_type = plan_type;
+                        // this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
+
+                        $.ajax({
+                            url: redirect_url,
+                            method: 'post',
+                            dataType: 'json',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data: {
+                                Ins_Type: plan_type
+                            },
+                            success: function (data) {
+                                console.log(`Set insurance type to ${plan_type}.`);
+                                router.push({name: v_all_routes_name.income});
+                            },
+                            error: function(data) {
+                                console.log("Error");
+                                console.table(data);
+                                router.push({name: v_all_routes_name.quote});
+
+                            }
+                        });
+
                     },
                 }
             }

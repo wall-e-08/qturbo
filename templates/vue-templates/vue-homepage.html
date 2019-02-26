@@ -324,9 +324,9 @@
                         <h1 class="font-wight-600 mb-3 font-lg responsive-font-xl text-center mb-3 heading-slogan">What kind of insurance are you looking for</h1>
                         <div class="btn-group-vertical qt-rigid-btn-group w-auto">
                             <button class="btn btn-primary btn-lg btn-block mb-3"
-                                    @click.prevent="choose_plan_type('stm')">Traditional insurance/short term medical (STM) plans</button>
+                                    @click.prevent='choose_plan_type("{% url 'quotes:set_ins_type' %}", "{{ csrf_token }}", "stm")'>Traditional insurance/short term medical (STM) plans</button>
                             <button class="btn btn-primary btn-lg btn-block mb-3"
-                                    @click.prevent="choose_plan_type('lim')">Defined benefit insurance</button>
+                                    @click.prevent='choose_plan_type("{% url 'quotes:set_ins_type' %}", "{{ csrf_token }}", "lim")'>Defined benefit insurance</button>
                         </div>
                     </form>
                 </div>
