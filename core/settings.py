@@ -477,7 +477,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 # -----------------------+
 
 USER_PROPERTIES: Dict[str, int] = {
-    'min_age': 21,
+    'min_age': 18,
     'max_age': 99,
 
     'dependents_min_age': 6,
