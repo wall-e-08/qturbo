@@ -537,6 +537,11 @@ FEATURED_PLAN_PREMIUM_DICT = {
 }
 
 
+# ------------------#
+#    Payment        #
+# ------------------#
+
+TEST_CARD_ALLOWED = True
 
 
 

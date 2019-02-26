@@ -1702,10 +1702,12 @@ class PaymentMethodForm(forms.Form):
 
     def _card_clean_card_number(self):
         card_number = self.cleaned_data.get('Card_Number', '')
+        exp_month = self.cleaned_data.get('Card_ExpirationMonth', None)
+        exp_year = self.cleaned_data.get('Card_ExpirationYear', None)
         if not card_number:
             self.add_error('Card_Number', forms.ValidationError(_("Card Number is required."), code='required'))
             return ''
-        card = Card(card_number)
+        card = Card(number=card_number, month=int(exp_month), year=int(exp_year))
         if not card.is_valid or (settings.TEST_CARD_ALLOWED is False and card.is_test):
             if card.brand == card.BRAND_UNKNOWN and card.is_mod10_valid:
                 self.add_error(
