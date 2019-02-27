@@ -32,7 +32,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
-                    get_available_benefit_against_coins, get_neighbour_plans_and_attrs)
+                    get_available_benefit_against_coins, get_neighbour_plans_and_attrs, is_ins_type_valid,
+                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -49,32 +50,9 @@ json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
-def get_prop_context():
-    """Return context variables for the home and plans view
-
-    :param prop: User attributes
-    :return: context variables
-    """
-    props = settings.USER_PROPERTIES
-    prop_context = {
-        'applicant_min_age': props['min_age'],
-        'applicant_max_age': props['max_age'],
-
-        'spouse_min_age': props['min_age'],
-        'spouse_max_age': props['max_age'],
-
-        'dependents_min_age': props['dependents_min_age'],
-        'dependents_max_age': props['dependents_max_age']
-    }
-
-    return prop_context
 
 def home(request: WSGIRequest) -> HttpResponse:
-    prop =settings.USER_PROPERTIES
-
-
     return render(request, 'homepage.html', get_prop_context())
-
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.
@@ -85,7 +63,6 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     :return: Django HttpResponse Object
     """
     return render(request, 'quotes/../../templates/homepage.html', get_prop_context())
-
 
 @require_POST
 def validate_quote_form(request: WSGIRequest) -> JsonResponse:
@@ -154,81 +131,95 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-def start_celery(request: WSGIRequest) -> True:
-        """
-        """
-        form_data = request.session.get('quote_request_form_data', None)
 
-        if form_data and form_data_is_valid(form_data) == False:
-            form_data = {}
-            request.session['quote_request_form_data'] = {}
-            request.session['quote_request_formset_data'] = []
-            request.session['quote_request_response_data'] = {}
 
-        logger.info("Plan Quote For Data: {0}".format(form_data))
+def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
+    print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
+    ins_type = request.POST.get('Ins_Type', None)
 
-        d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
-        request.session['quote_request_response_data'] = d
-        request.session.modified = True
-        logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
-
-        print('------------------------\nquote_request_form_data: \n------------------------')
-        print(json.dumps(form_data, indent=4, sort_keys=True))
-
-        # Changing quote store key regarding insurance type
-    # for ins_type in ['lim', 'stm']:
-        ins_type = get_ins_type(request)
+    if ins_type and request.session['quote_request_form_data']:
+        set_ins_type_in_session(request, ins_type)
         change_quote_store_key(request, ins_type)
-        form_data['Ins_Type'] = ins_type
 
-        # Calling celery for populating quote list
-        redis_key = get_redis_key(request, ins_type)
-        print(f"Calling celery task for ins_type: {ins_type}")
-        print(f"redis_key: {redis_key}")
+        start_celery_return_code = start_celery(request)
 
-        if not redis_conn.exists(redis_key):
-            print("Redis connection does not exist for redis key")
-            redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+        if start_celery_return_code:
+            return JsonResponse({'status': 'success'})
 
-            print(f"Insurance type is {ins_type}")
-            if ins_type == 'stm':
-                redis_key_done_data = f'{redis_key}:done_data'
-                # We are here setting up a dictionary in the session for future usage
-                print(f'Setting quote request preference data')
+    else:
+        return JsonResponse({
+            'status': 'fail',
+            'error': "Failed",
+        })
 
-                quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
 
-                quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
-                    'LifeShield STM': {
-                        'Duration_Coverage': [],
-                    },
 
-                    'AdvantHealth STM': {
-                        'Duration_Coverage': []
-                    }
+def start_celery(request: WSGIRequest) -> True:
+    """
+    """
+    form_data = request.session.get('quote_request_form_data', None)
+
+    if form_data and form_data_is_valid(form_data) == False:
+        form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+        request.session['quote_request_response_data'] = {}
+
+    logger.info("Plan Quote For Data: {0}".format(form_data))
+
+    d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
+    request.session['quote_request_response_data'] = d
+    request.session.modified = True
+    logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
+
+    print('------------------------\nquote_request_form_data: \n------------------------')
+    print(json.dumps(form_data, indent=4, sort_keys=True))
+
+    # Changing quote store key regarding insurance type
+    # for ins_type in ['lim', 'stm']:
+    ins_type = get_ins_type(request)
+    change_quote_store_key(request, ins_type)
+    form_data['Ins_Type'] = ins_type
+
+    # Calling celery for populating quote list
+    redis_key = get_redis_key(request, ins_type)
+    print(f"Calling celery task for ins_type: {ins_type}")
+    print(f"redis_key: {redis_key}")
+
+    if not redis_conn.exists(redis_key):
+        print("Redis connection does not exist for redis key")
+        redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+
+        print(f"Insurance type is {ins_type}")
+        if ins_type == 'stm':
+            redis_key_done_data = f'{redis_key}:done_data'
+            # We are here setting up a dictionary in the session for future usage
+            print(f'Setting quote request preference data')
+
+            quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
+
+            quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
+                'LifeShield STM': {
+                    'Duration_Coverage': [],
+                },
+
+                'AdvantHealth STM': {
+                    'Duration_Coverage': []
                 }
+            }
 
-                request.session['quote_request_preference_data'] = quote_request_preference_data
+            request.session['quote_request_preference_data'] = quote_request_preference_data
 
-                redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+            redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
 
-                StmPlanTask.delay(request.session.session_key, form_data,
-                                  quote_request_preference_data)
+            StmPlanTask.delay(request.session.session_key, form_data,
+                              quote_request_preference_data)
 
-            elif ins_type == 'lim':
-                LimPlanTask.delay(request.session.session_key, form_data)
+        elif ins_type == 'lim':
+            LimPlanTask.delay(request.session.session_key, form_data)
 
-        return True
+    return True
 
-
-def get_ins_type(request: WSGIRequest) -> str:
-    form_data = request.session.get('quote_request_form_data')
-    ins_type = form_data.get('Ins_Type', None)
-
-    if not ins_type:
-        ins_type = 'lim'
-
-    return ins_type
 
 
 def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
@@ -239,13 +230,14 @@ def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
     return
 
 
+
+
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
     """
 
     :return: JsonResponse containing the url
     """
     ins_type = get_ins_type(request)
-    set_ins_type_in_session(request, ins_type)
     quote_request_form_data = request.session.get('quote_request_form_data', None)
 
     print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
@@ -276,25 +268,14 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     return JsonResponse(response)
 
 
-def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
-    print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
-    ins_type = request.POST.get('Ins_Type', None)
+def get_ins_type(request: WSGIRequest) -> str:
+    form_data = request.session.get('quote_request_form_data')
+    ins_type = form_data.get('Ins_Type', None)
 
-    if ins_type and request.session['quote_request_form_data']:
-        set_ins_type_in_session(request, ins_type)
-        change_quote_store_key(request, ins_type)
+    if not ins_type:
+        ins_type = 'lim'
 
-        start_celery_return_code = start_celery(request)
-
-        if start_celery_return_code:
-            return JsonResponse({'status': 'success'})
-
-    else:
-        return JsonResponse({
-            'status': 'fail',
-            'error': "Failed",
-        })
-
+    return ins_type
 
 
 
@@ -816,32 +797,6 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
     return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[application_url]))
 
 
-
-def has_dependents(form_data):
-    if ((form_data['Include_Spouse'] == 'Yes' or form_data['Children_Count'] > 0)
-            and form_data['applicant_is_child'] == False):
-        return True
-    return False
-
-
-
-def get_enroll_object(vimm_enroll_id):
-    try:
-        return qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
-    except ObjectDoesNotExist:
-        return None
-
-
-def get_plan_object(stm_enroll_obj, vimm_enroll_id):
-    try:
-        stm_plan_model = qm.MainPlan
-        stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
-        return stm_plan_obj
-    except ObjectDoesNotExist:
-        return None
-
-
-
 def save_to_db(plan: Dict,
                application_url: str,
                form_data: Dict,
@@ -849,9 +804,9 @@ def save_to_db(plan: Dict,
 
     vimm_enroll_id = plan['vimm_enroll_id']
 
-    stm_enroll_obj = get_enroll_object(vimm_enroll_id)
+    stm_enroll_obj = get_enroll_object(vimm_enroll_id, qm)
     if stm_enroll_obj:
-        stm_plan_obj = get_plan_object(stm_enroll_obj, vimm_enroll_id)
+        stm_plan_obj = get_plan_object(vimm_enroll_id, qm)
     else:
         stm_plan_obj = None
 
@@ -1526,10 +1481,6 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     })
 
 
-def is_ins_type_valid(ins_type) -> bool:
-    if ins_type in ['stm', 'lim', 'anc']:
-        return True
-    return False
 
 
 
@@ -1550,37 +1501,6 @@ def get_redis_key(request: WSGIRequest, ins_type: str) -> str:
 
 
 
-def get_featured_plan(carrier_name, plan_list, ins_type):
-    """
-
-    :return:
-    """
-
-    plans = None
-
-    try:
-        featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
-        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
-    except KeyError:
-        print(f'Featured plan attribute not found for {carrier_name}')
-        return
-
-    eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
-                                                  x['Name'] == carrier_name, plan_list[1:-1]))
-
-    if len(eligible_plans) == 0:
-        eligible_plans = plan_list[1:-1]
-
-    for attr in featured_plan_attr:
-        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
-        if len (plans) > 0:
-            eligible_plans = plans
-        else:
-            return eligible_plans[0]
-
-
-    if plans:
-        return plans[0]
 
 
 def e_signature_enrollment(request, vimm_enroll_id):
@@ -2488,7 +2408,7 @@ def life_insurance(request):
 def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
     stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
     stm_dict_values = stm_dictionary.values()
-    stm_available_states = set().union(*[*stm_dict_values])
+    stm_available_states : set = set().union(*[*stm_dict_values])
 
     form_data = request.session.get('quote_request_form_data', None)
     if form_data is not None:

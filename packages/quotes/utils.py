@@ -475,6 +475,31 @@ def parse_stm_duration(stm_duration):
     return int(match.groupdict()['duration']) * int(match.groupdict()['times'])
 
 
+# -------------------------------#
+# Functions used in views        #
+# -------------------------------#
+
+def get_prop_context():
+    """Return context variables for the home and plans view
+
+    :param prop: User attributes
+    :return: context variables
+    """
+    props = settings.USER_PROPERTIES
+    prop_context = {
+        'applicant_min_age': props['min_age'],
+        'applicant_max_age': props['max_age'],
+
+        'spouse_min_age': props['min_age'],
+        'spouse_max_age': props['max_age'],
+
+        'dependents_min_age': props['dependents_min_age'],
+        'dependents_max_age': props['dependents_max_age']
+    }
+
+    return prop_context
+
+
 def create_selection_data(completed_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
     """ Create intermidiate quote request selection data from
     completed data and preferred coverage duration.
@@ -645,3 +670,64 @@ def get_neighbour_plans_and_attrs(plan: dict, plan_list: list):
 
 
 
+def has_dependents(form_data):
+    if ((form_data['Include_Spouse'] == 'Yes' or form_data['Children_Count'] > 0)
+            and form_data['applicant_is_child'] == False):
+        return True
+    return False
+
+
+def get_enroll_object(vimm_enroll_id, qm):
+    try:
+        return qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
+    except ObjectDoesNotExist:
+        return None
+
+
+def get_plan_object(vimm_enroll_id, qm):
+    try:
+        stm_plan_model = qm.MainPlan
+        stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
+        return stm_plan_obj
+    except ObjectDoesNotExist:
+        return None
+
+
+def is_ins_type_valid(ins_type) -> bool:
+    if ins_type in ['stm', 'lim', 'anc']:
+        return True
+    return False
+
+
+
+def get_featured_plan(carrier_name, plan_list, ins_type):
+    """
+
+    :return:
+    """
+
+    plans = None
+
+    try:
+        featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
+        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
+    except KeyError:
+        print(f'Featured plan attribute not found for {carrier_name}')
+        return
+
+    eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
+                                                  x['Name'] == carrier_name, plan_list[1:-1]))
+
+    if len(eligible_plans) == 0:
+        eligible_plans = plan_list[1:-1]
+
+    for attr in featured_plan_attr:
+        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
+        if len (plans) > 0:
+            eligible_plans = plans
+        else:
+            return eligible_plans[0]
+
+
+    if plans:
+        return plans[0]
