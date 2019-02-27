@@ -121,7 +121,7 @@ class QRXmlBase(object):
 
     def _make_request(self):
         try:
-            return requests.post(self._url, headers=self._headers, data=self.xmlForRequest(), timeout=(9, 9))
+            return requests.post(self._url, headers=self._headers, data=self.xmlForRequest(), timeout=(90, 90))
         except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
             return None
 
