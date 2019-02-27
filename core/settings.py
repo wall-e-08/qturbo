@@ -288,10 +288,10 @@ SALES_ADMIN = [
 # ------------------------+
 
 # Live Server
-QUOTE_ENROLL_URL = 'https://www.hiiquote.com/webservice/process.php'
-QUOTE_REQUEST_URL = 'https://www.hiiquote.com/webservice/quote_service.php'
-ESIGNATURE_VERIFICATION_URL = 'https://www.hiiquote.com/webservice/esign_payment.php'
-QUOTE_REQUEST_USER_ID = 'A157F6910039407D116147'  # CLH1251100 - $125 - live
+QUOTE_ENROLL_URL = os.environ.get('QUOTE_ENROLL_URL', 'https://test1.hiiquote.com/webservice/process.php')
+QUOTE_REQUEST_URL = os.environ.get('QUOTE_REQUEST_URL', 'https://test1.hiiquote.com/webservice/quote_service.php')
+ESIGNATURE_VERIFICATION_URL = os.environ.get('ESIGNATURE_VERIFICATION_URL', 'https://test1.hiiquote.com/webservice/esign_payment.php')
+QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A157FF340027874696242C')  # CLH1251100 - $125 - live
 
 
 # -----------------+
