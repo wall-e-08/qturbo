@@ -254,12 +254,17 @@ def plan_actual_premium(context, stm_plan=None):
                     decimal.Decimal(plan['GapAffordPlus_Fee']) +
                     decimal.Decimal(plan['GapAffordPlus_AdminFee']))
 
-    if plan['Name'] == 'Everest STM':
+    if plan['Name'] in ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']:
         premium += (decimal.Decimal(plan['RxAdvocacy_Fee']) +
                     decimal.Decimal(plan['Medsense_Fee']) +
                     decimal.Decimal(plan['TelaDoc_Fee']) +
-                    decimal.Decimal(plan.get('ChoiceValueSavings_Fee', '0.0')))
-    return premium
+                    decimal.Decimal(plan.get('RealValueSavings_Fee', '0.0')) +
+                    decimal.Decimal(plan.get('RealValueSavings_AdminFee', '0.00')) +
+                    decimal.Decimal(plan.get('ChoiceValueSavings_Fee', '0.0')) +
+                    decimal.Decimal(plan.get('ChoiceValue_AdminFee', '0.00')) +
+                    decimal.Decimal(plan.get('VBP_Fee', '0.00')))
+
+        return premium
 
 
 @register.simple_tag(takes_context=True)

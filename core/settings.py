@@ -336,7 +336,16 @@ MAIN_PLANS = (
     ('Legion Limited Medical', 'Legion Limited Medical'),
 )
 
-ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
+
+TYPEWISE_PLAN_LIST = {
+    'stm': ['Everest STM', 'LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Principle Advantage', 'Cardinal Choice', 'Vitala Care', 'Health Choice', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness', 'Foundation Dental']
+}
+
+# ---------------------+
+#    Dashboard CMS     +
+# ---------------------+
 
 SHORTCODE_PREFIX = '{{'
 SHORTCODE_POSTFIX = '}}'
@@ -480,11 +489,6 @@ USER_PROPERTIES: Dict[str, int] = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
-AVAILABLE_PLAN_NAME_LIST_DICT = {
-    'stm': ['LifeShield STM', 'AdvantHealth STM'],
-    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
-    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
-}
 
 
 
@@ -502,27 +506,27 @@ FEATURED_PLAN_DICT = {
     },
 
     'Health Choice':{
-        'Lim_Plan_Name': 'Plan_100'
+        'Plan_Name': 'Plan_100'
     },
 
     'Vitala Care':{
-        'Lim_Plan_Name': 'Plan_100'
+        'Plan_Name': 'Plan_100'
     },
 
     'Legion Limited Medical': {
-        'Lim_Plan_Name': 'Plan_3'
+        'Plan_Name': 'Plan_3'
     },
 
     'USA Dental': {
-        'Lim_Plan_Name': 'Access_III'
+        'Plan_Name': 'Access_III'
     },
 
     'Safeguard Critical Illness': {
-        'Lim_Plan_Name': 'Option5000',
+        'Plan_Name': 'Option5000',
     },
 
     'Freedom Spirit Plus':{
-        'Lim_Plan_Name': 'SPIRITPLUS_100000',
+        'Plan_Name': 'SPIRITPLUS_100000',
     }
 }
 
