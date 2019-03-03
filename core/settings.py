@@ -517,6 +517,10 @@ FEATURED_PLAN_DICT = {
         'Plan_Name': 'Plan_3'
     },
 
+    'Cardinal Choice': {
+        'Plan_Name': 'Plan_3'
+    },
+
     'USA Dental': {
         'Plan_Name': 'Access_III'
     },

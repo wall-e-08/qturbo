@@ -701,18 +701,20 @@ def is_ins_type_valid(ins_type) -> bool:
 
 
 def get_featured_plan(carrier_name, plan_list, ins_type):
-    """
+    """Unnecessary calcuations will be replaced.
 
     :return:
     """
 
-    plans = None
-
     try:
         featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
-        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
     except KeyError:
+        featured_plan_attr = None
         print(f'Featured plan attribute not found for {carrier_name}')
+
+    if ins_type:
+        premium = settings.FEATURED_PLAN_PREMIUM_DICT.get(ins_type)
+    else:
         return
 
     eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
@@ -721,13 +723,14 @@ def get_featured_plan(carrier_name, plan_list, ins_type):
     if len(eligible_plans) == 0:
         eligible_plans = plan_list[1:-1]
 
-    for attr in featured_plan_attr:
-        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
-        if len (plans) > 0:
-            eligible_plans = plans
-        else:
-            return eligible_plans[0]
+    if featured_plan_attr:
+        for attr in featured_plan_attr:
+            plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
+            if len (plans) > 0:
+                eligible_plans = plans
+            else:
+                return eligible_plans[0]
 
 
-    if plans:
-        return plans[0]
+    if eligible_plans:
+        return eligible_plans[0]
