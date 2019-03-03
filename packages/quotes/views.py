@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core import settings
+from quotes.forms import QR_DATE_PATTERN
 from quotes.templatetags.hp_tags import plan_actual_premium
 from .forms import (AppAnswerForm, AppAnswerCheckForm, StageOneTransitionForm, STApplicantInfoForm, STParentInfo,
                     STDependentInfoFormSet, PaymentMethodForm, GetEnrolledForm, AddonPlanForm, ApplicantInfoForm,
@@ -31,7 +32,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     save_enrolled_applicant_info, get_st_dependent_info_formset, get_quote_store_key, save_lead_info,
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
-                    get_available_benefit_against_coins)
+                    get_available_benefit_against_coins, get_neighbour_plans_and_attrs, is_ins_type_valid,
+                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context)
 from .logger import VimmLogger
 from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -48,32 +50,9 @@ json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 redis_conn = redis_connect()
 
-def get_prop_context():
-    """Return context variables for the home and plans view
-
-    :param prop: User attributes
-    :return: context variables
-    """
-    props = settings.USER_PROPERTIES
-    prop_context = {
-        'applicant_min_age': props['min_age'],
-        'applicant_max_age': props['max_age'],
-
-        'spouse_min_age': props['min_age'],
-        'spouse_max_age': props['max_age'],
-
-        'dependents_min_age': props['dependents_min_age'],
-        'dependents_max_age': props['dependents_max_age']
-    }
-
-    return prop_context
 
 def home(request: WSGIRequest) -> HttpResponse:
-    prop =settings.USER_PROPERTIES
-
-
     return render(request, 'homepage.html', get_prop_context())
-
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.
@@ -84,7 +63,6 @@ def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     :return: Django HttpResponse Object
     """
     return render(request, 'quotes/../../templates/homepage.html', get_prop_context())
-
 
 @require_POST
 def validate_quote_form(request: WSGIRequest) -> JsonResponse:
@@ -134,13 +112,10 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         # Saving Lead Form Info
         save_lead_info(qm.Leads, lead_form.cleaned_data)
-        
-        start_celery_return_code = start_celery(request, quote_request_form_data)
+        return JsonResponse({
+            'status': 'success',
+        })
 
-        if start_celery_return_code:
-            return JsonResponse({
-                'status': 'success',
-            })
 
     else:
         print(form.errors)
@@ -156,79 +131,95 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-def start_celery(request: WSGIRequest, form_data: Dict) -> True:
-        """
-        """
-
-        if form_data and form_data_is_valid(form_data) == False:
-            form_data = {}
-            request.session['quote_request_form_data'] = {}
-            request.session['quote_request_formset_data'] = []
-            request.session['quote_request_response_data'] = {}
-
-        logger.info("Plan Quote For Data: {0}".format(form_data))
-
-        d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
-        request.session['quote_request_response_data'] = d
-        request.session.modified = True
-        logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
-
-        print('------------------------\nquote_request_form_data: \n------------------------')
-        print(json.dumps(form_data, indent=4, sort_keys=True))
-
-        # Changing quote store key regarding insurance type
-        for ins_type in ['lim', 'stm']:
-        #     ins_type = get_ins_type(request)
-            change_quote_store_key(request, ins_type)
-            form_data['Ins_Type'] = ins_type
-
-            # Calling celery for populating quote list
-            redis_key = get_redis_key(request, ins_type)
-            print(f"Calling celery task for ins_type: {ins_type}")
-            print(f"redis_key: {redis_key}")
-
-            if not redis_conn.exists(redis_key):
-                print("Redis connection does not exist for redis key")
-                redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
-
-                print(f"Insurance type is {ins_type}")
-                if ins_type == 'stm':
-                    redis_key_done_data = f'{redis_key}:done_data'
-                    # We are here setting up a dictionary in the session for future usage
-                    print(f'Setting quote request preference data')
-
-                    quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
-
-                    quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
-                        'LifeShield STM': {
-                            'Duration_Coverage': [],
-                        },
-
-                        'AdvantHealth STM': {
-                            'Duration_Coverage': []
-                        }
-                    }
-
-                    request.session['quote_request_preference_data'] = quote_request_preference_data
-
-                    redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
-
-                    StmPlanTask.delay(request.session.session_key, form_data,
-                                      quote_request_preference_data)
-
-                elif ins_type == 'lim':
-                    LimPlanTask.delay(request.session.session_key, form_data)
-
-        return True
 
 
-def get_ins_type(request: WSGIRequest) -> str:
-    ins_type = request.COOKIES.get('qt_plan_type', None)
+def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
+    print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
+    ins_type = request.POST.get('Ins_Type', None)
 
-    if not ins_type:
-        ins_type = 'lim'
+    if ins_type and request.session['quote_request_form_data']:
+        set_ins_type_in_session(request, ins_type)
+        change_quote_store_key(request, ins_type)
 
-    return ins_type
+        start_celery_return_code = start_celery(request)
+
+        if start_celery_return_code:
+            return JsonResponse({'status': 'success'})
+
+    else:
+        return JsonResponse({
+            'status': 'fail',
+            'error': "Failed",
+        })
+
+
+
+def start_celery(request: WSGIRequest) -> True:
+    """
+    """
+    form_data = request.session.get('quote_request_form_data', None)
+
+    if form_data and form_data_is_valid(form_data) == False:
+        form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session['quote_request_formset_data'] = []
+        request.session['quote_request_response_data'] = {}
+
+    logger.info("Plan Quote For Data: {0}".format(form_data))
+
+    d: Dict[str, List[str]] = {'monthly_plans': [], 'addon_plans': []}
+    request.session['quote_request_response_data'] = d
+    request.session.modified = True
+    logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
+
+    print('------------------------\nquote_request_form_data: \n------------------------')
+    print(json.dumps(form_data, indent=4, sort_keys=True))
+
+    # Changing quote store key regarding insurance type
+    # for ins_type in ['lim', 'stm']:
+    ins_type = get_ins_type(request)
+    change_quote_store_key(request, ins_type)
+    form_data['Ins_Type'] = ins_type
+
+    # Calling celery for populating quote list
+    redis_key = get_redis_key(request, ins_type)
+    print(f"Calling celery task for ins_type: {ins_type}")
+    print(f"redis_key: {redis_key}")
+
+    if not redis_conn.exists(redis_key):
+        print("Redis connection does not exist for redis key")
+        redis_conn.rpush(redis_key, *[json_encoder.encode('START')])
+
+        print(f"Insurance type is {ins_type}")
+        if ins_type == 'stm':
+            redis_key_done_data = f'{redis_key}:done_data'
+            # We are here setting up a dictionary in the session for future usage
+            print(f'Setting quote request preference data')
+
+            quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
+
+            quote_request_done_data: Dict[str, Dict[str, List[str]]] = {
+                'LifeShield STM': {
+                    'Duration_Coverage': [],
+                },
+
+                'AdvantHealth STM': {
+                    'Duration_Coverage': []
+                }
+            }
+
+            request.session['quote_request_preference_data'] = quote_request_preference_data
+
+            redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
+
+            StmPlanTask.delay(request.session.session_key, form_data,
+                              quote_request_preference_data)
+
+        elif ins_type == 'lim':
+            LimPlanTask.delay(request.session.session_key, form_data)
+
+    return True
+
 
 
 def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
@@ -239,19 +230,20 @@ def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
     return
 
 
+
+
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
     """
 
     :return: JsonResponse containing the url
     """
-    quote_request_form_data = request.session.get('quote_request_form_data')
     ins_type = get_ins_type(request)
-    set_ins_type_in_session(request, ins_type)
+    quote_request_form_data = request.session.get('quote_request_form_data', None)
 
     print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
 
-    if annual_income:
+    if annual_income and quote_request_form_data:
         quote_request_form_data['Annual_Income'] = annual_income
 
         quote_request_preference_data = request.session.get('quote_request_preference_data', None)
@@ -274,6 +266,17 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         }
 
     return JsonResponse(response)
+
+
+def get_ins_type(request: WSGIRequest) -> str:
+    form_data = request.session.get('quote_request_form_data')
+    ins_type = form_data.get('Ins_Type', None)
+
+    if not ins_type:
+        ins_type = 'lim'
+
+    return ins_type
+
 
 
 def survey_members(request):
@@ -425,7 +428,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     :param plan_url: Unique url for plan that sits in plan_data
     :return: HttpResponse
     """
-    stm_carriers = ['Everest STM', 'LifeShield STM', 'AdvantHealth STM']
+    stm_carriers = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
 
     logger.info(f"Plan details: {plan_url}")
 
@@ -447,6 +450,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     plan_list = []
     redis_key = get_redis_key(request, ins_type)
+
     for plan in redis_conn.lrange(redis_key, 0, -1):
         p = json_decoder.decode(plan.decode())
         if not isinstance(p, str):
@@ -462,6 +466,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             stm_plan_general_url = request.COOKIES.get('current-plan-general-url')
             if request.session['stm_general_url_chosen'] == False and stm_plan_general_url == plan_url:
                 plan = next(filter(lambda mp : mp['unique_url'] == stm_plan_unique_url, plan_list))
+
+                # update_session_preferenced_data(
+                #     request=request,
+                #     stm_name=plan['Name'],
+                #     preference_for_current_stm=None,
+                #     coverage_duration=plan['Duration_Coverage'],
+                #     plan=plan
+                # )
             else:
                 # When page is refreshed or duration coverage is changed.
                 plan = next(filter(
@@ -497,6 +509,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan) # TODO: Make it a part of separate function or at least modularize branching.
+        neighbour_list, neighbour_attrs = get_neighbour_plans_and_attrs(plan, plan_list)
     else:
         related_plans = list(
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], plan_list))
@@ -519,33 +532,27 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     plan_name = plan['Name']
 
     try:
-        alternate_coverage_duration = settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name].copy()
-        # alternate_coverage_duration = list(alternate_coverage_duration_set)
+        alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
 
-        # All of them
-        alternate_benefit_amount = settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[plan_name].copy()
-        # alternate_benefit_amount = list(alternate_benefit_amount_set)
+        alternate_benefit_amount = list(neighbour_attrs['benefit_amount'])
+        alternate_benefit_amount.sort(key=int)
 
-        # All of them
-        alternate_coinsurace_percentage = settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW[plan_name].copy()
-        # alternate_coinsurace_percentage = list(alternate_coinsurace_percentage_set)
+        alternate_coinsurace_percentage = list(neighbour_attrs['coinsurance_percentage'])
+        alternate_coinsurace_percentage.sort(key=int)
 
         # Edge case 50 percent coinsurance for plan type 2
-        # TODO: Make this dynamic
-        if plan_name == 'LifeShield STM':
-            if plan['Plan'] == '1':
-                if '50' in alternate_coinsurace_percentage:
-                    alternate_coinsurace_percentage.remove('50')
-                if '5000' in alternate_benefit_amount:
-                    alternate_benefit_amount.remove('5000')
+        # if plan_name == 'LifeShield STM':
+        #     if plan['Plan'] == '1':
+        #         if '50' in alternate_coinsurace_percentage:
+        #             alternate_coinsurace_percentage.remove('50')
+        #         if '5000' in alternate_benefit_amount:
+        #             alternate_benefit_amount.remove('5000')
 
-        alternate_coverage_max = list(available_alternatives_as_set['alternate_coverage_max'])
+        alternate_coverage_max = list(neighbour_attrs['coverage_maximum'])
         alternate_coverage_max.sort(key=int)
-        # alternate_coverage_max = list(alternate_coverage_max_set)
 
         alternate_plan_set = available_alternatives_as_set['alternate_plan'] - {plan['Plan']}
         alternate_plan = list(alternate_plan_set)
-
 
 
     except KeyError as k:
@@ -752,28 +759,135 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
         request.session.get(
             '{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'], plan['unique_url'], "addon-plans"), [])
     ))
-    plan['vimm_enroll_id'] = get_random_string()
-    app_url = "{0}-{1}".format(plan['unique_url'], plan['vimm_enroll_id'])
-    logger.info("app url: {0}".format(app_url))
+
+    session_vimm_enroll_id = request.session.get(f'{plan_url}_vimm_enroll_id')
+    if session_vimm_enroll_id is None:
+        plan['vimm_enroll_id'] = get_random_string()
+    else:
+        plan['vimm_enroll_id'] = session_vimm_enroll_id
+
+    application_url = "{0}-{1}".format(plan['unique_url'], plan['vimm_enroll_id'])
+    logger.info("app url: {0}".format(application_url))
 
     # Updating vimm enroll id of leads
     update_lead_vimm_enroll_id(qm.Leads, quote_request_form_data['quote_store_key'], plan['vimm_enroll_id'])
 
-    if not request.session.get(app_url, {}):
-        request.session[app_url] = plan
-        request.session["{0}_form_data".format(app_url)] = copy.deepcopy(quote_request_form_data)
-        request.session["{0}-addon-plans".format(app_url)] = [addon_plan.data_as_dict() for addon_plan
-                                                              in selected_addon_plans]
+    stm_enroll_obj = save_to_db(
+        plan=plan,
+        application_url=application_url,
+        form_data=quote_request_form_data,
+        has_dependents=has_dependents(quote_request_form_data)
+    )
+
+    addon_plans: List[Dict] = [addon_plan.data_as_dict() for addon_plan in selected_addon_plans]
+
+    stm_addon_plan_objs = qm.AddonPlan.objects.filter(vimm_enroll_id=plan['vimm_enroll_id'])
+    if not stm_addon_plan_objs.exists() and selected_addon_plans:
+        logger.info("Saving add-on plan info.")
+        save_add_on_info(qm.AddonPlan, addon_plans, plan, stm_enroll_obj)
+    elif stm_addon_plan_objs.exists() and selected_addon_plans:
+        logger.info(f'Deleting old addons from database for {session_vimm_enroll_id}.')
+        stm_addon_plan_objs.delete()
+        save_add_on_info(qm.AddonPlan, addon_plans, plan, stm_enroll_obj)
+    elif not selected_addon_plans:
+        stm_addon_plan_objs.delete()
+
+
+    if not request.session.get(application_url, {}):
+        request.session[application_url] = plan
+        request.session["{0}_form_data".format(application_url)] = copy.deepcopy(quote_request_form_data)
+        request.session["{0}-addon-plans".format(application_url)] = addon_plans
+
+        request.session[f'{plan_url}_vimm_enroll_id'] = plan['vimm_enroll_id']
         request.session.modified = True
-    return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[app_url]))
+    return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[application_url]))
 
 
-def stm_enroll(request, plan_url, stage=None, template=None):
+def save_to_db(plan: Dict,
+               application_url: str,
+               form_data: Dict,
+               has_dependents: bool = False,) -> qm.StmEnroll.objects:
+
+    vimm_enroll_id = plan['vimm_enroll_id']
+
+    stm_enroll_obj = get_enroll_object(vimm_enroll_id, qm)
+    if stm_enroll_obj:
+        stm_plan_obj = get_plan_object(vimm_enroll_id, qm)
+    else:
+        stm_plan_obj = None
+
+
+
+    if stm_enroll_obj and stm_plan_obj:
+        stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
+    else:
+        stm_dependent_objs = None
+
+    with transaction.atomic():
+        logger.info("Saving to database.")
+        logger.info("Creating initial stm enroll data.")
+
+        if stm_enroll_obj is None:
+            stm_enroll_obj = qm.StmEnroll(vimm_enroll_id=plan['vimm_enroll_id'],
+                                          stm_name=plan['Name'],
+
+                                          app_url=application_url,
+
+                                          Age = form_data['Applicant_Age'],
+                                          DOB = QR_DATE_PATTERN.sub(r'\3-\1-\2', form_data.get('Applicant_DOB', None)),
+                                          Effective_Date = QR_DATE_PATTERN.sub(r'\3-\1-\2', form_data.get('Effective_Date', None)),
+                                          Gender = form_data['Applicant_Gender'],
+                                          State = form_data['State'],
+                                          Tobacco = form_data['Tobacco'],
+                                          ZipCode = form_data['Zip_Code'],
+                                          Applicant_is_Child = form_data['applicant_is_child'],
+                                          stage='1')
+            stm_enroll_obj.save()
+
+        if stm_plan_obj is None:
+            logger.info("Saving Plan Info.")
+            stm_plan_model = qm.MainPlan
+            stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
+            stm_plan_obj.save()
+
+        if has_dependents and stm_dependent_objs is None:
+            logger.info("Creating initial dependents entry.")
+
+            dependents = form_data.get('Dependents', None)
+
+            if form_data['Include_Spouse'] == 'Yes':  # TODO: Proper fix.
+                qm.Dependent.objects.create(
+                    stm_enroll=stm_enroll_obj,
+                    Relation='Spouse',
+                    Gender=form_data['Spouse_Gender'],
+                    vimm_enroll_id=plan['vimm_enroll_id'],
+                    DOB=QR_DATE_PATTERN.sub(r'\3-\1-\2', form_data.get('Spouse_DOB', None)),
+                    Tobacco=form_data.get('Spouse_Tobacco', None),
+                    Age=form_data.get('Spouse_Age', None)
+                )
+
+            for dependent in dependents:
+                qm.Dependent.objects.create(
+                    stm_enroll=stm_enroll_obj,
+                    vimm_enroll_id=plan['vimm_enroll_id'],
+                    Gender=dependent.get('Child_Gender', None),
+                    Relation='Child',
+                    DOB=QR_DATE_PATTERN.sub(r'\3-\1-\2', dependent.get('Child_DOB', None)),
+                    Tobacco=dependent.get('Child_Tobacco', None),
+                    Age=dependent.get('Child_Age', None)
+                )
+
+        return stm_enroll_obj
+
+
+
+def stm_enroll(request, application_url, stage=None, template=None):
     """STM enroll function for enrollment of the user
 
     :param request: Django request object
-    :param plan_url: application url for the plan object
-    :type plan_url: str
+    :param application_url: application url for the plan object
+    application_url = plan_url + vimm_enroll_id
+    :type application_url: str
     :returns: JsonResponse or HttpResponseRedirect object
     :rtype: Django JsonResponse object/ Django HttpResponseRedirect object
 
@@ -791,8 +905,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     if request.is_ajax():
         ajax_request = True
 
-    plan = request.session.get(plan_url, {})
-    vimm_enroll_id = plan_url.rsplit('-', 1)[-1]
+    plan = request.session.get(application_url, {})
+    vimm_enroll_id = application_url.rsplit('-', 1)[-1]
 
     def quote_error_html(quote_id):
         """
@@ -817,9 +931,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
 
         html = render_to_string('quotes/quote_error.html', {
             "quote_id": quote_id,
-            "url": reverse('quotes:stm_enroll', args=[plan_url, 4])
+            "url": reverse('quotes:stm_enroll', args=[application_url, 4])
         })
-        print(html)
         return html
 
     stm_enroll_obj = None
@@ -828,10 +941,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     stm_addon_plan_objs = None
     try:
         stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
-        if stm_enroll_obj.stm_name in settings.ANCILLARIES_PLANS:
-            stm_plan_model = getattr(qm, 'StandAloneAddonPlan')
-        else:
-            stm_plan_model = getattr(qm, stm_enroll_obj.stm_name.title().replace(' ', ''))
+        stm_plan_model = getattr(qm, 'MainPlan')
         stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
         stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
         stm_addon_plan_objs = qm.AddonPlan.objects.filter(vimm_enroll_id=vimm_enroll_id)
@@ -856,18 +966,18 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     selected_addon_plans = []
     if stm_addon_plan_objs is None:
         logger.info("GETTING ADD-ON PLAN FROM SESSION")
-        selected_addon_plans = request.session.get("{0}-addon-plans".format(plan_url), [])
+        selected_addon_plans = request.session.get("{0}-addon-plans".format(application_url), [])
     elif stm_addon_plan_objs:
         logger.info("GETTING ADD-ON PLANS FROM DB")
         selected_addon_plans = [addon_plan.data_as_dict() for addon_plan in stm_addon_plan_objs]
     logger.info("no of selected addon plans: {0}".format(len(selected_addon_plans)))
 
-    if not plan_url and not ajax_request:
+    if not application_url and not ajax_request:
         raise Http404()
-    elif not plan_url:
+    elif not application_url:
         return JsonResponse({'status': 'failed', 'redirect_url': reverse('quotes:plans', args=[])})
 
-    quote_request_form_data = request.session.get('{0}_form_data'.format(plan_url), {})
+    quote_request_form_data = request.session.get('{0}_form_data'.format(application_url), {})
     if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
         quote_request_form_data = {}
 
@@ -875,15 +985,15 @@ def stm_enroll(request, plan_url, stage=None, template=None):
         # need a fix for ajax request
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    stm_stages = request.session.get('enroll_{0}_stm_stages'.format(plan_url), None)
+    stm_stages = request.session.get('enroll_{0}_stm_stages'.format(application_url), None)
     if stm_stages is None:
-        request.session['enroll_{0}_stm_stages'.format(plan_url)] = []
+        request.session['enroll_{0}_stm_stages'.format(application_url)] = []
         stm_stages = []
     logger.info('stm stages: {0}'.format(stm_stages))
     stage = get_app_stage(stage, stm_stages)
     logger.info("{0}: {1}".format(stage, type(stage)))
     logger.info("PLAN::::: -> {0}".format(plan))
-    ctx = {'plan': plan, 'plan_url': plan_url, 'form_data': quote_request_form_data,
+    ctx = {'plan': plan, 'plan_url': application_url, 'form_data': quote_request_form_data,
            'stage': stage, 'selected_addon_plans': selected_addon_plans, 'stm_enroll_obj': stm_enroll_obj}
 
     if stage == 4 and stm_enroll_obj.esign_checked_and_enrolled_by_system and stm_enroll_obj.enrolled:
@@ -894,7 +1004,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
         request.session.modified = True
         ctx.update({'next_stage': stage + 1})
 
-    stm_questions_key = 'enroll_{0}_stm_question'.format(plan_url)
+    stm_questions_key = 'enroll_{0}_stm_question'.format(application_url)
     stm_questions = request.session.get(stm_questions_key, {})
 
     if stage == 1 and plan['Name'] in ['Unified Health One', 'Cardinal Choice']:
@@ -921,8 +1031,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                                        'USA Dental', 'Foundation Dental',
                                        'Safeguard Critical Illness', 'Freedom Spirit Plus']:
         if (StageOneTransitionForm.STAGE not in
-                request.session['enroll_{0}_stm_stages'.format(plan_url)]):
-            request.session['enroll_{0}_stm_stages'.format(plan_url)].append(
+                request.session['enroll_{0}_stm_stages'.format(application_url)]):
+            request.session['enroll_{0}_stm_stages'.format(application_url)].append(
                 StageOneTransitionForm.STAGE
             )
             request.session.modified = True
@@ -981,19 +1091,19 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                                                                    stm_questions, data=request.POST)
                 if state_one_transition_form.is_valid():
                     if (StageOneTransitionForm.STAGE not in
-                            request.session['enroll_{0}_stm_stages'.format(plan_url)]):
-                        request.session['enroll_{0}_stm_stages'.format(plan_url)].append(
+                            request.session['enroll_{0}_stm_stages'.format(application_url)]):
+                        request.session['enroll_{0}_stm_stages'.format(application_url)].append(
                             StageOneTransitionForm.STAGE
                         )
                         request.session.modified = True
                     return JsonResponse(
                         {'redirect_url': reverse('quotes:stm_enroll',
-                                                 args=[plan_url, StageOneTransitionForm.NEXT_STAGE])}
+                                                 args=[application_url, StageOneTransitionForm.NEXT_STAGE])}
                     )
                 else:
                     return JsonResponse(
                         {'redirect_url': reverse('quotes:stm_enroll',
-                                                 args=[plan_url, StageOneTransitionForm.STAGE])}
+                                                 args=[application_url, StageOneTransitionForm.STAGE])}
                     )
         elif ajax_request:
             return JsonResponse({'status': 'failed', 'redirect_url': reverse('quotes:plans', args=[])})
@@ -1002,12 +1112,12 @@ def stm_enroll(request, plan_url, stage=None, template=None):
             logger.info("STAGE1: application started with question retrieval from hiiquote api")
             stm_questions = get_stm_questions(plan['Quote_ID'], selected_addon_plans)
             logger.info("STAGE1: retrieve questions - {0}".format(stm_questions))
-            request.session['enroll_{0}_stm_question'.format(plan_url)] = stm_questions
+            request.session['enroll_{0}_stm_question'.format(application_url)] = stm_questions
 
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
         ctx.update({'stm_questions': get_askable_questions(stm_questions_values)})
 
-        request.session['ongoing_session_plan_url'] = plan_url
+        request.session['ongoing_session_plan_url'] = application_url
         request.session['ongoing_session_stage'] = stage
 
     # Application Stage Two - Personal Info
@@ -1036,21 +1146,21 @@ def stm_enroll(request, plan_url, stage=None, template=None):
         applicant_parent_info = {}
         applicant_dependents_info = {}
         if quote_request_form_data['applicant_is_child']:
-            applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
+            applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
             has_parent = True
         if ((quote_request_form_data['Include_Spouse'] == 'Yes' or quote_request_form_data['Children_Count'] > 0) and
                 not quote_request_form_data['applicant_is_child']):
             has_dependents = True
             applicant_dependents_info = request.session.get(
-                'applicant_dependent_info_{0}'.format(plan_url), {})
-        applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
+                'applicant_dependent_info_{0}'.format(application_url), {})
+        applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
         # ajax request with form data
         if ajax_request and request.method == 'POST':
             stage_2_errors = {}
             app_form = STApplicantInfoForm(initial_form_data=quote_request_form_data,
                                            plan=plan, request=request, data=request.POST)
             if app_form.is_valid():
-                request.session['applicant_info_{0}'.format(plan_url)] = app_form.cleaned_data
+                request.session['applicant_info_{0}'.format(application_url)] = app_form.cleaned_data
                 applicant_cleaned_data = app_form.cleaned_data
             else:
                 logger.error("STAGE2: STApplicantInfoForm errors - {0}".format(app_form.errors))
@@ -1064,7 +1174,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 parent_form = STParentInfo(initial=applicant_cleaned_data, data=request.POST)
                 if parent_form.is_valid():
                     applicant_parent_form_cleaned_data = parent_form.cleaned_data
-                    request.session["applicant_parent_info_{0}".format(plan_url)] = parent_form.cleaned_data
+                    request.session["applicant_parent_info_{0}".format(application_url)] = parent_form.cleaned_data
                 else:
                     stage_2_errors.update({'parent_errors': dict(parent_form.errors.items()),
                                            'parent_error_keys': list(parent_form.errors.keys())})
@@ -1080,7 +1190,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 )
                 if st_dependent_info_formset.is_valid():
                     request.session[
-                        'applicant_dependent_info_{0}'.format(plan_url)
+                        'applicant_dependent_info_{0}'.format(application_url)
                     ] = st_dependent_info_formset.cleaned_data
                     dependent_info_form_data = st_dependent_info_formset.cleaned_data
                     logger.info("STAGE2: STDependentInfoFormSet - {0}".format(st_dependent_info_formset.cleaned_data))
@@ -1092,8 +1202,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 stage_2_errors.update({'status': 'fail'})
                 print('stage_2_errors: {0}'.format(stage_2_errors))
                 return JsonResponse(stage_2_errors)
-            if 2 not in request.session['enroll_{0}_stm_stages'.format(plan_url)]:
-                request.session['enroll_{0}_stm_stages'.format(plan_url)].append(2)
+            if 2 not in request.session['enroll_{0}_stm_stages'.format(application_url)]:
+                request.session['enroll_{0}_stm_stages'.format(application_url)].append(2)
                 request.session.modified = True
 
             '''
@@ -1101,8 +1211,8 @@ def stm_enroll(request, plan_url, stage=None, template=None):
             when ajax_request is false and we save the data. 
             '''
 
-            if request.session[plan_url].get('vimm_enroll_id') is None:
-                request.session[plan_url]['vimm_enroll_id'] = get_random_string()
+            if request.session[application_url].get('vimm_enroll_id') is None:
+                request.session[application_url]['vimm_enroll_id'] = get_random_string()
                 request.session.modified = True
             # saving info to db
             with transaction.atomic():
@@ -1110,14 +1220,15 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                     logger.info("Updating applicant info.")
                     update_applicant_info(stm_enroll_obj, applicant_cleaned_data,
                                           applicant_parent_form_cleaned_data, plan)
+                    update_application_stage(stm_enroll_obj, stage)
                 if stm_enroll_obj is None:
                     logger.info("Saving applicant info.")
                     stm_enroll_obj = save_applicant_info(qm.StmEnroll, applicant_cleaned_data,
-                                                         applicant_parent_form_cleaned_data, plan, plan_url)
+                                                         applicant_parent_form_cleaned_data, plan, application_url)
                     update_application_stage(stm_enroll_obj, stage)
                 if stm_plan_obj is None:
                     logger.info("Saving Plan Info.")
-                    save_stm_plan(qm, plan, stm_enroll_obj, quote_request_form_data)
+                    save_stm_plan(qm, plan, stm_enroll_obj)
                 if stm_dependent_objs is None and has_dependents:
                     logger.info("Saving dependents Info.")
                     save_dependent_info(qm.Dependent, dependent_info_form_data, plan, stm_enroll_obj)
@@ -1135,7 +1246,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                     logger.warning("Cannot update Lead info database")
 
             return JsonResponse(
-                {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 3])}
+                {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 3])}
             )
         if applicant_info:
             st_application_info_form = STApplicantInfoForm(initial_form_data=quote_request_form_data,
@@ -1154,7 +1265,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
         elif has_dependents:
             st_dependent_info_formset = get_st_dependent_info_formset(STDependentInfoFormSet, quote_request_form_data)
 
-        request.session['ongoing_session_plan_url'] = plan_url
+        request.session['ongoing_session_plan_url'] = application_url
         request.session['ongoing_session_stage'] = stage
 
         ctx.update({'st_application_info_form': st_application_info_form,
@@ -1188,36 +1299,36 @@ def stm_enroll(request, plan_url, stage=None, template=None):
 
         template = 'quotes/stm_enroll_payment.html'
 
-        applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
-        payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
+        applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
+        payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
         if ajax_request and request.method == 'POST' and applicant_info:
             payment_method_form = PaymentMethodForm(applicant_info, data=request.POST)
             if payment_method_form.is_valid():
-                request.session['payment_info_{0}'.format(plan_url)] = payment_method_form.cleaned_data
-                payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
-                if 3 not in request.session['enroll_{0}_stm_stages'.format(plan_url)]:
-                    request.session['enroll_{0}_stm_stages'.format(plan_url)].append(3)
+                request.session['payment_info_{0}'.format(application_url)] = payment_method_form.cleaned_data
+                payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
+                if 3 not in request.session['enroll_{0}_stm_stages'.format(application_url)]:
+                    request.session['enroll_{0}_stm_stages'.format(application_url)].append(3)
                     request.session.modified = True
                 if stm_enroll_obj is not None and payment_info:
                     logger.info("Saving payment info.")
-                    save_applicant_payment_info(stm_enroll_obj, request, plan_url)
+                    save_applicant_payment_info(stm_enroll_obj, request, application_url)
                 return JsonResponse({'status': 'success',
-                                     'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 4])})
+                                     'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 4])})
             else:
                 logger.error("STAGE3: PaymentMethodForm errors {0}".format(payment_method_form.errors))
                 return JsonResponse({'status': 'error', "errors": dict(payment_method_form.errors.items()),
                                      "error_keys": list(payment_method_form.errors.keys())})
         elif ajax_request:
             return JsonResponse({'status': 'fail',
-                                 'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 2])})
+                                 'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 2])})
         if not applicant_info:
-            return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[plan_url, 3]))
+            return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[application_url, 3]))
         if payment_info:
             payment_method_form = PaymentMethodForm(applicant_info, initial=payment_info)
         else:
             payment_method_form = PaymentMethodForm(applicant_info, initialize_form=True)
 
-        request.session['ongoing_session_plan_url'] = plan_url
+        request.session['ongoing_session_plan_url'] = application_url
         request.session['ongoing_session_stage'] = stage
 
         ctx.update({'payment_method_form': payment_method_form, 'applicant_info': applicant_info})
@@ -1231,19 +1342,19 @@ def stm_enroll(request, plan_url, stage=None, template=None):
 
             enrolled_form = GetEnrolledForm(request.POST)
             if enrolled_form.is_valid():
-                if 4 not in request.session['enroll_{0}_stm_stages'.format(plan_url)]:
-                    request.session['enroll_{0}_stm_stages'.format(plan_url)].append(4)
+                if 4 not in request.session['enroll_{0}_stm_stages'.format(application_url)]:
+                    request.session['enroll_{0}_stm_stages'.format(application_url)].append(4)
                     request.session.modified = True
                 return JsonResponse({'status': 'success',
-                                     'redirect_url': reverse('quotes:stm_enroll', args=[plan_url, 5])})
+                                     'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 5])})
             else:
                 return JsonResponse({'status': 'fail', 'error_msg': 'provide consent'})
-        applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
-        payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
-        stm_questions = request.session.get('enroll_{0}_stm_question'.format(plan_url), {})
+        applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
+        payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
+        stm_questions = request.session.get('enroll_{0}_stm_question'.format(application_url), {})
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
-        applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
-        applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(plan_url), {})
+        applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
+        applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(application_url), {})
         logger.info("STAGE4: applicant = {0}".format(applicant_info))
         logger.info("STAGE4: parent = {0}".format(applicant_parent_info))
         logger.info("STAGE4: payment = {0}".format(payment_info))
@@ -1261,7 +1372,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
                 esign_req_sent = True
                 request.session['esign_req_sent_{0}'.format(stm_plan_obj.Quote_ID)] = True
 
-        request.session['ongoing_session_plan_url'] = plan_url
+        request.session['ongoing_session_plan_url'] = application_url
         request.session['ongoing_session_stage'] = stage
 
         ctx.update({'applicant_info': applicant_info, 'payment_info': payment_info, 'esign_req_sent': esign_req_sent})
@@ -1269,15 +1380,15 @@ def stm_enroll(request, plan_url, stage=None, template=None):
     # Post - enrollment stage
     if stage == 5:
         template = 'quotes/stm_enroll_done.html'
-        res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
+        res = request.session.get('enrolled_plan_{0}'.format(application_url), '')
         formatted_enroll_response = res  # and EnrollResponse(res)
         if not res:
-            applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
-            payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
-            stm_questions = request.session.get('enroll_{0}_stm_question'.format(plan_url), {})
+            applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
+            payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
+            stm_questions = request.session.get('enroll_{0}_stm_question'.format(application_url), {})
             stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
-            applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(plan_url), {})
-            applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(plan_url), {})
+            applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
+            applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(application_url), {})
             # enr = Enroll({'Plan_ID': plan['Plan_ID'], 'Name': plan['Name']},
             #              applicant_data=applicant_info,
             #              payment_data=payment_info,
@@ -1293,7 +1404,7 @@ def stm_enroll(request, plan_url, stage=None, template=None):
             if formatted_enroll_response.applicant:
                 print("STAGE5: applicant info - {0}".format(formatted_enroll_response.applicant))
                 logger.info("STAGE5: applicant info - {0}".format(formatted_enroll_response.applicant))
-                request.session['applicant_enrolled'] = {'plan_url': plan_url}
+                request.session['applicant_enrolled'] = {'plan_url': application_url}
                 save_enrolled_applicant_info(stm_enroll_obj, formatted_enroll_response.applicant)
                 # sending mail on successful enrollment
                 # send_enroll_email(request, quote_request_form_data, formatted_enroll_response, stm_enroll_obj)
@@ -1376,10 +1487,6 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     })
 
 
-def is_ins_type_valid(ins_type) -> bool:
-    if ins_type in ['stm', 'lim', 'anc']:
-        return True
-    return False
 
 
 
@@ -1400,37 +1507,6 @@ def get_redis_key(request: WSGIRequest, ins_type: str) -> str:
 
 
 
-def get_featured_plan(carrier_name, plan_list, ins_type):
-    """
-
-    :return:
-    """
-
-    plans = None
-
-    try:
-        featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
-        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
-    except KeyError:
-        print(f'Featured plan attribute not found for {carrier_name}')
-        return
-
-    eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
-                                                  x['Name'] == carrier_name, plan_list[1:-1]))
-
-    if len(eligible_plans) == 0:
-        eligible_plans = plan_list[1:-1]
-
-    for attr in featured_plan_attr:
-        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
-        if len (plans) > 0:
-            eligible_plans = plans
-        else:
-            return eligible_plans[0]
-
-
-    if plans:
-        return plans[0]
 
 
 def e_signature_enrollment(request, vimm_enroll_id):
@@ -1509,7 +1585,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
     #     logger.error("not stm_plan_obj or not carrier")
     #     raise Http404()
 
-    plan_url = stm_enroll_obj.app_url
+    application_url = stm_enroll_obj.app_url
 
     hii_formatted_enroll_response = None
 
@@ -1540,9 +1616,9 @@ def e_signature_enrollment(request, vimm_enroll_id):
         })
 
     stage = int(stm_enroll_obj.stage or 1)
-    stm_stages = request.session.get('enroll_{0}_stm_stages'.format(plan_url), None)
+    stm_stages = request.session.get('enroll_{0}_stm_stages'.format(application_url), None)
     if stm_stages is None:
-        request.session['enroll_{0}_stm_stages'.format(plan_url)] = []
+        request.session['enroll_{0}_stm_stages'.format(application_url)] = []
         stm_stages = []
     stage = get_app_stage(stage, stm_stages)
     if stage != 4:
@@ -1575,7 +1651,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
     # stm_questions = json_decoder.decode(stm_enroll_obj.question_data or '{}')
 
     # Question: Why do we do this? -ds87
-    applicant_info = request.session.get('applicant_info_{0}'.format(plan_url), {})
+    applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
     applicant_info = copy.deepcopy(applicant_info)
 
     applicant_info.update({
@@ -1585,14 +1661,14 @@ def e_signature_enrollment(request, vimm_enroll_id):
     })
     # stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
 
-    res = request.session.get('enrolled_plan_{0}'.format(plan_url), '')
+    res = request.session.get('enrolled_plan_{0}'.format(application_url), '')
     print(f'applicant_info: {json.dumps(applicant_info, indent=4, sort_keys=True)}')
     if not res:
         # applicant_info = applicant_info
-        payment_info = request.session.get('payment_info_{0}'.format(plan_url), {})
+        payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
         applicant_parent_info = stm_enroll_obj.get_applicant_parent_info()
         applicant_dependents_info = [dependent.get_json_data() for dependent in stm_dependent_objs]
-        stm_questions = request.session.get('enroll_{0}_stm_question'.format(plan_url), {})
+        stm_questions = request.session.get('enroll_{0}_stm_question'.format(application_url), {})
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
         enr = Enroll({'Plan_ID': plan['Plan_ID'], 'Name': plan['Name']},
                      applicant_data=applicant_info,
@@ -1653,6 +1729,14 @@ def e_signature_enrollment(request, vimm_enroll_id):
             'main_api_source': 'hii'
         })
 
+        # Deleting quote key
+        redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
+                                           quote_request_form_data['quote_store_key']))
+
+        # Deleting vimm_enroll_id stored aginst plan_url in session
+        plan_url = application_url.rsplit('-', 1)[0]
+        request.session.pop(f'{plan_url}_vimm_enroll_id', None)
+
     if not hii_formatted_enroll_response.error:
         stm_enroll_obj.esign_verification_starts = True
         stm_enroll_obj.esign_verification_pending = True
@@ -1667,9 +1751,8 @@ def e_signature_enrollment(request, vimm_enroll_id):
                                                                                       'applicant_info_{0}'.format(
                                                                                           stm_enroll_obj.app_url)))))
 
-    # Deleting quote key
-    redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
-                                       quote_request_form_data['quote_store_key']))
+
+
     return JsonResponse(final_response)
 
 
@@ -1800,6 +1883,10 @@ def esign_verification_payment(request, vimm_enroll_id):
         stm_enroll_obj.save(update_fields=fields_to_update_on_hii_enrollment)
         save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant, enrolled=True)
 
+        stm_plan_obj = qm.MainPlan.objects.get(vimm_enroll_id=vimm_enroll_id)
+        stm_plan_obj.paid = True
+        stm_plan_obj.save()
+
         # TODO: Need to implement loader from salesfusion django/templates/loader
         # enroll_info_panel_body = loader.render_to_string(
         #     'stm/render/app_stage_5_enroll_info.html',
@@ -1882,12 +1969,11 @@ def thank_you(request, vimm_enroll_id):
 
     # Destroying session vimm_enroll_id
     applicant_enrolled = request.session.get('applicant_enrolled', False)
-    plan_url = applicant_enrolled['plan_url']
-    del request.session[plan_url]['vimm_enroll_id']
-    logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
+    if applicant_enrolled:
+        plan_url = applicant_enrolled['plan_url']
+        del request.session[plan_url]['vimm_enroll_id']
+        logger.info("Enroll id {0} removed from session".format(vimm_enroll_id))
 
-    # res = request.session.get('applicant_info_{0}'.format(plan_url), '')
-    # res = stm_enroll_obj.enrolled_plan_res
     res = json_decoder.decode(stm_enroll_obj.enrolled_plan_res or '{}')
     formatted_enroll_response = res and EnrollResponse(res)
     return render(request, 'quotes/thank_you.html',
@@ -1934,7 +2020,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
 
     request.session['applicant_enrolled'] = False
     request.session.modified = True
@@ -1977,12 +2062,12 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     coverage_duration = plan['Duration_Coverage']
 
     try:
-        preference : Optional[Dict]  = get_user_preference(request, form, plan)
-        coinsurance_percentage = preference['Coinsurance_Percentage']
-        benefit_amount = preference['Benefit_Amount']
-        coverage_maximum = preference['Coverage_Max']
-        input_change = preference['input_change']
-        plan_type = preference['plan_type']
+        preference_for_current_stm : Optional[Dict]  = get_user_preference(request, form, plan)
+        coinsurance_percentage = preference_for_current_stm['Coinsurance_Percentage']
+        benefit_amount = preference_for_current_stm['Benefit_Amount']
+        coverage_maximum = preference_for_current_stm['Coverage_Max']
+        input_change = preference_for_current_stm['input_change']
+        plan_type = preference_for_current_stm['plan_type']
     except TypeError as t:
         print(t)
 
@@ -1991,14 +2076,14 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         l = get_available_coins_against_benefit(plan_list, benefit_amount, plan)
         if coinsurance_percentage not in l:
             # coinsurance_percentage = min(l)
-            preference['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
+            preference_for_current_stm['Coinsurance_Percentage'] = coinsurance_percentage = min(l)
 
 
     elif input_change == 'Coinsurance_Percentage':
         l = get_available_benefit_against_coins(plan_list, coinsurance_percentage, plan)
         if benefit_amount not in l:
             # benefit_amount = min(l)
-            preference['Benefit_Amount'] = benefit_amount = min(l)
+            preference_for_current_stm['Benefit_Amount'] = benefit_amount = min(l)
 
 
     try:
@@ -2014,12 +2099,6 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     # Alternate plan found
     alternative_plan_url = alternative_plan['unique_url']
-
-    # Setting preference data
-    quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
-    quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
-    quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
-    quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
 
     request.session['stm_general_url_chosen'] = True
 
@@ -2040,7 +2119,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         addon_plan.data_as_dict() for addon_plan in selected_addon_plans
     ]
 
-    request.session['quote_request_preference_data'] = quote_request_preference_data
+    # update_session_preferenced_data(request, stm_name, preference_for_current_stm, coverage_duration)
 
     logger.info(f'PLAN: {alternative_plan}')
     logger.info("ADD-ON: {0}".format([s_add_on_plan.data_as_dict() for s_add_on_plan in selected_addon_plans]))
@@ -2053,10 +2132,41 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
             'benefit_amount': alternative_plan['out_of_pocket_value'],
             'coverage_maximum': alternative_plan['coverage_max_value'],
             'premium': plan_actual_premium(context=None, stm_plan=alternative_plan),
-            'related_plans' : get_related_plans(plan, preference, plan_list),
+            'related_plans' : get_related_plans(plan, preference_for_current_stm, plan_list),
             'plan_type': quote_request_form_data.get('Ins_Type'),
         }
     )
+
+
+def update_session_preferenced_data(request: WSGIRequest,
+                                    stm_name: str,
+                                    preference_for_current_stm: Union[dict, None],
+                                    coverage_duration: str,
+                                    plan: Dict = None) -> None:
+    """ Setting preference data. Note: preference has a input changed field that is unchanged. """
+    quote_request_preference_data = request.session.get('quote_request_preference_data', {})
+
+    try:
+        if plan is not None:
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [plan['Coinsurance_Percentage']]
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [plan['Benefit_Amount']]
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [plan['Coverage_Max']]
+
+        elif preference_for_current_stm is not None:
+            coinsurance_percentage = preference_for_current_stm['Coinsurance_Percentage']
+            benefit_amount = preference_for_current_stm['Benefit_Amount']
+            coverage_maximum = preference_for_current_stm['Coverage_Max']
+
+            quote_request_preference_data[stm_name]['Coinsurance_Percentage'] = [coinsurance_percentage]
+            quote_request_preference_data[stm_name]['Benefit_Amount'] = [benefit_amount]
+            quote_request_preference_data[stm_name]['Coverage_Max'] = [coverage_maximum]
+        quote_request_preference_data[stm_name]['Duration_Coverage'] = [coverage_duration]  # why not a dict of str Need to refractor.
+    except KeyError as k:
+        logger.warning(k)
+
+    request.session['quote_request_preference_data'] = quote_request_preference_data
+
+    return
 
 
 def get_related_plans(plan, preference_dict, plan_list):
@@ -2304,7 +2414,7 @@ def life_insurance(request):
 def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
     stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
     stm_dict_values = stm_dictionary.values()
-    stm_available_states = set().union(*[*stm_dict_values])
+    stm_available_states : set = set().union(*[*stm_dict_values])
 
     form_data = request.session.get('quote_request_form_data', None)
     if form_data is not None:
