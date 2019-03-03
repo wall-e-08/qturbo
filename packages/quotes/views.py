@@ -855,7 +855,7 @@ def save_to_db(plan: Dict,
 
             dependents = form_data.get('Dependents', None)
 
-            if form_data['Include_Spouse']:
+            if form_data['Include_Spouse'] == 'Yes':  # TODO: Proper fix.
                 qm.Dependent.objects.create(
                     stm_enroll=stm_enroll_obj,
                     Relation='Spouse',
