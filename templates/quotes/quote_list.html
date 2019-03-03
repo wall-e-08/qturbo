@@ -602,6 +602,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="container">
+            {% if benefits %}
+                <hr>
+                <h2>Benefits and Coverages:</h2>
+            {% endif %}
+            {% for benefit in benefits %}
+                <div class="qt-each-benefit" style="margin: 10px 0; display: inline-block;width: 100%;">
+                    <h4>{{ benefit.title }}</h4>
+                    <div>{{ benefit.description|safe }}</div>
+                </div>
+            {% endfor %}
+            
+        </div>
     </div>
 
     {% if ctx_app_url_exists %}

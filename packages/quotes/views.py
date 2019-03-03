@@ -388,8 +388,14 @@ def plan_quote(request, ins_type):
     print('------------------------\nquote_request_form_data: \n------------------------')
     print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
+    bncq = qm.BenefitsAndCoverage.objects.filter(plan__ins_type=ins_type)
+    bnc_for_return = []
+    for b in bncq:
+        if b.self == None:
+            bnc_for_return.append(b)
     return render(request, 'quotes/quote_list.html', {
-        'form_data': quote_request_form_data, 'xml_res': d
+        'form_data': quote_request_form_data, 'xml_res': d,
+        'benefits': bnc_for_return,
     })
 
 
@@ -2293,4 +2299,19 @@ def legal(request, slug):
 
 def life_insurance(request):
     return render(request, 'quotes/lifeinsurance.html')
+
+
+def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
+    stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
+    stm_dict_values = stm_dictionary.values()
+    stm_available_states = set().union(*[*stm_dict_values])
+
+    form_data = request.session.get('quote_request_form_data', None)
+    if form_data is not None:
+        user_state = form_data['State']
+        if user_state in stm_available_states:
+            return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'fail'})
+
 
