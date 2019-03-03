@@ -537,6 +537,43 @@ FEATURED_PLAN_PREMIUM_DICT = {
 }
 
 
+STM_PLAN_BENEFITS = {
+    'lifeshield-stm': {
+        '1': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '2': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '3': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+    },
+    'advanthealth-stm': {
+        '1': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '2': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '3': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+    }
+}
+
 # ------------------#
 #    Payment        #
 # ------------------#

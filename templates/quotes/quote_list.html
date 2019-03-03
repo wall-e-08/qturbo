@@ -30,7 +30,6 @@
         }
         .quote-tab-info-line {
             border: 1px solid #19B4FA;
-            {#margin: 0 15px;#}
             padding: 0;
             display: block;
         }
@@ -69,15 +68,18 @@
         }
         .row-eq-height, .row-eq-height > [class*='col-'] {
             display: -webkit-box;
-            display: -webkit-flex;
             display: -ms-flexbox;
             display: flex;
         }
         .row-eq-height {
-            flex-wrap: wrap;
+            -ms-flex-wrap: wrap;
+                flex-wrap: wrap;
         }
         .row-eq-height > [class*='col-'] {
-            flex-direction: column;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                    flex-direction: column;
         }
         #filter-sort {
             position: absolute;
@@ -89,8 +91,6 @@
             border: 1px solid #e7e7e7;
             border-top: 0;
             padding-bottom: 20px;
-            -webkit-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
-            -moz-box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
             box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.3);
         }
         .quote-sort-bar {
@@ -102,8 +102,7 @@
             }
         }
         .qt-each-plan{
-            margin-left:auto;
-            margin-right:auto;
+            margin: 0 auto 60px;
         }
         #filter-sort .row-eq-height .custom-check-holder {
             border: 1px solid #fe8829;
@@ -178,7 +177,62 @@
             right: 0;
             top: -16px;
         }
-    /* best seller end */
+        /* best seller end */
+
+        .lim-plan-info-wrapper,
+        .stm-plan-info-wrapper {
+            display: -ms-grid;
+            display: grid;
+            -ms-grid-columns: auto auto auto;
+            grid-template-columns: auto auto auto;
+            grid-template-areas: 
+                    'main main main'
+                    'main main main'
+                    'footer1 footer1 footer1'
+                    'footer2 footer2 footer2';
+            text-align: center !important;
+        }
+        .lim-plan-info-wrapper {
+            -ms-grid-columns: auto auto;
+                grid-template-columns: auto auto;
+            grid-template-areas: unset;
+        }
+        .grid-footer1 {
+            grid-area: footer1;
+        }
+        .grid-footer2 {
+            grid-area: footer2;
+            font-size: 30px !important;
+        }
+
+        .lim-plan-info-heading,
+        .stm-plan-info-heading {
+            background: #e0e2ff;
+            padding: 3px 4px;
+            font-size: 12px;
+            font-weight: bold;
+            border-collapse: collapse;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                    justify-content: center;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                    flex-direction: column;
+            box-shadow: 0 0 0 1px #000;
+        }
+
+        .lim-plan-info-wrapper > :not(.lim-plan-info-heading),
+        .stm-plan-info-wrapper > :not(.stm-plan-info-heading) {
+            box-shadow: 0 0 0 1px #000;
+            background: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a3ecc;
+        }
     </style>
 {% endblock extra_css %}
 
@@ -633,7 +687,7 @@
 <script src="{% static 'nhaquote_old/js/plugins/numeral.min.js' %}"></script>
 
 <script id="limited_plan_template" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+    <div class="col-xs-12 col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
                 <div class="">
@@ -657,7 +711,7 @@
                             </a>
                             </h4>
                     </div>
-                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                    {% comment %}<div class="plan-single-info" style="margin-top: 10px; text-align: left">
                         <p class="deductible">Premium: $[[actual_premium]]</p>
                     <div class="">
                         <p class="deductible">Enrollment Fee: $[[Enrollment_Fee]]</p>
@@ -672,6 +726,15 @@
                     [[/TelaDoc_Fee]]
                     </div>
                     </div>
+                    {% endcomment %}
+                    <div class="plan-single-info lim-plan-info-wrapper">
+                        <div class="lim-plan-info-heading">Premium</div>
+                        <div class="lim-plan-info-heading">Enrollment Fee</div>
+                         [[^TelaDoc_Fee]]<div class="lim-plan-info-heading">Administrative Fee</div>[[/TelaDoc_Fee]]
+                        <div>$[[actual_premium]]</div>
+                        <div>$[[Enrollment_Fee]]</div>
+                         [[^TelaDoc_Fee]]<div>$[[Administrative_Fee]]</div>[[/TelaDoc_Fee]]
+                    </div>
                     <div class="plan-select-btn">
                         <a href="/stm/plan/[[unique_url]]">Select this Plan</a>
                     </div>
@@ -683,7 +746,7 @@
 </script>
 
 <script id="anc_plan_template" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+    <div class="col-xs-12 col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
                 <div class="">
@@ -734,7 +797,7 @@
 </script>
 
 <script id="stm_plan_template" data-plans="" type="x-tmpl-mustache">
-    <div class="col-sm-6 col-md-4 mb-30 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
+    <div class="col-xs-12 col-sm-6 col-md-4 qt-each-plan [[#featured_plan]]featured-plan[[/featured_plan]]">
         <div class="h-100">
             <div class="quote-container">
                 <div class="">
@@ -758,7 +821,7 @@
                             </a>
                             </h4>
                     </div>
-                    <div class="plan-single-info" style="margin-top: 10px; text-align: left">
+                    {% comment %}<div class="plan-single-info" style="text-align: left">
                         <p class="deductible">Deductible: $[[option]]
                             <span data-content="The amount you pay before your health insurance plan begins to pay for the services you receive. Not everything you pay (such as your premium and copay) counts toward your deductible. For example, if your deductible is $1,000, your plan won't pay anything until you've met your $1,000 deductible for covered healthcare services subject to the deductible. Estimated Premium is based on a (Per Term Deductible)"
                                   data-placement="top" data-toggle="popover" data-container="body" class="info-icon"
@@ -795,6 +858,23 @@
                             <a class="js-glossary" href="javascript:void(0)">$[[copay_2]] [[copay_2_text]]</a>
                         </p>
                     </div>
+                    </div>{% endcomment %}
+
+                    <div class="plan-single-info stm-plan-info-wrapper">
+                        <div class="stm-plan-info-heading">Deductible</div>
+                        <div class="stm-plan-info-heading">Coinsurance</div>
+                        <div class="stm-plan-info-heading">Max Out of Pocket</div>
+                        <div>$[[option]]</div> {# deductible #}
+                        <div>[[Coinsurance_Percentage]]%</div>
+                        <div>$[[out_of_pocket_value]]</div>
+                        <p class="policy-max stm-plan-info-heading grid-footer1">
+                            <span data-content="The maximum dollar amount that a health insurance company agrees to pay on behalf of a member for covered services during the course of the coverage period."
+                               class="glossary-x js-popover-x" href="javascript:void(0);" data-toggle="popover"
+                               data-placement="top" data-container="body">
+                                Policy Max:
+                            </span>
+                        </p>
+                        <p class="policy-max grid-footer2">$[[coverage_max_value]]</p>
                     </div>
                     <div class="plan-select-btn">
                         <a class="stm-plan-unique-url" data-unique-url="[[unique_url]]" href="/stm/plan/[[general_url]]">Select this Plan</a>
