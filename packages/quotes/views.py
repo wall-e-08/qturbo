@@ -573,7 +573,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                   # 'quotes/stm_plan.html',
                   'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
                   {'plan': plan, 'related_plans': related_plans,
-                   'plan_benefits_from_settings': settings.STM_PLAN_BENEFITS.get(plan['plan_name_for_img'], []).get(plan['Plan'], []),
+                   'plan_benefits_from_settings': settings.STM_PLAN_BENEFITS.get(plan['plan_name_for_img'], []).get(plan['Plan'], []) if ins_type == 'stm' else [],
                    'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans, 'selected_addon_plans': selected_addon_plans,
                    'remaining_addon_plans': remaining_addon_plans,
