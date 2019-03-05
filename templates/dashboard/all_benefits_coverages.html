@@ -1,0 +1,116 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ bnc_type|capfirst }} Benefits & Coverages | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Benefits & Coverages</a></li>
+    {% if bnc_type == 'core' %}
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:all_benefits_coverages' 'bridged' %}">Bridged</a></li>
+    {% elif bnc_type == 'bridged' %}
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:all_benefits_coverages' 'core' %}">Core</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active">{{ bnc_type|capfirst }}</li>
+{% endblock %}
+
+{% block head_css %}
+    <style>
+        .svg-container svg {
+            width: 50px !important;
+            height: 50px !important;
+        }
+        form img {
+            padding: 10px;
+            border: 1px solid #898;
+            margin-top: 16px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                {% if bncs %}
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <h1 class="font-wight-600 mb-4">All {{ bnc_type }} Benefits & Coverages</h1>
+                            <div class="">
+                                {% if bnc_type == 'core' %}
+                                    <a href="{% url 'dashboard:create_benefits_coverages' bnc_type='core' %}" class="btn btn-success btn-lg">+ Add new {{ bnc_type }} Benefits & Coverages</a>
+                                {% elif bnc_type == 'bridged' %}
+                                    <a href="{% url 'dashboard:create_benefits_coverages' bnc_type='bridged' %}" class="btn btn-success btn-lg">+ Add new {{ bnc_type }} Benefits & Coverages</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <table class="table text-center bg-light d-lg-table table-bordered table-responsive">
+                            <thead>
+                                <tr class="table-black">
+                                    <th class="align-middle" scope="col">#</th>
+                                    <th class="align-middle" scope="col">Title</th>
+                                    <th class="align-middle" scope="col">Plan</th>
+                                    <th class="align-middle" scope="col">Icon/Image</th>
+                                    <th class="align-middle" scope="col">Display Order</th>
+{#                                    <th class="align-middle" scope="col">Date</th>#}
+                                    <th class="align-middle" scope="col">Edit</th>
+                                    <th class="align-middle" scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bnc in bncs %}
+                                    <tr>
+                                        <th class="align-middle" scope="row">{{ forloop.counter }}</th>
+                                        <td class="align-middle">
+                                            {% if bnc_type == 'core' %}
+                                                {{ bnc.title|truncatechars:"20" }}
+                                            {% elif bnc_type == 'bridged' %}
+                                                {{ bnc.self_fk.title|truncatechars:"20" }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle">
+                                            {{ bnc.plan }} - {{ bnc.plan_number|default:'all' }}
+                                        </td>
+                                        <td class="align-middle">
+                                            {% if bnc_type == 'core' %}
+                                                {% if bnc.image %}
+                                                    <img width="30px" src="{{ bnc.image.url }}" alt="{{ bnc.title|truncatechars:"20" }}">
+                                                {% else %}-{% endif %}
+                                            {% elif bnc_type == 'bridged' %}
+                                                {% if bnc.self_fk.image %}
+                                                    <img width="30px" src="{{ bnc.self_fk.image.url }}" alt="{{ bnc.self_fk.title|truncatechars:"20" }}">
+                                                {% else %}-{% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <th class="align-middle" scope="row"><h3 class="font-weight-bold">{{ bnc.order_serial }}</h3></th>
+{#                                        <td class="align-middle"><span class="font-sm">{{ bnc.create_time }}</span></td>#}
+                                        <td class="align-middle">
+                                            <a href="{% url 'dashboard:edit_benefits_coverages' bnc_type=bnc_type bnc_id=bnc.id %}" class="btn btn-info dsb-edit-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="white">
+                                                    <path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z"></path>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="#" class="btn btn-danger disabled"
+                                                    {% comment %}data-href="{% url 'dashboard:delete_benefits_coverages' bnc.id %}" data-toggle="modal" data-target="#delete_confirmation"{% endcomment %}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="white">
+                                                    <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                {% else %}
+                    <p class="my-5">No Benefits & coverages found!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

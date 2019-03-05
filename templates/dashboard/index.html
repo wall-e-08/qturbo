@@ -7,7 +7,7 @@ Home | {{ block.super }}
 
 {% block dashboard_content %}
     <div class="container">
-        <h2>Edit General Item <a class="btn btn-success" href="{% url 'dashboard:edit_general_topic' %}">Here</a></h2>
+        <h3>Edit General Item <a class="btn btn-success" href="{% url 'dashboard:edit_general_topic' %}">Here</a></h3>
         <hr>
         <dsb-card-items></dsb-card-items>
     </div>
@@ -51,6 +51,19 @@ Home | {{ block.super }}
                                         <span class="badge badge-danger">[[ dsb_item.section.count ]]</span>
                                     </h5>
                                     <a :href="[[ dsb_item.section.url ]]" class="btn btn-outline-primary">All Sections</a>
+                                </div>
+                            </template>
+                            <template v-if="dsb_item.bridged_item">
+                                <hr class="w-100">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <h5 class="card-title font-wight-600">
+                                        Total Bridged [[ dsb_item.item.only_name ]]
+                                        <span class="badge badge-danger">[[ dsb_item.bridged_item.count ]]</span>
+                                    </h5>
+                                    <a :href="[[ dsb_item.bridged_item.url ]]" class="btn btn-outline-primary">All Bridged [[ dsb_item.item.only_name ]]s</a>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <a :href="[[ dsb_item.bridged_item.new_url ]]" class="btn btn-success qt-dsb-btn-box-shadow">Add new Bridged [[ dsb_item.item.only_name ]]s</a>
                                 </div>
                             </template>
                         </div>
@@ -134,6 +147,32 @@ Home | {{ block.super }}
                             count: "{{ data.menu.count }}",
                             url: "{% url 'dashboard:all_menus' %}",
                             new_url: "{% url 'dashboard:create_menu' %}",
+                        },
+                    },{
+                        item: {
+                            name: "Core Benefit",
+                            only_name: "Benefit",
+                            count: "{{ data.bnc.core_count }}",
+                            url: "{% url 'dashboard:all_benefits_coverages' 'core' %}",
+                            new_url: "{% url 'dashboard:create_benefits_coverages' bnc_type='core' %}",
+                        },
+                        bridged_item: {
+                            count: "{{ data.bnc.bridged_count }}",
+                            url: "{% url 'dashboard:all_benefits_coverages' 'bridged' %}",
+                            new_url: "{% url 'dashboard:create_benefits_coverages' bnc_type='bridged' %}",
+                        },
+                    },{
+                        item: {
+                            name: "Core Disclaimer",
+                            only_name: "Disclaimer",
+                            count: "{{ data.dnr.core_count }}",
+                            url: "{% url 'dashboard:all_disclaimers_restrictions' 'core' %}",
+                            new_url: "{% url 'dashboard:create_disclaimers_restrictions' dnr_type='core' %}",
+                        },
+                        bridged_item: {
+                            count: "{{ data.dnr.bridged_count }}",
+                            url: "{% url 'dashboard:all_disclaimers_restrictions' 'bridged' %}",
+                            new_url: "{% url 'dashboard:create_disclaimers_restrictions' dnr_type='bridged' %}",
                         },
                     },],
                 }

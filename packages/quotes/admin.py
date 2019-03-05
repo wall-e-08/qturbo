@@ -14,7 +14,7 @@ class BenefitsAndCoverageAdmin(admin.ModelAdmin):
     list_filter = ['plan']
 
     def _title(self, obj):
-        return obj.self.title if obj.self else obj.title
+        return obj.self_fk.title if obj.self_fk else obj.title
     _title.short_description = 'Title'
 
     def _img(self, obj):

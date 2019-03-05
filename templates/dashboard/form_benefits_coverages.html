@@ -1,0 +1,238 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+
+{% block title %}{{ item_type|capfirst }} Benefits & Coverages | {{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Benefits & Coverages</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_benefits_coverages' 'bridged' %}">Bridged</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:all_benefits_coverages' 'core' %}">Core</a></li>
+    <li class="breadcrumb-item active">{{ action|capfirst }} {{ item_type|capfirst }}</li>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="container">
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-md-12">
+                <h1>{% if action.lower == 'create' %}Add New{% else %}Edit{% endif %} Benefits & Coverages</h1>
+                {% if item_type == 'core' %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.plan.id_for_label }}">Plan</label>
+                                    <select class="form-control" id="{{ form.plan.id_for_label }}" name="{{ form.plan.name }}">
+                                        {% for val, opt in form.fields.plan.choices %}
+                                            <option value="{{ val }}"{% if form.plan.value == val %} selected{% endif %} xxx="{{ opt.is_active }}">{{ opt }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    {% if form.plan.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.plan.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.plan_number.id_for_label }}">Plan Number</label>
+                                    <input type="text"
+                                           class="form-control {% if form.plan_number.errors %}border-danger{% endif %}"
+                                           name="{{ form.plan_number.name }}"
+                                           id="{{ form.plan_number.id_for_label }}"
+                                           value="{{ form.plan_number.value|default:'' }}"
+                                           placeholder="Plan Number">
+
+                                    {% if form.plan_number.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.plan_number.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="{{ form.title.id_for_label }}">Title</label>
+                                    <input type="text"
+                                           class="form-control {% if form.title.errors %}border-danger{% endif %}"
+                                           name="{{ form.title.name }}"
+                                           id="{{ form.title.id_for_label }}"
+                                           value="{{ form.title.value|default:'' }}"
+                                           placeholder="Title">
+
+                                    {% if form.title.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.title.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-6">
+                                    <label for="{{ form.order_serial.id_for_label }}">Display Order (lower comes first)</label>
+                                    <input type="number"
+                                           class="form-control {% if form.order_serial.errors %}border-danger{% endif %}"
+                                           name="{{ form.order_serial.name }}"
+                                           id="{{ form.order_serial.id_for_label }}"
+                                           value="{{ form.order_serial.value|default:0 }}"
+                                           placeholder="Display Order">
+
+                                    {% if form.order_serial.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.order_serial.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group border border-secondary p-2">
+                            <div class="row">
+                                <div class="col-8">
+                                    <label for="{{ form.image.id_for_label }}">Image</label>
+                                    <b-form-file accept=".jpg, .png, .gif"
+                                                 class="form-control {% if form.image.errors %}border-danger{% endif %}"
+                                                 name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" placeholder="{{ form.image.value|default:'' }}"
+                                                 value="{{ form.image.value|default:'' }}"></b-form-file>
+                                    {% if form.image.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.image.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-4 text-center">
+                                    {% if form.image.value %}<img width="80" src="/media/{{ form.image.value }}" alt="No image found! Try reloading">{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                            <label for="{{ form.description.id_for_label }}">Description (List preferred)</label>
+                            <textarea class="form-control {% if form.description.errors %}border-danger{% endif %}"
+                                      name="{{ form.description.name }}"
+                                      id="{{ form.description.id_for_label }}">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="form_field_error text-danger form-input-error">{{ form.description.errors|join:" " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </form>
+                {% elif item_type == 'bridged' %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="{{ form.plan.id_for_label }}">Plan</label>
+                                    <select class="form-control" id="{{ form.plan.id_for_label }}" name="{{ form.plan.name }}">
+                                        {% for val, opt in form.fields.plan.choices %}
+                                            <option value="{{ val }}"{% if form.plan.value == val %} selected{% endif %} xxx="{{ opt.is_active }}">{{ opt }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    {% if form.plan.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.plan.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-4">
+                                    <label for="{{ form.plan_number.id_for_label }}">Plan Number</label>
+                                    <input type="text"
+                                           class="form-control {% if form.plan_number.errors %}border-danger{% endif %}"
+                                           name="{{ form.plan_number.name }}"
+                                           id="{{ form.plan_number.id_for_label }}"
+                                           value="{{ form.plan_number.value|default:'' }}"
+                                           placeholder="Plan Number">
+
+                                    {% if form.plan_number.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.plan_number.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-4">
+                                    <label for="{{ form.order_serial.id_for_label }}">Display Order (lower comes first)</label>
+                                    <input type="number"
+                                           class="form-control {% if form.order_serial.errors %}border-danger{% endif %}"
+                                           name="{{ form.order_serial.name }}"
+                                           id="{{ form.order_serial.id_for_label }}"
+                                           value="{{ form.order_serial.value|default:0 }}"
+                                           placeholder="Display Order">
+
+                                    {% if form.order_serial.errors %}
+                                        <div class="form_field_error text-danger form-input-error">{{ form.order_serial.errors|join:" " }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <self_fk></self_fk>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block vue_templates %}
+    <script type="text/x-template" id="self_fk-template">
+        <div class="form-group p-md-3 p-2 mb-4 border border-dark">
+            <label for="{{ form.self_fk.id_for_label }}">Similar to</label>
+            <select class="form-control" id="{{ form.self_fk.id_for_label }}" name="{{ form.self_fk.name }}" @change="change_data">
+                {% for val, opt in form.fields.self_fk.choices %}
+                    <option value="{{ val }}"{% if form.self_fk.value == val %} selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+            <hr>
+            <hr>
+            <div class="row">
+                <div class="col-6">
+                    <h4 class="font-weight-bold mb-0">Title: <span class="font-weight-normal">[[ selected_data.title ]]</span></h4>
+                </div>
+                <div class="col-6">
+                    <h4 class="font-weight-bold mb-2">Image:</h4>
+                    <img width="100" :src="selected_data.img_src" alt="">
+                </div>
+                <hr>
+                <div class="col-12"><span class="font-weight-bold">Description:</span> <div v-html="selected_data.desc"></div></div>
+            </div>
+            {% if form.self_fk.errors %}
+                <div class="form_field_error text-danger form-input-error">{{ form.self_fk.errors|join:" " }}</div>
+            {% endif %}
+        </div>
+
+    </script>
+{% endblock %}
+
+
+{% block bottom_js %}
+    {% if item_type == 'core' %}
+        {% with selectors='#'|add:form.description.id_for_label non_container=True  %}
+            {% include 'snippets/tinymc-init.html' %}
+        {% endwith %}
+    {% endif %}
+
+    <script>
+        all_components['self_fk'] = {
+            template: '#self_fk-template',
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                    all_data: [],
+                    selected_data: {},
+                }
+            },
+            methods: {
+                change_data: function (e) {
+                    this.selected_data = this.all_data[e.target.value]
+                }
+            },
+            created() {
+                {% for core in all_core_data %}
+                    this.all_data[{{ core.id }}] = {
+                        title: '{{ core.title }}',
+                        img_src: '{% if core.image %}/media/{{ core.image }}{% endif %}',
+                        desc: `{{ core.description|safe }}`,
+                    };
+                {% endfor %}
+                {% if form.self_fk.value %}this.selected_data = this.all_data[{{ form.self_fk.value }}];{% endif %}
+            },
+        }
+    </script>
+{% endblock %}
+
