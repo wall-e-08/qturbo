@@ -620,7 +620,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    })
 
 
-def stm_apply(request, plan_url) -> HttpResponse:
+def stm_apply(request: WSGIRequest, plan_url: str) -> HttpResponse:
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
     request.session.modified = True

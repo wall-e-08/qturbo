@@ -416,7 +416,6 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         "sorting_conditions": {}
     }
 
-    addon_plans = {}
     sorting_conditions = {}
     errors = []
     for redis_key in redis_keys:
