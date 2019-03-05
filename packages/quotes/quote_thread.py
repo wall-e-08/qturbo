@@ -102,6 +102,8 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
     # time.sleep(15)
     results = thread(tasks, n=36)
     num_of_tasks = len(tasks)
+    # time1 = datetime.datetime.now(tz=pytz.timezone('Asia/Dhaka'))
+    # print(f'==============> Start time is {time1}')
     addon_plans = []
     print('num_of_tasks: ', num_of_tasks)
     while num_of_tasks > 0:
@@ -133,6 +135,10 @@ def threaded_request(form_data, session_key, selection_data=None) -> int:
         num_of_tasks -= 1
         print('remaining num_of_tasks: ', num_of_tasks)
 
+    # time2 = datetime.datetime.now(tz=pytz.timezone('Asia/Dhaka'))
+    # print(f'==============> End time is {time2}')
+    #
+    # print(f'Total time required {(time2-time1).seconds} seconds')
 
 
     if form_data['Ins_Type'] == 'stm':

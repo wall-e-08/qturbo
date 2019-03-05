@@ -1,5 +1,6 @@
 import copy
 import json
+import time
 from urllib import request
 
 import requests
@@ -35,7 +36,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     get_available_benefit_against_coins, get_neighbour_plans_and_attrs, is_ins_type_valid,
                     has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context)
 from .logger import VimmLogger
-from .tasks import StmPlanTask, LimPlanTask, AncPlanTask
+from .tasks import StmPlanTask, LimPlanTask, AncPlanTask, prepare_tasks, post_process_task
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
 
 import quotes.models as qm
@@ -212,8 +213,16 @@ def start_celery(request: WSGIRequest) -> True:
 
             redis_conn.set(redis_key_done_data, json.dumps(quote_request_done_data))
 
-            StmPlanTask.delay(request.session.session_key, form_data,
-                              quote_request_preference_data)
+            # StmPlanTask.delay(request.session.session_key, form_data,
+            #                   quote_request_preference_data)
+
+            prepare_tasks(
+                form_data=copy.deepcopy(form_data),
+                ins_type=ins_type,
+                session_identifier_quote_store_key = redis_key,
+                request=request
+            )
+
 
         elif ins_type == 'lim':
             LimPlanTask.delay(request.session.session_key, form_data)
@@ -254,6 +263,10 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
                     [policy_max_from_income(int(quote_request_form_data['Annual_Income']), plan_name)]
 
         request.session['quote_request_preference_data'] = quote_request_preference_data
+
+        redis_status_key = f'{get_redis_key(request, ins_type)}##status'
+        while post_process_task_view(request) != 'complete' or request.session.get(redis_status_key) != 'complete':
+            time.sleep(3)
 
         response = {
             'status': 'success',
@@ -1442,9 +1455,9 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     preference = request.session.get('quote_request_preference_data', {})
     request.session.modified = True
 
-    plan_list = []
-
     redis_key = get_redis_key(request, ins_type)
+    plans = json_decoder.decode(redis_conn.get(redis_key).decode())
+    plan_list = plans.get('stm_plans')
 
     if not quote_request_form_data or not redis_conn.exists(redis_key):
         plan_list = ['START', 'END']
@@ -1452,39 +1465,63 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
         'monthly_plans': plan_list # TODO: Properly handle error
     })
 
+    if plan_list:
+        carriers = set(x['Name'] for x in plan_list[1:-1])
 
-    for pdx, matched_plan in enumerate(redis_conn.lrange(redis_key, 0, -1)):
-        decoded_plan = json_decoder.decode(matched_plan.decode())
+    def filter_stm_plans(plan: Dict) -> bool:
+        if (plan['Duration_Coverage'] not in preference[plan['Name']]['Duration_Coverage'] or
+                plan['Coverage_Max'] not in preference[plan['Name']]['Coverage_Max'] or
+                plan['Coinsurance_Percentage'] not in preference[plan['Name']]['Coinsurance_Percentage'] or
+                plan['Benefit_Amount'] not in preference[plan['Name']]['Benefit_Amount']):
 
-        if decoded_plan == 'START':
-            pass
+                    return False
+        return True
 
-        elif decoded_plan == 'END':
-            carrier_list = set(x['Name'] for x in plan_list[1:-1])
+    plan_list = list(filter(filter_stm_plans, plan_list))
 
-            for carrier_name in carrier_list:
-                featured_plan = get_featured_plan(carrier_name, plan_list, ins_type)
-                if featured_plan:
-                    featured_plan['featured_plan'] = True
-                    plan_list[plan_list.index(featured_plan)] = featured_plan
-                else:
-                    print(f'Featured plan not found for {carrier_name}')
+    for carrier in carriers:
+        featured_plan = get_featured_plan(carrier, plan_list, ins_type)
+        if featured_plan:
+            featured_plan['featured_plan'] = True
+            plan_list[plan_list.index(featured_plan)] = featured_plan
+        else:
+            print(f'Featured plan not found for {carrier}')
 
-        elif ins_type == 'stm' and decoded_plan['Name'] in [*preference]:
-            if (
-                    decoded_plan['Duration_Coverage'] not in preference[decoded_plan['Name']]['Duration_Coverage'] or
-                    decoded_plan['Coverage_Max'] not in preference[decoded_plan['Name']]['Coverage_Max'] or
-                    decoded_plan['Coinsurance_Percentage'] not in preference[decoded_plan['Name']]['Coinsurance_Percentage'] or
-                    decoded_plan['Benefit_Amount'] not in preference[decoded_plan['Name']]['Benefit_Amount']
-            ):
-                continue
 
-        plan_list.append(decoded_plan)
+    plan_list.insert(0, 'START')
+    plan_list.append('END')
 
 
     return JsonResponse({
         'monthly_plans': plan_list,
     })
+
+
+def post_process_task_view(request: WSGIRequest):
+    quote_request_form_data = request.session.get('quote_request_form_data', {})
+    logger.info('Showing available plan lists...')
+
+    if quote_request_form_data and not form_data_is_valid(quote_request_form_data):
+        quote_request_form_data = {}
+        request.session['quote_request_form_data'] = {}
+        request.session.modified = True
+    if not quote_request_form_data:
+        return JsonResponse({'error': 'Invalid form Data', 'status': 'invalid'})
+
+    quote_store_key = quote_request_form_data.get('quote_store_key')
+    session_identifier_quote_store_key = "{0}:{1}".format(request.session.session_key, quote_store_key)
+    session_quote_store_key_status = '{}##status'.format(session_identifier_quote_store_key)
+    status = request.session.get(session_quote_store_key_status)
+
+    print('status: {}'.format(status))
+    if status != 'processing':
+        print('status: {}'.format(status))
+        # return JsonResponse({'status': status})
+    status = post_process_task(quote_request_form_data, session_identifier_quote_store_key, request)
+    print('status: {}'.format(status))
+    # return JsonResponse({'status': status})
+    return status
+
 
 
 

@@ -121,6 +121,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
 CELERY_TASK_ROUTES = {
+    'quotes.tasks.ProcessTask': {'queue': 'process_task'},
+
     'quotes.tasks.StmPlanTask': {'queue': 'stm'},
     'quotes.tasks.LimPlanTask': {'queue': 'lim'},
     'quotes.tasks.AncPlanTask': {'queue': 'anc'},
@@ -410,27 +412,7 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
 # Carrier specific plan attributes   +
 # -----------------------------------+
 
-# TODO: Quote request should use these values OR initial quote should be fully hardcoded
-CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
-    'LifeShield STM': ['0', '2000', '3000', '4000', '5000'],
-    'AdvantHealth STM': ['2000', '4000']
-}
-
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE = {
-    'LifeShield STM': ['80/20', '50/50', '70/30', '100/0'],
-    'AdvantHealth STM': ['80/20']
-}
-
-
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
-    'LifeShield STM': ['0', '20', '30', '50'],
-    'AdvantHealth STM': ['20']
-}
-
-CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
-    'AdvantHealth STM': ['250000', '500000', '1000000'],
-    'LifeShield STM': ['250000', '750000', '1000000', '1500000']
-}
+# None
 
 # --------------+
 #    Income     +

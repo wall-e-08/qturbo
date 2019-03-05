@@ -5,6 +5,7 @@ import html
 import time
 import datetime
 from typing import List
+from copy import deepcopy as _cpy
 
 import requests
 from xml.dom import minidom
@@ -22,6 +23,7 @@ from quotes.quote_response import (StmQuoteResponse, EverestResponse, HealtheFle
                                         LegionLimitedMedicalResponse, USADentalResponse, FoundationDentalResponse,
                                         FreedomSpiritPlusResponse, SafeguardCriticalIllnessResponse)
 from quotes.us_states import states
+from quotes.utils import clean_number
 
 MONTH_OPTION_PATTERN = re.compile(r'^Option(?P<option_for>\d+)$')
 
@@ -53,6 +55,8 @@ class QRXmlBase(object):
     User_ID = settings.QUOTE_REQUEST_USER_ID
 
     def __init__(self, **kwargs):
+        self.api_error = False
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -624,23 +628,15 @@ class UnifiedXml(QRXmlBase):
 
 class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                     DurationCoverageMixIn, BenefitAmountMixIn):
-    """
-    The dictinaries _Coin_P, _D_C, _B_A, _C_M has a key named 'values'. It's confusing and should be addressed.
-    """
 
     Plan_ID = 112
 
     Name = 'LifeShield STM'
 
-    # '80/20', '50/50', '70/30', '100/0'
-    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE[Name]}
-
-    _D_C = {'attr': 'Duration_Coverage', 'values': []} # This value gets overwritten.
-
-    # '2000', '3000', '4000', '5000'
-    _B_A = {'attr': 'Benefit_Amount', 'values': settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[Name]}
-
-    _C_M = {'attr': 'Coverage_Max', 'values': ['250000', '750000', '1000000', '1500000']}
+    _Coin_P = {'attr': 'Coinsurance_Percentage', 'default_values': ['100/0', '80/20', '50/50', '70/30']}
+    _D_C = {'attr': 'Duration_Coverage', 'default_values': ['12*1', '12*3']}
+    _B_A = {'attr': 'Benefit_Amount', 'default_values': ['2000', '3000', '4000', '5000']}
+    _C_M = {'attr': 'Coverage_Max', 'default_values': ['250000', '750000', '1000000']}
 
     def name(self):
         return self.Name
@@ -649,11 +645,20 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
         return REQUEST_ATTRS + ['Payment_Option', 'Duration_Coverage', 'Coinsurance_Percentage',
                                 'Benefit_Amount', 'Coverage_Max', 'Tobacco', 'Dependents']
 
+    def _get_request_data_combination(self):
+        return "{0}-{1}-{2}-{3}-{4}-{5}".format(self.quote_store_key, self.Name, self.Duration_Coverage,
+                                                self.Coinsurance_Percentage, self.Benefit_Amount,
+                                                self.Coverage_Max)
+
+
     @classmethod
-    def all(cls, data):
+    def all(cls, data, request_options=None, request=None):
+        if request:
+            data['request'] = request
+
+        print('LifeShieldXML:request_options: {0}'.format(request_options))
         lst = []
         data_tuple_lst = []
-
         if int(data['Payment_Option']) == 2:
             data['Duration_Coverage'] = data.get('Coverage_Days')
 
@@ -664,14 +669,76 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
             if data['Coinsurance_Percentage'] == '100/0':
                 data['Benefit_Amount'] = '0'
 
+            # removing duplicate data, if any
             data_tuple = tuple(data.values())
             if data_tuple in data_tuple_lst:
                 continue
             data_tuple_lst.append(data_tuple)
 
-            lst.append(cls(**data))
+            if (request_options and request_options.get('Coinsurance_Percentage') and
+                    data['Coinsurance_Percentage'] not in request_options['Coinsurance_Percentage']):
+                continue
+            if (request_options and request_options.get('Coverage_Max') and
+                    data['Coverage_Max'] not in request_options['Coverage_Max']):
+                continue
+            if (request_options and request_options.get('Benefit_Amount') and
+                    data['Benefit_Amount'] not in request_options['Benefit_Amount']):
+                continue
 
-        print('LifeShield TOTAL REQUEST:', len(lst))
+            lst.append(cls(**data))
+        print('LIFESHIELD TOTAL REQUEST: {0}'.format(len(lst)))
+        print("connection: {0}".format(len(lst)))
+        return lst
+
+    @classmethod
+    def all_rates(cls, data, ins_type, plan_id, request_options=None, request=None):
+        form_data = _cpy(data)
+
+        data['Coinsurance_Percentage'] = None
+        data['Coverage_Max'] = None
+        data['Out_Of_Pocket'] = None
+        data['Duration_Coverage'] = None
+
+        if request:
+            data['request'] = request
+        lst = []
+        # format (payload, data, ins_type, product_ids, cls.__name__, plan_id, api_source)
+        data_tuple_lst = []
+        if int(data['Payment_Option']) == 2:
+            data['Duration_Coverage'] = data.get('Coverage_Days')
+
+        for cbn in cls._combination_data(data):
+            data.update(cbn)
+
+            # adjustment for 0% Co-Insurance Percentage
+            if data['Coinsurance_Percentage'] == '100/0':
+                data['Benefit_Amount'] = '0'
+
+            # removing duplicate data, if any
+            data_tuple = tuple(data.values())
+            if data_tuple in data_tuple_lst:
+                continue
+            data_tuple_lst.append(data_tuple)
+
+            if (request_options and request_options.get('Coinsurance_Percentage') and
+                    data['Coinsurance_Percentage'] not in request_options['Coinsurance_Percentage']):
+                continue
+            if (request_options and request_options.get('Coverage_Max') and
+                    data['Coverage_Max'] not in request_options['Coverage_Max']):
+                continue
+            if (request_options and request_options.get('Benefit_Amount') and
+                    data['Benefit_Amount'] not in request_options['Benefit_Amount']):
+                continue
+
+            lst.append(dict(
+                payload=_cpy(data),
+                form_data=form_data,
+                ins_type=ins_type,
+                cls_name=cls.__name__,
+                plan_id=plan_id,
+                carrier_name=cls.Name
+            ))
+        print('LIFESHIELD TOTAL REQUEST: {0}'.format(len(lst)))
         return lst
 
     @classmethod
@@ -681,23 +748,30 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                     for cm in cls._C_M['values'] for ba in cls._B_A['values']
                     for cp in cls._Coin_P['values']]
 
+        cls._Coin_P['values'] = ([data['Coinsurance_Percentage']] if data['Coinsurance_Percentage'] in
+                                 cls._Coin_P['default_values'] else cls._Coin_P['default_values'])
+
+        cls._C_M['values'] = ([clean_number(data['Coverage_Max'])] if clean_number(data['Coverage_Max']) in
+                              cls._C_M['default_values'] else cls._C_M['default_values'])
+
+        cls._B_A['values'] = ([clean_number(data['Out_Of_Pocket'])] if clean_number(data['Out_Of_Pocket']) in
+                              cls._B_A['default_values'] else cls._B_A['default_values'])
+
+        cls._D_C['values'] = ([str(data['Duration_Coverage'])] if data['Duration_Coverage'] in
+                              cls._D_C else cls._D_C['default_values'])
+
         return [{cls._Coin_P['attr']: cp, cls._D_C['attr']: dc,
                  cls._B_A['attr']: ba, cls._C_M['attr']: cm}
                 for cm in cls._C_M['values'] for ba in cls._B_A['values']
                 for dc in cls._D_C['values'] for cp in cls._Coin_P['values']]
 
-
-
     def _get_coverage_max(self):
         return self.Coverage_Max
 
-    def _get_request_data_combination(self):
-        return "{0}-{1}-{2}-{3}-{4}-{5}".format(self.quote_store_key, self.Name, self.Duration_Coverage,
-                                                self.Coinsurance_Percentage, self.Benefit_Amount,
-                                                self.Coverage_Max)
-
     def process_response(self):
         response = self.get_response()
+        print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
+        print('{} Response: {}'.format(self.__class__.__name__, response))
         if response is None:
             self.formatted_response = None
             return
@@ -708,7 +782,8 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                                                      self.quote_request_timestamp,
                                                      self.get_plan_duration_coverage_value(),
                                                      self.Plan_ID, self.Payment_Option,
-                                                     self._get_request_data_combination())
+                                                     self._get_request_data_combination()
+                                                     )
 
 
 class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
@@ -776,13 +851,7 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                 for dc in cls._D_C['values'] for cp in cls._Coin_P['values']]
 
     def _get_coverage_max(self):
-        # print(f'0 plans found. Showing 0 plans.{self.toXML()}')
         return self.Coverage_Max
-
-    def _get_request_data_combination(self):
-        return "{0}-{1}-{2}-{3}-{4}-{5}".format(self.quote_store_key, self.Name, self.Duration_Coverage,
-                                                self.Coinsurance_Percentage, self.Benefit_Amount,
-                                                self.Coverage_Max)
 
     def process_response(self):
         response = self.get_response()
@@ -1114,6 +1183,22 @@ class SafeguardCriticalIllnessXml(QRXmlBase):
             self.Name, response, self.State, self.Plan_ID,
             self.quote_request_timestamp,
             self._get_request_data_combination())
+
+PROVIDERS = {
+    'Everest STM': EverestXml,
+    'LifeShield STM': LifeShieldXML,
+    'AdvantHealth STM': AdvantHealthXML,
+
+    'Cardinal Choice': CardinalChoiceXml,
+    'Health Choice': HealthChoiceXml,
+    'Vitala Care': VitalaCareXml,
+    'Legion Limited Medical': LegionLimitedMedicalXml,
+
+    # 'hii_0048': FoundationDentalXml,
+    # 'hii_0064': FreedomSpiritPlusXml,
+    # 'hii_0079': USADentalXml,
+    # 'hii_0088': SafeguardCriticalIllnessXml,
+}
 
 
 insurance_selector = {
