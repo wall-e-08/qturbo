@@ -247,8 +247,6 @@ class LimQRXmlBase(QRXmlBase):
         )]
 
 
-
-
 class DependentsMixIn(object):
 
     fields = ['Gender', 'DOB', 'Age']
@@ -1114,7 +1112,7 @@ class CardinalChoiceXml(LimQRXmlBase):
                                                    self.quote_request_timestamp, self._get_request_data_combination())
 
 
-class VitalaCareXml(QRXmlBase):
+class VitalaCareXml(LimQRXmlBase):
 
     Plan_ID = '153'
     Name = 'Vitala Care'
