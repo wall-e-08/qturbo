@@ -20,7 +20,8 @@ from celery.utils.log import get_task_logger
 
 # from quotes.mail import send_mail
 from quotes.models import Carrier
-from quotes.quote_thread import threaded_request, new_addon_plan_to_add, addon_plans_from_json_data
+from quotes.quote_thread import threaded_request, new_addon_plan_to_add, addon_plans_from_json_data, \
+    addon_plans_from_dict
 from quotes.quote_request import PROVIDERS
 # from quotes.models import StmEnroll
 from quotes.logger import VimmLogger
@@ -412,8 +413,7 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         "sorting_conditions": {}
     }
 
-    addon_plans = []
-    addon_plans_api_sources = []
+    addon_plans = {}
     sorting_conditions = {}
     errors = []
     for redis_key in redis_keys:
@@ -429,7 +429,15 @@ def post_process_task(data, session_identifier_quote_store_key, request):
                 print("api_error")
                 continue
             else:
-                addon_plans += content.get("addon_plans", [])
+                addon_list_of_dict = content.get("addon_plans", [])
+                plan_name = content['plan_name']
+                addon_plan_redis_key = "{0}:{1}".format(session_identifier_quote_store_key, plan_name.lower().replace(" ", '-'))
+                new_addon_plans = new_addon_plan_to_add(
+                    addon_plans_from_json_data(REDIS_CLIENT.lrange(addon_plan_redis_key, 0, -1)),
+                    set(addon_plans_from_dict(addon_list_of_dict))
+                )
+                for new_addon_plan in new_addon_plans:
+                    REDIS_CLIENT.rpush(addon_plan_redis_key, new_addon_plan)
             continue
         return 'processing'
     else:
@@ -472,18 +480,6 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         if errors:
             results['errors'] = errors
         print('--------\n\n\ncontents: {}\n\n\n-------'.format(results))
-
-        # changing add-on plan for child applicant - lifeshield stm only **** checked
-        if data.get('provider', False) and data['provider'] in ['LifeShield STM', 'AdvantHealth STM'] and \
-                data.get('applicant_is_child', False) and bool(settings.ADD_SETTINGS_FOR_CHILD_APPLICANT):
-
-            stm_to_exclude_ADD = data['provider'].lower().replace(' ', '-')
-            print('plan info -> add-on plans -> {0}: {1}'.format(stm_to_exclude_ADD, results['addon_plans'].get(stm_to_exclude_ADD)))
-            addons = copy.deepcopy(results['addon_plans'].get(stm_to_exclude_ADD, []))
-            for addon in addons:
-                if addon['addon_id'] in settings.ADD_SETTINGS_FOR_CHILD_APPLICANT:
-                    results['addon_plans'][stm_to_exclude_ADD].remove(addon)
-            print('addon-on plans updated for child applicant, addons: {}'.format(results['addon_plans'].get(stm_to_exclude_ADD)))
 
         REDIS_CLIENT.setex(name=session_identifier_quote_store_key,
                            value=json_encoder.encode(results),
@@ -539,13 +535,8 @@ class ProcessTask(Task):
                 #     continue
                 main_plans.append(data)
             if res.addon_plans:
-                addon_plan_redis_key = "{0}:{1}".format(redis_key, task_obj.Name.lower().replace(" ", '-'))
-                new_addon_plans = new_addon_plan_to_add(
-                    addon_plans_from_json_data(REDIS_CLIENT.lrange(addon_plan_redis_key, 0, -1)),
-                    set(res.addon_plans)
-                )
-                for new_addon_plan in new_addon_plans:
-                    REDIS_CLIENT.rpush(addon_plan_redis_key, new_addon_plan)
+                for addon_plan in res.addon_plans:
+                    addon_plans.append(addon_plan.data_as_dict())
 
         # important for showing error message related to API call
         # to the user (agent or verifier)

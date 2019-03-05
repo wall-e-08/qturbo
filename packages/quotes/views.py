@@ -265,7 +265,8 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         request.session['quote_request_preference_data'] = quote_request_preference_data
 
         redis_status_key = f'{get_redis_key(request, ins_type)}##status'
-        while post_process_task_view(request) != 'complete' or request.session.get(redis_status_key) != 'complete':
+        while request.session.get(redis_status_key) != 'complete':
+            post_process_task_view(request)
             time.sleep(3)
 
         response = {
@@ -434,6 +435,14 @@ def change_quote_store_key(request: WSGIRequest, ins_type: str) -> None:
     return None
 
 
+def get_plan_list(request: WSGIRequest, ins_type: str) -> List:
+    redis_key = get_redis_key(request, ins_type)
+    plans = json_decoder.decode(redis_conn.get(redis_key).decode())
+    plan_list = plans.get('stm_plans')
+
+    return plan_list
+
+
 def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     """Show currently selected plan to user for application. Also select addons.
 
@@ -461,13 +470,15 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    plan_list = []
+    plan_list: [Dict] = []
     redis_key = get_redis_key(request, ins_type)
 
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            plan_list.append(p)
+    # for plan in redis_conn.lrange(redis_key, 0, -1):
+    #     p = json_decoder.decode(plan.decode())
+    #     if not isinstance(p, str):
+    #         plan_list.append(p)
+
+    plan_list = get_plan_list(request, ins_type)
 
     if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
@@ -613,20 +624,22 @@ def stm_apply(request, plan_url) -> HttpResponse:
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    sp = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            sp.append(p)
+    ins_type = get_ins_type(request)
+    # for plan in redis_conn.lrange(redis_key, 0, -1):
+    #     p = json_decoder.decode(plan.decode())
+    #     if not isinstance(p, str):
+    #         sp.append(p)
 
-    if not sp:
+    plan_list = get_plan_list(request, ins_type)
+
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning("No Plan Found: {0}; there are plans for this session".format(plan_url))
         raise Http404()
@@ -667,19 +680,16 @@ def stm_plan_addon_action(request, plan_url, action) -> Union[HttpResponseRedire
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    sp = []
+    ins_type = get_ins_type(request)
+    plan_list = get_plan_list(request, ins_type)
     redis_key = "{0}:{1}".format(request.session._get_session_key(), quote_request_form_data['quote_store_key'])
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            sp.append(p)
 
-    if not sp:
+    if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
         raise Http404()
 
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning("No Plan Found: {0}; there are plans for this session".format(plan_url))
         raise Http404()
@@ -1497,7 +1507,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     })
 
 
-def post_process_task_view(request: WSGIRequest):
+def post_process_task_view(request: WSGIRequest) -> None:
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     logger.info('Showing available plan lists...')
 
