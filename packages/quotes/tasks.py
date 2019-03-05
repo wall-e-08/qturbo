@@ -408,6 +408,9 @@ def post_process_task(data, session_identifier_quote_store_key, request):
     """
     redis_keys = request.session.get(session_identifier_quote_store_key)
 
+    if not redis_keys:
+        return 'failed'
+
     results = {
         "stm_plans": [],
         "sorting_conditions": {}

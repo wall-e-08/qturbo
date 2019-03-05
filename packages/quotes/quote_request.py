@@ -787,24 +787,16 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
 
 
 class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
-                    DurationCoverageMixIn, BenefitAmountMixIn):
-    """
-    The dictinaries _Coin_P, _D_C, _B_A, _C_M has a key named 'values'. It's confusing and should be addressed.
-    """
+                      DurationCoverageMixIn, BenefitAmountMixIn):
 
     Plan_ID = 209
 
     Name = 'AdvantHealth STM'
 
-    # '80/20', '50/50', '70/30', '100/0'
-    _Coin_P = {'attr': 'Coinsurance_Percentage', 'values': settings.CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE[Name]}
-
-    _D_C = {'attr': 'Duration_Coverage', 'values': []}  # Set in set_alternative_attr
-
-    # '2000', '3000', '4000', '5000'
-    _B_A = {'attr': 'Benefit_Amount', 'values': settings.CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT[Name]}
-
-    _C_M = {'attr': 'Coverage_Max', 'values': ['250000', '500000', '1000000']}
+    _Coin_P = {'attr': 'Coinsurance_Percentage', 'default_values': ['80/20']}
+    _D_C = {'attr': 'Duration_Coverage', 'default_values': ['6*1', '6*2', '6*3', '6*6']}
+    _B_A = {'attr': 'Benefit_Amount', 'default_values': ['2000', '4000']}
+    _C_M = {'attr': 'Coverage_Max', 'default_values': ['250000', '500000', '1000000']}
 
     def name(self):
         return self.Name
@@ -813,11 +805,61 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
         return REQUEST_ATTRS + ['Payment_Option', 'Duration_Coverage', 'Coinsurance_Percentage',
                                 'Benefit_Amount', 'Coverage_Max', 'Tobacco', 'Dependents']
 
+    def _get_request_data_combination(self):
+        return "{0}-{1}-{2}-{3}-{4}-{5}".format(self.quote_store_key, self.Name, self.Duration_Coverage,
+                                                self.Coinsurance_Percentage, self.Benefit_Amount,
+                                                self.Coverage_Max)
+
+
     @classmethod
-    def all(cls, data):
+    def all(cls, data, request_options=None, request=None):
+        if request:
+            data['request'] = request
+
+        print('{0}:request_options: {1}'.format(cls.Name, request_options))
         lst = []
         data_tuple_lst = []
+        if int(data['Payment_Option']) == 2:
+            data['Duration_Coverage'] = data.get('Coverage_Days')
 
+        for cbn in cls._combination_data(data):
+            data.update(cbn)
+
+            # removing duplicate data, if any
+            data_tuple = tuple(data.values())
+            if data_tuple in data_tuple_lst:
+                continue
+            data_tuple_lst.append(data_tuple)
+
+            if (request_options and request_options.get('Coinsurance_Percentage') and
+                    data['Coinsurance_Percentage'] not in request_options['Coinsurance_Percentage']):
+                continue
+            if (request_options and request_options.get('Coverage_Max') and
+                    data['Coverage_Max'] not in request_options['Coverage_Max']):
+                continue
+            if (request_options and request_options.get('Benefit_Amount') and
+                    data['Benefit_Amount'] not in request_options['Benefit_Amount']):
+                continue
+
+            lst.append(cls(**data))
+        print('ADVANT TOTAL REQUEST: {0}'.format(len(lst)))
+        print("connection: {0}".format(len(lst)))
+        return lst
+
+    @classmethod
+    def all_rates(cls, data, ins_type, plan_id, request_options=None, request=None):
+        form_data = _cpy(data)
+
+        data['Coinsurance_Percentage'] = None
+        data['Coverage_Max'] = None
+        data['Out_Of_Pocket'] = None
+        data['Duration_Coverage'] = None
+
+        if request:
+            data['request'] = request
+        lst = []
+        # format (payload, data, ins_type, product_ids, cls.__name__, plan_id, api_source)
+        data_tuple_lst = []
         if int(data['Payment_Option']) == 2:
             data['Duration_Coverage'] = data.get('Coverage_Days')
 
@@ -828,14 +870,31 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
             if data['Coinsurance_Percentage'] == '100/0':
                 data['Benefit_Amount'] = '0'
 
+            # removing duplicate data, if any
             data_tuple = tuple(data.values())
             if data_tuple in data_tuple_lst:
                 continue
             data_tuple_lst.append(data_tuple)
 
-            lst.append(cls(**data))
+            if (request_options and request_options.get('Coinsurance_Percentage') and
+                    data['Coinsurance_Percentage'] not in request_options['Coinsurance_Percentage']):
+                continue
+            if (request_options and request_options.get('Coverage_Max') and
+                    data['Coverage_Max'] not in request_options['Coverage_Max']):
+                continue
+            if (request_options and request_options.get('Benefit_Amount') and
+                    data['Benefit_Amount'] not in request_options['Benefit_Amount']):
+                continue
 
-        print('AdvantHealth TOTAL REQUEST:', len(lst))
+            lst.append(dict(
+                payload=_cpy(data),
+                form_data=form_data,
+                ins_type=ins_type,
+                cls_name=cls.__name__,
+                plan_id=plan_id,
+                carrier_name=cls.Name
+            ))
+        print('ADVANT TOTAL REQUEST: {0}'.format(len(lst)))
         return lst
 
     @classmethod
@@ -844,6 +903,18 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
             return [{cls._Coin_P['attr']: cp, cls._B_A['attr']: ba, cls._C_M['attr']: cm}
                     for cm in cls._C_M['values'] for ba in cls._B_A['values']
                     for cp in cls._Coin_P['values']]
+
+        cls._Coin_P['values'] = ([data['Coinsurance_Percentage']] if data['Coinsurance_Percentage'] in
+                                 cls._Coin_P['default_values'] else cls._Coin_P['default_values'])
+
+        cls._C_M['values'] = ([clean_number(data['Coverage_Max'])] if clean_number(data['Coverage_Max']) in
+                              cls._C_M['default_values'] else cls._C_M['default_values'])
+
+        cls._B_A['values'] = ([clean_number(data['Out_Of_Pocket'])] if clean_number(data['Out_Of_Pocket']) in
+                              cls._B_A['default_values'] else cls._B_A['default_values'])
+
+        cls._D_C['values'] = ([str(data['Duration_Coverage'])] if data['Duration_Coverage'] in
+                              cls._D_C else cls._D_C['default_values'])
 
         return [{cls._Coin_P['attr']: cp, cls._D_C['attr']: dc,
                  cls._B_A['attr']: ba, cls._C_M['attr']: cm}
@@ -855,17 +926,20 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
 
     def process_response(self):
         response = self.get_response()
+        print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
+        print('{} Response: {}'.format(self.__class__.__name__, response))
         if response is None:
             self.formatted_response = None
             return
-        self.formatted_response = AdvantHealthResponse(self.name(), response, self.State,
+        self.formatted_response = LifeShieldResponse(self.name(), response, self.State,
                                                      self._get_coinsurance_percentage(),
                                                      self._get_benefit_amount(),
                                                      self._get_coverage_max(),
                                                      self.quote_request_timestamp,
                                                      self.get_plan_duration_coverage_value(),
                                                      self.Plan_ID, self.Payment_Option,
-                                                     self._get_request_data_combination())
+                                                     self._get_request_data_combination()
+                                                     )
 
 
 
