@@ -1914,7 +1914,8 @@ class RestrictionsAndOmissions(Feature):
 
     feature_type = models.CharField(
         max_length=50,
-        default="Disclaimers & Restrictions"
+        default="Disclaimers & Restrictions",
+        editable=False,
     )
 
     def get_instance(self):

@@ -91,8 +91,17 @@ def all_benefits_coverages(request, bnc_type=None):
     })
 
 
-def all_disclaimers_restrictions(request):
-    return render(request, 'dashboard/all_disclaimers_restrictions.html', context={})
+def all_disclaimers_restrictions(request, dnr_type):
+    if dnr_type == BENEFITS_DISCLAIMERS_TYPES['c']:
+        dnrs = RestrictionsAndOmissions.objects.filter(self_fk=None).order_by('order_serial')
+    elif dnr_type == BENEFITS_DISCLAIMERS_TYPES['b']:
+        dnrs = RestrictionsAndOmissions.objects.exclude(self_fk=None).order_by('order_serial')
+    else:
+        raise Http404("Error")
+    return render(request, 'dashboard/all_disclaimers_restrictions.html', context={
+        "dnrs": dnrs,
+        "dnr_type": dnr_type,
+    })
 
 
 # All START ##
@@ -195,8 +204,42 @@ def create_or_edit_benefits_coverages(request, bnc_type, bnc_id=None):
     })
 
 
-def create_or_edit_disclaimers_restrictions(request, dnr_id=None, dnr_type=None):
-    return render(request, 'dashboard/all_disclaimers_restrictions.html', context={})
+def create_or_edit_disclaimers_restrictions(request, dnr_type, dnr_id=None):
+    if dnr_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = DisclaimerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse('dashboard:all_disclaimers_restrictions', kwargs={"dnr_type": dnr_type}))
+            else:
+                print("create_disclaimers  Form not valid. errors: {}".format(form.errors))
+        else:
+            form = DisclaimerForm()
+    else:
+        action = "Edit"
+        try:
+            dnr = RestrictionsAndOmissions.objects.get(id=int(dnr_id))
+            if request.method == 'POST':
+                form = DisclaimerForm(request.POST, instance=dnr)
+                if form.is_valid():
+                    form.save()
+                    return redirect(reverse('dashboard:all_disclaimers_restrictions', kwargs={"dnr_type": dnr_type}))
+            else:
+                form = DisclaimerForm(instance=dnr)
+        except RestrictionsAndOmissions.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No info found")
+    form.fields["plan"].queryset = Carrier.objects.filter(is_active=True)
+    all_core_data = RestrictionsAndOmissions.objects.filter(self_fk=None)
+    form.fields["self_fk"].queryset = all_core_data
+    return render(request, 'dashboard/form_disclaimers_restrictions.html', {
+        "form": form,
+        "action": action,
+        "item_type": dnr_type,
+        "all_core_data": all_core_data,
+    })
 
 
 def create_or_edit_article(request, article_id=None):
