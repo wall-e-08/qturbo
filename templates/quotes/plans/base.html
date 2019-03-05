@@ -550,12 +550,22 @@
         });
 
         $(document).ready(function () {
+            let qt_plan_details = $('#qt-plan-details');
             let center_selected_plan_div = function () {
-                let qt_plan_details = $('#qt-plan-details')
                 qt_plan_details.css('left',($(window).outerWidth() / 2 - qt_plan_details.width()) / 2);
             };
+            let laptop_fix_qtplan_height = function () {
+                // fixed problem in laptop device (full div cannot be showed)
+                if (($(window).width() > 1024) && ($(window).height() < qt_plan_details.height())) {
+                    qt_plan_details.addClass('qt-plan-details-non-fixed');
+                } else {
+                    qt_plan_details.removeClass('qt-plan-details-non-fixed');
+                }
+            };
+            laptop_fix_qtplan_height();
             center_selected_plan_div(); // run at first
             $( window ).resize(function() {
+                laptop_fix_qtplan_height();
                 center_selected_plan_div(); // run when changes width
             });
 
