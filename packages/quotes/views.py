@@ -654,6 +654,7 @@ def stm_apply(request: WSGIRequest, plan_url: str) -> HttpResponse:
 
     logger.info("apply for plan - {0}: {1}".format(plan_url, plan))
 
+    # addon plans
     selected_addon_plans = addon_plans_from_dict(
         request.session.get(
             '{0}-{1}-{2}'.format(quote_request_form_data['quote_store_key'], plan['unique_url'], "addon-plans"), [])
@@ -662,7 +663,6 @@ def stm_apply(request: WSGIRequest, plan_url: str) -> HttpResponse:
     logger.info("PLAN: {0}".format(plan))
     logger.info("ADD-ON: {0}".format(add_on_list_as_dict))
 
-    # addon plans
     logger.info("no of selected addon plans: {0}, for plan: {1}".format(len(selected_addon_plans), plan['unique_url']))
     addon_plans_redis_key = "{0}:{1}".format(redis_key, plan['plan_name_for_img'])
     addon_plans = addon_plans_from_json_data(redis_conn.lrange(addon_plans_redis_key, 0, -1))
@@ -708,10 +708,7 @@ def stm_plan_addon_action(request, plan_url, action) -> Union[HttpResponseRedire
     )
     logger.info("no of selected addon plans: {0}, for plan: {1}".format(len(selected_addon_plans), plan['unique_url']))
 
-    addon_plans = addon_plans_from_json_data(redis_conn.lrange(
-        "{0}:{1}".format(redis_key, plan['plan_name_for_img']),
-        0, -1)
-    )
+    addon_plans = addon_plans_from_json_data(redis_conn.lrange(f'{redis_key}:{plan["plan_name_for_img"]}'))
 
     form = AddonPlanForm(addon_plans, selected_addon_plans, data=request.POST)
     if action == 'include' and form.is_valid() and form.add_addon_plan():
@@ -767,19 +764,20 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
         quote_request_form_data = {}
         request.session['quote_request_form_data'] = {}
         request.session['quote_request_formset_data'] = []
-    sp = []
     if quote_request_form_data:
         redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                      quote_request_form_data['quote_store_key'])
-        for plan in redis_conn.lrange(redis_key, 0, -1):
-            p = json_decoder.decode(plan.decode())
-            if not isinstance(p, str):
-                sp.append(p)
-    if not quote_request_form_data or not sp:
+        # for plan in redis_conn.lrange(redis_key, 0, -1):
+        #     p = json_decoder.decode(plan.decode())
+        #     if not isinstance(p, str):
+        #         plan_list.append(p)
+        ins_type = get_ins_type(request)
+        plan_list = get_plan_list(request, ins_type)
+    if not quote_request_form_data or not plan_list:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
     try:
-        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, sp))
+        plan = next(filter(lambda mp: mp['unique_url'] == plan_url, plan_list))
     except StopIteration:
         logger.warning("Starting application failed. No Plan Found:"
                        " {0}; there are plans for this session".format(plan_url))
@@ -2087,18 +2085,19 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     if not quote_request_form_data:
         return JsonResponse(None)
 
-    plan_list = []
+    ins_type = get_ins_type(request)
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
+    plan_list = get_plan_list(request, ins_type)
 
     print(f"redis_key: {redis_key}")
 
     # TODO: Set an expiration timer for plans in redis.
 
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            plan_list.append(p)
+    # for plan in redis_conn.lrange(redis_key, 0, -1):
+    #     p = json_decoder.decode(plan.decode())
+    #     if not isinstance(p, str):
+    #         plan_list.append(p)
 
     if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
@@ -2313,11 +2312,12 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     if not quote_request_form_data:
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
-    plan_list = []
     redis_key = "{0}:{1}".format(request.session._get_session_key(),
                                  quote_request_form_data['quote_store_key'])
 
+    ins_type = get_ins_type(request)
     print(f"redis_key: {redis_key}")
+    plan_list = get_plan_list(request, ins_type)
 
     redis_done_data_flag = f'{redis_key}:done_data'
     quote_request_completed_data = json.loads(redis_conn.get(redis_done_data_flag))
@@ -2340,10 +2340,10 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     else:
         threaded_request(quote_request_form_data, request.session._get_session_key(), selection_data)
 
-    for plan in redis_conn.lrange(redis_key, 0, -1):
-        p = json_decoder.decode(plan.decode())
-        if not isinstance(p, str):
-            plan_list.append(p)
+    # for plan in redis_conn.lrange(redis_key, 0, -1):
+    #     p = json_decoder.decode(plan.decode())
+    #     if not isinstance(p, str):
+    #         plan_list.append(p)
 
     if not plan_list:
         logger.warning("No Plan found: {0}; no plan for the session".format(plan_url))
