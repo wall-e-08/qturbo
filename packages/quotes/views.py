@@ -216,16 +216,24 @@ def start_celery(request: WSGIRequest) -> True:
             # StmPlanTask.delay(request.session.session_key, form_data,
             #                   quote_request_preference_data)
 
-            prepare_tasks(
-                form_data=copy.deepcopy(form_data),
-                ins_type=ins_type,
-                session_identifier_quote_store_key = redis_key,
-                request=request
-            )
+            # prepare_tasks(
+            #     form_data=copy.deepcopy(form_data),
+            #     ins_type=ins_type,
+            #     session_identifier_quote_store_key = redis_key,
+            #     request=request
+            # )
 
 
-        elif ins_type == 'lim':
-            LimPlanTask.delay(request.session.session_key, form_data)
+        # elif ins_type == 'lim':
+            # LimPlanTask.delay(request.session.session_key, form_data)
+
+        prepare_tasks(
+            form_data=copy.deepcopy(form_data),
+            ins_type=ins_type,
+            session_identifier_quote_store_key = redis_key,
+            request=request
+        )
+
 
     return True
 
@@ -1460,7 +1468,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     print(f'Calling AJAX. Time: {datetime.now().strftime("%H:%M:%S")}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    ins_type = quote_request_form_data.get('Ins_Type', None)
+    ins_type = quote_request_form_data.get('Ins_Type', 'lim')
 
     preference = request.session.get('quote_request_preference_data', {})
     request.session.modified = True
@@ -1487,7 +1495,8 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
                     return False
         return True
 
-    plan_list = list(filter(filter_stm_plans, plan_list))
+    if ins_type == 'stm':
+        plan_list = list(filter(filter_stm_plans, plan_list))
 
     for carrier in carriers:
         featured_plan = get_featured_plan(carrier, plan_list, ins_type)

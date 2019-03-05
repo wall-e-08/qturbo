@@ -159,8 +159,6 @@ class QRXmlBase(object):
         cls._D_C = {'attr': 'Duration_Coverage', 'values': attr_dict['Duration_Coverage']}
 
 
-
-
     def _get_value(self, r):
         return (r.text.replace("&amp;", '&') if r.tag == 'string'
                 else self._get_value(r.getchildren()[0]))
@@ -188,6 +186,67 @@ class QRXmlBase(object):
 
     def process_response(self):
         raise NotImplemented
+
+
+class LimQRXmlBase(QRXmlBase):
+
+    def __init__(self, **kwargs):
+        super(LimQRXmlBase, self).__init__(**kwargs)
+        self._response_cls = self.get_response_cls()
+
+    def get_response_cls(self):
+        """Must be implemented in sub-class
+        """
+        return NotImplemented
+
+    @classmethod
+    def all(cls, data, request_options=None, request=None):
+        """class method to unpack dictionary into a list
+
+        :param data: dictionay object
+        :param request_options: optional
+        :return: list of the unpacked dictionary
+
+        """
+        if request:
+            data['request'] = request
+
+        lst = [cls(**data)]
+        print("{}:: connection: {}".format(cls.__name__, len(lst)))
+        return lst
+
+    def process_response(self):
+        """process the compact XML response string to human readable formatted response string
+
+        :return: None
+        """
+        response = self.get_response()
+        if response is None:
+            self.formatted_response = None
+            return
+        self.formatted_response = self._response_cls(self.Name, response, self.State, self.Plan_ID,
+                                                     self.quote_request_timestamp, self.request,
+                                                     self.carrier_plan_id, self.verification_weight,
+                                                     self.has_post_date_api)
+
+
+    @classmethod
+    def all_rates(cls, data, ins_type, plan_id, request_options=None, request=None):
+        form_data = _cpy(data)
+
+        if request:
+            data['request'] = request
+
+        return [dict(
+            payload=_cpy(data),
+            form_data=form_data,
+            ins_type=ins_type,
+            cls_name=cls.__name__,
+            plan_id=plan_id,
+            carrier_name=cls.Name
+        )]
+
+
 
 
 class DependentsMixIn(object):
@@ -1028,7 +1087,7 @@ class SelectXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
                                                  self._get_request_data_combination())
 
 
-class CardinalChoiceXml(QRXmlBase):
+class CardinalChoiceXml(LimQRXmlBase):
 
     Plan_ID = '136'
     Name = 'Cardinal Choice'
@@ -1082,7 +1141,7 @@ class VitalaCareXml(QRXmlBase):
                                                    self.quote_request_timestamp, self._get_request_data_combination())
 
 
-class HealthChoiceXml(QRXmlBase):
+class HealthChoiceXml(LimQRXmlBase):
 
     Plan_ID = '152'
     Name = 'Health Choice'
@@ -1110,7 +1169,7 @@ class HealthChoiceXml(QRXmlBase):
                                                      self._get_request_data_combination())
 
 
-class LegionLimitedMedicalXml(QRXmlBase):
+class LegionLimitedMedicalXml(LimQRXmlBase):
 
     Plan_ID = '122'
     Name = 'Legion Limited Medical'
