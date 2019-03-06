@@ -786,6 +786,10 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
             if (request_options and request_options.get('Benefit_Amount') and
                     data['Benefit_Amount'] not in request_options['Benefit_Amount']):
                 continue
+            if (request_options and request_options.get('Duration_Coverage') and
+                    data['Duration_Coverage'] not in request_options['Duration_Coverage']):
+                continue
+
 
             lst.append(dict(
                 payload=_cpy(data),
@@ -942,6 +946,10 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
             if (request_options and request_options.get('Benefit_Amount') and
                     data['Benefit_Amount'] not in request_options['Benefit_Amount']):
                 continue
+            if (request_options and request_options.get('Duration_Coverage') and
+                    data['Duration_Coverage'] not in request_options['Duration_Coverage']):
+                continue
+
 
             lst.append(dict(
                 payload=_cpy(data),
@@ -1332,45 +1340,45 @@ PROVIDERS = {
 }
 
 
-insurance_selector = {
-    'stm': [EverestXml, LifeShieldXML, AdvantHealthXML],
-    'lim': [CardinalChoiceXml, VitalaCareXml, HealthChoiceXml, LegionLimitedMedicalXml],
-    'anc': [USADentalXml, FoundationDentalXml, FreedomSpiritPlusXml, SafeguardCriticalIllnessXml]
-}
+# insurance_selector = {
+#     'stm': [EverestXml, LifeShieldXML, AdvantHealthXML],
+#     'lim': [CardinalChoiceXml, VitalaCareXml, HealthChoiceXml, LegionLimitedMedicalXml],
+#     'anc': [USADentalXml, FoundationDentalXml, FreedomSpiritPlusXml, SafeguardCriticalIllnessXml]
+# }
 
 
-def get_xml_requests(form_data: dict, selection_data: dict) -> List[QRXmlBase]:
-    """ This is the class that is called by celery to create initial quote
-    request xml for sending.
-
-    :param selection_data: Selection data from quote_thread. Set xml attributes
-    according to this.
-    :type selection_data: dict
-    :param form_data: Quote request form data
-    :type form_data: Python dictionary
-    :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
-    :type alt_cov_flag: bool
-    :return: list of xml objects
-    """
-    print("packages/quotes/quote_request.py -- Line No. 770")
-    print('\n\nget_xml_class data: ', form_data)
-    print('\n\nins_type: ', form_data['Ins_Type'])
-
-    app_state = form_data['State']
-    xml_requests : List = []
-
-
-    for xml_cls in insurance_selector[form_data['Ins_Type']]:
-        if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
-            print(f"{xml_cls.Name} is available in state: {app_state}")
-            if form_data['Ins_Type'] == 'stm':
-                print(f'Setting alternative coverage options for {xml_cls.Name}')
-                xml_cls.set_alternative_attr(app_state, selection_data[xml_cls.Name])
-            xml_requests += xml_cls.all(form_data)
-        else:
-            print(f'{xml_cls.Name} is NOT available in state: {app_state}')
-
-
-    print("xml_request objects: ", xml_requests.__str__())
-    print("Returning xml requests.")
-    return xml_requests
+# def get_xml_requests(form_data: dict, selection_data: dict) -> List[QRXmlBase]:
+#     """ This is the class that is called by celery to create initial quote
+#     request xml for sending.
+#
+#     :param selection_data: Selection data from quote_thread. Set xml attributes
+#     according to this.
+#     :type selection_data: dict
+#     :param form_data: Quote request form data
+#     :type form_data: Python dictionary
+#     :param alt_cov_flag: alternative coverage flag; If this is set we'll get a different request for stm.
+#     :type alt_cov_flag: bool
+#     :return: list of xml objects
+#     """
+#     print("packages/quotes/quote_request.py -- Line No. 770")
+#     print('\n\nget_xml_class data: ', form_data)
+#     print('\n\nins_type: ', form_data['Ins_Type'])
+#
+#     app_state = form_data['State']
+#     xml_requests : List = []
+#
+#
+#     for xml_cls in insurance_selector[form_data['Ins_Type']]:
+#         if app_state in xml_cls.allowed_states() and xml_cls.is_carrier_active():
+#             print(f"{xml_cls.Name} is available in state: {app_state}")
+#             if form_data['Ins_Type'] == 'stm':
+#                 print(f'Setting alternative coverage options for {xml_cls.Name}')
+#                 xml_cls.set_alternative_attr(app_state, selection_data[xml_cls.Name])
+#             xml_requests += xml_cls.all(form_data)
+#         else:
+#             print(f'{xml_cls.Name} is NOT available in state: {app_state}')
+#
+#
+#     print("xml_request objects: ", xml_requests.__str__())
+#     print("Returning xml requests.")
+#     return xml_requests

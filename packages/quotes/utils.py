@@ -500,23 +500,18 @@ def get_prop_context():
     return prop_context
 
 
-def create_selection_data(completed_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
+def create_selection_data(completion_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
     """ Create intermidiate quote request selection data from
     completed data and preferred coverage duration.
 
     :return: dict
     """
-    quote_request_data : dict = {
-        'LifeShield STM': {
-            'Duration_Coverage': [],
-        },
+    quote_request_data = {}
 
-        'AdvantHealth STM': {
-            'Duration_Coverage': []
-        }
-    }
 
-    if duration_coverage not in completed_data[stm_name]['Duration_Coverage']:
+    if duration_coverage not in completion_data[stm_name]['Duration_Coverage']:
+        if stm_name not in quote_request_data:
+            quote_request_data[stm_name] = {}
         quote_request_data[stm_name]['Duration_Coverage'] = [duration_coverage]
         return quote_request_data
     else:

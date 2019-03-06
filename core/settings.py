@@ -412,7 +412,15 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
 # Carrier specific plan attributes   +
 # -----------------------------------+
 
-# None
+INITIAL_QUOTE_DATA = {
+    'LifeShield STM': {
+        'Duration_Coverage': ['12*1'],
+    },
+
+    'AdvantHealth STM': {
+        'Duration_Coverage': ['6*6']
+    }
+}
 
 # --------------+
 #    Income     +

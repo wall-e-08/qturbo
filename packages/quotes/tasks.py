@@ -6,6 +6,8 @@ import copy
 # import time
 import json
 import uuid
+from time import time
+from typing import Dict, List
 
 import redis
 import requests
@@ -20,7 +22,7 @@ from celery.utils.log import get_task_logger
 
 # from quotes.mail import send_mail
 from quotes.models import Carrier
-from quotes.quote_thread import threaded_request, new_addon_plan_to_add, addon_plans_from_json_data, \
+from quotes.quote_thread import new_addon_plan_to_add, addon_plans_from_json_data, \
     addon_plans_from_dict
 from quotes.quote_request import PROVIDERS
 # from quotes.models import StmEnroll
@@ -47,21 +49,21 @@ REDIS_CLIENT = redis.Redis.from_url(
 )
 
 # Two separate tasks might not be necessary.
-@shared_task
-def get_stm_plan_task(session_key, form_data):
-    """
-    :param session_key: str: key when a session is created
-    :param form_data: quote request form data from plan.html
-    :return: zero
-    """
-    threaded_request(copy.deepcopy(form_data), session_key)
-    return 0
-
-
-@shared_task
-def get_lim_plan_task(session_key, form_data):
-    threaded_request(copy.deepcopy(form_data), session_key)
-    return 0
+# @shared_task
+# def get_stm_plan_task(session_key, form_data):
+#     """
+#     :param session_key: str: key when a session is created
+#     :param form_data: quote request form data from plan.html
+#     :return: zero
+#     """
+#     threaded_request(copy.deepcopy(form_data), session_key)
+#     return 0
+#
+#
+# @shared_task
+# def get_lim_plan_task(session_key, form_data):
+#     threaded_request(copy.deepcopy(form_data), session_key)
+#     return 0
 
 #
 # @shared_task
@@ -98,41 +100,41 @@ def get_lim_plan_task(session_key, form_data):
 #     return 0
 
 
-class StmPlanTask(Task):
-    """
-    this class based task is replacing get_stm_plan_task function based task. 
-    run() method is executed when this task executed from queue
-    
-        :param session_key: str: key when a session is created
-        :param form_data: quote request form data from plan.html
-        :return: zero
-    """
-
-    # selection_data = {preference_data} - {completed_data}
-    def run(self, session_key, form_data, selection_data=None, *args, **kwargs):
-        threaded_request(copy.deepcopy(form_data), session_key, copy.deepcopy(selection_data))
-
-
-class LimPlanTask(Task):
-    """
-        :param session_key: str: key when a session is created
-        :param form_data: quote request form data from plan.html
-        :return: zero
-    """
-
-    def run(self, session_key, form_data, *args, **kwargs):
-        threaded_request(copy.deepcopy(form_data), session_key)
-
-
-class AncPlanTask(Task):
-    """
-        :param session_key: str: key when a session is created
-        :param form_data: quote request form data from plan.html
-        :return: zero
-    """
-
-    def run(self, session_key, form_data, *args, **kwargs):
-        threaded_request(copy.deepcopy(form_data), session_key)
+# class StmPlanTask(Task):
+#     """
+#     this class based task is replacing get_stm_plan_task function based task.
+#     run() method is executed when this task executed from queue
+#
+#         :param session_key: str: key when a session is created
+#         :param form_data: quote request form data from plan.html
+#         :return: zero
+#     """
+#
+#     # selection_data = {preference_data} - {completed_data}
+#     def run(self, session_key, form_data, selection_data=None, *args, **kwargs):
+#         threaded_request(copy.deepcopy(form_data), session_key, copy.deepcopy(selection_data))
+#
+#
+# class LimPlanTask(Task):
+#     """
+#         :param session_key: str: key when a session is created
+#         :param form_data: quote request form data from plan.html
+#         :return: zero
+#     """
+#
+#     def run(self, session_key, form_data, *args, **kwargs):
+#         threaded_request(copy.deepcopy(form_data), session_key)
+#
+#
+# class AncPlanTask(Task):
+#     """
+#         :param session_key: str: key when a session is created
+#         :param form_data: quote request form data from plan.html
+#         :return: zero
+#     """
+#
+#     def run(self, session_key, form_data, *args, **kwargs):
+#         threaded_request(copy.deepcopy(form_data), session_key)
 
 
 def only_one(function=None, ikey="", timeout=None):
@@ -323,7 +325,7 @@ def get_api_rate_data(carrier_obj, data, request_options=None, request=None):
         return []
     payload_data = copy.deepcopy(data)
     payload_data['Plan_ID'] = carrier_obj.plan_id
-    return rate_cls.all_rates(data=data, ins_type=data['Ins_Type'], plan_id=carrier_obj.plan_id, request_options=None, request=None)
+    return rate_cls.all_rates(data=data, ins_type=data['Ins_Type'], plan_id=carrier_obj.plan_id, request_options=request_options, request=None)
 
 
 # TODO: Need Documentation and Unittest
@@ -353,32 +355,41 @@ def get_api_rate_obj(payload, form_data, ins_type, cls_name, plan_id, carrier_na
 
     return rate_cls(**payload)
 
+def get_carriers_for_preparing_task(form_data: Dict, preference: Dict, ins_type: str) -> [Carrier]:
 
-# TODO: Need Documentation and Unittest
-def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, request_options=None, request=None, api_sources=None):
-    """
-
-    :param form_data:
-    :param session_quote_store_key:
-    :param request_options:
-    :param request:
-    :param api_sources:
-    :return:
-    """
-    rate_requests = []
+    carriers = []
     try:
-        carriers = Carrier.objects.filter(
-            is_active=True,
-            allowed_state__contains=form_data['State'],
-            ins_type=ins_type
-        )
+        if preference and ins_type == 'stm':
+            for carrier_name in preference:
+                carriers.append(Carrier.objects.get(name=carrier_name))
+
+        else:
+            carriers = Carrier.objects.filter(
+                is_active=True,
+                allowed_state__contains=form_data['State'],
+                ins_type=ins_type
+            )
     except Carrier.DoesNotExist as err:
         return False
+
+    return carriers
+
+import time
+# TODO: Need Documentation and Unittest
+def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, preference_dictionary=None, request=None):
+    """
+    """
+    time1 = time.time()
+    rate_requests = []
+    carriers = get_carriers_for_preparing_task(form_data=form_data,
+                                               preference=preference_dictionary,
+                                               ins_type=ins_type)
 
     # TODO: Handle non stm states.
 
     for carrier in carriers:
-        rate_requests += get_api_rate_data(carrier, form_data, request_options=request_options, request=request)
+        request_option = preference_dictionary.get(carrier.name) if preference_dictionary else None
+        rate_requests += get_api_rate_data(carrier, form_data, request_options=request_option, request=request)
 
     if not rate_requests:
         return False
@@ -392,7 +403,9 @@ def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, reque
 
     request.session[session_identifier_quote_store_key] = redis_keys
     request.session['{}##status'.format(session_identifier_quote_store_key)] = 'processing'
-    print('redis_keys: {}'.format(redis_keys))
+
+    time2 = time.time()
+    print(f'\n\n\n Time is: {time2-time1}\n\n\n\n')
     return True
 
 
@@ -406,6 +419,8 @@ def post_process_task(data, session_identifier_quote_store_key, request):
     :param request:
     :return:
     """
+
+    time1 = time.time()
     redis_keys = request.session.get(session_identifier_quote_store_key)
 
     if not redis_keys:
@@ -443,42 +458,50 @@ def post_process_task(data, session_identifier_quote_store_key, request):
             continue
         return 'processing'
     else:
+        if REDIS_CLIENT.exists(session_identifier_quote_store_key):
+            old_plan_data = json_decoder.decode(REDIS_CLIENT.get(session_identifier_quote_store_key).decode())
+            old_plans = old_plan_data.get('stm_plans')
+            if old_plans:
+                results['stm_plans'] += old_plans
+
         if data['Ins_Type'] == 'stm':
-            for plan_data in results['stm_plans']:
-                try:
-                    sc_cp = sorting_conditions['CP']
-                except KeyError:
-                    sorting_conditions['CP'] = []
-                    sc_cp = sorting_conditions['CP']
-                finally:
-                    if plan_data['Coinsurance_Percentage'] not in sc_cp:
-                        sc_cp.append(plan_data['Coinsurance_Percentage'])
+            results['completion_data'] = get_available_attributes(results.get('stm_plans'))
 
-                try:
-                    sc_moop = sorting_conditions['MOOP']
-                except KeyError:
-                    sorting_conditions['MOOP'] = []
-                    sc_moop = sorting_conditions['MOOP']
-                finally:
-                    if plan_data['out_of_pocket_value'] not in sc_moop:
-                        sc_moop.append(plan_data['out_of_pocket_value'])
-
-                try:
-                    sc_cm = sorting_conditions['CM']
-                except KeyError:
-                    sorting_conditions['CM'] = []
-                    sc_cm = sorting_conditions['CM']
-                finally:
-                    if plan_data['coverage_max_value'] not in sc_cm:
-                        sc_cm.append(plan_data['coverage_max_value'])
-
-        if sorting_conditions:
-            sorting_conditions['CP'].sort(key=lambda v: - int(v))
-            sorting_conditions['MOOP'].sort(key=lambda v: - int(v))
-            sorting_conditions['CM'].sort(key=lambda v: - int(v))
+        #     for plan_data in results['stm_plans']:
+        #         try:
+        #             sc_cp = sorting_conditions['CP']
+        #         except KeyError:
+        #             sorting_conditions['CP'] = []
+        #             sc_cp = sorting_conditions['CP']
+        #         finally:
+        #             if plan_data['Coinsurance_Percentage'] not in sc_cp:
+        #                 sc_cp.append(plan_data['Coinsurance_Percentage'])
+        #
+        #         try:
+        #             sc_moop = sorting_conditions['MOOP']
+        #         except KeyError:
+        #             sorting_conditions['MOOP'] = []
+        #             sc_moop = sorting_conditions['MOOP']
+        #         finally:
+        #             if plan_data['out_of_pocket_value'] not in sc_moop:
+        #                 sc_moop.append(plan_data['out_of_pocket_value'])
+        #
+        #         try:
+        #             sc_cm = sorting_conditions['CM']
+        #         except KeyError:
+        #             sorting_conditions['CM'] = []
+        #             sc_cm = sorting_conditions['CM']
+        #         finally:
+        #             if plan_data['coverage_max_value'] not in sc_cm:
+        #                 sc_cm.append(plan_data['coverage_max_value'])
+        #
+        # if sorting_conditions:
+        #     sorting_conditions['CP'].sort(key=lambda v: - int(v))
+        #     sorting_conditions['MOOP'].sort(key=lambda v: - int(v))
+        #     sorting_conditions['CM'].sort(key=lambda v: - int(v))
 
         #results['addon_plans'] = {data['plan_name_for_img']: addon_plans}
-        results['sorting_conditions'] = sorting_conditions
+        # results['sorting_conditions'] = sorting_conditions
         if errors:
             results['errors'] = errors
         print('--------\n\n\ncontents: {}\n\n\n-------'.format(results))
@@ -492,6 +515,21 @@ def post_process_task(data, session_identifier_quote_store_key, request):
             REDIS_CLIENT.delete(redis_key)
 
     return 'complete'
+
+
+def get_available_attributes(plan_list: List) -> Dict:
+    data = {}
+    carriers = set(x['Name'] for x in plan_list)
+    for carrier in carriers:
+        carrier_specific_plans = list(filter(lambda p: p['Name'] == carrier, plan_list))
+        duration_coverage = set(x['Duration_Coverage'] for x in carrier_specific_plans)
+        data[carrier] = {'Duration_Coverage': list(duration_coverage)}
+
+    return data
+
+
+
+
 
 
 class ProcessTask(Task):
