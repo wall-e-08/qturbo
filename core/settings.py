@@ -541,6 +541,66 @@ FEATURED_PLAN_PREMIUM_DICT = {
 }
 
 
+STM_PLAN_BENEFITS = {
+    'lifeshield-stm': {
+        '1': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '2': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '3': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+    },
+    'advanthealth-stm': {
+        '1': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '2': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+        '3': [
+            'ER visits per week: 2',
+            'Hospital visits per week: 5',
+            'Doctor visits per week: 8',
+        ],
+    }
+}
+
+PLAN_NAMES_LIST = {
+    # stm
+    'advanthealth-stm': ('Plan 1', 'Plan 2', 'Plan 3', ),
+    'everest-stm': (),
+    'healtheflex-stm': (),
+    'healthemed-stm': (),
+    'lifeshield-stm': ('Plan 1', 'Plan 2',),
+    'premier-stm': (),
+    'sage-stm': (),
+    'select-stm': (),
+
+    # lim + anc
+    'cardinal-choice': (),
+    'freedom-spirit-plus': (),
+    'health-choice': ('Plan_100A', 'Plan_100', 'Plan_200', 'Plan_200Plus', 'Plan_300', 'Plan_500', 'Plan_750', 'Plan_1000', ),
+    'legion-limited-medical': ('Plan_1', 'Plan_2', 'Plan_3', ),
+    'principle-advantage': (),
+    'safeguard-critical-illness': (),
+    'unified-health-one': (),
+    'usa-dental': (),
+    'vitala-care': ('Plan_100A', 'Plan_100', 'Plan_200', 'Plan_200Plus', 'Plan_300', 'Plan_500', 'Plan_750', 'Plan_1000', ),
+}
+
 # ------------------#
 #    Payment        #
 # ------------------#
