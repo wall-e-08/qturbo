@@ -708,7 +708,7 @@ def stm_plan_addon_action(request, plan_url, action) -> Union[HttpResponseRedire
     )
     logger.info("no of selected addon plans: {0}, for plan: {1}".format(len(selected_addon_plans), plan['unique_url']))
 
-    addon_plans = addon_plans_from_json_data(redis_conn.lrange(f'{redis_key}:{plan["plan_name_for_img"]}'))
+    addon_plans = addon_plans_from_json_data(redis_conn.lrange(f'{redis_key}:{plan["plan_name_for_img"]}', 0, -1))
 
     form = AddonPlanForm(addon_plans, selected_addon_plans, data=request.POST)
     if action == 'include' and form.is_valid() and form.add_addon_plan():
