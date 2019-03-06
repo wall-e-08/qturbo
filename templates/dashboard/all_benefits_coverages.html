@@ -53,7 +53,6 @@
                                     <th class="align-middle" scope="col">Plan</th>
                                     <th class="align-middle" scope="col">Icon/Image</th>
                                     <th class="align-middle" scope="col">Display Order</th>
-{#                                    <th class="align-middle" scope="col">Date</th>#}
                                     <th class="align-middle" scope="col">Edit</th>
                                     <th class="align-middle" scope="col">Delete</th>
                                 </tr>
@@ -84,7 +83,6 @@
                                             {% endif %}
                                         </td>
                                         <th class="align-middle" scope="row"><h3 class="font-weight-bold">{{ bnc.order_serial }}</h3></th>
-{#                                        <td class="align-middle"><span class="font-sm">{{ bnc.create_time }}</span></td>#}
                                         <td class="align-middle">
                                             <a href="{% url 'dashboard:edit_benefits_coverages' bnc_type=bnc_type bnc_id=bnc.id %}" class="btn btn-info dsb-edit-btn">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="white">
@@ -93,12 +91,7 @@
                                             </a>
                                         </td>
                                         <td class="align-middle">
-                                            <a href="#" class="btn btn-danger disabled"
-                                                    {% comment %}data-href="{% url 'dashboard:delete_benefits_coverages' bnc.id %}" data-toggle="modal" data-target="#delete_confirmation"{% endcomment %}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="white">
-                                                    <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
-                                                </svg>
-                                            </a>
+                                            <delete-btn-with-modal item_id="{{ bnc.id }}"></delete-btn-with-modal>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -114,3 +107,54 @@
     </div>
 {% endblock %}
 
+
+
+{% block vue_templates %}
+    <script type="text/x-template" id="delete-modal-template">
+        <div>
+            <button v-b-modal="'del_confirmation_modal-' + item_id" class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="white">
+                    <path d="M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"></path>
+                </svg>
+            </button>
+            <b-modal :id="'del_confirmation_modal-' + item_id" :ref="'del_confirmation_modal-' + item_id" centered title="Do you really want to delete?" :hide-footer="true">
+                <div class="d-flex">
+                    <b-btn variant="success" :block="true" class="m-1" @click.prevent="close_modal(item_id)">No</b-btn>
+                    <b-btn variant="danger" :block="true" class="m-1" @click.prevent="confirm_delete(item_id)">Yes</b-btn>
+                </div>
+            </b-modal>
+        </div>
+    </script>
+{% endblock %}
+
+
+{% block bottom_js %}
+    <script>
+        all_components['delete-btn-with-modal'] = {
+            props: ['item_id'],
+            delimiters: ['[[', ']]'],
+            template: '#delete-modal-template',
+            data: function () {
+                return {}
+            },
+            methods: {
+                close_modal: function (_id) {
+                    this.$refs['del_confirmation_modal-' + _id].hide()
+                },
+                confirm_delete: function (_id) {
+                    let ajax_req = new XMLHttpRequest();
+                    ajax_req.onreadystatechange = function () {
+                        if (ajax_req.readyState === 4 && ajax_req.status === 200) {
+                            let data = JSON.parse(ajax_req.responseText);
+                            if (data.success){
+                                window.location.reload(false)
+                            }
+                        }
+                    };
+                    ajax_req.open("GET", "{% url 'dashboard:delete_benefits_coverages' %}?bnc_id=" + _id, true);
+                    ajax_req.send();
+                }
+            },
+        }
+    </script>
+{% endblock %}

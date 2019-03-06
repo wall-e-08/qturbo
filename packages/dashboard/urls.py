@@ -15,13 +15,13 @@ urlpatterns = [
     path('benefits-coverages/<bnc_type>/', login_required(views.all_benefits_coverages), name='all_benefits_coverages'),
     path('benefits-coverages/<bnc_type>/create/', login_required(views.create_or_edit_benefits_coverages), name='create_benefits_coverages'),
     path('benefits-coverages/<bnc_type>/edit/<bnc_id>/', login_required(views.create_or_edit_benefits_coverages), name='edit_benefits_coverages'),
-    # path('benefits-coverages/delete/<bnc_id>/', login_required(views.delete_benefits_coverages), name='delete_benefits_coverages'),
+    path('benefits-coverages-delete/', login_required(views.delete_benefits_coverages), name='delete_benefits_coverages'),
 
     path('disclaimers-restrictions/', login_required(views.all_disclaimers_restrictions), name='all_disclaimers_restrictions'),
     path('disclaimers-restrictions/<dnr_type>/', login_required(views.all_disclaimers_restrictions), name='all_disclaimers_restrictions'),
     path('disclaimers-restrictions/<dnr_type>/create/', login_required(views.create_or_edit_disclaimers_restrictions), name='create_disclaimers_restrictions'),
     path('disclaimers-restrictions/<dnr_type>/edit/<dnr_id>/', login_required(views.create_or_edit_disclaimers_restrictions), name='edit_disclaimers_restrictions'),
-    # path('disclaimers-restrictions/delete/<dnr_id>/', login_required(views.delete_disclaimers_restrictions), name='delete_disclaimers_restrictions'),
+    path('disclaimers-restrictions-delete/', login_required(views.delete_disclaimers_restrictions), name='delete_disclaimers_restrictions'),
 
     # pages | currently not active in website
     path('page/', login_required(views.all_pages), name='all_pages'),

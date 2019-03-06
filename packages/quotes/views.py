@@ -394,7 +394,7 @@ def plan_quote(request, ins_type):
     bncq = qm.BenefitsAndCoverage.objects.filter(plan__ins_type=ins_type)
     bnc_for_return = []
     for b in bncq:
-        if b.self == None:
+        if b.self_fk == None:
             bnc_for_return.append(b)
     return render(request, 'quotes/quote_list.html', {
         'form_data': quote_request_form_data, 'xml_res': d,

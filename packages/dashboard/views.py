@@ -571,11 +571,25 @@ def create_or_edit_menu(request, menu_id=None):
 
 
 def delete_benefits_coverages(request):
-    return render(request, 'dashboard/benefits_coverages.html', context={})
+    if not request.GET or not request.GET.get('bnc_id', None):
+        raise Http404("err")
+    bnc_id = request.GET['bnc_id']
+    try:
+        BenefitsAndCoverage.objects.get(id=bnc_id).delete()
+    except BenefitsAndCoverage.DoesNotExist:
+        raise Http404("Not found")
+    return JsonResponse({"success": True,})
 
 
 def delete_disclaimers_restrictions(request):
-    return render(request, 'dashboard/all_disclaimers_restrictions.html', context={})
+    if not request.GET or not request.GET.get('dnr_id', None):
+        raise Http404("err")
+    dnr_id = request.GET['dnr_id']
+    try:
+        RestrictionsAndOmissions.objects.get(id=dnr_id).delete()
+    except RestrictionsAndOmissions.DoesNotExist:
+        raise Http404("Not found")
+    return JsonResponse({"success": True,})
 
 
 def delete_page(request):
