@@ -7,6 +7,7 @@ import requests
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
@@ -569,6 +570,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     except qm.Carrier.DoesNotExist as er:
         print("Very weird error: {}".format(er))
 
+    # print("==============" + plan['Plan_Name'])
     return render(request,
                   # 'quotes/stm_plan.html',
                   'quotes/plans/{0}.html'.format(plan["Name"].lower().replace(' ', '_')),
@@ -584,8 +586,8 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                    'alternate_plan': alternate_plan,
                    'benefit_amount_coinsurance_coverage_max_form': AjaxRequestAttrChangeForm,
                    'duration_coverage_form': DurationCoverageForm,
-                   'benefit_coverage': qm.BenefitsAndCoverage.objects.filter(plan=carrier),
-                   'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier),
+                   'benefit_coverage': qm.BenefitsAndCoverage.objects.filter(plan=carrier).filter(Q(plan_number='all') | Q(plan_number=plan.get('Plan_Name'))),
+                   'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier).filter(Q(plan_number='all') | Q(plan_number=plan.get('Plan_Name'))),
                    })
 
 

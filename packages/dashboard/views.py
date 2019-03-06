@@ -783,3 +783,22 @@ def generate_short_code(request):
     return JsonResponse({
         "success": False,
     })
+
+
+def ajax_all_plan_names(request):
+    if request.GET:
+        if request.GET.get('plan_id', None):
+            try:
+                plan = Carrier.objects.get(id=request.GET['plan_id'])
+                plan_name_for_key = plan.name.lower().replace(' ', '-')
+                return JsonResponse({
+                    "success": True,
+                    "plan_names": settings.PLAN_NAMES_LIST.get(plan_name_for_key, []),
+                })
+            except Carrier.DoesNotExist:
+                print("awkward err carrier not found!")
+    return JsonResponse({
+        "success": False,
+    })
+
+

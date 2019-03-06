@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('upload_media_file/', login_required(views.editor_media_upload), name='editor_media_upload'),
 
+    path('get-all-plan-names-by-plan/', login_required(views.ajax_all_plan_names), name='ajax_all_plan_names'),
+
     path('edit-general-topic/', login_required(views.edit_general_topic), name='edit_general_topic'),
 
     path('benefits-coverages/', login_required(views.all_benefits_coverages), name='all_benefits_coverages'),

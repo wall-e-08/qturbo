@@ -2,10 +2,15 @@ from __future__ import print_function, unicode_literals
 
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import (StmEnroll, Dependent, AddonPlan, Carrier, BenefitsAndCoverage, RestrictionsAndOmissions)
+from .models import (StmEnroll, Dependent, AddonPlan, Carrier, BenefitsAndCoverage, RestrictionsAndOmissions, MainPlan)
 
 
 admin.site.register(RestrictionsAndOmissions)
+
+@admin.register(MainPlan)
+class MainPlanAdmin(admin.ModelAdmin):
+    list_display = ['vimm_enroll_id', 'Name', 'Plan_Name']
+    list_filter = ['Name']
 
 
 @admin.register(BenefitsAndCoverage)
