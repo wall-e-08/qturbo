@@ -10,7 +10,7 @@
                 <div class="mt-5">
                     <div class="row">
                         <div class="home-nav-item-box">
-                            <a href="javascript:void(0);" target="_blank" class="mr-4 home-nav-single-item">
+                            <a href="{% url 'quotes:life_insurance' %}" target="_blank" class="mr-4 home-nav-single-item">
                                 <div class="home-nav-single-item-content">
                                     <div class="pb-2" style="height: 80px">
                                         <img src="{% static 'img/family.svg' %}" alt="" class="h-100">
@@ -68,11 +68,11 @@
                                         Code
                                     </label>
                                     <div class="position-relative">
-                                        <input type="text" id="home-zip-code"
+                                        <input type="tel" id="home-zip-code"
                                                class="font-md border-0 outline-0 w-100"
                                                :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
                                                v-on:keydown="validate_zip($event)">
-                                        <div class="position-absolute vertical-center" style="left:99%"
+                                        <div class="position-absolute vertical-center" style="left:96%"
                                              v-html="current_marker"></div>
                                     </div>
                                     <div class="home-zc-err"></div>
@@ -118,9 +118,13 @@
            {% comment %} <span class="border border-secondary rounded-circle cur-p qt-tooltip"
                   v-if="survey_type == 'me'">?</span>{% endcomment %}
         </p>
-        <input type="text" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
+        <input type="tel" placeholder="mm/dd/yyyy" v-model="inputs.dob" :name="'dob-'+survey_type+index"
                @keydown="prevent_NaN_input" @keyup="auto_slash_insert"
-               class="font-mm border border-secondary mb-3 rounded w-100 qt-survey-input">
+               :class="{
+                    'is-invalid': dob_err,
+                    'form-control font-mm border border-secondary rounded w-100 qt-survey-input' : true,
+                }">
+        <div class="invalid-feedback mb-3">[[ dob_err ]]</div>
 
         <div class="qt-survey-gender my-3" v-if="['gender', 'tobacco'].indexOf(current_stage) > -1">
             <!--show only if current stage is gender or tobacco-->
@@ -180,7 +184,7 @@
                     <h5 class="card-title font-md font-wight-700">Who are you looking to insure?</h5>
                     <p class="card-text text-secondary font-sm mb-0">Include yourself plus any household members for
                         this new coverage.</p>
-                    <a href="#" class="card-link text-capitalize font-wight-600 font-md">learn more
+                    <a href="{% url 'article:all_articles' %}" class="card-link text-capitalize font-wight-600 font-md">learn more
                         <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="24" height="24"
                              viewBox="0 0 24 24">
                             <path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"></path>
@@ -227,9 +231,22 @@
                                 </div>
                             </template>
                             <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                         v-if="own_input.dob && own_input.gender && own_input.tobacco" :to="{ name: 'survey-income'}"
+                                         v-if="is_all_data_valid"
+                                         :to="{ name: 'survey-plan'}"
                                          @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</router-link>
-                            <button v-else class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
+                            <template v-else>
+                                <button class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
+                                <div class="alert alert-info border-info mt-3" role="alert" v-if="show_error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="info" style="width: 18px !important;height: 18px !important;margin-top: -2px;">
+                                        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.033
+                                                16.01c.564-1.789 1.632-3.932 1.821-4.474.273-.787-.211-1.136-1.74.209l-.34-.64c1.744-1.897 5.335-2.326
+                                                4.113.613-.763 1.835-1.309 3.074-1.621 4.03-.455 1.393.694.828 1.819-.211.153.25.203.331.356.619-2.498
+                                                2.378-5.271 2.588-4.408-.146zm4.742-8.169c-.532.453-1.32.443-1.761-.022-.441-.465-.367-1.208.164-1.661.532-.453
+                                                1.32-.442 1.761.022.439.466.367 1.209-.164 1.661z"></path>
+                                    </svg>
+                                    <span>Please correct all data above</span>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -238,10 +255,10 @@
     </div>
 </script>
 
-<script type="text/x-template" id="monthly-income-template">
+<script type="text/x-template" id="annual-income-template">
     <div class="row">
         <div class="col-lg-8 offset-lg-2">
-            <router-link :to="{ name: 'survey-member'}">
+            <router-link :to="{ name: 'survey-plan'}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
                     <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
                 </svg>
@@ -286,6 +303,33 @@
                     <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 mr-3 w-auto col">$47,000+</button>
                     <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 ml-3 w-auto col">$30,001 - $47,000+</button>
                 </div>{% endcomment %}
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="plan-type-template">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <router-link :to="{ name: 'survey-member'}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="primary" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"></path>
+                </svg>
+                Back
+            </router-link>
+
+            <div class="card text-center mt-2">
+                <div class="card-body">
+                    <form class="text-center w-100">
+                        <h1 class="font-wight-600 mb-3 font-lg responsive-font-xl text-center mb-3 heading-slogan">What kind of insurance are you looking for</h1>
+                        <div class="btn-group-vertical qt-rigid-btn-group w-auto">
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    @click.prevent='choose_plan_type("{% url 'quotes:set_ins_type' %}", "{{ csrf_token }}", "stm")'>Traditional insurance/short term medical (STM) plans</button>
+                            <button class="btn btn-primary btn-lg btn-block mb-3"
+                                    @click.prevent='choose_plan_type("{% url 'quotes:set_ins_type' %}", "{{ csrf_token }}", "lim")'>Defined benefit insurance</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

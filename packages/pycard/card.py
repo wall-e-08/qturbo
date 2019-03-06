@@ -65,7 +65,7 @@ class Card(object):
         '4242424242424242',
     )
 
-    def __init__(self, number, month, year, cvc, holder=None):
+    def __init__(self, number, month=None, year=None, cvc=None, holder=None):
         """
         Attaches the provided card data and holder to the card after removing
         non-digits from the provided number.

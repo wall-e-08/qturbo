@@ -54,13 +54,16 @@
 
     <div class="row" style="margin-top: 1rem;">
         <div id="application-body" class="col-xs-12 col-md-8">
+            {% if not esign_req_sent %}
             <div class="">
                 <div class="col-sm-12 app_body_panel">
                 <div class="">
                     <h3>
                         <span style="text-transform: uppercase;" class="fo">{% trans "Applicant Info" %}</span>
                         {% if not esign_req_sent %}
-                        <span><a href="{% url 'quotes:stm_enroll' plan_url 2 %}"><i class="fa fa-edit"></i></a></span>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" data-toggle="tooltip" title="Edit Applicant Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
@@ -93,16 +96,20 @@
                 </div>
                 </div>
             </div>
+            {% endif %}
 
             <div class="">
                 <div class="col-sm-12 app_body_panel">
                     <h3>
-                        <span style="text-transform: uppercase;">{% trans "Payment & Billing Info" %}</span>
+                        <span style="text-transform: uppercase;">{% trans "Payment Info" %}</span>
                         {% if not esign_req_sent %}
-                        <span><a href="{% url 'quotes:stm_enroll' plan_url 3 %}"><i class="fa fa-edit"></i></a></span>
+                            <a href="{% url 'quotes:stm_enroll' plan_url 3 %}" data-toggle="tooltip" title="Edit Payment & Billing Info !">
+                                <i class="fa fa-edit"></i>
+                            </a>
                         {% endif %}
                     </h3>
                     <div class="row" style="margin: 1rem 0 2rem;">
+                        {% if not esign_req_sent %}
                         <div class="col-sm-6">
                             <ul>
                                 <li>{{ payment_info.Payment_Method }}</li>
@@ -125,7 +132,8 @@
                                 <li>{{ payment_info.Billing_City }}, {{ payment_info.Billing_State }} {{ payment_info.Billing_ZipCode }}</li>
                             </ul>
                         </div>
-                        <div class="col-sm-12">
+                        {% endif %}
+                        <div class="col-sm-12 pad-l-0">
                             <p style="margin-top: 10px;" class="review_addon"><span style="font-weight: bold;">Total Payment</span>: ${% plan_total_payment %}</p>
                             {% if form_data.Payment_Option == '2' %}
                                 <p class="review_addon">
@@ -145,6 +153,16 @@
                                 <p class="review_addon"><span style="font-weight: bold">{{ add_on_plan.carrier_name }}</span>
                                     Premium: ${{ add_on_plan.actual_premium }}</p>
                             {% endfor %}
+                        
+                                {% if esign_req_sent %}
+                                    <div style="background: rgba(244, 67, 54, 0.29);padding: 2px 20px;margin-top: 30px;
+                                        box-shadow: 0 0 20px rgba(244, 67, 54, 0.76);border: 1px solid rgba(244, 67, 54, 0.33);">
+                                        <h4 style="line-height: 1.4;font-weight: 600;">An email from <em style="font-weight: 700;"> echosign@echosign.com </em>
+                                            containing the instructions for signing your {{ plan.Name }} application has been sent to your email address.
+                                            Please check your email <em style="font-weight: 700;">{{ applicant_info.Email }}</em>.
+                                        </h4>
+                                    </div>
+                                {% endif %}
                         </div>
                     </div>
                 </div>
@@ -169,7 +187,7 @@
                             <label for="consent_checkbox_custom">
                                 <p>
                                     I have read the
-                                    <a href="{% url 'quotes:legal' 'terms-of-use' %}" target="_blank">NationsHealthInsurance Terms and Agreements</a>
+                                    <a href="{% url 'quotes:legal' 'terms-of-use' %}" target="_blank">HealthInsurance.fm Terms and Agreements</a>
                                     and I agree that by using this site, my agreement and consent will be legally binding and enforcable and the legal equivalent of my handwritten signature.
                                     <sup style="color: #ff0000;">*</sup>
                                 </p>
@@ -209,7 +227,7 @@
 
             {% if not esign_req_sent %}
                 <div class="" style="margin-bottom:30px;margin-top:30px;">
-                    <div class="" style="margin-bottom:30px;margin-top:30px;">
+                    <div class="text-center" style="margin-bottom:30px;margin-top:30px;">
                         <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
                         <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn btn-orange"
                                 id="send_e_sign_link_btn"
@@ -221,12 +239,8 @@
                     </div>
                 </div>
             {% else %}
-                <h4 class=""color="Blue">An email from <em> echosign@echosign.com </em>
-                    containing the instructions for signing your {{ plan.Name }} application has been sent to your email address.
-                    Please check your email {{ applicant_info.Email }}.
-                </h4>
                 <div class="" style="margin-bottom:30px;margin-top:30px;">
-                <div class="">
+                <div class="text-center">
                     <button type="button" class="btn btn-lg btn-yellow hii_esign_enroll_action_btn btn-orange"
                             id = "hii_esign_enroll_action_btn"
                             data-action="enroll"
@@ -321,7 +335,7 @@
                                         </div>
                                         <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
                                         <div class="plan-summary">
-                                            <h4 class="text-primary">{{ plan.plan_name }}</h4>
+                                            <h4 class="text-primary">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</h4>
                                             {% if form_data.Ins_Type == 'stm' %}
                                                 <p>Deductible: ${{ plan.option|intcomma }}</p>
 
@@ -453,10 +467,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            {% if selected_addon_plans %}
                                 <hr>
                                 <div class="addon-holder border-basic rounded sidebar-each-part"
                                      id="sidebar-add-on-holder">
-                                    {% if selected_addon_plans %}
+
                                         <h4 class="text-uppercase policy-label mrg-t-0 fw-700"
                                             style="margin-bottom: 1em">
                                             ADD-ON PLAN

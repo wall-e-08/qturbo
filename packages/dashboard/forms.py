@@ -1,6 +1,7 @@
 from django import forms
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog
+from quotes.models import BenefitsAndCoverage, RestrictionsAndOmissions
 from djrichtextfield.widgets import RichTextWidget
 from .utils import get_distinct_page_template_file_list, get_all_urls
 from .models import Menu, GeneralTopic
@@ -11,7 +12,7 @@ class GeneralTopicForm(forms.ModelForm):
         model = GeneralTopic
         fields = ['site_name', 'site_main_title', 'meta_keywords', 'meta_description',
                   'top_quote_heading', 'top_quote_sub_heading', 'top_text',
-                  'footer_left', 'footer_middle', 'copyright_text', 'social_links',]
+                  'footer_left', 'footer_middle', 'copyright_text', 'social_links', ]
 
 
 class EditorMediaForm(forms.Form):
@@ -117,3 +118,14 @@ class MenuForm(forms.ModelForm):
         model = Menu
         exclude = '__all__'
 
+
+class BenefitsForm(forms.ModelForm):
+    class Meta:
+        model = BenefitsAndCoverage
+        fields = '__all__'
+
+
+class DisclaimerForm(forms.ModelForm):
+    class Meta:
+        model = RestrictionsAndOmissions
+        fields = '__all__'

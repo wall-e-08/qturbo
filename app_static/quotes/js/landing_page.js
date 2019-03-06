@@ -5,11 +5,13 @@ const v_all_routes_name = {
     zip: 'zip-code',
     survey: 'survey',
     quote: 'survey-member',
+    plan_type: 'survey-plan',
     income: 'survey-income',
 };
 
 const v_cookies_keys = {
     zip_code: "qt_zip_code",
+    plan_type: "qt_plan_type",
     own_input: "qt_own_input",
     spouse_input: "qt_spouse_input",
     dependents: "qt_dependents"
@@ -21,7 +23,8 @@ const v_templates = {
     zip_code: '#zipcode-template',
     survey_member: '#survey-template',
     survey_card: '#survey-card-template',
-    monthly_income: '#monthly-income-template',
+    plan_type: '#plan-type-template',
+    annual_income: '#annual-income-template',
 };
 
 const svg_format = (svg_attr, path_d) => {
@@ -94,6 +97,7 @@ const v_survey_card = {
     },
     data: function () {
         return {
+            dob_err: '',
             current_stage: this.prop_current_stage,
         }
     },
@@ -127,7 +131,10 @@ const v_survey_card = {
             } //else console.log("Else")
         },
         auto_slash_insert: function (e) {
+            this.dob_err = '';
             this.current_stage = survey_card_stages[0];
+            this.inputs.gender = '';
+            this.inputs.tobacco = '';
             if (e.keyCode === 8 || e.keyCode === 46) {
                 // if "backspace" or "del" button pressed
                 if (this.inputs.dob.length === 2 || this.inputs.dob.length === 5) {
@@ -142,19 +149,28 @@ const v_survey_card = {
             }
         },
         check_age: function () {
-            //Your age must be under 99 years old
-            // Your age must be at least 21
             var dob = new Date(this.inputs.dob);
             if (dob == 'Invalid Date') {
+                if(this.inputs.dob) {
+                    this.dob_err = 'Invalid Date';   // don't show error if input is empty
+                    this.$parent.show_error = true;
+                } else {
+                    this.dob_err = '';
+                    this.$parent.show_error = false;
+                }
                 console.warn("invalid date");
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
             if (age > this.prop_max_age) {
-                console.warn("your age must be under " + this.prop_max_age +" years old !!")
+                this.dob_err = "Your age must be under " + this.prop_max_age +" years old !";
+                this.$parent.show_error = true;
             } else if (age < this.prop_min_age) {
-                console.warn("your age must be at least " + this.prop_min_age);
+                this.dob_err = "Your age must be at least " + this.prop_min_age + " years !";
+                this.$parent.show_error = true;
             } else {
+                this.dob_err = '';
+                this.$parent.show_error = false;
                 this.current_stage = survey_card_stages[1];
                 if (this.inputs.gender) this.current_stage = survey_card_stages[2];
             }
@@ -244,12 +260,15 @@ const router = new VueRouter({
             name: v_all_routes_name.quote,
             component: {
                 template: v_templates.survey_member,
+                delimiters: ['[[', ']]'],
                 components: {
                     'survey-card': v_survey_card,
                 },
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
+                        show_error: false,
+                        // dob_err: '',
                         own_input: {
                             dob: '',
                             gender: '',
@@ -262,6 +281,7 @@ const router = new VueRouter({
                             tobacco: '',
                         },
                         dependents: [],
+                        dependents_data_correct: false,
                         max_dependents: 9,
                     }
                 },
@@ -355,7 +375,7 @@ const router = new VueRouter({
                             data: form_data,
                             success: function (data) {
                                 // console.log("Initial success");
-                                console.table(data);
+                                // console.table(data);
                                 if (data.status === "false"){
                                     // console.log("Error in form data");
                                     console.error(data.errors);
@@ -375,6 +395,22 @@ const router = new VueRouter({
                     spouse_input: function () {
                         this.spouse = !!this.spouse_input.dob;  // if found previous data, then show spouse card
                     },
+                    dependents: {
+                        handler() {
+                            let _t = this;
+                            for (let i = 0; i < _t.dependents.length; i++) {
+                                _t.dependents_data_correct = Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k]);
+                            }
+                        },
+                        deep: true
+                    }
+                },
+                computed: {
+                    is_all_data_valid: function () {
+                        return this.own_input.dob && this.own_input.gender && this.own_input.tobacco &&
+                            (!this.spouse || (this.spouse_input.dob && this.spouse_input.gender && this.spouse_input.tobacco)) &&
+                            ((!this.dependents.length) || this.dependents_data_correct);
+                    }
                 },
                 created() {
                     let zip_code = this.$cookies.get(v_cookies_keys.zip_code);
@@ -411,11 +447,51 @@ const router = new VueRouter({
                 }
             },
         },{
+            path: 'plan',
+            name: v_all_routes_name.plan_type,
+            component: {
+                template: v_templates.plan_type,
+                data: function () {
+                    return {
+                        plan_type: '',
+                    }
+                },
+                methods: {
+                    choose_plan_type: function(redirect_url, csrf_token, plan_type) {
+                        let _t = this;
+                        _t.plan_type = plan_type;
+                        // this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
+
+                        $.ajax({
+                            url: redirect_url,
+                            method: 'post',
+                            dataType: 'json',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                            },
+                            data: {
+                                Ins_Type: plan_type
+                            },
+                            success: function (data) {
+                                console.log(`Set insurance type to ${plan_type}.`);
+                                router.push({name: v_all_routes_name.income});
+                            },
+                            error: function(data) {
+                                console.log("Error");
+                                console.table(data);
+                                router.push({name: v_all_routes_name.quote});
+
+                            }
+                        });
+
+                    },
+                }
+            }
+        },{
             path: 'income',
             name: v_all_routes_name.income,
             component: {
-                // TODO: Make this annual income
-                template: v_templates.monthly_income,
+                template: v_templates.annual_income,
                 data: function () {
                     return {
                         income: '',
