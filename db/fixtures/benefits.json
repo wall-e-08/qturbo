@@ -1,0 +1,1019 @@
+[
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 27,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/phcs.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 30,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/teladoc.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 31,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/karis360.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 32,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/rx-helpline.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 29,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-urgent-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 33,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-urgent-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 34,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 35,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 36,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/outpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 37,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/outpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 38,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/mental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 39,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/substance-abuse-coverage.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 157,
+    "fields": {
+      "self_fk": 30,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 158,
+    "fields": {
+      "self_fk": 31,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 159,
+    "fields": {
+      "self_fk": 32,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 130,
+    "fields": {
+      "self_fk": 68,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 131,
+    "fields": {
+      "self_fk": 70,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 105,
+    "fields": {
+      "self_fk": 72,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 160,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 133,
+    "fields": {
+      "self_fk": 71,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 107,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 161,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 162,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 163,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 164,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 135,
+    "fields": {
+      "self_fk": 79,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 109,
+    "fields": {
+      "self_fk": 78,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 137,
+    "fields": {
+      "self_fk": 81,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 111,
+    "fields": {
+      "self_fk": 80,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 139,
+    "fields": {
+      "self_fk": 82,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 113,
+    "fields": {
+      "self_fk": 85,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 165,
+    "fields": {
+      "self_fk": 82,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 166,
+    "fields": {
+      "self_fk": 82,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 114,
+    "fields": {
+      "self_fk": 83,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 167,
+    "fields": {
+      "self_fk": 83,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 142,
+    "fields": {
+      "self_fk": 84,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 116,
+    "fields": {
+      "self_fk": 90,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 144,
+    "fields": {
+      "self_fk": 96,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 145,
+    "fields": {
+      "self_fk": 89,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 119,
+    "fields": {
+      "self_fk": 91,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 147,
+    "fields": {
+      "self_fk": 92,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 121,
+    "fields": {
+      "self_fk": 93,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 122,
+    "fields": {
+      "self_fk": 94,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 150,
+    "fields": {
+      "self_fk": 95,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 124,
+    "fields": {
+      "self_fk": 102,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 152,
+    "fields": {
+      "self_fk": 97,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 126,
+    "fields": {
+      "self_fk": 98,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 154,
+    "fields": {
+      "self_fk": 99,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 128,
+    "fields": {
+      "self_fk": 100,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 129,
+    "fields": {
+      "self_fk": 101,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 65,
+    "fields": {
+      "self_fk": 30,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 66,
+    "fields": {
+      "self_fk": 31,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 67,
+    "fields": {
+      "self_fk": 32,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 68,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/multiplan-ppo.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 70,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 72,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 77,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 71,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 69,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 73,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 74,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 75,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 76,
+    "fields": {
+      "self_fk": 69,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 79,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/mental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 78,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/mental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 81,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/mental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 80,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/mental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 82,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/accidental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 85,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/accidental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 86,
+    "fields": {
+      "self_fk": 82,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 87,
+    "fields": {
+      "self_fk": 82,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 83,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/accidental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 88,
+    "fields": {
+      "self_fk": 83,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 84,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/accidental.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 90,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 96,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 89,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 91,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 92,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 93,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 94,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 95,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/hospital.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 102,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 97,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 98,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 99,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 100,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 101,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 55,
+    "fields": {
+      "self_fk": 30,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 56,
+    "fields": {
+      "self_fk": 31,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 57,
+    "fields": {
+      "self_fk": 32,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 58,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/first-health-network.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 59,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 60,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 61,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 62,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/diagnostic.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 63,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/diagnostic.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 64,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/diagnostic.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 40,
+    "fields": {
+      "self_fk": 27,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 41,
+    "fields": {
+      "self_fk": 30,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 42,
+    "fields": {
+      "self_fk": 31,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 43,
+    "fields": {
+      "self_fk": 32,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 44,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 45,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 46,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/doctor-visit.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 47,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/inpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 48,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/outpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 49,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/outpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 50,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/outpatient.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 51,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/surgery.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 52,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 53,
+    "fields": {
+      "self_fk": null,
+      "image": "benefits/others.png",
+      "feature_type": "Benefits and Coverage"
+    }
+  },
+  {
+    "model": "quotes.benefitsandcoverage",
+    "pk": 54,
+    "fields": {
+      "self_fk": 53,
+      "image": "",
+      "feature_type": "Benefits and Coverage"
+    }
+  }
+]

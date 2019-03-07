@@ -14,3 +14,9 @@
 #./manage.py loaddata db/fixtures/general_topic.json
 
 ./manage.py loaddata db/fixtures/carrier.json
+
+
+unzip -o benefits-img.zip -d /var/qturbo/media/benefits/
+./manage.py loaddata db/fixtures/feature.json
+./manage.py loaddata db/fixtures/benefits.json
+./manage.py loaddata db/fixtures/disclaimers.json
