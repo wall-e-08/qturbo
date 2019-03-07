@@ -15,7 +15,7 @@ class MainPlanAdmin(admin.ModelAdmin):
 
 @admin.register(BenefitsAndCoverage)
 class BenefitsAndCoverageAdmin(admin.ModelAdmin):
-    list_display = ['_title', 'plan', '_img']
+    list_display = ['_title', 'plan', 'plan_number', '_img']
     list_filter = ['plan']
 
     def _title(self, obj):

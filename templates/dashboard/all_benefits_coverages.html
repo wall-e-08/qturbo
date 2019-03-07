@@ -48,8 +48,9 @@
                         <thead>
                             <tr class="table-black">
                                 <th class="align-middle" scope="col">#</th>
-                                <th class="align-middle" scope="col">Title</th>
                                 <th class="align-middle" scope="col">Plan</th>
+                                <th class="align-middle" scope="col">Plan Number</th>
+                                <th class="align-middle" scope="col">Title</th>
                                 <th class="align-middle" scope="col">Icon/Image</th>
                                 <th class="align-middle" scope="col">Display Order</th>
                                 <th class="align-middle" scope="col">Edit</th>
@@ -59,16 +60,22 @@
                         <tbody>
                             {% for bnc in bncs %}
                                 <tr>
-                                    <th class="align-middle" scope="row">{{ forloop.counter }}</th>
+                                    {% with plan3=bnc.plan|lower|stringformat:".3s" %}
+                                        {% if plan3 == 'lif' %}  <th class="align-middle table-primary" scope="row">{{ forloop.counter }}</th>
+                                        {% elif plan3 == 'adv' %}<th class="align-middle table-warning" scope="row">{{ forloop.counter }}</th>
+                                        {% elif plan3 == 'vit' %}<th class="align-middle table-success" scope="row">{{ forloop.counter }}</th>
+                                        {% elif plan3 == 'hea' %}<th class="align-middle table-dark" scope="row">{{ forloop.counter }}</th>
+                                        {% elif plan3 == 'leg' %}<th class="align-middle table-danger" scope="row">{{ forloop.counter }}</th>
+                                        {% else %}<th class="align-middle table-light" scope="row">{{ forloop.counter }}</th>{% endif %}
+                                    {% endwith %}
+                                    <td class="align-middle">{{ bnc.plan }}</td>
+                                    <td class="align-middle text-capitalize">{{ bnc.plan_number|default:'-' }}</td>
                                     <td class="align-middle">
                                         {% if bnc_type == 'core' %}
                                             {{ bnc.title|truncatechars:"20" }}
                                         {% elif bnc_type == 'bridged' %}
                                             {{ bnc.self_fk.title|truncatechars:"20" }}
                                         {% endif %}
-                                    </td>
-                                    <td class="align-middle">
-                                        {{ bnc.plan }} - {{ bnc.plan_number|default:'all' }}
                                     </td>
                                     <td class="align-middle">
                                         {% if bnc_type == 'core' %}

@@ -534,36 +534,27 @@ FEATURED_PLAN_PREMIUM_DICT = {
 STM_PLAN_BENEFITS = {
     'lifeshield-stm': {
         '1': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
+            'ER benefits $250 per visit',
+            'Hospital: average standard room rate',
+            'Doctor visits copay $30, maximum 3 visits',
         ],
         '2': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
-        ],
-        '3': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
+            'ER benefits $500 per visit (additional deductible applies)',
+            'Hospital: average standard room rate',
+            'Doctor visits copay $40, unlimited visits',
         ],
     },
     'advanthealth-stm': {
         '1': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
+            'Office Consultation or Urgent Care copay of $25, maximum 2 visits',
         ],
         '2': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
+            'ER Additional Deductible $250, maximum 1',
+            'Office Consultation or Urgent Care copay of $15, unlimited visits',
         ],
         '3': [
-            'ER visits per week: 2',
-            'Hospital visits per week: 5',
-            'Doctor visits per week: 8',
+            'ER Additional Deductible $250, maximum 1',
+            'Office Consultation or Urgent Care copay of $25, maximum 2 visits',
         ],
     }
 }
