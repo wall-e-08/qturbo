@@ -80,9 +80,9 @@ def edit_general_topic(request):
 
 def all_benefits_coverages(request, bnc_type=None):
     if bnc_type == BENEFITS_DISCLAIMERS_TYPES['c']:
-        bncs = BenefitsAndCoverage.objects.filter(self_fk=None).order_by('order_serial')
+        bncs = BenefitsAndCoverage.objects.filter(self_fk=None).all()
     elif bnc_type == BENEFITS_DISCLAIMERS_TYPES['b']:
-        bncs = BenefitsAndCoverage.objects.exclude(self_fk=None).order_by('order_serial')
+        bncs = BenefitsAndCoverage.objects.exclude(self_fk=None).all()
     else:
         raise Http404("Error")
     return render(request, 'dashboard/all_benefits_coverages.html', context={
@@ -93,9 +93,9 @@ def all_benefits_coverages(request, bnc_type=None):
 
 def all_disclaimers_restrictions(request, dnr_type):
     if dnr_type == BENEFITS_DISCLAIMERS_TYPES['c']:
-        dnrs = RestrictionsAndOmissions.objects.filter(self_fk=None).order_by('order_serial')
+        dnrs = RestrictionsAndOmissions.objects.filter(self_fk=None).all()
     elif dnr_type == BENEFITS_DISCLAIMERS_TYPES['b']:
-        dnrs = RestrictionsAndOmissions.objects.exclude(self_fk=None).order_by('order_serial')
+        dnrs = RestrictionsAndOmissions.objects.exclude(self_fk=None).all()
     else:
         raise Http404("Error")
     return render(request, 'dashboard/all_disclaimers_restrictions.html', context={

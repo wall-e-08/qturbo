@@ -5,7 +5,7 @@ from multiselectfield import MultiSelectField
 from djrichtextfield.models import RichTextField
 from core import settings
 from .us_states import states, states_list
-from .utils import get_img_path
+from .utils import get_img_path, get_img_path_by_filename
 
 
 class PatchedMultiSelectField(MultiSelectField):
@@ -1861,7 +1861,7 @@ class Feature(models.Model):
     )
 
     plan_number = models.CharField(
-        max_length=10,
+        max_length=20,
         blank=True, null=True,
     )
 
@@ -1879,6 +1879,9 @@ class Feature(models.Model):
     def __str__(self):
         return "{} - {}({})".format(self.title, self.plan.name, self.plan_number) if self.title else "-"
 
+    class Meta:
+        ordering = ['plan', 'order_serial', 'plan_number']
+
 
 class BenefitsAndCoverage(Feature):
     self_fk = models.ForeignKey(
@@ -1889,7 +1892,7 @@ class BenefitsAndCoverage(Feature):
 
     image = models.ImageField(
         verbose_name='Image File',
-        upload_to=get_img_path,
+        upload_to=get_img_path_by_filename,
         blank=True,
         null=True,
     )
