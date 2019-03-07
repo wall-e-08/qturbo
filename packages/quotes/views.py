@@ -260,8 +260,12 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
 
         redis_status_key = f'{get_redis_key(request, ins_type)}##status'
         while request.session.get(redis_status_key) != 'complete':
-            post_process_task_view(request)
-            time.sleep(1)
+            status = post_process_task_view(request)
+            if status == 'complete':
+                break
+            time.sleep(2)
+
+        print(f'OLKIUYHJK\n\n\n {time.time()-time1} \n\n\n')
 
         response = {
             'status': 'success',

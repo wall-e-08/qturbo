@@ -423,8 +423,9 @@ def post_process_task(data, session_identifier_quote_store_key, request):
     time1 = time.time()
     redis_keys = request.session.get(session_identifier_quote_store_key)
 
-    if not redis_keys:
-        return 'failed'
+    if not redis_keys and REDIS_CLIENT.exists(session_identifier_quote_store_key):
+        request.session['{}##status'.format(session_identifier_quote_store_key)] = 'complete'
+        return 'completed'
 
     results = {
         "stm_plans": [],
