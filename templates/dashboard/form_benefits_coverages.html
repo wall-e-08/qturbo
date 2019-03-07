@@ -2,7 +2,7 @@
 {% load static %}
 
 
-{% block title %}{{ item_type|capfirst }} Benefits & Coverages | {{ block.super }}{% endblock title %}
+{% block title %}{{ action|capfirst }} {{ item_type|capfirst }} Benefits & Coverages | {{ block.super }}{% endblock title %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
@@ -171,7 +171,8 @@
                         <option :value="pn" v-if="selected_value == pn" selected>[[ pn ]]</option>
                         <option :value="pn" v-else>[[ pn ]]</option>
                     </template>
-                    <option value="all"><< All >></option>
+                    <option value="all" v-if="selected_value == 'all'" selected> << All >></option>
+                    <option value="all" v-else> << All >></option>
                 </select>
 
                 {% if form.plan_number.errors %}
