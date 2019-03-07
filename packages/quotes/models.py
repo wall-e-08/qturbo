@@ -5,7 +5,7 @@ from multiselectfield import MultiSelectField
 from djrichtextfield.models import RichTextField
 from core import settings
 from .us_states import states, states_list
-from .utils import get_img_path
+from .utils import get_img_path, get_img_path_by_filename
 
 
 class PatchedMultiSelectField(MultiSelectField):
@@ -1860,6 +1860,13 @@ class Feature(models.Model):
         on_delete=models.CASCADE,
     )
 
+    plan_number = models.CharField(
+        max_length=20,
+        blank=True, null=True,
+    )
+
+    order_serial = models.IntegerField(default=0)
+
     title = models.CharField(
         max_length=200,
         blank=True, null=True,
@@ -1869,9 +1876,15 @@ class Feature(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return "{} - {}({})".format(self.title, self.plan.name, self.plan_number) if self.title else "-"
+
+    class Meta:
+        ordering = ['plan', 'order_serial', 'plan_number']
+
 
 class BenefitsAndCoverage(Feature):
-    self = models.ForeignKey(
+    self_fk = models.ForeignKey(
         "BenefitsAndCoverage",
         on_delete=models.CASCADE,
         blank=True, null=True,
@@ -1879,7 +1892,7 @@ class BenefitsAndCoverage(Feature):
 
     image = models.ImageField(
         verbose_name='Image File',
-        upload_to=get_img_path,
+        upload_to=get_img_path_by_filename,
         blank=True,
         null=True,
     )
@@ -1890,16 +1903,13 @@ class BenefitsAndCoverage(Feature):
         editable=False,
     )
 
-    def __str__(self):
-        return "{} ({})".format(self.title or self.self.title, "benefits")
-
     def get_instance(self):
         """hack to ignore many to many relation"""
-        return self if self.title else self.self
+        return self if self.title else self.self_fk
 
 
 class RestrictionsAndOmissions(Feature):
-    self = models.ForeignKey(
+    self_fk = models.ForeignKey(
         "RestrictionsAndOmissions",
         on_delete=models.CASCADE,
         blank=True, null=True,
@@ -1907,13 +1917,11 @@ class RestrictionsAndOmissions(Feature):
 
     feature_type = models.CharField(
         max_length=50,
-        default="Restrictions and Omissions"
+        default="Disclaimers & Restrictions",
+        editable=False,
     )
-
-    def __str__(self):
-        return "{} ({})".format(self.title or self.self.title, "restriction")
 
     def get_instance(self):
         """hack to ignore many to many relation"""
-        return self if self.title else self.self
+        return self if self.title else self.self_fk
 
