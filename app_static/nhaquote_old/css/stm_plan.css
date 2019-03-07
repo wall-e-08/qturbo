@@ -32,6 +32,12 @@ h3 {
     margin-top: 20px;
 }
 
+.qt-plan-details-non-fixed {
+    position: relative !important;
+    margin: 50px auto !important;
+    left: initial !important;
+}
+
 .flex-center-between {
     display: -webkit-box;
     display: -ms-flexbox;

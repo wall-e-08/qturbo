@@ -36,6 +36,14 @@ def get_img_path(instance, filename):
         str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
     )
 
+
+def get_img_path_by_filename(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+    return os.path.join(
+        "benefits",
+        str("{}".format(os.path.splitext(filename)[0]) + file_extension)
+    )
+
 # def date_from_str(date_str, date_format='%d-%M-%Y'):
 #     if not isinstance(date_str, str):
 #         return date_str

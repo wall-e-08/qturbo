@@ -3,12 +3,15 @@
     "model": "dashboard.generaltopic",
     "pk": 1,
     "fields": {
-      "site_name": "asd",
-      "site_main_title": "asd",
-      "meta_keywords": "Asd",
-      "meta_description": "asd",
-      "top_quote_heading": "Find Affordable Health quotes that right for you",
-      "top_quote_sub_heading": "Instantly Compare Over 4,000 Insurance Plans",
+      "site_name": "healthinsurance.fm",
+      "site_main_title": "HealthInsurance.fm | Get Affordable Health Quotes in 1min",
+      "meta_keywords": "health insurance healthinsurance quote affordable family happy free easy find fm",
+      "meta_description": "Find Affordable Health Quotes for you and your Family",
+      "top_quote_heading": "Find Affordable Health Quotes for you and your Family",
+      "top_quote_sub_heading": "Instantly Compare Over 1,000 Insurance Plans",
+      
+      
+      
       "top_img": "general/general-topic-DmwJlxea.png",
       "top_text": "<p><strong>Short Term Health Insurance</strong></p><p>Short Term Health Insurance (STM) was introduced to the market for people who needed help covering gaps in coverage and it is not an \"Obamacare\" plan under the Affordable Care Act. The plans offer a range of deductibles, co-pay, and max out of pocket options to create more comprehensive or more affordable options for the insured. The duration of a STM plan is determined by the carrier and the state laws, ranging from 3 months to 12. Everyone is not eligible for STM plans, some coverages &amp; health benefits are not covered by them, and you can be denied coverage for pre-existing conditions.</p><p>&nbsp;</p><p><strong>Indemnity Insurance</strong></p><p>Some plans have names like Health Benefit Indemnity, Fixed Indemnity, and Limited Medical Indemnity. These plans have a different financial structure than traditional major medical health insurance plans and they are not major medical or Obamacare plans. Instead of co-pays and deductibles, Indemnity plans offer you \"first dollar\" coverage which is a cash benefit policy holders will receive if they have a doctors office or hospital visit. The coverage and benefit levels will vary for Indemnity plans and those differences will be seen in the premiums paid for the coverage. Indemnity also can include supplemental medical insurance coverage for critical illnesses or accidents, as well as non insurance supplemental health benefits such as telemedicine, insurance advocacy, and pharmacy.</p><p>&nbsp;</p><p><strong>Supplemental Health Products</strong></p><p>Many Short Term and Indemnity plans will also be sold with supplemental health products, some of these are insurance products and some are not. Most commonly these are dental, vision, critical illness, emergency medical, and accidental death &amp; dismemberment (AD&amp;D) insurance plans. They can also be products like telemedicine for 24/7 access to medical providers, insurance advocacy services to help you take advantage of your plans, pharmacy benefits for discounted prescriptions, and other group association discounts.</p>",
       "service_heading": "It\u2019s everything about health insurance in one place",
@@ -24,10 +27,12 @@
       "faqs": "[]",
       "quote_heading": "What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing",
       "quote_bg": "general/general-topic-MDUtspmT.jpg",
+      
+      
       "footer_left": "<h6 class=\"text-light font-weight-bold text-center text-md-left\">How we make money</h6>\r\n                            <p class=\"text-light footer-font-size text-center text-md-left\"> Healthinsurance.fm is an\r\n                                independent, advertising-supported website\r\n                                publisher and provides a consumer comparison service.\r\n                                Healthinsurance.fm may earn revenue for leads, clicks, calls and application generated, and\r\n                                may be compensated by its advertisers\r\n                                for sponsored products and services. This compensation may impact how, where and in what\r\n                                order products appear. Healthinsurance.fm does not include all companies or all available\r\n                                products.\r\n                                Healthinsurance.fm is not a broker or agent on the sale of insurance products.</p>",
       "footer_middle": "<h6 class=\"text-light font-weight-bold text-center text-md-left\">Who we are?</h6>\r\n                            <p class=\"text-light footer-font-size text-center text-md-left\"> Healthinsurance.fm is an\r\n                                independent, advertising-supported website\r\n                                publisher and provides a consumer comparison service.\r\n                                Healthinsurance.fm may earn revenue for leads, clicks, calls and application generated, and\r\n                                may be compensated by its advertisers\r\n                                for sponsored products and services. This compensation may impact how, </p>",
       "copyright_text": "Copyright \u00a9 2018, Healthinsurance.fm, Inc.",
-      "social_links": "[[\"http://www.linkedin.com/Healthinsurance.fm/\",\"/static/img/linkedin.svg\"],[\"http://www.twitter.com/Healthinsurance.fm/\",\"/static/img/twitter.svg\"],[\"http://www.facebook.com/Healthinsurance.fm/\",\"/static/img/facebook.svg\"]]",
+      "social_links": "[[\"http://www.linkedin.com/healthinsurance.fm/\",\"/static/img/linkedin.svg\"],[\"http://www.twitter.com/healthinsurance.fm/\",\"/static/img/twitter.svg\"],[\"http://www.facebook.com/healthinsurance.fm/\",\"/static/img/facebook.svg\"]]",
       "last_edited_time": "2019-01-20T11:36:56.161Z"
     }
   }
