@@ -460,6 +460,10 @@ const router = new VueRouter({
                     choose_plan_type: function(redirect_url, csrf_token, plan_type) {
                         let _t = this;
                         _t.plan_type = plan_type;
+
+                        let id_loading_overlay = document.getElementById('overlay-loading');
+                        id_loading_overlay.style.display = "block";
+
                         // this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
 
                         $.ajax({
@@ -474,7 +478,11 @@ const router = new VueRouter({
                             },
                             success: function (data) {
                                 console.log(`Set insurance type to ${plan_type}.`);
-                                router.push({name: v_all_routes_name.income});
+                                setTimeout(function () {
+                                    id_loading_overlay.style.display = "none";
+                                    router.push({name: v_all_routes_name.income});
+
+                                }, 1000);
                             },
                             error: function(data) {
                                 console.log("Error");
@@ -516,6 +524,10 @@ const router = new VueRouter({
                     redirect_to_plans: function (redirect_url, csrf_token, income) {
                         let _t = this;
                         _t.income = income;
+
+                        let id_loading_overlay = document.getElementById('overlay-loading');
+                        id_loading_overlay.style.display = "block";
+
                         $.ajax({
                             url: redirect_url,
                             method: 'post',
@@ -533,10 +545,12 @@ const router = new VueRouter({
                                 } else {
                                     router.push({name: v_all_routes_name.quote});
                                 }
+                                id_loading_overlay.style.display = "none";
                             },
                             error: function(data) {
                                 console.log("Error");
                                 console.table(data);
+                                id_loading_overlay.style.display = "none";
                             }
                         });
                     },
