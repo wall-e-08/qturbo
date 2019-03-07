@@ -1,2 +1,22 @@
 #product_logo,#product_logo_sm{background-color:#f8f8f8}.hover_color:hover{color:#19b4fa}.product_item{color:#9b9b9b}.product_item h5{font-size:18px}.hi-title{color:#19b4fa;font-size:22px}.hi-feature{display:flex;-webkit-box-align:start;-webkit-align-items:flex-start;-ms-flex-align:start;align-items:flex-start;text-align:left}#statistics{background:url("/static/quotes/img/background.png");background-size:cover;color:#f8f9fa}#info .nav-tabs .nav-link{margin-left:35px;font-size:16px;color:#9b9b9b}#info .nav-tabs .nav-link.active,#info .nav-tabs .nav-item.show .nav-link{color:#19b4fa;border-color:#fff;border-bottom:4px solid}#info .nav-tabs .nav-link:hover,#info .nav-tabs .nav-link:focus{border-color:#fff}#info .nav-tabs .nav-link.active:hover,#info .nav-tabs .nav-link.active:focus{border-bottom-color:#19b4fa}#testimonial{background:url("/static/quotes/img/testimonial.png");padding:4.25rem .5rem;background-repeat:no-repeat;background-position-x:left;background-position-y:top;background-size:cover}.testimonial-1{background-color:rgba(0,0,0,0.4);font-size:18px}.testimonial-2{background-color:rgba(0,0,0,0.4);margin-top:140px;font-size:18px}#question{background-color:#f8f8f8}.question-img{width:9.5rem}.blog-article{top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);-ms-transform:translateY(-50%);-o-transform:translateY(-50%);transform:translateY(-50%)}.blog-question:hover{color:#19b4fa}.overlay{background-color:rgba(0,0,0,0.4);width:100%;height:100%;position:absolute;top:0;left:0;overflow:hidden}.home-nav-item-box{display:flex;flex-direction:row;margin:0 auto}.home-nav-item-box a{background:#f8f8f8;border-radius:5px;width:200px;height:200px;box-shadow:rgba(0,0,0,0.09804) 0 1px 2px,rgba(0,0,0,0.04706) 0 5px 15px;transition:all .4s ease-in-out;display:flex;justify-content:center;align-items:center;text-align:center}.home-nav-single-item:hover{box-shadow:0 4px 20px 0 rgba(0,0,0,0.2)}.home-nav-single-item-content-smd{display:flex;align-items:center;background:#f8f8f8;padding:8px;margin-bottom:20px;border-radius:5px;box-shadow:rgba(0,0,0,0.09804) 0 1px 2px,rgba(0,0,0,0.04706) 0 5px 15px;transition:all .4s ease-in-out}.home-nav-single-item-content-smd:hover{box-shadow:0 4px 20px 0 rgba(0,0,0,0.2)}@media (max-width: 768px){.hi-feature{flex-direction:column;align-items:center;text-align:center}.blog-article h2,.blog-article h3{font-size:18px}}@media (max-width: 768px){.home-nav-item-box{flex-direction:column}.home-nav-item-box a{margin-bottom:20px}}.heading-mini-slogan{max-width:325px}.qt-single-icon{width:16px;height:16px;border-radius:3px}#separator{background-color:#ced4da;width:3px;height:200px;left:0;top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);-ms-transform:translateY(-50%);-o-transform:translateY(-50%);transform:translateY(-50%)}.qt-tooltip{padding:0 7.5px}.qt-tooltip:hover{border-color:#19b4fa !important;background-color:#19b4fa !important;color:#fff !important}.qt-survey-input{padding:10px 16px;width:200px;height:50px}input.controlled-by-label:checked+label{color:#fff;background-color:#0599db;border-color:#0599db}.remove-card-X{top:11px;right:18px;line-height:1}.faq-toggle-icon{font-size:30px;line-height:.8;width:24px;height:24px;text-align:center;border-radius:3px}.faq-toggle-icon.qt-accordion-minus{font-size:26px}#qt-accordion header a:not(.collapsed) .qt-accordion-minus{display:inline-block !important}#qt-accordion header a:not(.collapsed) .qt-accordion-plus{display:none !important}#qt-accordion header a.collapsed .qt-accordion-plus{display:inline-block !important}#qt-accordion header a.collapsed .qt-accordion-minus{display:none !important}@media (max-width: 992px){.swap-div-mobile{-webkit-box-direction:reverse;-webkit-box-orient:vertical;-ms-flex-direction:column-reverse;flex-direction:column-reverse}}
+
+#overlay-loading {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99999;
+    position: fixed;
+    font-size: 50px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    line-height: 100vh;
+}
+
+#overlay-loading img {
+    width: 65px;
+}
+
 /*# sourceMappingURL=quotes.css.map */
