@@ -635,9 +635,9 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
 
 
 
-def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=True):
+def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=False):
     if string_at_list_boundaries == True:
-        plan_list = plan_list[-1:-1]
+        plan_list = plan_list
 
     return {
         'carrier' : set(x['Name'] for x in plan_list),
@@ -721,10 +721,10 @@ def get_featured_plan(carrier_name, plan_list, ins_type):
         return
 
     eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
-                                                  x['Name'] == carrier_name, plan_list[1:-1]))
+                                                  x['Name'] == carrier_name, plan_list))
 
     if len(eligible_plans) == 0:
-        eligible_plans = plan_list[1:-1]
+        eligible_plans = plan_list
 
     if featured_plan_attr:
         for attr in featured_plan_attr:

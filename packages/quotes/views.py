@@ -265,7 +265,6 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
                 break
             time.sleep(2)
 
-        print(f'OLKIUYHJK\n\n\n {time.time()-time1} \n\n\n')
 
         response = {
             'status': 'success',
@@ -433,10 +432,14 @@ def change_quote_store_key(request: WSGIRequest, ins_type: str) -> None:
     return None
 
 
-def get_plan_list(request: WSGIRequest, ins_type: str) -> List:
-    redis_key = get_redis_key(request, ins_type)
-    plan_data = json_decoder.decode(redis_conn.get(redis_key).decode())
-    plan_list = plan_data.get('stm_plans')
+def get_plan_list(request: WSGIRequest, ins_type: str) -> Optional[List]:
+    plan_list = None
+    try:
+        redis_key = get_redis_key(request, ins_type)
+        plan_data = json_decoder.decode(redis_conn.get(redis_key).decode())
+        plan_list = plan_data.get('stm_plans')
+    except AttributeError:
+        print(f'Plans not present in redis.')
 
     return plan_list
 
@@ -789,6 +792,19 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
     ))
 
     session_vimm_enroll_id = request.session.get(f'{plan_url}_vimm_enroll_id')
+    old_application_url = f"{plan_url}-{session_vimm_enroll_id}"
+    old_form_data = request.session.get('{0}_form_data'.format(old_application_url), {})
+    old_quote_request_timestamp = old_form_data.get('quote_request_timestamp')
+
+    if (old_quote_request_timestamp and time.time() - old_quote_request_timestamp > 3600) or \
+            (old_form_data and form_data_is_valid(old_form_data) is False):
+            try:
+                del request.session[f'{plan_url}_vimm_enroll_id']
+                del request.session[f'{old_application_url}']
+                del request.session[f'{old_application_url}_form_data']
+                HttpResponseRedirect(reverse('quotes:home'))
+            except KeyError:
+                pass
     if session_vimm_enroll_id is None:
         plan['vimm_enroll_id'] = get_random_string()
     else:
@@ -1452,6 +1468,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
             return HttpResponseRedirect(reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id]))
 
         ctx.update({'res': formatted_enroll_response})
+    ctx.update({'IS_DEV': settings.IS_DEV})
     return render(request, template, ctx)
 
 
@@ -1470,18 +1487,17 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     preference = request.session.get('quote_request_preference_data', {})
     request.session.modified = True
 
-    redis_key = get_redis_key(request, ins_type)
-    plans = json_decoder.decode(redis_conn.get(redis_key).decode())
-    plan_list = plans.get('stm_plans')
+    plan_list = get_plan_list(request, ins_type)
 
-    if not quote_request_form_data or not redis_conn.exists(redis_key):
+    if not quote_request_form_data or not plan_list:
+        # raise Http404 # TODO: Custom 404 regarding plans being deleted from redis.
         plan_list = ['START', 'END']
         return JsonResponse({
         'monthly_plans': plan_list # TODO: Properly handle error
     })
 
     if plan_list:
-        carriers = set(x['Name'] for x in plan_list[1:-1])
+        carriers = set(x['Name'] for x in plan_list)
 
     def filter_stm_plans(plan: Dict) -> bool:
         if (plan['Duration_Coverage'] not in preference[plan['Name']]['Duration_Coverage'] or
@@ -1513,9 +1529,8 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     })
 
 
-def post_process_task_view(request: WSGIRequest) -> None:
+def post_process_task_view(request: WSGIRequest) -> str:
     quote_request_form_data = request.session.get('quote_request_form_data', {})
-    logger.info('Showing available plan lists...')
 
     if quote_request_form_data and not form_data_is_valid(quote_request_form_data):
         quote_request_form_data = {}
@@ -1529,16 +1544,9 @@ def post_process_task_view(request: WSGIRequest) -> None:
     session_quote_store_key_status = '{}##status'.format(session_identifier_quote_store_key)
     status = request.session.get(session_quote_store_key_status)
 
-    print('status: {}'.format(status))
-    if status != 'processing':
-        print('status: {}'.format(status))
-        # return JsonResponse({'status': status})
-    status = post_process_task(quote_request_form_data, session_identifier_quote_store_key, request)
-    print('status: {}'.format(status))
-    # return JsonResponse({'status': status})
+    if status != 'completed':
+        status = post_process_task(quote_request_form_data, session_identifier_quote_store_key, request)
     return status
-
-
 
 
 
@@ -1555,10 +1563,6 @@ def get_redis_key(request: WSGIRequest, ins_type: str) -> str:
     redis_key = "{0}:{1}".format(request.session._get_session_key(), quote_store_key)
 
     return redis_key
-
-
-
-
 
 
 
@@ -1793,11 +1797,10 @@ def e_signature_enrollment(request, vimm_enroll_id):
     if not hii_formatted_enroll_response.error:
         stm_enroll_obj.esign_verification_starts = True
         stm_enroll_obj.esign_verification_pending = True
-    print("packages/quotes/views.py Line No. 1740: -- esign_verification_update_fields",
-          esign_verification_update_fields)
+    elif hii_formatted_enroll_response.error:
+        redis_conn.delete("{0}:{1}".format(request.session._get_session_key(), quote_request_form_data['quote_store_key']))
+
     esign_verification_update_fields.extend(['esign_verification_starts', 'esign_verification_pending'])
-    print("packages/quotes/views.py Line No. 1743: -- esign_verification_update_fields",
-          esign_verification_update_fields)
     stm_enroll_obj.save(update_fields=esign_verification_update_fields)
     logger.info('Esign Enrollment: sent mail, Response:{0}, user info:{1}'.format(final_response,
                                                                                   log_user_info(request.session.get(
