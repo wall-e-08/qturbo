@@ -710,8 +710,8 @@
     });
 </script>
 
-{#{% if dev_debug %}#}
 {#    Amir Bhai's user info populating function#}
+{% if IS_DEV %}
 <script>
     $(function () {
         function makeid() {
@@ -737,12 +737,14 @@
 
 
         var payment_info_fields = [
-            'Bank_Account_Name', 'Bank_Name', 'Bank_Account_Number', 'Bank_Routing_Number', 'CardHolder_Name'
+            'Bank_Account_Name', 'Bank_Name', 'Bank_Account_Number', 'Bank_Routing_Number', 'CardHolder_Name',
+            'Card_Number'
         ];
 
         var payment_info_fields_value = {
             'Bank_Account_Number': random_account_number(),
-            'Bank_Routing_Number': '111000025'
+            'Bank_Routing_Number': '111000025',
+            'Card_Number': '6011111111111117'
         };
 
         $.each(payment_info_fields, function( index, value ) {
@@ -762,6 +764,6 @@
 
     });
 </script>
-{#{% endif %}#}
+{% endif %}
 
 {% endblock extra_js %}
