@@ -379,7 +379,6 @@ import time
 def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, preference_dictionary=None, request=None):
     """
     """
-    time1 = time.time()
     rate_requests = []
     carriers = get_carriers_for_preparing_task(form_data=form_data,
                                                preference=preference_dictionary,
@@ -404,8 +403,6 @@ def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, prefe
     request.session[session_identifier_quote_store_key] = redis_keys
     request.session['{}##status'.format(session_identifier_quote_store_key)] = 'processing'
 
-    time2 = time.time()
-    print(f'\n\n\n Time is: {time2-time1}\n\n\n\n')
     return True
 
 
@@ -432,11 +429,9 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         "sorting_conditions": {}
     }
 
-    sorting_conditions = {}
     errors = []
     for redis_key in redis_keys:
         content = REDIS_CLIENT.get(redis_key)
-        print(f'content: {content}, for key: {redis_key}')
         if content:
             content = json_decoder.decode(content.decode())
             results['stm_plans'] += content.get("main_plans", [])
@@ -444,7 +439,7 @@ def post_process_task(data, session_identifier_quote_store_key, request):
             error = content.get("error", [])
             if 'api_error' in error:
                 errors.append("Failed to access API for Plan {}".format(content['plan_name']))
-                print("api_error")
+                print(f'api_error for {content["plan_name"]}')
                 continue
             else:
                 addon_list_of_dict = content.get("addon_plans", [])
@@ -505,7 +500,6 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         # results['sorting_conditions'] = sorting_conditions
         if errors:
             results['errors'] = errors
-        print('--------\n\n\ncontents: {}\n\n\n-------'.format(results))
 
         REDIS_CLIENT.setex(name=session_identifier_quote_store_key,
                            value=json_encoder.encode(results),
@@ -514,6 +508,9 @@ def post_process_task(data, session_identifier_quote_store_key, request):
         request.session.modified = True
         for redis_key in redis_keys:
             REDIS_CLIENT.delete(redis_key)
+
+        del request.session[session_identifier_quote_store_key]
+        request.session.modified = True
 
     return 'complete'
 
@@ -527,10 +524,6 @@ def get_available_attributes(plan_list: List) -> Dict:
         data[carrier] = {'Duration_Coverage': list(duration_coverage)}
 
     return data
-
-
-
-
 
 
 class ProcessTask(Task):
