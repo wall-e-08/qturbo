@@ -76,7 +76,7 @@
                                                                                     class="boolean-toggle questionbtn-form capitalize btn btn-default-answer btn-lg expected_answer_button btn-orange
                                                                                     q-e-a-{{ forloop.parentloop.counter }}
                                                                                     {% if stm_question.user_answer == expected_answer %}selected-ans-button{% endif %}"
-                                                                                    data-action="{% url 'quotes:stm_enroll' plan_url stage %}"
+                                                                                    data-action="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"
                                                                                     data-answer="{{ expected_answer }}"
                                                                                     data-question-count="{{ forloop.parentloop.counter }}"
                                                                                     data-question-id="{{ stm_question.ID }}" data-order="{{ stm_question.g_order }}"
@@ -106,8 +106,8 @@
                                                                    id="continue_next_stage_link"
                                                                    data-stage="{{ stage }}"
                                                                    data-next-stage="{{ next_stage }}"
-                                                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%; background: #FE8829 !important;">
+                                                                   data-stage-url="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"
+                                                                   href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id next_stage %}" style="width: 100%; background: #FE8829 !important;">
                                                                     {% trans "Continue" %}
                                                                 </a>
                                                             </div>

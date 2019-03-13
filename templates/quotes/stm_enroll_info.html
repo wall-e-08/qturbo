@@ -14,7 +14,7 @@
 
 {% block qt_breadcrumb %}
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}">
             <span class="tooltip">Eligibility</span>
         </a>
     </li>
@@ -38,7 +38,7 @@
             <ul class="app-status-list">
                 <li class="first completed" id="underwriting">
                     <span class="progress-bar-step-label">✓</span>
-                    <a href="{% url 'quotes:stm_enroll' plan_url 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
+                    <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
                     <span class="progress-bar-divider"> &gt; </span>
                 </li>
                 <li class="current" id="applicantInfo">
@@ -769,8 +769,8 @@
                                    id="continue_next_stage_link"
                                    data-stage="{{ stage }}"
                                    data-next-stage="{{ next_stage }}"
-                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                   data-stage-url="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"
+                                   href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id next_stage %}" style="width: 100%;">
                                     {% trans "Continue to Step 3 - Payment & Billing" %} &gt;
                                 </a>
                             </div>

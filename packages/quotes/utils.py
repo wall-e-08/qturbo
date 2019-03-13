@@ -113,7 +113,7 @@ except NotImplementedError:
     using_sysrandom = False
 
 
-def get_random_string(length=12,
+def get_random_string(length=20,
                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
     if not using_sysrandom:
