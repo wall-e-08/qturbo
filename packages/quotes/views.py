@@ -133,8 +133,6 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         )
 
 
-
-
 def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
     print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
     ins_type = request.POST.get('Ins_Type', None)
@@ -220,9 +218,7 @@ def start_celery(request: WSGIRequest) -> True:
             preference_dictionary=settings.INITIAL_QUOTE_DATA,
             request=request)
 
-
     return True
-
 
 
 def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
@@ -231,8 +227,6 @@ def set_ins_type_in_session(request: WSGIRequest, ins_type: str) -> None:
     request.session['quote_request_form_data'].update(quote_request_form_data)
 
     return
-
-
 
 
 def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonResponse:
