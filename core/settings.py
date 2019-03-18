@@ -120,6 +120,10 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
+CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
+CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
+
 CELERY_TASK_ROUTES = {
     'quotes.tasks.StmPlanTask': {'queue': 'stm'},
     'quotes.tasks.LimPlanTask': {'queue': 'lim'},
@@ -292,14 +296,6 @@ QUOTE_ENROLL_URL = os.environ.get('QUOTE_ENROLL_URL', 'https://test1.hiiquote.co
 QUOTE_REQUEST_URL = os.environ.get('QUOTE_REQUEST_URL', 'https://test1.hiiquote.com/webservice/quote_service.php')
 ESIGNATURE_VERIFICATION_URL = os.environ.get('ESIGNATURE_VERIFICATION_URL', 'https://test1.hiiquote.com/webservice/esign_payment.php')
 QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A157FF340027874696242C')  # CLH1251100 - $125 - live
-
-
-# -----------------+
-#  Celery Settings |
-# -----------------+
-CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
-CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
-CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
 
 
 # ----------------------+
