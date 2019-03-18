@@ -836,7 +836,6 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
     elif not selected_addon_plans:
         stm_addon_plan_objs.delete()
 
-
     if not request.session.get(application_url, {}):
         request.session[application_url] = plan
         request.session["{0}_form_data".format(application_url)] = copy.deepcopy(quote_request_form_data)
@@ -844,7 +843,7 @@ def stm_application(request, plan_url) -> HttpResponseRedirect:
 
         request.session[f'{plan_url}_vimm_enroll_id'] = plan['vimm_enroll_id']
         request.session.modified = True
-    return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[application_url]))
+    return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[plan['vimm_enroll_id']]))
 
 
 def save_to_db(plan: Dict,
@@ -859,8 +858,6 @@ def save_to_db(plan: Dict,
         stm_plan_obj = get_plan_object(vimm_enroll_id, qm)
     else:
         stm_plan_obj = None
-
-
 
     if stm_enroll_obj and stm_plan_obj:
         stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
@@ -924,8 +921,7 @@ def save_to_db(plan: Dict,
         return stm_enroll_obj
 
 
-
-def stm_enroll(request, application_url, stage=None, template=None):
+def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
     """STM enroll function for enrollment of the user
 
     :param request: Django request object
@@ -948,9 +944,6 @@ def stm_enroll(request, application_url, stage=None, template=None):
     ajax_request = False
     if request.is_ajax():
         ajax_request = True
-
-    plan = request.session.get(application_url, {})
-    vimm_enroll_id = application_url.rsplit('-', 1)[-1]
 
     def quote_error_html(quote_id):
         """
@@ -975,7 +968,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
 
         html = render_to_string('quotes/quote_error.html', {
             "quote_id": quote_id,
-            "url": reverse('quotes:stm_enroll', args=[application_url, 4])
+            "url": reverse('quotes:stm_enroll', args=[vimm_enroll_id, 4])
         })
         return html
 
@@ -989,8 +982,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
         stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
         stm_dependent_objs = qm.Dependent.objects.filter(vimm_enroll_id=vimm_enroll_id)
         stm_addon_plan_objs = qm.AddonPlan.objects.filter(vimm_enroll_id=vimm_enroll_id)
-        if not plan:
-            plan = stm_plan_obj.get_json_data()
+        plan = stm_plan_obj.get_json_data()
     except (ObjectDoesNotExist, AttributeError) as err:
         logger.warning("getting application data from db: {0}".format(str(err)))
         pass
@@ -1000,11 +992,14 @@ def stm_enroll(request, application_url, stage=None, template=None):
             """
             If the user is enrolled and has pressed the back button to go back, 
             we shall bring him to the home page. Also we can destroy the session 
-            variables.#TODO: destroy session vars.
+            variables.
             """
+            # TODO: destroy session vars.
             return HttpResponseRedirect(reverse('quotes:home'))
     except AttributeError as a:
         print("Applicant is not enrolled")
+
+    application_url = stm_enroll_obj.app_url
 
     # addon plans
     selected_addon_plans = []
@@ -1016,13 +1011,11 @@ def stm_enroll(request, application_url, stage=None, template=None):
         selected_addon_plans = [addon_plan.data_as_dict() for addon_plan in stm_addon_plan_objs]
     logger.info("no of selected addon plans: {0}".format(len(selected_addon_plans)))
 
-    if not application_url and not ajax_request:
-        raise Http404()
-    elif not application_url:
+    if not application_url:
         return JsonResponse({'status': 'failed', 'redirect_url': reverse('quotes:plans', args=[])})
 
     quote_request_form_data = request.session.get('{0}_form_data'.format(application_url), {})
-    if quote_request_form_data and form_data_is_valid(quote_request_form_data) == False:
+    if quote_request_form_data and not form_data_is_valid(quote_request_form_data):
         quote_request_form_data = {}
 
     if not quote_request_form_data and not ajax_request:
@@ -1142,12 +1135,12 @@ def stm_enroll(request, application_url, stage=None, template=None):
                         request.session.modified = True
                     return JsonResponse(
                         {'redirect_url': reverse('quotes:stm_enroll',
-                                                 args=[application_url, StageOneTransitionForm.NEXT_STAGE])}
+                                                 args=[vimm_enroll_id, StageOneTransitionForm.NEXT_STAGE])}
                     )
                 else:
                     return JsonResponse(
                         {'redirect_url': reverse('quotes:stm_enroll',
-                                                 args=[application_url, StageOneTransitionForm.STAGE])}
+                                                 args=[vimm_enroll_id, StageOneTransitionForm.STAGE])}
                     )
         elif ajax_request:
             return JsonResponse({'status': 'failed', 'redirect_url': reverse('quotes:plans', args=[])})
@@ -1168,7 +1161,6 @@ def stm_enroll(request, application_url, stage=None, template=None):
     # if applicant is child required parent info no spouse or child
     # if applicant is adult no parent info but spouse info and child info could present
     if stage == 2:
-        print("Plan dictionary: ", json.dumps(plan, indent=4, sort_keys=True))
         logger.info('STAGE2: form_data - {0}'.format(quote_request_form_data))
         if stm_plan_obj:
             try:
@@ -1290,7 +1282,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
                     logger.warning("Cannot update Lead info database")
 
             return JsonResponse(
-                {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 3])}
+                {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 3])}
             )
         if applicant_info:
             st_application_info_form = STApplicantInfoForm(initial_form_data=quote_request_form_data,
@@ -1357,16 +1349,16 @@ def stm_enroll(request, application_url, stage=None, template=None):
                     logger.info("Saving payment info.")
                     save_applicant_payment_info(stm_enroll_obj, request, application_url)
                 return JsonResponse({'status': 'success',
-                                     'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 4])})
+                                     'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 4])})
             else:
                 logger.error("STAGE3: PaymentMethodForm errors {0}".format(payment_method_form.errors))
                 return JsonResponse({'status': 'error', "errors": dict(payment_method_form.errors.items()),
                                      "error_keys": list(payment_method_form.errors.keys())})
         elif ajax_request:
             return JsonResponse({'status': 'fail',
-                                 'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 2])})
+                                 'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 2])})
         if not applicant_info:
-            return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[application_url, 3]))
+            return HttpResponseRedirect(reverse('quotes:stm_enroll', args=[vimm_enroll_id, 3]))
         if payment_info:
             payment_method_form = PaymentMethodForm(applicant_info, initial=payment_info)
         else:
@@ -1390,7 +1382,7 @@ def stm_enroll(request, application_url, stage=None, template=None):
                     request.session['enroll_{0}_stm_stages'.format(application_url)].append(4)
                     request.session.modified = True
                 return JsonResponse({'status': 'success',
-                                     'redirect_url': reverse('quotes:stm_enroll', args=[application_url, 5])})
+                                     'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 5])})
             else:
                 return JsonResponse({'status': 'fail', 'error_msg': 'provide consent'})
         applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})

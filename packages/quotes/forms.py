@@ -1179,7 +1179,6 @@ class STApplicantInfoForm(forms.Form):
             self.cleaned_data['Estate_Flag'] = '1'
             self.cleaned_data['Estate_Detail'] = 'ESTATE'
 
-
         if self.plan['Name'] == 'Unified Health One':
             soc = self.cleaned_data.get('SOC', '') or '123456789'
             if soc and not is_valid_ssn(soc):

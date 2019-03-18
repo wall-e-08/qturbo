@@ -1612,7 +1612,8 @@ class MainPlan(models.Model):
             'copay': self.copay,
             'copay_text': self.copay_text,
             'Payment_Option': self.Payment_Option,
-            'note': self.note
+            'note': self.note,
+            'Coverage_Max': str(self.Coverage_Max)
         }
 
         return data
