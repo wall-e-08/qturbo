@@ -127,9 +127,9 @@ CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
 CELERY_TASK_ROUTES = {
     'quotes.tasks.ProcessTask': {'queue': 'process_task'},
 
-    'quotes.tasks.StmPlanTask': {'queue': 'stm'},
-    'quotes.tasks.LimPlanTask': {'queue': 'lim'},
-    'quotes.tasks.AncPlanTask': {'queue': 'anc'},
+    # 'quotes.tasks.StmPlanTask': {'queue': 'stm'},
+    # 'quotes.tasks.LimPlanTask': {'queue': 'lim'},
+    # 'quotes.tasks.AncPlanTask': {'queue': 'anc'},
     'quotes.tasks.EsignCheckBeat': {'queue': 'esign_check'},
     'quotes.tasks.EsignCheckWorker': {'queue': 'esign_check'},
 

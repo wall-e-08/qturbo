@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery -A core worker -l info -Q stm,lim,anc,esign_check -c 4
+celery -A core worker -l info -Q process_task,esign_check -c 4
