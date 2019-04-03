@@ -120,10 +120,16 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
+CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
+CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
+
 CELERY_TASK_ROUTES = {
-    'quotes.tasks.StmPlanTask': {'queue': 'stm'},
-    'quotes.tasks.LimPlanTask': {'queue': 'lim'},
-    'quotes.tasks.AncPlanTask': {'queue': 'anc'},
+    'quotes.tasks.ProcessTask': {'queue': 'process_task'},
+
+    # 'quotes.tasks.StmPlanTask': {'queue': 'stm'},
+    # 'quotes.tasks.LimPlanTask': {'queue': 'lim'},
+    # 'quotes.tasks.AncPlanTask': {'queue': 'anc'},
     'quotes.tasks.EsignCheckBeat': {'queue': 'esign_check'},
     'quotes.tasks.EsignCheckWorker': {'queue': 'esign_check'},
 
@@ -294,14 +300,6 @@ ESIGNATURE_VERIFICATION_URL = os.environ.get('ESIGNATURE_VERIFICATION_URL', 'htt
 QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A157FF340027874696242C')  # CLH1251100 - $125 - live
 
 
-# -----------------+
-#  Celery Settings |
-# -----------------+
-CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
-CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
-CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
-
-
 # ----------------------+
 # E-Signature Variables |
 # ----------------------+
@@ -410,26 +408,14 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
 # Carrier specific plan attributes   +
 # -----------------------------------+
 
-# TODO: Quote request should use these values OR initial quote should be fully hardcoded
-CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
-    'LifeShield STM': ['0', '2000', '3000', '4000', '5000'],
-    'AdvantHealth STM': ['2000', '4000']
-}
+INITIAL_QUOTE_DATA = {
+    'LifeShield STM': {
+        'Duration_Coverage': ['12*1'],
+    },
 
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE = {
-    'LifeShield STM': ['80/20', '50/50', '70/30', '100/0'],
-    'AdvantHealth STM': ['80/20']
-}
-
-
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
-    'LifeShield STM': ['0', '20', '30', '50'],
-    'AdvantHealth STM': ['20']
-}
-
-CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
-    'AdvantHealth STM': ['250000', '500000', '1000000'],
-    'LifeShield STM': ['250000', '750000', '1000000', '1500000']
+    'AdvantHealth STM': {
+        'Duration_Coverage': ['6*6']
+    }
 }
 
 # --------------+

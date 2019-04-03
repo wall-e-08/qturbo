@@ -11,12 +11,12 @@
 {% block show_qt_breadcrumb %}{% endblock %}
 {% block qt_breadcrumb %}
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}">
             <span class="tooltip">Eligibility</span>
         </a>
     </li>
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 2 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 2 %}">
             <span class="tooltip">Applicant Info</span>
         </a>
     </li>
@@ -36,12 +36,12 @@
             <ul class="app-status-list">
                 <li class="completed" id="underwriting">
                     <span class="progress-bar-step-label">✓</span>
-                    <a href="{% url 'quotes:stm_enroll' plan_url 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
+                    <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
                     <span class="progress-bar-divider"> &gt; </span>
                 </li>
                 <li class="completed" id="applicantInfo">
                     <span class="progress-bar-step-label">✓</span>
-                    <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" class="js-progress-bar-nav-link progress-bar-label">Applicant Info</a>
+                    <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 2 %}" class="js-progress-bar-nav-link progress-bar-label">Applicant Info</a>
                     <span class="progress-bar-divider"> &gt; </span>
                 </li>
                 <li class="current" id="payment">
@@ -411,8 +411,8 @@
                                                    id="continue_next_stage_link"
                                                    data-stage="{{ stage }}"
                                                    data-next-stage="{{ next_stage }}"
-                                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}"
+                                                   data-stage-url="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"
+                                                   href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id next_stage %}"
                                                    style="width: 100%;">
                                                     {% trans "Continue to Step 4 - Review" %} &gt;
                                                 </a>
@@ -710,8 +710,8 @@
     });
 </script>
 
-{#{% if dev_debug %}#}
 {#    Amir Bhai's user info populating function#}
+{% if IS_DEV %}
 <script>
     $(function () {
         function makeid() {
@@ -737,12 +737,14 @@
 
 
         var payment_info_fields = [
-            'Bank_Account_Name', 'Bank_Name', 'Bank_Account_Number', 'Bank_Routing_Number', 'CardHolder_Name'
+            'Bank_Account_Name', 'Bank_Name', 'Bank_Account_Number', 'Bank_Routing_Number', 'CardHolder_Name',
+            'Card_Number'
         ];
 
         var payment_info_fields_value = {
             'Bank_Account_Number': random_account_number(),
-            'Bank_Routing_Number': '111000025'
+            'Bank_Routing_Number': '111000025',
+            'Card_Number': '6011111111111117'
         };
 
         $.each(payment_info_fields, function( index, value ) {
@@ -762,6 +764,6 @@
 
     });
 </script>
-{#{% endif %}#}
+{% endif %}
 
 {% endblock extra_js %}

@@ -32,17 +32,17 @@
 {% block show_qt_breadcrumb %}{% endblock %}
 {% block qt_breadcrumb %}
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}">
             <span class="tooltip">Eligibility</span>
         </a>
     </li>
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 2 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 2 %}">
             <span class="tooltip">Applicant Info</span>
         </a>
     </li>
     <li class="active ">
-    <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 3 %}">
+    <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 3 %}">
         <span class="tooltip">Payment & Billing</span>
     </a>
     </li>
@@ -61,7 +61,7 @@
                     <h3>
                         <span style="text-transform: uppercase;" class="fo">{% trans "Applicant Info" %}</span>
                         {% if not esign_req_sent %}
-                            <a href="{% url 'quotes:stm_enroll' plan_url 2 %}" data-toggle="tooltip" title="Edit Applicant Info !">
+                            <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 2 %}" data-toggle="tooltip" title="Edit Applicant Info !">
                                 <i class="fa fa-edit"></i>
                             </a>
                         {% endif %}
@@ -103,7 +103,7 @@
                     <h3>
                         <span style="text-transform: uppercase;">{% trans "Payment Info" %}</span>
                         {% if not esign_req_sent %}
-                            <a href="{% url 'quotes:stm_enroll' plan_url 3 %}" data-toggle="tooltip" title="Edit Payment & Billing Info !">
+                            <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 3 %}" data-toggle="tooltip" title="Edit Payment & Billing Info !">
                                 <i class="fa fa-edit"></i>
                             </a>
                         {% endif %}
@@ -219,8 +219,8 @@
             {#                       data-status=""#}
             {#                       data-stage="{{ stage }}"#}
             {#                       data-next-stage="{{ next_stage }}"#}
-            {#                       data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"#}
-            {#                       href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">#}
+            {#                       data-stage-url="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"#}
+            {#                       href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id next_stage %}" style="width: 100%;">#}
             {#                        {% trans "Submit Your Application" %}#}
             {#                    </a>#}
             {#                </div>#}
