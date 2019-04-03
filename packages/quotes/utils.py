@@ -113,7 +113,7 @@ except NotImplementedError:
     using_sysrandom = False
 
 
-def get_random_string(length=12,
+def get_random_string(length=20,
                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
     if not using_sysrandom:
@@ -508,23 +508,18 @@ def get_prop_context():
     return prop_context
 
 
-def create_selection_data(completed_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
+def create_selection_data(completion_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
     """ Create intermidiate quote request selection data from
     completed data and preferred coverage duration.
 
     :return: dict
     """
-    quote_request_data : dict = {
-        'LifeShield STM': {
-            'Duration_Coverage': [],
-        },
+    quote_request_data = {}
 
-        'AdvantHealth STM': {
-            'Duration_Coverage': []
-        }
-    }
 
-    if duration_coverage not in completed_data[stm_name]['Duration_Coverage']:
+    if duration_coverage not in completion_data[stm_name]['Duration_Coverage']:
+        if stm_name not in quote_request_data:
+            quote_request_data[stm_name] = {}
         quote_request_data[stm_name]['Duration_Coverage'] = [duration_coverage]
         return quote_request_data
     else:
@@ -640,9 +635,9 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
 
 
 
-def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=True):
+def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=False):
     if string_at_list_boundaries == True:
-        plan_list = plan_list[-1:-1]
+        plan_list = plan_list
 
     return {
         'carrier' : set(x['Name'] for x in plan_list),
@@ -709,33 +704,36 @@ def is_ins_type_valid(ins_type) -> bool:
 
 
 def get_featured_plan(carrier_name, plan_list, ins_type):
-    """
+    """Unnecessary calcuations will be replaced.
 
     :return:
     """
 
-    plans = None
-
     try:
         featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
-        premium = settings.FEATURED_PLAN_PREMIUM_DICT[ins_type]
     except KeyError:
+        featured_plan_attr = None
         print(f'Featured plan attribute not found for {carrier_name}')
+
+    if ins_type:
+        premium = settings.FEATURED_PLAN_PREMIUM_DICT.get(ins_type)
+    else:
         return
 
     eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
-                                                  x['Name'] == carrier_name, plan_list[1:-1]))
+                                                  x['Name'] == carrier_name, plan_list))
 
     if len(eligible_plans) == 0:
-        eligible_plans = plan_list[1:-1]
+        eligible_plans = plan_list
 
-    for attr in featured_plan_attr:
-        plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
-        if len (plans) > 0:
-            eligible_plans = plans
-        else:
-            return eligible_plans[0]
+    if featured_plan_attr:
+        for attr in featured_plan_attr:
+            plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
+            if len (plans) > 0:
+                eligible_plans = plans
+            else:
+                return eligible_plans[0]
 
 
-    if plans:
-        return plans[0]
+    if eligible_plans:
+        return eligible_plans[0]

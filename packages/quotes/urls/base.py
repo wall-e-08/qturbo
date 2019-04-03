@@ -96,21 +96,7 @@ urlpatterns = [
             r'-[a-z]{2}-[a-zA-Z0-9_]+(Plus)?-[0-9]+)/$',
             views.stm_application, name='stm_application'),
 
-    re_path('stm/enroll/(?P<application_url>(Principle_Advantage|Unified_Health_One|Cardinal_Choice)'
-            r'-[a-z]{2}-Plan[A-Z0-9_]+-[0-9]+-[0-9a-zA-Z]{12})(?:/(?P<stage>[1-5]{1}))?/$',
-            views.stm_enroll, name='stm_enroll'),
-
-    re_path(r'stm/enroll/(?P<application_url>(Vitala_Care|Health_Choice|Legion_Limited_Medical)'
-            r'-[a-z]{2}-Plan[A-Z0-9_]+(Plus)?-[0-9]+-[0-9a-zA-Z]{12})(?:/(?P<stage>[1-5]{1}))?/$',
-            views.stm_enroll, name='stm_enroll'),
-
-    re_path('stm/enroll/(?P<application_url>(Everest_STM|HealtheFlex_STM|LifeShield_STM|AdvantHealth_STM|Select_STM'
-            r'HealtheMed_STM|Premier_STM|Sage_STM)-[a-z]{2}-\d+-\d+-\d+-\d{1,2}-\d{1,2}(\*\d{1,1})?p?\d?-[0-9a-zA-Z]{12})'
-            r'(?:/(?P<stage>[1-5]{1}))?/$',
-            views.stm_enroll, name='stm_enroll'),
-
-    re_path('stm/enroll/(?P<application_url>(USA_Dental|Foundation_Dental|Safeguard_Critical_Illness|Freedom_Spirit_Plus)'
-            r'-[a-z]{2}-[a-zA-Z0-9_]+(Plus)?-[0-9]+-[0-9a-zA-Z]{12})(?:/(?P<stage>[1-5]{1}))?/$',
+    re_path('stm/enroll/(?P<vimm_enroll_id>[0-9a-zA-Z]{20})(?:/(?P<stage>[1-5]{1}))?/$',
             views.stm_enroll, name='stm_enroll'),
 
     re_path('stm/e_signature_enrollment/(?P<vimm_enroll_id>[a-zA-Z0-9]+)/$',
