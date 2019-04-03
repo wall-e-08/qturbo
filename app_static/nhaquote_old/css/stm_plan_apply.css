@@ -64,8 +64,11 @@ body{
 
 #nhaqt_footer{
     background: #f9f9f9;
-    margin-top: 40px;
+    /*margin-top: 40px;*/
     border-top: 1px solid #e4e0e0;
+}
+#nhaqt_footer .hi-footer-single-item>h4 {
+    font-size: 12px;
 }
 .nhaqt_footer_content{
     padding: 25px 0 10px 0;

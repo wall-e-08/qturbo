@@ -8,7 +8,7 @@ import string
 import random
 import hashlib
 import datetime
-from typing import Union
+from typing import Union, Dict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -34,6 +34,14 @@ def get_img_path(instance, filename):
     return os.path.join(
         "benefits",
         str("{}-{}".format(instance.title, ''.join(random.choices(string.ascii_letters + string.digits, k=8))) + file_extension)
+    )
+
+
+def get_img_path_by_filename(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+    return os.path.join(
+        "benefits",
+        str("{}".format(os.path.splitext(filename)[0]) + file_extension)
     )
 
 # def date_from_str(date_str, date_format='%d-%M-%Y'):
@@ -105,7 +113,7 @@ except NotImplementedError:
     using_sysrandom = False
 
 
-def get_random_string(length=12,
+def get_random_string(length=20,
                       allowed_chars='abcdefghijklmnopqrstuvwxyz'
                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
     if not using_sysrandom:
@@ -317,19 +325,11 @@ def get_plan_type_principle_limited(form_data):
     return 'Single Member'
 
 
-def save_stm_plan(hm, plan, stm_enroll_obj, quote_request_form_data):
-    ancillaries_plans = settings.ANCILLARIES_PLANS
+def save_stm_plan(qm, plan, stm_enroll_obj):
+    # if plan['Name'] == 'Principle Advantage':
+    #     plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
 
-    if plan['Name'] == 'Principle Advantage':
-        plan['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(quote_request_form_data))
-
-    elif plan['Name'] in ancillaries_plans:
-        stm_plan_model = hm.StandAloneAddonPlan
-        stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
-        stm_plan_obj.save()
-        return  stm_plan_obj
-
-    stm_plan_model = getattr(hm, plan['Name'].title().replace(' ', ''))
+    stm_plan_model = getattr(qm, 'MainPlan')
     stm_plan_obj = stm_plan_model(stm_enroll=stm_enroll_obj, **plan)
     stm_plan_obj.save()
     return stm_plan_obj
@@ -483,23 +483,43 @@ def parse_stm_duration(stm_duration):
     return int(match.groupdict()['duration']) * int(match.groupdict()['times'])
 
 
-def create_selection_data(completed_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
+# -------------------------------#
+# Functions used in views        #
+# -------------------------------#
+
+def get_prop_context():
+    """Return context variables for the home and plans view
+
+    :param prop: User attributes
+    :return: context variables
+    """
+    props = settings.USER_PROPERTIES
+    prop_context = {
+        'applicant_min_age': props['min_age'],
+        'applicant_max_age': props['max_age'],
+
+        'spouse_min_age': props['min_age'],
+        'spouse_max_age': props['max_age'],
+
+        'dependents_min_age': props['dependents_min_age'],
+        'dependents_max_age': props['dependents_max_age']
+    }
+
+    return prop_context
+
+
+def create_selection_data(completion_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
     """ Create intermidiate quote request selection data from
     completed data and preferred coverage duration.
 
     :return: dict
     """
-    quote_request_data : dict = {
-        'LifeShield STM': {
-            'Duration_Coverage': [],
-        },
+    quote_request_data = {}
 
-        'AdvantHealth STM': {
-            'Duration_Coverage': []
-        }
-    }
 
-    if duration_coverage not in completed_data[stm_name]['Duration_Coverage']:
+    if duration_coverage not in completion_data[stm_name]['Duration_Coverage']:
+        if stm_name not in quote_request_data:
+            quote_request_data[stm_name] = {}
         quote_request_data[stm_name]['Duration_Coverage'] = [duration_coverage]
         return quote_request_data
     else:
@@ -593,7 +613,7 @@ def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, se
     return list(coins_set)
 
 
-def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> dict:
+def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selected_plan: dict) -> list:
 
     out_of_pocket_set = set()
 
@@ -612,3 +632,108 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
                 out_of_pocket_set.add(plan['Benefit_Amount'])
 
     return list(out_of_pocket_set)
+
+
+
+def available_dict_from_plan_list(plan_list: list, string_at_list_boundaries=False):
+    if string_at_list_boundaries == True:
+        plan_list = plan_list
+
+    return {
+        'carrier' : set(x['Name'] for x in plan_list),
+        'coinsurance_percentage' : set(x['Coinsurance_Percentage'] for x in plan_list),
+        'benefit_amount' : set(x['Benefit_Amount'] for x in plan_list),
+        'duration_coverage' : set(x['Benefit_Amount'] for x in plan_list),
+        'option' : set(x['option'] for x in plan_list),
+        'coverage_maximum' : set(x['Coverage_Max'] for x in plan_list)
+    }
+
+def get_neighbour_plans_and_attrs(plan: dict, plan_list: list):
+
+    def neighbour(plan: Dict, key: str, val: str):
+        copy_plan = copy.deepcopy(plan)
+        copy_plan[key] = val
+        if copy_plan in plan_list:
+            return True
+        return False
+
+    try:
+        eligible_plans = list(filter(
+            lambda x: x['Name'] == plan['Name'] and
+                      x['Plan'] == plan['Plan'], plan_list))
+
+        neighbours = list(filter(lambda x: neighbour(x, 'Coverage_Max', plan['Coverage_Max']) == True or
+                                           neighbour(x, 'Coinsurance_Percentage', plan['Coinsurance_Percentage']) == True or
+                                           neighbour(x, 'Benefit_Amount', plan['Benefit_Amount'] == True), eligible_plans))
+
+    except KeyError as k:
+        print(f"KeyError: {k}")
+
+    return neighbours, available_dict_from_plan_list(neighbours, string_at_list_boundaries=False)
+
+
+
+def has_dependents(form_data):
+    if ((form_data['Include_Spouse'] == 'Yes' or form_data['Children_Count'] > 0)
+            and form_data['applicant_is_child'] == False):
+        return True
+    return False
+
+
+def get_enroll_object(vimm_enroll_id, qm):
+    try:
+        return qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
+    except ObjectDoesNotExist:
+        return None
+
+
+def get_plan_object(vimm_enroll_id, qm):
+    try:
+        stm_plan_model = qm.MainPlan
+        stm_plan_obj = stm_plan_model.objects.get(vimm_enroll_id=vimm_enroll_id)
+        return stm_plan_obj
+    except ObjectDoesNotExist:
+        return None
+
+
+def is_ins_type_valid(ins_type) -> bool:
+    if ins_type in ['stm', 'lim', 'anc']:
+        return True
+    return False
+
+
+
+def get_featured_plan(carrier_name, plan_list, ins_type):
+    """Unnecessary calcuations will be replaced.
+
+    :return:
+    """
+
+    try:
+        featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
+    except KeyError:
+        featured_plan_attr = None
+        print(f'Featured plan attribute not found for {carrier_name}')
+
+    if ins_type:
+        premium = settings.FEATURED_PLAN_PREMIUM_DICT.get(ins_type)
+    else:
+        return
+
+    eligible_plans = list(filter(lambda  x: float(x['Premium']) > premium and
+                                                  x['Name'] == carrier_name, plan_list))
+
+    if len(eligible_plans) == 0:
+        eligible_plans = plan_list
+
+    if featured_plan_attr:
+        for attr in featured_plan_attr:
+            plans = list(filter(lambda mp: mp[attr] == featured_plan_attr[attr], eligible_plans))
+            if len (plans) > 0:
+                eligible_plans = plans
+            else:
+                return eligible_plans[0]
+
+
+    if eligible_plans:
+        return eligible_plans[0]

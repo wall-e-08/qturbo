@@ -14,7 +14,7 @@
 
 {% block qt_breadcrumb %}
     <li class="active">
-        <a class="d-block" href="{% url 'quotes:stm_enroll' plan_url 1 %}">
+        <a class="d-block" href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}">
             <span class="tooltip">Eligibility</span>
         </a>
     </li>
@@ -38,7 +38,7 @@
             <ul class="app-status-list">
                 <li class="first completed" id="underwriting">
                     <span class="progress-bar-step-label">✓</span>
-                    <a href="{% url 'quotes:stm_enroll' plan_url 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
+                    <a href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id 1 %}" class="js-progress-bar-nav-link progress-bar-label">Eligibility</a>
                     <span class="progress-bar-divider"> &gt; </span>
                 </li>
                 <li class="current" id="applicantInfo">
@@ -769,8 +769,8 @@
                                    id="continue_next_stage_link"
                                    data-stage="{{ stage }}"
                                    data-next-stage="{{ next_stage }}"
-                                   data-stage-url="{% url 'quotes:stm_enroll' plan_url stage %}"
-                                   href="{% url 'quotes:stm_enroll' plan_url next_stage %}" style="width: 100%;">
+                                   data-stage-url="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id stage %}"
+                                   href="{% url 'quotes:stm_enroll' stm_enroll_obj.vimm_enroll_id next_stage %}" style="width: 100%;">
                                     {% trans "Continue to Step 3 - Payment & Billing" %} &gt;
                                 </a>
                             </div>
@@ -853,7 +853,7 @@
                                 </div>
                                 <h3 class="policy-label text-capitalize fw-700" style="margin: 10px 0">PLAN</h3>
                                 <div class="plan-summary">
-                                    <h4 class="text-primary">{{ plan.plan_name }}</h4>
+                                    <h4 class="text-primary">{{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %}</h4>
                                     {% if form_data.Ins_Type == 'stm' %}
                                     <p>Deductible: ${{ plan.option|intcomma }}</p>
 
@@ -1151,7 +1151,7 @@
     {#    changeYear: true,#}
     {#    yearRange: "1950:2025",#}
     {#    dateFormat: "mm/dd/yy"#}
-    {#});#}
+    //{#});#}
 
     $(function() {
         var $contact_as_mailing = $('input[name="mailing_not_as_contact"]');
@@ -1214,7 +1214,7 @@
         });
     });
 </script>
-{#{% if dev_debug %}#}
+{% if IS_DEV %}
 <script>
     {#Amir Bhai's user info populating function#}
 $(function () {
@@ -1229,15 +1229,42 @@ $(function () {
       return 'ZZ11' + text;
     }
 
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    var select_fields = [
+        'Feet', 'Inch',
+    ];
+
+    $.each(select_fields, function( index, value ) {
+        console.log("AWERF__" + value)
+        var $select_field = $('select[name="' + value + '"]');
+
+        var select_field_val = $select_field.val();
+        console.log("AACD__"+ select_field_val)
+
+            if (select_field_val === "" || !select_field_val) {
+                console.log("AAVC")
+                value = getRandomInt(4, 6);
+                $select_field.val(value);
+            }
+    });
+
+
+
     var user_info_fields = [
         'DayPhone', 'CellPhone', 'First_Name', 'Middle_Name', 'Last_Name', 'Email',
-        'Address', 'Mailing_Address', 'City', 'Mailing_City'
+        'Address', 'Mailing_Address', 'City', 'Mailing_City', 'Weight'
     ];
 
     var user_info_fields_value = {
         'DayPhone': '123-456-7890',
         'CellPhone': '123-456-7890',
-        'Email': 'torsho.92@gmail.com'
+        'Email': 'torsho.92@gmail.com',
+        'Weight': getRandomInt(120, 200),
     };
 
     $.each(user_info_fields, function( index, value ) {
@@ -1257,5 +1284,5 @@ $(function () {
 
 });
 </script>
-{#{% endif %}#}
+{% endif %}
 {% endblock extra_js %}

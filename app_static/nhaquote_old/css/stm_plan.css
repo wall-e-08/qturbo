@@ -32,6 +32,12 @@ h3 {
     margin-top: 20px;
 }
 
+.qt-plan-details-non-fixed {
+    position: relative !important;
+    margin: 50px auto !important;
+    left: initial !important;
+}
+
 .flex-center-between {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -175,8 +181,8 @@ h3 {
     background-color: #fff;
     border: 1px solid #777;
     padding: 5px 15px;
-    margin: 8px;
-    border-radius: 7px;
+    /*margin: 8px;*/
+    border-radius: 4px;
     -webkit-box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
     box-shadow: inset 0 0 13px 2px rgba(0, 0, 0, 0.6);
@@ -397,6 +403,7 @@ a.qt-plan-brochure-file > i.fa:last-child {
     #qt-plan-details {
         position: relative !important;
         margin: 50px auto !important;
+        left: initial !important;
     }
 }
 
@@ -454,4 +461,13 @@ a.qt-plan-brochure-file > i.fa:last-child {
         -ms-grid-columns: auto auto;
         grid-template-columns: auto auto;
     }
+}
+
+.benefits-from-settings {
+    margin: 18px 0;
+    border-top: 3px double #000;
+    border-bottom: 3px double #000;
+    display: inline-block;
+    padding: 2px 30px;
+    text-align: left;
 }

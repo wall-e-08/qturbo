@@ -190,7 +190,7 @@ class Response(object):
         self.applicant['Add_ons'] = addons
 
     def process_message(self, message_tree):
-        print(dir(message_tree))
+        # print(dir(message_tree))
         if message_tree.text:
             self.applicant['Message'] = message_tree.text
         for child in message_tree:
@@ -262,5 +262,5 @@ class ESignVerificationEnroll(object):
         response = self._make_request()
         logger.info("ESign Verification Enroll response (formatted) from HII server, EnrollResponse_XML:{0}, user_info:{1}".format(response.text, self.request))
 
-        print("response.text: ", response.text)
+        # print("response.text: ", response.text)
         return XML_ENCODING_PATTERN.sub('', html.unescape(response.text), 1)

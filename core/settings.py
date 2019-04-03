@@ -120,10 +120,16 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
+CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
+CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
+
 CELERY_TASK_ROUTES = {
-    'quotes.tasks.StmPlanTask': {'queue': 'stm'},
-    'quotes.tasks.LimPlanTask': {'queue': 'lim'},
-    'quotes.tasks.AncPlanTask': {'queue': 'anc'},
+    'quotes.tasks.ProcessTask': {'queue': 'process_task'},
+
+    # 'quotes.tasks.StmPlanTask': {'queue': 'stm'},
+    # 'quotes.tasks.LimPlanTask': {'queue': 'lim'},
+    # 'quotes.tasks.AncPlanTask': {'queue': 'anc'},
     'quotes.tasks.EsignCheckBeat': {'queue': 'esign_check'},
     'quotes.tasks.EsignCheckWorker': {'queue': 'esign_check'},
 
@@ -288,18 +294,10 @@ SALES_ADMIN = [
 # ------------------------+
 
 # Live Server
-QUOTE_ENROLL_URL = 'https://www.hiiquote.com/webservice/process.php'
-QUOTE_REQUEST_URL = 'https://www.hiiquote.com/webservice/quote_service.php'
-ESIGNATURE_VERIFICATION_URL = 'https://www.hiiquote.com/webservice/esign_payment.php'
-QUOTE_REQUEST_USER_ID = 'A157F6910039407D116147'  # CLH1251100 - $125 - live
-
-
-# -----------------+
-#  Celery Settings |
-# -----------------+
-CELERY_TASK_LOCK_EXPIRE = 2 * 60    # 2 min
-CELERY_ESIGN_CHECK_TIME = 5 * 60    # 5 min
-CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
+QUOTE_ENROLL_URL = os.environ.get('QUOTE_ENROLL_URL', 'https://test1.hiiquote.com/webservice/process.php')
+QUOTE_REQUEST_URL = os.environ.get('QUOTE_REQUEST_URL', 'https://test1.hiiquote.com/webservice/quote_service.php')
+ESIGNATURE_VERIFICATION_URL = os.environ.get('ESIGNATURE_VERIFICATION_URL', 'https://test1.hiiquote.com/webservice/esign_payment.php')
+QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A157FF340027874696242C')  # CLH1251100 - $125 - live
 
 
 # ----------------------+
@@ -336,7 +334,16 @@ MAIN_PLANS = (
     ('Legion Limited Medical', 'Legion Limited Medical'),
 )
 
-ANCILLARIES_PLANS = ['Foundation Dental', 'Freedom Spirit Plus', 'USA Dental', 'Safeguard Critical Illness']
+
+TYPEWISE_PLAN_LIST = {
+    'stm': ['Everest STM', 'LifeShield STM', 'AdvantHealth STM'],
+    'lim': ['Principle Advantage', 'Cardinal Choice', 'Vitala Care', 'Health Choice', 'Legion Limited Medical'],
+    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness', 'Foundation Dental']
+}
+
+# ---------------------+
+#    Dashboard CMS     +
+# ---------------------+
 
 SHORTCODE_PREFIX = '{{'
 SHORTCODE_POSTFIX = '}}'
@@ -367,7 +374,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
         'MS': ['12*1', '12*3'],
         'MO': ['6*6'],
         'NC': ['12*1', '12*3'],
-        'OH': ['12*1', '12*3'],
+        # 'OH': ['12*1', '12*3'], # Currently unavailable
         'OK': ['6*6'],
         'PA': ['12*1', '12*3'],
         'SD': ['6*6'],
@@ -391,7 +398,7 @@ STATE_SPECIFIC_PLAN_DURATION = {
     }
 }
 
-# 3*2 is not working right now 01/21/19
+# TODO: CREATE SEPARATE DEFAULTS FOR SEPARATE STATES
 STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
     'LifeShield STM': ['12*1'],
     'AdvantHealth STM': ['6*6']
@@ -401,26 +408,14 @@ STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
 # Carrier specific plan attributes   +
 # -----------------------------------+
 
-# TODO: Quote request should use these values OR initial quote should be fully hardcoded
-CARRIER_SPECIFIC_PLAN_BENEFIT_AMOUNT = {
-    'LifeShield STM': ['0', '2000', '3000', '4000', '5000'],
-    'AdvantHealth STM': ['2000', '4000']
-}
+INITIAL_QUOTE_DATA = {
+    'LifeShield STM': {
+        'Duration_Coverage': ['12*1'],
+    },
 
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_QUOTE = {
-    'LifeShield STM': ['80/20', '50/50', '70/30', '100/0'],
-    'AdvantHealth STM': ['80/20']
-}
-
-
-CARRIER_SPECIFIC_PLAN_COINSURACE_PERCENTAGE_FOR_VIEW = {
-    'LifeShield STM': ['0', '20', '30', '50'],
-    'AdvantHealth STM': ['20']
-}
-
-CARRIER_SPECIFIC_PLAN_COVERAGE_MAX = {
-    'AdvantHealth STM': ['250000', '500000', '1000000'],
-    'LifeShield STM': ['250000', '750000', '1000000', '1500000']
+    'AdvantHealth STM': {
+        'Duration_Coverage': ['6*6']
+    }
 }
 
 # --------------+
@@ -448,16 +443,15 @@ CARRIER_SPECIFIC_INCOME_VS_POLICY_MAXIMUM = {
 USER_INITIAL_PREFERENCE_DATA = {
     # The general_url_chosen flag will be true when user goes into stm_plan page.
     # It will be again set false when the user gets back to quote list page.
-    'general_url_chosen': False,
     'LifeShield STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['LifeShield STM'],
+        'Duration_Coverage': ['12*1'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['0', '20'],
         'Benefit_Amount': ['0', '2000']
     },
 
     'AdvantHealth STM': {
-        'Duration_Coverage': STATE_SPECIFIC_PLAN_DURATION_DEFAULT['AdvantHealth STM'],
+        'Duration_Coverage': ['6*6'],
         'Coverage_Max': [''],
         'Coinsurance_Percentage': ['20'],
         'Benefit_Amount': ['2000']
@@ -469,7 +463,7 @@ USER_INITIAL_PREFERENCE_DATA = {
 # -----------------------+
 
 USER_PROPERTIES: Dict[str, int] = {
-    'min_age': 21,
+    'min_age': 18,
     'max_age': 99,
 
     'dependents_min_age': 6,
@@ -481,41 +475,114 @@ USER_PROPERTIES: Dict[str, int] = {
 #  Featured Plan Properties   +
 #-----------------------------+
 
-AVAILABLE_PLAN_NAME_LIST_DICT = {
-    'stm': ['LifeShield STM', 'AdvantHealth STM'],
-    'lim': ['Health Choice', 'Vitala Care', 'Legion Limited Medical'],
-    'anc': ['USA Dental', 'Freedom Spirit Plus', 'Safeguard Critical Illness']
+
+
+
+FEATURED_PLAN_DICT = {
+    'LifeShield STM': {
+        'option': '5000',
+        'Coinsurance_Percentage': '20',
+        'Benefit_Amount': '3000',
+    },
+
+    'AdvantHealth STM': {
+        'option': '2500',
+        'Coinsurance_Percentage': '20',
+        'Benefit_Amount': '2000',
+    },
+
+    'Health Choice':{
+        'Plan_Name': 'Plan_100'
+    },
+
+    'Vitala Care':{
+        'Plan_Name': 'Plan_100'
+    },
+
+    'Legion Limited Medical': {
+        'Plan_Name': 'Plan_3'
+    },
+
+    'Cardinal Choice': {
+        'Plan_Name': 'Plan_3'
+    },
+
+    'USA Dental': {
+        'Plan_Name': 'Access_III'
+    },
+
+    'Safeguard Critical Illness': {
+        'Plan_Name': 'Option5000',
+    },
+
+    'Freedom Spirit Plus':{
+        'Plan_Name': 'SPIRITPLUS_100000',
+    }
+}
+
+FEATURED_PLAN_PREMIUM_DICT = {
+    'stm': 100.0,
+    'lim': 100.0,
+    'anc': 25.0
 }
 
 
-#
-# FEATURED_PLAN_DICT = {
-#                          'LifeShield STM': {
-#                              'Coinsurance_Percentage': '20',
-#                              'Benefit_Amount': '2000',
-#                              'Duration_Coverage': '12*1',
-#                              'Premium': '100.00',
-#                              'coverage_max_value': '1000000',
-#                              'session_key': 'qt_dummy_session_key',
-#                          },
-#
-#                         'AdvantHealth STM': {
-#                             'Coinsurance_Percentage': '20',
-#                             'Benefit_Amount': '2000',
-#                             'Duration_Coverage': '6*6',
-#                             'Premium': '100.00',
-#                             'coverage_max_value': '1000000',
-#                             'session_key': 'qt_dummy_session_key',
-#                         },
-#
-#                         # 'Health Choice':{
-#                         #
-#                         # }
-#
-#                     }
+STM_PLAN_BENEFITS = {
+    'lifeshield-stm': {
+        '1': [
+            'ER benefits $250 per visit',
+            'Hospital: average standard room rate',
+            'Doctor visits copay $30, maximum 3 visits',
+        ],
+        '2': [
+            'ER benefits $500 per visit (additional deductible applies)',
+            'Hospital: average standard room rate',
+            'Doctor visits copay $40, unlimited visits',
+        ],
+    },
+    'advanthealth-stm': {
+        '1': [
+            'Office Consultation or Urgent Care copay of $25, maximum 2 visits',
+        ],
+        '2': [
+            'ER Additional Deductible $250, maximum 1',
+            'Office Consultation or Urgent Care copay of $15, unlimited visits',
+        ],
+        '3': [
+            'ER Additional Deductible $250, maximum 1',
+            'Office Consultation or Urgent Care copay of $25, maximum 2 visits',
+        ],
+    }
+}
 
-# WILL BE DONE LATER IF GOD WISHES.
+PLAN_NAMES_LIST = {
+    # stm
+    'advanthealth-stm': ('Plan 1', 'Plan 2', 'Plan 3', ),
+    'everest-stm': (),
+    'healtheflex-stm': (),
+    'healthemed-stm': (),
+    'lifeshield-stm': ('Plan 1', 'Plan 2',),
+    'premier-stm': (),
+    'sage-stm': (),
+    'select-stm': (),
 
+    # lim + anc
+    'cardinal-choice': (),
+    'freedom-spirit-plus': (),
+    'health-choice': ('Plan_100A', 'Plan_100', 'Plan_200', 'Plan_200Plus', 'Plan_300', 'Plan_500', 'Plan_750', 'Plan_1000', ),
+    'legion-limited-medical': ('Plan_1', 'Plan_2', 'Plan_3', ),
+    'principle-advantage': (),
+    'safeguard-critical-illness': (),
+    'unified-health-one': (),
+    'usa-dental': (),
+    'vitala-care': ('Plan_100A', 'Plan_100', 'Plan_200', 'Plan_200Plus', 'Plan_300', 'Plan_500', 'Plan_750', 'Plan_1000', ),
+}
+
+# ------------------#
+#    Payment        #
+# ------------------#
+
+TEST_CARD_ALLOWED = True
 
 
 

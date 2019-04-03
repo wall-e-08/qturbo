@@ -6,13 +6,15 @@ from django.http import Http404, JsonResponse, HttpResponse
 from .models import Menu, GeneralTopic
 from distinct_pages.models import Page, ItemList, ItemIcon, ItemTwoColumn, ItemGuide
 from writing.models import Article, Blog, Category, Categorize, Section
+from quotes.models import Carrier, BenefitsAndCoverage, RestrictionsAndOmissions
 from .utils import get_category_list_by_blog
 from .forms import (PageForm, ArticleForm, BlogForm, EditorMediaForm, ItemListForm,
                     ItemIconForm, ItemTwoColumnForm, ItemGuideForm, MenuForm,
-                    GeneralTopicForm,)
+                    GeneralTopicForm, BenefitsForm, DisclaimerForm)
 from distinct_pages.short_code import Encoder as SC_Encoder
 
 """login_required decorator added in urls.py... So no need to add here"""
+BENEFITS_DISCLAIMERS_TYPES = {'c': 'core', 'b': 'bridged'}
 
 
 def index(request):
@@ -44,6 +46,14 @@ def index(request):
         "menu": {
             "count": Menu.objects.all().count(),
         },
+        "bnc": {
+            "core_count": BenefitsAndCoverage.objects.filter(self_fk=None).count(),
+            "bridged_count": BenefitsAndCoverage.objects.exclude(self_fk=None).count(),
+        },
+        "dnr": {
+            "core_count": RestrictionsAndOmissions.objects.filter(self_fk=None).count(),
+            "bridged_count": RestrictionsAndOmissions.objects.exclude(self_fk=None).count(),
+        },
     }
     return render(request, 'dashboard/index.html', {"data": data})
 
@@ -66,6 +76,32 @@ def edit_general_topic(request):
         "icons": ItemIcon.objects.all(),
     })
     return render(request, 'dashboard/edit_general_topic.html', context=ctx)
+
+
+def all_benefits_coverages(request, bnc_type=None):
+    if bnc_type == BENEFITS_DISCLAIMERS_TYPES['c']:
+        bncs = BenefitsAndCoverage.objects.filter(self_fk=None).all()
+    elif bnc_type == BENEFITS_DISCLAIMERS_TYPES['b']:
+        bncs = BenefitsAndCoverage.objects.exclude(self_fk=None).all()
+    else:
+        raise Http404("Error")
+    return render(request, 'dashboard/all_benefits_coverages.html', context={
+        "bncs": bncs,
+        "bnc_type": bnc_type,
+    })
+
+
+def all_disclaimers_restrictions(request, dnr_type):
+    if dnr_type == BENEFITS_DISCLAIMERS_TYPES['c']:
+        dnrs = RestrictionsAndOmissions.objects.filter(self_fk=None).all()
+    elif dnr_type == BENEFITS_DISCLAIMERS_TYPES['b']:
+        dnrs = RestrictionsAndOmissions.objects.exclude(self_fk=None).all()
+    else:
+        raise Http404("Error")
+    return render(request, 'dashboard/all_disclaimers_restrictions.html', context={
+        "dnrs": dnrs,
+        "dnr_type": dnr_type,
+    })
 
 
 # All START ##
@@ -127,6 +163,82 @@ def all_menus(request):
     menus = Menu.objects.all()
     return render(request, 'dashboard/all_menus.html', {
         "menus": menus,
+    })
+
+
+def create_or_edit_benefits_coverages(request, bnc_type, bnc_id=None):
+    if bnc_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = BenefitsForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse('dashboard:all_benefits_coverages', kwargs={"bnc_type": bnc_type}))
+            else:
+                print("create_benefits  Form not valid. errors: {}".format(form.errors))
+        else:
+            form = BenefitsForm()
+    else:
+        action = "Edit"
+        try:
+            bnc = BenefitsAndCoverage.objects.get(id=int(bnc_id))
+            if request.method == 'POST':
+                form = BenefitsForm(request.POST, request.FILES, instance=bnc)
+                if form.is_valid():
+                    form.save()
+                    return redirect(reverse('dashboard:all_benefits_coverages', kwargs={"bnc_type": bnc_type}))
+            else:
+                form = BenefitsForm(instance=bnc)
+        except BenefitsAndCoverage.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No info found")
+    form.fields["plan"].queryset = Carrier.objects.filter(is_active=True)
+    all_core_data = BenefitsAndCoverage.objects.filter(self_fk=None)
+    form.fields["self_fk"].queryset = all_core_data
+    return render(request, 'dashboard/form_benefits_coverages.html', {
+        "form": form,
+        "action": action,
+        "item_type": bnc_type,
+        "all_core_data": all_core_data,
+    })
+
+
+def create_or_edit_disclaimers_restrictions(request, dnr_type, dnr_id=None):
+    if dnr_id is None:
+        action = 'Create'
+        if request.method == 'POST':
+            print(request.POST)
+            form = DisclaimerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse('dashboard:all_disclaimers_restrictions', kwargs={"dnr_type": dnr_type}))
+            else:
+                print("create_disclaimers  Form not valid. errors: {}".format(form.errors))
+        else:
+            form = DisclaimerForm()
+    else:
+        action = "Edit"
+        try:
+            dnr = RestrictionsAndOmissions.objects.get(id=int(dnr_id))
+            if request.method == 'POST':
+                form = DisclaimerForm(request.POST, instance=dnr)
+                if form.is_valid():
+                    form.save()
+                    return redirect(reverse('dashboard:all_disclaimers_restrictions', kwargs={"dnr_type": dnr_type}))
+            else:
+                form = DisclaimerForm(instance=dnr)
+        except RestrictionsAndOmissions.DoesNotExist as err:
+            print("awkward Error: {}".format(err))
+            raise Http404("No info found")
+    form.fields["plan"].queryset = Carrier.objects.filter(is_active=True)
+    all_core_data = RestrictionsAndOmissions.objects.filter(self_fk=None)
+    form.fields["self_fk"].queryset = all_core_data
+    return render(request, 'dashboard/form_disclaimers_restrictions.html', {
+        "form": form,
+        "action": action,
+        "item_type": dnr_type,
+        "all_core_data": all_core_data,
     })
 
 
@@ -458,6 +570,28 @@ def create_or_edit_menu(request, menu_id=None):
     })
 
 
+def delete_benefits_coverages(request):
+    if not request.GET or not request.GET.get('bnc_id', None):
+        raise Http404("err")
+    bnc_id = request.GET['bnc_id']
+    try:
+        BenefitsAndCoverage.objects.get(id=bnc_id).delete()
+    except BenefitsAndCoverage.DoesNotExist:
+        raise Http404("Not found")
+    return JsonResponse({"success": True,})
+
+
+def delete_disclaimers_restrictions(request):
+    if not request.GET or not request.GET.get('dnr_id', None):
+        raise Http404("err")
+    dnr_id = request.GET['dnr_id']
+    try:
+        RestrictionsAndOmissions.objects.get(id=dnr_id).delete()
+    except RestrictionsAndOmissions.DoesNotExist:
+        raise Http404("Not found")
+    return JsonResponse({"success": True,})
+
+
 def delete_page(request):
     if request.method == 'GET':
         pid = request.GET.get('page_id', None)
@@ -649,3 +783,22 @@ def generate_short_code(request):
     return JsonResponse({
         "success": False,
     })
+
+
+def ajax_all_plan_names(request):
+    if request.GET:
+        if request.GET.get('plan_id', None):
+            try:
+                plan = Carrier.objects.get(id=request.GET['plan_id'])
+                plan_name_for_key = plan.name.lower().replace(' ', '-')
+                return JsonResponse({
+                    "success": True,
+                    "plan_names": settings.PLAN_NAMES_LIST.get(plan_name_for_key, []),
+                })
+            except Carrier.DoesNotExist:
+                print("awkward err carrier not found!")
+    return JsonResponse({
+        "success": False,
+    })
+
+

@@ -407,7 +407,7 @@ class ApplicantInfoForm(forms.Form):
         return age(dob)
 
 
-class Duration_Coverage_Form(forms.Form):
+class DurationCoverageForm(forms.Form):
     Duration_Coverage = forms.CharField(
         label=_("Select Minimum"),
         error_messages={"required": _("Duration Coverage is required.")},
@@ -425,7 +425,11 @@ class Duration_Coverage_Form(forms.Form):
         return self.cleaned_data
 
 
-class Alt_Benefit_Amount_Coinsurance_Coverage_Maximum_Form(forms.Form):
+class AjaxRequestAttrChangeForm(forms.Form):
+    """
+    Form to change plan Benefit_Amount, Coinsurance_Percentage and Coverage_Max
+    using Ajax.
+    """
 
     Benefit_Amount = forms.CharField(
         label=_("Select Max Out Of Pocket"),
@@ -1175,7 +1179,6 @@ class STApplicantInfoForm(forms.Form):
             self.cleaned_data['Estate_Flag'] = '1'
             self.cleaned_data['Estate_Detail'] = 'ESTATE'
 
-
         if self.plan['Name'] == 'Unified Health One':
             soc = self.cleaned_data.get('SOC', '') or '123456789'
             if soc and not is_valid_ssn(soc):
@@ -1186,7 +1189,7 @@ class STApplicantInfoForm(forms.Form):
                 self.cleaned_data['SOC'] = ssn_format(soc)
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship',
                           'Contingent_First_Name', 'Contingent_Last_Name', 'Contingent_Relationship']:
                 self.cleaned_data[field] = ''
@@ -1197,7 +1200,7 @@ class STApplicantInfoForm(forms.Form):
         if self.plan['Name'] == 'Principle Advantage':
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
             self.cleaned_data['Plan_Type'] = get_plan_type_principle_limited(copy.deepcopy(self.initial_form_data))
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship',
                           'Contingent_First_Name', 'Contingent_Last_Name', 'Contingent_Relationship']:
@@ -1216,7 +1219,7 @@ class STApplicantInfoForm(forms.Form):
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee',
                           'RealValueSavings_Fee', 'RealValueSavings_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1260,7 +1263,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1304,7 +1307,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1347,7 +1350,7 @@ class STApplicantInfoForm(forms.Form):
             for field in ['Premium', 'Enrollment_Fee', 'TelaDoc_Fee', 'RxAdvocacy_Fee',
                           'ChoiceValueSavings_Fee', 'ChoiceValue_AdminFee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1389,7 +1392,7 @@ class STApplicantInfoForm(forms.Form):
         if self.plan['Name'] == 'USA Dental':
             for field in ['Premium', 'Enrollment_Fee']: # Administrative_Fee is included in Premium
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             self.cleaned_data['Payment_Agree'] = '1'
             self.cleaned_data['Applicant_Agree'] = '1'
@@ -1400,7 +1403,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             self.cleaned_data['Payment_Agree'] = '1'
             self.cleaned_data['Medsense_Agree'] = '1'
@@ -1411,7 +1414,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1448,7 +1451,7 @@ class STApplicantInfoForm(forms.Form):
 
             for field in ['Premium', 'Enrollment_Fee', 'Administrative_Fee']:
                 self.cleaned_data[field] = self.plan[field]
-            self.cleaned_data['Plan_Name'] = self.plan['Lim_Plan_Name']
+            self.cleaned_data['Plan_Name'] = self.plan['Plan_Name']
 
             beneficiary = ''
             for field in ['Beneficiary_First_Name', 'Beneficiary_Last_Name', 'Beneficiary_Relationship']:
@@ -1583,10 +1586,12 @@ class STDependentInfoForm(forms.Form):
     Weight = forms.IntegerField(required=False, label=_("Weight"))
 
     def clean(self):
+        stm_plans = copy.deepcopy(settings.TYPEWISE_PLAN_LIST['stm'])
+
         super().clean()
+
         relation = self.cleaned_data.get('Relation', '')
-        if relation == 'Spouse' and self.plan['Name'] not in ['Principle Advantage', 'Cardinal Choice',
-                                                              'Vitala Care', 'Health Choice', 'Legion Limited Medical']:
+        if relation == 'Spouse' and self.plan['Name'] in stm_plans :
             for field in ['Feet', 'Inch', 'Weight']:
                 if not self.cleaned_data.get(field, ''):
                     self.add_error(field, forms.ValidationError("{0} is required".format(field), code='required'))
@@ -1696,10 +1701,12 @@ class PaymentMethodForm(forms.Form):
 
     def _card_clean_card_number(self):
         card_number = self.cleaned_data.get('Card_Number', '')
+        exp_month = self.cleaned_data.get('Card_ExpirationMonth', None)
+        exp_year = self.cleaned_data.get('Card_ExpirationYear', None)
         if not card_number:
             self.add_error('Card_Number', forms.ValidationError(_("Card Number is required."), code='required'))
             return ''
-        card = Card(card_number)
+        card = Card(number=card_number, month=int(exp_month), year=int(exp_year))
         if not card.is_valid or (settings.TEST_CARD_ALLOWED is False and card.is_test):
             if card.brand == card.BRAND_UNKNOWN and card.is_mod10_valid:
                 self.add_error(

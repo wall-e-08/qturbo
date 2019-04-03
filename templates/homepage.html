@@ -2,6 +2,9 @@
 {% load qt_tags static %}
 
 {% block main_content %}
+    <div id="overlay-loading" style="display: none">
+        <img src="{% static 'quotes/img/ajax-loader.gif' %}" alt="ajax-loader">
+    </div>
     <section id="main-quote">
         <div class="container">
             <router-view></router-view>

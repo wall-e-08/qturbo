@@ -1,0 +1,30 @@
+{% extends 'base_nhaquote.html' %}
+{% load i18n static humanize hp_tags %}
+{% block title %}
+    {{ block.super }}
+{% endblock title %}
+{% load i18n hp_tags %}
+{% block top-menu-block %}{% endblock %}
+{% block mobile-header %}{% endblock %}
+{% block extra_css %}
+    <style>
+        .common-section {
+            min-height: calc(100vh - 205px);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row mrg-t-25">
+        <div class="col-md-12">
+
+            <h1>Already submitted from this quote. ID #{{ quote_id }}</h1>
+            <a class="btn btn-primary" href={{ url }}>Click here</a>
+            <span> to go to application review</span>
+
+        </div>
+    </div>
+{% endblock content %}
+
+{% block footer-info %}{% endblock %}
+{% block hamburger %}{% endblock %}
