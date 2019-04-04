@@ -140,7 +140,23 @@
         </div>
     </div>
 </div>
-
+<!--disclaimer start-->
+       <div class="container">
+                {% if restrictions_omissions %}
+                    <hr>
+                    <div id="restrictions-n-omissions">
+                        <h3>Disclaimers / Restrictions / Omissions</h3>
+                        {% for bc in restrictions_omissions %}
+                            <div>
+                                <h4>{{ bc.get_instance.title }}</h4>
+                                <div>{{ bc.get_instance.description|safe }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        <br>
+<!--disclaimer end-->
 {% endblock container %}
 {% block footer-info %}{% endblock %}
 {% block hamburger %}{% endblock %}
