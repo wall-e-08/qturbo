@@ -227,7 +227,7 @@
             {#                </div>#}
 
             {% if not esign_req_sent %}
-                <div class="" style="margin-bottom:30px;margin-top:30px;">
+                <div class="" style="margin-bottom:70px;margin-top:30px;">
                     <div class="text-center" style="margin-bottom:30px;margin-top:30px;">
                         <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
                         <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn btn-orange"
@@ -534,8 +534,9 @@
                     </div>
     </div>
 <!--disclaimer start-->
-       <div class="container" style="padding-left:0; padding-right:30px">
+       <div class="container">
                 {% if restrictions_omissions %}
+                <br>
                     <hr>
                     <div id="restrictions-n-omissions">
                         <h3>Disclaimers / Restrictions / Omissions</h3>
@@ -547,9 +548,9 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
-        <br>
+       </div>
 <!--disclaimer end-->
+
 {% endblock content %}
 
 {% block footer-info %}{% endblock %}
