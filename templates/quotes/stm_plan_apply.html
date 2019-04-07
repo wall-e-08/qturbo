@@ -5,6 +5,7 @@
     Apply For Plan {{ plan.Name }}{% if plan.Plan %}-Plan {{ plan.Plan }}{% endif %} |  {{ block.super }}
 {% endblock title %}
 {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'nhaquote_old/css/stm_plan.css' %}">
     <style type="text/css">
         .apply-details-summary {
             min-height: auto;
@@ -628,6 +629,25 @@
             the combination of the tax and a Term Health Insurance premium can be cheaper than traditional insurance
             for their circumstances.</p>
         <br/>
+        <!--disclaimer start-->
+       <div class="">
+
+                {% if restrictions_omissions %}
+                    <hr>
+                    <div id="restrictions-n-omissions">
+                        <h3>Disclaimers / Restrictions / Omissions</h3>
+                        {% for bc in restrictions_omissions %}
+                            <div>
+                                <h4>{{ bc.get_instance.title }}</h4>
+                                <div>{{ bc.get_instance.description|safe }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        <br>
+        <!--disclaimer end-->
+
     </div>
 
     {% if ctx_app_url_exists %}

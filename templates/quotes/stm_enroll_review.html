@@ -5,6 +5,7 @@
 {% endblock title %}
 {% load i18n hp_tags %}
 {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'nhaquote_old/css/stm_plan.css' %}">
     <link href="{% static 'nhaquote_old/css/stm_enroll_info.css' %}" rel="stylesheet">
     <style type="text/css">
         body {line-height: 1.42857; font-size: 1.6rem;}
@@ -226,7 +227,7 @@
             {#                </div>#}
 
             {% if not esign_req_sent %}
-                <div class="" style="margin-bottom:30px;margin-top:30px;">
+                <div class="" style="margin-bottom:70px;margin-top:30px;">
                     <div class="text-center" style="margin-bottom:30px;margin-top:30px;">
                         <p id="payment-form-error-message-fix" class="none">↑↑Please correct the above↑↑</p>
                         <button type="button" class="btn btn-lg btn-yellow vimm-nim-width-btn btn-orange"
@@ -532,6 +533,24 @@
                         </div>
                     </div>
     </div>
+<!--disclaimer start-->
+       <div class="container">
+                {% if restrictions_omissions %}
+                <br>
+                    <hr>
+                    <div id="restrictions-n-omissions">
+                        <h3>Disclaimers / Restrictions / Omissions</h3>
+                        {% for bc in restrictions_omissions %}
+                            <div>
+                                <h4>{{ bc.get_instance.title }}</h4>
+                                <div>{{ bc.get_instance.description|safe }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+       </div>
+<!--disclaimer end-->
+
 {% endblock content %}
 
 {% block footer-info %}{% endblock %}

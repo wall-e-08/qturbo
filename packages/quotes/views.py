@@ -664,11 +664,19 @@ def stm_apply(request: WSGIRequest, plan_url: str) -> HttpResponse:
     addon_plans = addon_plans_from_json_data(redis_conn.lrange(addon_plans_redis_key, 0, -1))
     remaining_addon_plans = addon_plans.difference(selected_addon_plans)
 
+    carrier = None
+    try:
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as er:
+        print("Very weird error: {}".format(er))
+
     return render(request, 'quotes/stm_plan_apply.html',
                   {'plan': plan, 'quote_request_form_data': quote_request_form_data,
                    'addon_plans': addon_plans,
                    'selected_addon_plans': selected_addon_plans,
-                   'remaining_addon_plans': remaining_addon_plans,})
+                   'remaining_addon_plans': remaining_addon_plans,
+                   'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier).filter(Q(plan_number='all') | Q(plan_number=plan.get('Plan_Name'))),
+                   })
 
 
 @require_POST
@@ -1013,8 +1021,15 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
     stage = get_app_stage(stage, stm_stages)
     logger.info("{0}: {1}".format(stage, type(stage)))
     logger.info("PLAN::::: -> {0}".format(plan))
+    carrier = None
+    try:
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as er:
+        print("Very weird error: {}".format(er))
+
     ctx = {'plan': plan, 'plan_url': application_url, 'form_data': quote_request_form_data,
-           'stage': stage, 'selected_addon_plans': selected_addon_plans, 'stm_enroll_obj': stm_enroll_obj}
+           'stage': stage, 'selected_addon_plans': selected_addon_plans, 'stm_enroll_obj': stm_enroll_obj,
+           'restrictions_omissions': qm.RestrictionsAndOmissions.objects.filter(plan=carrier).filter(Q(plan_number='all') | Q(plan_number=plan.get('Plan_Name'))),}
 
     if stage == 4 and stm_enroll_obj.esign_checked_and_enrolled_by_system and stm_enroll_obj.enrolled:
         return HttpResponseRedirect(reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id]))
@@ -1451,6 +1466,9 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
 
         ctx.update({'res': formatted_enroll_response})
     ctx.update({'IS_DEV': settings.IS_DEV})
+
+
+
     return render(request, template, ctx)
 
 

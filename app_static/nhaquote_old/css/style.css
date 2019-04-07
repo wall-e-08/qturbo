@@ -2607,7 +2607,7 @@ p {
     .summary-wrapper p {font-size: 17px}
 }
 @media (max-width: 480px){
-    #continue_next_stage_link {font-size: 15px}
+    #continue_next_stage_link {font-size: 13px}
 }
 @media (max-width: 320px){
     #continue_next_stage_link {font-size: 11px}
