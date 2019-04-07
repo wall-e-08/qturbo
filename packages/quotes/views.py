@@ -1375,7 +1375,8 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             else:
                 return JsonResponse({'status': 'fail', 'error_msg': 'provide consent'})
         applicant_info = stm_enroll_obj.get_applicant_info_for_update()
-        payment_info = stm_enroll_obj.get_payment_info()
+        # payment_info = stm_enroll_obj.get_payment_info() # Payment information is not being saved in database.
+        payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
         stm_questions = request.session.get('enroll_{0}_stm_question'.format(application_url), {})
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
         applicant_parent_info = stm_enroll_obj.get_applicant_parent_info()
