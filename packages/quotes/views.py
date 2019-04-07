@@ -1271,9 +1271,11 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             return JsonResponse(
                 {'status': 'success', 'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 3])}
             )
-        if applicant_info:
+        if applicant_info and applicant_info.get('form_initialized'):
             st_application_info_form = STApplicantInfoForm(initial_form_data=quote_request_form_data,
                                                            plan=plan, request=request, initial=applicant_info)
+            stm_enroll_obj.form_initialized = True
+            stm_enroll_obj.save()
         else:
             st_application_info_form = STApplicantInfoForm(initial_form_data=quote_request_form_data,
                                                            plan=plan, request=request, initialize_form=True)

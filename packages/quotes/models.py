@@ -401,6 +401,10 @@ class StmEnroll(models.Model):
         blank=True, null=True
     )
 
+    form_initialized = models.BooleanField(
+        default=False
+    )
+
     def get_absolute_url(self):
         return reverse('dashboard:enroll_detail',
                        args=[self.id,
@@ -544,6 +548,8 @@ class StmEnroll(models.Model):
 
             'Name_Enroll': self.Name_Enroll,
             'Name_Auth': self.Name_Auth,
+
+            'form_initialized': self.form_initialized
         }
         if self.Applicant_is_Child:
             data.update({
