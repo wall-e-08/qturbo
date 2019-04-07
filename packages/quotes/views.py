@@ -868,6 +868,7 @@ def save_to_db(plan: Dict,
 
                                           app_url=application_url,
 
+                                          form_data=json_encoder.encode(copy.deepcopy(form_data)),
                                           Age = form_data['Applicant_Age'],
                                           DOB = QR_DATE_PATTERN.sub(r'\3-\1-\2', form_data.get('Applicant_DOB', None)),
                                           Effective_Date = QR_DATE_PATTERN.sub(r'\3-\1-\2', form_data.get('Effective_Date', None)),
@@ -946,19 +947,6 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
         :return: html to show in case of user getting back
         after esign request.
         """
-        """ We make a http response and serve it when User has already
-        submitted his esign request We determine that by checking for
-        esign_req_sent_{} key in the session dictionary. We collect 
-        quote ID from the plan object or from the plan dictionary.
-
-        Also in near future, we shall replace it with a html page.
-        """
-        # html = """<html>
-        #             <body>
-        #                 <h1>Already submitted from this quote. ID #{0}</h1>
-        #                 <a href={1}>Click here to go to application review</a>
-        #             </body>
-        #        </html>""".format(quote_id, (reverse('quotes:stm_enroll', args=[plan_url, 4])))
 
         html = render_to_string('quotes/quote_error.html', {
             "quote_id": quote_id,
@@ -970,6 +958,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
     stm_plan_obj = None
     stm_dependent_objs = None
     stm_addon_plan_objs = None
+    plan = None
     try:
         stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id)
         stm_plan_model = getattr(qm, 'MainPlan')
@@ -1176,14 +1165,16 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
         applicant_parent_info = {}
         applicant_dependents_info = {}
         if quote_request_form_data['applicant_is_child']:
-            applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
+            # applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
+            applicant_parent_info = stm_enroll_obj.get_applicant_parent_info()
             has_parent = True
         if ((quote_request_form_data['Include_Spouse'] == 'Yes' or quote_request_form_data['Children_Count'] > 0) and
                 not quote_request_form_data['applicant_is_child']):
             has_dependents = True
             applicant_dependents_info = request.session.get(
                 'applicant_dependent_info_{0}'.format(application_url), {})
-        applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
+        # applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {}) # TODO: Truncate
+        applicant_info = stm_enroll_obj.get_applicant_info_for_update()
         # ajax request with form data
         if ajax_request and request.method == 'POST':
             stage_2_errors = {}
@@ -1241,6 +1232,8 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             when ajax_request is false and we save the data. 
             '''
 
+            # I think creating vimm enroll id in this step is unncecessary as we have already created vimm_enroll_id
+            # in stm_application. Also vimm enroll id is stored in stm_plan database. Should be deleted in next commit iteration.
             if request.session[application_url].get('vimm_enroll_id') is None:
                 request.session[application_url]['vimm_enroll_id'] = get_random_string()
                 request.session.modified = True
@@ -1335,7 +1328,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             payment_method_form = PaymentMethodForm(applicant_info, data=request.POST)
             if payment_method_form.is_valid():
                 request.session['payment_info_{0}'.format(application_url)] = payment_method_form.cleaned_data
-                payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
+                payment_info = request.session.get('payment_info_{0}'.format(application_url), {}) # TODO
                 if 3 not in request.session['enroll_{0}_stm_stages'.format(application_url)]:
                     request.session['enroll_{0}_stm_stages'.format(application_url)].append(3)
                     request.session.modified = True
@@ -1379,11 +1372,11 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
                                      'redirect_url': reverse('quotes:stm_enroll', args=[vimm_enroll_id, 5])})
             else:
                 return JsonResponse({'status': 'fail', 'error_msg': 'provide consent'})
-        applicant_info = request.session.get('applicant_info_{0}'.format(application_url), {})
-        payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
+        applicant_info = stm_enroll_obj.get_applicant_info_for_update()
+        payment_info = stm_enroll_obj.get_payment_info()
         stm_questions = request.session.get('enroll_{0}_stm_question'.format(application_url), {})
         stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
-        applicant_parent_info = request.session.get("applicant_parent_info_{0}".format(application_url), {})
+        applicant_parent_info = stm_enroll_obj.get_applicant_parent_info()
         applicant_dependents_info = request.session.get('applicant_dependent_info_{0}'.format(application_url), {})
         logger.info("STAGE4: applicant = {0}".format(applicant_info))
         logger.info("STAGE4: parent = {0}".format(applicant_parent_info))
@@ -1645,8 +1638,10 @@ def e_signature_enrollment(request, vimm_enroll_id):
             'verification': 'Y'
         })
 
-    # TODO: Need to put quote_request_form_data in model
-    # quote_request_form_data = json_decoder.decode(stm_enroll_obj.form_data)
+    try:
+        quote_request_form_data = json_decoder.decode(stm_enroll_obj.form_data)
+    except TypeError:
+        quote_request_form_data = request.session.get('quote_request_form_data', {})
 
     quote_request_form_data = request.session.get('{0}_form_data'.format(stm_enroll_obj.app_url), {})
     if quote_request_form_data and not form_data_is_valid(quote_request_form_data):

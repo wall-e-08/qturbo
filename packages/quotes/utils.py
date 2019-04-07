@@ -695,6 +695,15 @@ def get_plan_object(vimm_enroll_id, qm):
     except ObjectDoesNotExist:
         return None
 
+def get_Addon_Object(vimm_enroll_id, qm):
+    try:
+        stm_addon_model = qm.AddonPlan
+        stm_addon_plan_objs = stm_addon_model.objects.get(vimm_enroll_id=vimm_enroll_id)
+        return stm_addon_plan_objs
+    except ObjectDoesNotExist:
+        return None
+
+
 
 def is_ins_type_valid(ins_type) -> bool:
     if ins_type in ['stm', 'lim', 'anc']:

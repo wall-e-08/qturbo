@@ -145,6 +145,11 @@ class StmEnroll(models.Model):
 
     Payment_Status_Date = models.DateField(blank=True, null=True)
 
+    form_data = models.TextField(blank=True, null=True)
+
+    question_data = models.TextField(blank=True, null=True)
+
+
     # applicant information
     First_Name = models.CharField(
         max_length=500,
@@ -388,7 +393,6 @@ class StmEnroll(models.Model):
     #     blank=True, null=True
     # )
 
-
     Payment_Agree = models.BooleanField(
         default=False
     )
@@ -511,6 +515,16 @@ class StmEnroll(models.Model):
             'First_Name': self.First_Name,
             'Middle_Name': self.Middle_Name,
             'Last_Name': self.Last_Name,
+
+            'Gender': self.Gender,
+            'DOB': self.DOB,
+            'Tobacco': self.Tobacco,
+            'Occupation': self.Occupation,
+            'Age': self.Age,
+            'Feet': self.Feet,
+            'Inch': self.Inch,
+            'Weight': self.Weight,
+            
             'Address': self.Address,
             'City': self.City,
             'Email': self.Email,
