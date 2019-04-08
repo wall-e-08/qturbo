@@ -230,10 +230,9 @@
                                     </div>
                                 </div>
                             </template>
-                            <router-link class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
+                            <button class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
                                          v-if="is_all_data_valid"
-                                         :to="{ name: 'survey-plan'}"
-                                         @click.native="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</router-link>
+                                         @click="save_to_cookie() ; start_celery_quote(' {% url 'quotes:validate_quote_form' %}', '{{ csrf_token }}')">Next</button>
                             <template v-else>
                                 <button class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600" disabled>Next</button>
                                 <div class="alert alert-info border-info mt-3" role="alert" v-if="show_error">
@@ -250,6 +249,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="text-center alert alert-danger mt-4" v-if="err_msg">
+                <span>ERROR: [[ err_msg ]]</span>
+                <br>
+                <span>Please try again or return to <a href="/">Home</a></span>
             </div>
         </div>
     </div>
@@ -276,14 +281,6 @@
                             Household income <br>
                             Enter the gross income from your 2018 (or most recent) income tax return, and adjust for changes to your income and deductions for 2019.
                         </b-tooltip>
-                        {% comment %}<div class="input-group mb-3">
-                            <br>
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">$</span>
-                            </div>
-                            <input type="text"v-model="income" v-on:keydown="accept_only_number"
-                               class="form-control qt-survey-input" id="enroll-monthly-income" name="monthly-income" >
-                        </div>{% endcomment %}
                         <div class="btn-group-vertical qt-rigid-btn-group">
                             <button class="btn btn-primary btn-lg btn-block mb-3"
                                     v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "47001")'>$47,000+</button>
@@ -292,17 +289,14 @@
                             <button class="btn btn-primary btn-lg btn-block mb-3"
                                     v-on:click.prevent='redirect_to_plans("{% url 'quotes:redirect_to_plans' %}", "{{ csrf_token }}", "20000")'>$16,001 - $30,000</button>
                         </div>
-                        {% comment %}<button id="submit_quote_request" :disabled="income == ''"
-                                class="btn btn-tertiary btn-block btn-lg text-capitalize font-wight-600"
-                                v-on:click.prevent='redirect_to_plans("{% url 'quotes:validate_quote_form' %}", "{{ csrf_token }}")'>
-                            Check Quote
-                        </button>{% endcomment %}
                     </form>
                 </div>
-                {% comment %}<div class="d-flex justify-content-center w-100 qt-rigid-btn-group px-3">
-                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 mr-3 w-auto col">$47,000+</button>
-                    <button class="btn btn-primary btn-lg btn-block mb-3 mt-0 ml-3 w-auto col">$30,001 - $47,000+</button>
-                </div>{% endcomment %}
+            </div>
+
+            <div class="text-center alert alert-danger mt-4" v-if="err_msg">
+                <span>ERROR: [[ err_msg ]]</span>
+                <br>
+                <span>Please try again or return to <a href="/">Home</a></span>
             </div>
         </div>
     </div>
@@ -330,6 +324,11 @@
                         </div>
                     </form>
                 </div>
+            </div>
+            <div class="text-center alert alert-danger mt-4" v-if="err_msg">
+                <span>ERROR: [[ err_msg ]]</span>
+                <br>
+                <span>Please try again or return to <a href="/">Home</a></span>
             </div>
         </div>
     </div>
