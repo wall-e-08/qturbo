@@ -13,6 +13,7 @@ from django.template import Context
 from dateutil.relativedelta import relativedelta
 
 from quotes.utils import parse_stm_duration
+from quotes.addon_properties import properties as addon_props
 
 
 logger = logging.getLogger('main.quotes.templatetags.hp_tags')
@@ -339,4 +340,22 @@ def plan_duration_total_month(value):
     # TODO: Handle exceptions
     month_times = value.split("*")
     return int(month_times[0]) * int(month_times[1])
+
+
+@register.simple_tag
+def addon_disclaimers(addons):
+    if not (isinstance(addons, set) or isinstance(addons, list)):
+        return None
+    data = {}
+    for add_on in addons:
+        addon_id = str(add_on.get('addon_id')) if isinstance(addons, list) else add_on.addon_id
+        aop = addon_props.get(addon_id)
+        if aop:
+            try:
+                data[aop['name']] = aop['disclaimer']
+            except KeyError as er:
+                print("err in addon_disclaimer: {}".format(er))
+    return data
+
+
 

@@ -385,23 +385,18 @@ STATE_SPECIFIC_PLAN_DURATION = {
     },
     'AdvantHealth STM': {
         'AL': ['6*1','6*6'],
+        'AR': ['6*1','6*6'],
         'AZ': ['6*1','6*2', '6*6'],
-        "AR": ['6*1','6*6'],
-        "KY": ['6*1','6*6'],
+        'KY': ['6*1','6*6'],
         'MS': ['6*1','6*6'],
-        "NE": ['6*1','6*6'],
-        "NV": ['6*1','6*6'],
+        'NE': ['6*1','6*6'],
+        'NV': ['6*1','6*6'],
+        'OH': ['6*1','6*6'],
         'OK': ['6*1','6*6'],
         'TX': ['6*1','6*6'],
         'VA': ['6*1','6*6'],
-        "WI": ['6*1','6*6'],
+        'WI': ['6*1','6*6'],
     }
-}
-
-# TODO: CREATE SEPARATE DEFAULTS FOR SEPARATE STATES
-STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
-    'LifeShield STM': ['12*1'],
-    'AdvantHealth STM': ['6*6']
 }
 
 # -----------------------------------+

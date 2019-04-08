@@ -1,3 +1,4 @@
 web: gunicorn core.wsgi
-worker: celery -A core worker -l info -Q stm,lim,anc,esign_check -c 4
+worker: celery -A core worker -l info -Q process_task -c 10
+worker_esign_check: celery -A core worker -l info -Q esign_check  -c 1
 beat: celery -A core beat -l info

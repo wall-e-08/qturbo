@@ -111,6 +111,7 @@
                 {% endif %}
 
                 {% if quote_request_form_data.Ins_Type == 'stm' %}
+                {% if alternate_coverage_duration or alternate_benefit_amount or alternate_coinsurace_percentage or alternate_coverage_max %}
                     <hr>
                     <div id="qt-customize-plan">
                         <h2>Customize your plan:</h2>
@@ -138,7 +139,7 @@
                                     </form>
                                 </div>
                             {% endif %}
-                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_benefit_amount %}
+                            {% if alternate_benefit_amount %}
                                 <div class="dropdown">
                                     <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
@@ -161,7 +162,7 @@
                                     </form>
                                 </div>
                             {% endif %}
-                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coinsurace_percentage %}
+                            {% if alternate_coinsurace_percentage %}
                                 <div class="dropdown">
                                     <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
@@ -184,7 +185,7 @@
                                     </form>
                                 </div>
                             {% endif %}
-                            {% if quote_request_form_data.Ins_Type == 'stm' and alternate_coverage_max %}
+                            {% if alternate_coverage_max %}
                                 <div class="dropdown">
                                     <button type="button" data-toggle="dropdown" class="btn w100">
                                     <span class="ms-block mrg-r-10">
@@ -209,6 +210,7 @@
                             {% endif %}
                         </div>
                     </div>
+                {% endif %}
                 {% endif %}
 
                 {% comment %}
