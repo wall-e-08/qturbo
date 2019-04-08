@@ -268,25 +268,24 @@ def get_api_rate_obj(payload, form_data, ins_type, cls_name, plan_id, carrier_na
     return rate_cls(**payload)
 
 
-def get_carriers_for_preparing_task(form_data: Dict, preference: Dict, ins_type: str) -> [Carrier]:
-
+def get_carriers_for_preparing_task(form_data: Dict, ins_type: str) -> [Carrier]:
     carriers = []
     try:
-        if preference and ins_type == 'stm':
-            for carrier_name in preference:
-                carriers.append(Carrier.objects.get(name=carrier_name))
+        carriers = Carrier.objects.filter(
+            is_active=True,
+            allowed_state__icontains=form_data['State'],
+            ins_type=ins_type
+        )
+    except Carrier.DoesNotExist:
+        pass
 
-        else:
-            carriers = Carrier.objects.filter(
-                is_active=True,
-                allowed_state__contains=form_data['State'],
-                ins_type=ins_type
-            )
-    except Carrier.DoesNotExist as err:
-        return False
+    if not carriers:
+        carriers = Carrier.objects.filter(
+            ins_type=ins_type,
+            is_active=True
+        )
 
     return carriers
-
 
 # TODO: Need Documentation and Unittest
 def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, preference_dictionary=None, request=None):
@@ -294,7 +293,6 @@ def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, prefe
     """
     rate_requests = []
     carriers = get_carriers_for_preparing_task(form_data=form_data,
-                                               preference=preference_dictionary,
                                                ins_type=ins_type)
 
     # TODO: Handle non stm states.
