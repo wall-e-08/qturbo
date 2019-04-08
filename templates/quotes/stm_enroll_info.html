@@ -1039,22 +1039,31 @@
 
     </div>
 </div>
+
 <!--disclaimer start-->
-       <div class="container" style="padding:0 15px 0 30px">
-                {% if restrictions_omissions %}
-                    <hr>
-                    <div id="restrictions-n-omissions">
-                        <h3>Disclaimers / Restrictions / Omissions</h3>
-                        {% for bc in restrictions_omissions %}
-                            <div>
-                                <h4>{{ bc.get_instance.title }}</h4>
-                                <div>{{ bc.get_instance.description|safe }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        <br>
+{% if restrictions_omissions or addon_disclaimers %}
+    <div class="container" style="padding:0 15px 0 30px">
+        <hr>
+        <div id="restrictions-n-omissions">
+            <h3>Disclaimers / Restrictions / Omissions</h3>
+            {% for bc in restrictions_omissions %}
+                <div>
+                    <h4>{{ bc.get_instance.title }}</h4>
+                    <div>{{ bc.get_instance.description|safe }}</div>
+                </div>
+            {% endfor %}
+
+            {% addon_disclaimers selected_addon_plans as add_On_Disclaimer_Dict %}
+            {% for ao_name, ao_disc in add_On_Disclaimer_Dict.items %}
+                <div>
+                    <h4>{{ ao_name }} (Add-on)</h4>
+                    <div>{{ ao_disc|default:""|safe }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<br>
 <!--disclaimer end-->
 {% endblock container %}
 {% block footer-info %}{% endblock %}
