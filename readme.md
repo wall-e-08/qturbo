@@ -25,3 +25,5 @@ Celery run steps:
 ```bash
  celery -A core beat -l info
 ```
+
+*** Read guidelines for development 'dev_guide.md' carefully
