@@ -94,7 +94,7 @@
         .addon_name {
             position: relative;
             margin: 5px 0 5px 15px;
-            font-weight:600;
+            font-weight: 600;
         }
         .addon_name:before {
             content: '';
@@ -455,7 +455,7 @@
                             <div id="selected-add-on">
                                 <div class="panel panel-default ms-panel-adon">
                                     <div class="panel-heading pad-l-0">
-                                        <h3 class="panel-title bold">Add-on{{ selected_addon_plans|pluralize }}</h3>
+                                        <h3 class="panel-title bold">Enhancement{{ selected_addon_plans|pluralize }}</h3>
                                     </div>
                                     <div class="panel-body addon_plans_panel addon_plans_panel_selected">
                                         {% for addon_plan in selected_addon_plans %}
@@ -489,7 +489,7 @@
                                                 </div>
                                             </div>
                                         {% empty %}
-                                            <h4>No Add-on Plan</h4>
+                                            <h4>No Enhancements</h4>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -629,25 +629,34 @@
             the combination of the tax and a Term Health Insurance premium can be cheaper than traditional insurance
             for their circumstances.</p>
         <br/>
-        <!--disclaimer start-->
-       <div class="">
 
-                {% if restrictions_omissions %}
-                    <hr>
-                    <div id="restrictions-n-omissions">
-                        <h3>Disclaimers / Restrictions / Omissions</h3>
-                        {% for bc in restrictions_omissions %}
-                            <div>
-                                <h4>{{ bc.get_instance.title }}</h4>
-                                <div>{{ bc.get_instance.description|safe }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+        <!--disclaimer start-->
+        {% addon_disclaimers addon_plans as add_On_Disclaimer_Dict %}
+        {% if restrictions_omissions or add_On_Disclaimer_Dict %}
+            <div class="">
+                <hr>
+                <div id="restrictions-n-omissions">
+                    <h3>Disclaimers / Restrictions / Omissions</h3>
+                    {% for bc in restrictions_omissions %}
+                        <div>
+                            <h4>{{ bc.get_instance.title }}</h4>
+                            <div>{{ bc.get_instance.description|default:""|safe }}</div>
+                        </div>
+                    {% endfor %}
+
+                    <h3>Enhancement Disclaimers</h3>
+                    {% addon_disclaimers addon_plans as add_On_Disclaimer_Dict %}
+                    {% for ao_name, ao_disc in add_On_Disclaimer_Dict.items %}
+                        <div>
+                            <h4>{{ ao_name }}</h4>
+                            <div>{{ ao_disc|default:""|safe }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         <br>
+        {% endif %}
         <!--disclaimer end-->
-
     </div>
 
     {% if ctx_app_url_exists %}
@@ -687,7 +696,8 @@
             </div>
         </div>
     </div>
-</script>
+
+    </script>
     <script id="addon_plan_template_selected" type="x-tmpl-mustache">
     <div class="row" style="border: 1px solid #dddddd; border-radius: 5px; margin-top: 5px; padding: 5px; display: flex;">
         <div class="col-sm-9" style="flex: 3; border-right: 1px solid transparent;">
@@ -716,7 +726,8 @@
             </button>
         </div>
     </div>
-</script>
+
+    </script>
 
     <script>
         // For showing preferred plans
@@ -824,6 +835,7 @@
                     }
                 });
             });
+
             function executeData() {    {% comment %}set the div's display state{% endcomment %}
                 $('[data-clickResult]').each(function () {
                     var _this = $(this);
@@ -831,6 +843,7 @@
                     _this.css('display', _temp === undefined ? 'none' : _temp);
                 });
             }
+
             function saveData() {   {% comment %}saving the div's display state{% endcomment %}
                 $('[data-clickResult]').each(function () {
                     var _this = $(this);
@@ -839,7 +852,7 @@
             }
         });
 
-        function Grouping () {
+        function Grouping() {
             var addonParent = $('.addon_plans_panel_available');
             var carriers = [];
             var group_carrier = [];
@@ -894,9 +907,9 @@
                 $('[data-clickResult=' + _val + ']').slideToggle();
             });
 
-             $(".addon_plan_name_h4").each(function (i, el) {
-                 $(el).html($(el).html().replace('~~', ' - '))
-             })
+            $(".addon_plan_name_h4").each(function (i, el) {
+                $(el).html($(el).html().replace('~~', ' - '))
+            })
         }
 
         $(document).ready(function () {
