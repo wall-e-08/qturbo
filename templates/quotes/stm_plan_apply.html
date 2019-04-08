@@ -455,7 +455,7 @@
                             <div id="selected-add-on">
                                 <div class="panel panel-default ms-panel-adon">
                                     <div class="panel-heading pad-l-0">
-                                        <h3 class="panel-title bold">Add-on{{ selected_addon_plans|pluralize }}</h3>
+                                        <h3 class="panel-title bold">Enhancement{{ selected_addon_plans|pluralize }}</h3>
                                     </div>
                                     <div class="panel-body addon_plans_panel addon_plans_panel_selected">
                                         {% for addon_plan in selected_addon_plans %}
@@ -489,7 +489,7 @@
                                                 </div>
                                             </div>
                                         {% empty %}
-                                            <h4>No Add-on Plan</h4>
+                                            <h4>No Enhancements</h4>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -631,7 +631,8 @@
         <br/>
 
         <!--disclaimer start-->
-        {% if restrictions_omissions or addon_disclaimers %}
+        {% addon_disclaimers addon_plans as add_On_Disclaimer_Dict %}
+        {% if restrictions_omissions or add_On_Disclaimer_Dict %}
             <div class="">
                 <hr>
                 <div id="restrictions-n-omissions">
@@ -643,10 +644,11 @@
                         </div>
                     {% endfor %}
 
+                    <h3>Enhancement Disclaimers</h3>
                     {% addon_disclaimers addon_plans as add_On_Disclaimer_Dict %}
                     {% for ao_name, ao_disc in add_On_Disclaimer_Dict.items %}
                         <div>
-                            <h4>{{ ao_name }} (Add-on)</h4>
+                            <h4>{{ ao_name }}</h4>
                             <div>{{ ao_disc|default:""|safe }}</div>
                         </div>
                     {% endfor %}
