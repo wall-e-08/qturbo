@@ -98,7 +98,13 @@ properties = {
                 """
             }
         },
-        "disclaimer": """"""
+        "disclaimer": """
+            Freedom Spirit benefits are is underwritten by FEDERAL INSURANCE COMPANY, a Chubb company.
+            This information is a brief description of the important features of this insurance plan.
+            It is not an insurance contract. Coverage may not be available in all states or certain terms may be different where required by state law.
+            Chubb NA is the U.S.-based operating division of the Chubb Group of Companies, headed by Chubb Ltd. (NYSE:CB)
+            Insurance products and services are provided by Chubb insurance underwriting companies and not by the parent company itself.
+        """
     },
 
 
