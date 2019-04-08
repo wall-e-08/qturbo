@@ -357,6 +357,7 @@ def addon_disclaimers(addons):
                     data[aop['name']] = discl
             except KeyError as er:
                 print("err in addon_disclaimer: {}".format(er))
+    print(data)
     return data
 
 
