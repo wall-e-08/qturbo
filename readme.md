@@ -26,6 +26,8 @@ Celery run steps:
  celery -A core beat -l info
 ```
 
+*** Read guidelines for development 'dev_guide.md' carefully
+
 Todo:
  - Hashbang solution for SPA. Solution: [vue router](https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations) @debu @ahsan
  - Add `Error message` in context of all ajax request in SPA @torsho

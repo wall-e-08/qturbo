@@ -293,11 +293,11 @@ SALES_ADMIN = [
 # Server webservice urls |
 # ------------------------+
 
-# Live Server
+# Test Server
 QUOTE_ENROLL_URL = os.environ.get('QUOTE_ENROLL_URL', 'https://test1.hiiquote.com/webservice/process.php')
 QUOTE_REQUEST_URL = os.environ.get('QUOTE_REQUEST_URL', 'https://test1.hiiquote.com/webservice/quote_service.php')
 ESIGNATURE_VERIFICATION_URL = os.environ.get('ESIGNATURE_VERIFICATION_URL', 'https://test1.hiiquote.com/webservice/esign_payment.php')
-QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A157FF340027874696242C')  # CLH1251100 - $125 - live
+QUOTE_REQUEST_USER_ID = os.environ.get('QUOTE_REQUEST_USER_ID', 'A15B508200951702B80B12')  # CLH1253600 -$125 - live
 
 
 # ----------------------+
@@ -385,23 +385,18 @@ STATE_SPECIFIC_PLAN_DURATION = {
     },
     'AdvantHealth STM': {
         'AL': ['6*1','6*6'],
+        'AR': ['6*1','6*6'],
         'AZ': ['6*1','6*2', '6*6'],
-        "AR": ['6*1','6*6'],
-        "KY": ['6*1','6*6'],
+        'KY': ['6*1','6*6'],
         'MS': ['6*1','6*6'],
-        "NE": ['6*1','6*6'],
-        "NV": ['6*1','6*6'],
+        'NE': ['6*1','6*6'],
+        'NV': ['6*1','6*6'],
+        'OH': ['6*1','6*6'],
         'OK': ['6*1','6*6'],
         'TX': ['6*1','6*6'],
         'VA': ['6*1','6*6'],
-        "WI": ['6*1','6*6'],
+        'WI': ['6*1','6*6'],
     }
-}
-
-# TODO: CREATE SEPARATE DEFAULTS FOR SEPARATE STATES
-STATE_SPECIFIC_PLAN_DURATION_DEFAULT = {
-    'LifeShield STM': ['12*1'],
-    'AdvantHealth STM': ['6*6']
 }
 
 # -----------------------------------+
