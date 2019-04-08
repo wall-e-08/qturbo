@@ -158,7 +158,7 @@ const v_survey_card = {
                     this.dob_err = '';
                     this.$parent.show_error = false;
                 }
-                console.warn("invalid date");
+                // console.warn("invalid date");
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
@@ -347,7 +347,7 @@ const router = new VueRouter({
                             form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
 
                         } else {
-                            console.error("Please insert data to see plans");
+                            // console.error("Please insert data to see plans");
                             return null;
                         }
                         if (_t.spouse) {
@@ -356,7 +356,7 @@ const router = new VueRouter({
                                 form_data['Spouse_Gender'] = _t.spouse_input.gender;
                                 form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';
                             } else {
-                                console.error("Please insert spouse data correctly to see plans");
+                                // console.error("Please insert spouse data correctly to see plans");
                                 return null;
                             }
                         }
@@ -367,7 +367,7 @@ const router = new VueRouter({
                                     form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
                                     form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true' ? 'Y' : 'N';
                                 } else {
-                                    console.error("Please insert child data correctly to see plans");
+                                    // console.error("Please insert child data correctly to see plans");
                                     return null;
                                 }
                             }
@@ -381,11 +381,11 @@ const router = new VueRouter({
                             },
                             data: form_data,
                             success: function (data) {
-                                console.log("Initial success");
-                                console.table(data);
+                                // console.log("Initial success");
+                                // console.table(data);
                                 if (data.status === "false"){
-                                    console.log("Error in form data");
-                                    console.table(data.errors);
+                                    // console.log("Error in form data");
+                                    // console.table(data.errors);
                                     setTimeout(function () {
                                          _t.err_msg = "Internal Server error!";
                                         id_loading_overlay.style.display = "none";
@@ -398,8 +398,8 @@ const router = new VueRouter({
                                 }
                             },
                             error: function(data) {
-                                console.log("Error");
-                                console.table(data);
+                                // console.log("Error");
+                                // console.table(data);
                                 setTimeout(function () {
                                     if(data.message) _t.err_msg = data.message;
                                     else  _t.err_msg = "Unexpected Error occurred!";
@@ -495,15 +495,15 @@ const router = new VueRouter({
                                 Ins_Type: plan_type
                             },
                             success: function (data) {
-                                console.log(`Set insurance type to ${plan_type}.`);
+                                // console.log(`Set insurance type to ${plan_type}.`);
                                 setTimeout(function () {
                                     id_loading_overlay.style.display = "none";
                                     router.push({name: v_all_routes_name.income});
                                 }, 1000);
                             },
                             error: function(data) {
-                                console.log("Error");
-                                console.table(data);
+                                // console.log("Error");
+                                // console.table(data);
                                 setTimeout(function () {
                                     if(data.message) _t.err_msg = data.message;
                                     else  _t.err_msg = "Unexpected Error occurred!";
@@ -561,7 +561,7 @@ const router = new VueRouter({
                             },
                             success: function (data) {
                                 if (data.url){
-                                    console.log("Redirecting to "+ data.url);
+                                    // console.log("Redirecting to "+ data.url);
                                     location.href = data.url;
                                 } else {
                                     setTimeout(function () {
@@ -572,8 +572,8 @@ const router = new VueRouter({
                                 }
                             },
                             error: function(data) {
-                                console.log("Error");
-                                console.table(data);
+                                // console.log("Error");
+                                // console.table(data);
                                 setTimeout(function () {
                                     if(data.message) _t.err_msg = data.message;
                                     else  _t.err_msg = "Unexpected Error occurred!";
