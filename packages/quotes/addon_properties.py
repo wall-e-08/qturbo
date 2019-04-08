@@ -61,7 +61,8 @@ properties = {
                     Major Services - Benefit Waiting Period: -
                 """
             }
-        }
+        },
+        "disclaimer": """"""
     },
 
 
@@ -96,7 +97,8 @@ properties = {
                     Accidental Loss of Thumb and Index Finger of the same Hand: 25% of full amt.
                 """
             }
-        }
+        },
+        "disclaimer": """"""
     },
 
 
@@ -106,7 +108,8 @@ properties = {
         "name": "Foundation Vision",
         "plan": {
             'Foundation Vision~~Foundation Vision': {'description': ''}
-        }
+        },
+        "disclaimer": """"""
     },
 
 
@@ -118,7 +121,8 @@ properties = {
         "plan": {
             'Cigna Dental Network Access~~Cigna Dental @@ Annual': {'description': ''},
             'Cigna Dental Network Access~~Cigna Dental @@ Monthly': {'description': ''},
-        }
+        },
+        "disclaimer": """"""
     },
 
 
@@ -130,7 +134,18 @@ properties = {
         'plan': {
             'Freedom Spirit Plus~~100,000': {'description': ''},
             'Freedom Spirit Plus~~50,000': {'description': ''}
-        }
+        },
+        "disclaimer": """The monthly MSGA Membership Fee listed above includes the monthly
+        Freedom Spirit Plus AD&D premium: $75,000: $2.25, $125,000: $3.75, $175,000: $5.25 as well as
+        Marketing and Administrative dues charged by MyBenefitsKeeper. The Freedom Spirit Plus premium for the
+        insurance benefit amount you select will be displayed on the summary page prior to enrollment.  This coverage
+        is issued to the Primary Applicant only. Any dependents will not be covered under this insurance. Freedom
+        Spirit Plus benefits are is underwritten by FEDERAL INSURANCE COMPANY, a Chubb company.
+        This information is a brief description of the important features of this insurance plan.
+        It is not an insurance contract. Coverage may not be available in all states or certain terms
+        may be different where required by state law. Chubb NA is the U.S.-based operating division of the
+        Chubb Group of Companies, headed by Chubb Ltd. (NYSE:CB) Insurance products and services are provided by
+        Chubb insurance underwriting companies and not by the parent company itself."""
     },
 
     # Freedom Spirit
@@ -150,7 +165,8 @@ properties = {
             'Freedom Platinum~~$75,000': {
                 'description': ""
             }
-        }
+        },
+        "disclaimer": """"""
     },
 
     # Extra Care Package - 
@@ -159,7 +175,19 @@ properties = {
         "name": "Extra Care Package",
         "plan": {
             'Extra Care Package~~ExtraCare': {'description': ''}
-        }
+        },
+        "disclaimer": """THE EXTRA CARE PACKAGE IS NOT INSURANCE and is not intended to replace health insurance.
+        This plan does not meet the minimum creditable coverage requirements under M.G.L. c.111M and 956 CMR 5.00.
+        This plan is not a Qualified Health Plan under the Affordable Care Act. This is not a Medicare prescription
+        drug plan. The range of discounts will vary depending on the type of provider and service. The plan does not
+        pay providers directly. Plan members must pay for all services but will receive a discount from participating
+        providers. The list of participating providers is at hiiquotecustomers.com. A written list of participating
+        providers is available upon request. You may cancel within the first 30 days after receipt of
+        membership materials and receive a full refund, less a nominal processing fee (nominal fee for MD
+        residents is $5, AR and TN residents will be refunded processing fee). Discount Medical Plan Organization
+        and administrator: Careington International Corporation, 7400 Gaylord Parkway,
+        Frisco, TX 75034; phone 800-441-0380.  If you purchase the Extra Care Package, your effective date will be
+        the first of the next month.The monthly administration fee of $3 is included in the monthly cost listed."""
     },
 
     # Safeguard Critical Illness
@@ -170,14 +198,34 @@ properties = {
             'Safeguard Critical Illness~~$10,000': {'description': ''},
             'Safeguard Critical Illness~~$5,000': {'description': ''},
             'Safeguard Critical Illness~~$7,500': {'description': ''}
-        }
+        },
+        'disclaimer': """The monthly MSGA Membership Fee listed above includes the monthly Safeguard Critical Illness
+        premium: $5,000: $0.88, $7,500: $1.32, $10,000: $1.76 as well as Marketing and Administrative dues charged by
+        MyBenefitsKeeper. The Safeguard Critical Illness premium for the benefit amount you select will be displayed
+        on the summary page prior to enrollment. Safeguard Critical Illness is underwritten by
+        FEDERAL INSURANCE COMPANY, a Chubb company. This information is a brief description of the important
+        features of this insurance plan. It is not an insurance contract. Coverage may not be available in all
+        states or certain terms may be different where required by state law. Chubb NA is the U.S.-based operating
+        division of the Chubb Group of Companies, headed by Chubb Ltd. (NYSE:CB) Insurance products and services are
+        provided by Chubb insurance underwriting companies and not by the parent company itself."""
     },
 
     '34': {
         "name": "Dental Savings",
         "plan": {
             'Dental Savings~~Dental': {'description': ''}
-        }
+        },
+        "disclaimer": """THE DENTAL SAVINGS IS NOT INSURANCE and is not intended to replace health insurance.
+        This plan does not meet the minimum creditable coverage requirements under M.G.L. c.111M and 956 CMR 5.00.
+        This plan is not a Qualified Health Plan under the Affordable Care Act. This is not a Medicare prescription
+        drug plan. The range of discounts will vary depending on the type of provider and service. The plan does
+        not pay providers directly. Plan members must pay for all services but will receive a discount from
+        participating providers. The list of participating providers is at hiiquotecustomers.com. A written list of
+        participating providers is available upon request. You may cancel within the first 30 days after receipt of
+        membership materials and receive a full refund, less a nominal processing fee (nominal fee for MD residents
+        is $5, AR and TN residents will be refunded processing fee). Discount Medical Plan Organization and
+        administrator: Careington International Corporation, 7400 Gaylord Parkway, Frisco, TX 75034;
+        phone 800-441-0380."""
     },
 
     # Savings Plus
@@ -185,7 +233,8 @@ properties = {
         "name": "Dental Savings Plus",
         "plan": {
             'Dental Savings Plus~~Dental': {'description': ''}
-        }
+        },
+        "disclaimer": """"""
     },
 
 
@@ -202,7 +251,8 @@ properties = {
             'Sentry Accident Plan~~$3,000': {'description': ''},
             'Sentry Accident Plan~~$5,000': {'description': ''},
             'Sentry Accident Plan~~$500': {'description': ''}
-        }
+        },
+        "disclaimer": """"""
     },
 
     '40': {
@@ -210,7 +260,12 @@ properties = {
         'plan': {
             'Ally Rx~~Ally Rx': {'description': ""},
             'Ally Rx~~Option 2': {'description': ""}
-        }
+        },
+        "disclaimer": """This website provides a brief description of the plan for members of the Alliance for
+        Consumers USA, Inc. (ACUSA) and the important features of the Outpatient Prescription Drug Plan.
+        It is not a contract. The terms and conditions of coverage are set forth in the policy. The policy is subject
+        to the laws of the state in which it was issued. Coverage may not be available in all states or certain
+        terms or conditions may be different if required by state law."""
     },
 
     # USA+ DENTAL
@@ -222,7 +277,8 @@ properties = {
             'USA+ Dental~~Dental Access': {'description': ""},
             'USA+ Dental~~Dental Care': {'description': ""},
             'USA+ Dental~~Dental Vision Plus': {'description': ""}
-        }
+        },
+        "disclaimer": """"""
     },
 
 }
