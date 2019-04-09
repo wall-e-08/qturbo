@@ -20,6 +20,7 @@ repository branch structure to follow:
 
 
 For fresh developer:
+
     1. clone this repo on your local machine
     2. switch to staging branch: git checkout staging
     3. Create a feature branch on your local:
@@ -33,6 +34,7 @@ For fresh developer:
         > publish the commits to remote: git push origin staging
 
 How to sync up with other git branches as well as your feature branch:
+
 	Lets assume your remote 'origin' is setup already.
 
 	1. make changes on a feature branch say 'dev_kuddus', commit those changes on local
