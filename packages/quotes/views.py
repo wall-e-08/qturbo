@@ -35,7 +35,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
                     get_available_benefit_against_coins, get_neighbour_plans_and_attrs, is_ins_type_valid,
-                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context)
+                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context,
+                    create_initial_data)
 from .logger import VimmLogger
 from .tasks import prepare_tasks, post_process_task
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -190,32 +191,16 @@ def start_celery(request: WSGIRequest) -> True:
     if not redis_conn.exists(redis_key):
         print("Redis connection does not exist for redis key")
         print(f"Insurance type is {ins_type}")
+        initial_quote_dictionary = None
         if ins_type == 'stm':
-            # We are here setting up a dictionary in the session for future usage
-
-            print(f'Setting quote request preference data')
-            quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
-            request.session['quote_request_preference_data'] = quote_request_preference_data
-
-
-            # StmPlanTask.delay(request.session.session_key, form_data,
-            #                   quote_request_preference_data)
-
-            # prepare_tasks(
-            #     form_data=copy.deepcopy(form_data),
-            #     ins_type=ins_type,
-            #     session_identifier_quote_store_key = redis_key,
-            #     request=request
-            # )
-
-
-        # elif ins_type == 'lim':
-            # LimPlanTask.delay(request.session.session_key, form_data)
+            user_state = form_data.get('State')
+            preference_dictionary, initial_quote_dictionary = create_initial_data(user_state, qm, ins_type)
+            request.session['quote_request_preference_data'] = preference_dictionary
 
         prepare_tasks(form_data=copy.deepcopy(form_data),
             ins_type=ins_type,
             session_identifier_quote_store_key = redis_key,
-            preference_dictionary=settings.INITIAL_QUOTE_DATA,
+            preference_dictionary=initial_quote_dictionary,
             request=request)
 
     return True
@@ -557,22 +542,20 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
 
+    carrier = None
     try:
-        alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as err:
+        print("Very weird error: {}".format(err))
+
+    try:
+        alternate_coverage_duration = carrier.duration_coverages_in_states[applicant_state_name]
 
         alternate_benefit_amount = list(neighbour_attrs['benefit_amount'])
         alternate_benefit_amount.sort(key=int)
 
         alternate_coinsurace_percentage = list(neighbour_attrs['coinsurance_percentage'])
         alternate_coinsurace_percentage.sort(key=int)
-
-        # Edge case 50 percent coinsurance for plan type 2
-        # if plan_name == 'LifeShield STM':
-        #     if plan['Plan'] == '1':
-        #         if '50' in alternate_coinsurace_percentage:
-        #             alternate_coinsurace_percentage.remove('50')
-        #         if '5000' in alternate_benefit_amount:
-        #             alternate_benefit_amount.remove('5000')
 
         alternate_coverage_max = list(neighbour_attrs['coverage_maximum'])
         alternate_coverage_max.sort(key=int)
@@ -581,19 +564,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_plan = list(alternate_plan_set)
 
 
-    except KeyError as k:
-        print(f'{k} - No duration coverage for {plan_name}')
+    except (KeyError, UnboundLocalError) as k:
+        print(f'{k} - No alternate attributes for {plan_name}')
         alternate_coverage_duration = None
         alternate_benefit_amount = None
         alternate_coinsurace_percentage = None
         alternate_coverage_max = None
         alternate_plan = None
 
-    carrier = None
-    try:
-        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
-    except qm.Carrier.DoesNotExist as er:
-        print("Very weird error: {}".format(er))
 
     # print("==============" + plan['Plan_Name'])
     return render(request,
