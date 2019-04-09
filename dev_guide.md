@@ -9,7 +9,7 @@ repository branch structure to follow:
      ___________________|______________________________.....
      |               |                |              |
      |               |                |              |
-   dev_kuddus      feature1         dev_boyati      .....
+    dev_kuddus      feature1         dev_boyati      .....
 
 
     * 'master' branch is for production/finalized version
@@ -19,33 +19,41 @@ repository branch structure to follow:
     * 'dev_boyati' branch holder has to update code from 'staging'
 
 
-For fresh developer
-    1. switch to staging branch: git checkout staging
-    2. Create a feature branch on your local:
+For fresh developer:
+
+    1. clone this repo on your local machine
+    2. switch to staging branch: git checkout staging
+    3. Create a feature branch on your local:
         > git checkout dev_[your name/feature name] (i.e: dev_kuddus)
-    3. make necessary changes and commit
-    3. if you want to publish those changes on remote as well as your branch
+    4. make necessary changes and commit
+    5. if you want to publish those changes on remote as well as your branch
         > git push origin dev_kuddus
-    4. if you want to publish those changes on remote but not your branch:
+    6. if you want to publish those changes on remote but not your branch:
         > switch to 'staging': git checkout staging
         > merge code from your 'dev_kuddus' local branch to 'staging' branch: git merge dev_kuddus
         > publish the commits to remote: git push origin staging
 
 How to sync up with other git branches as well as your feature branch:
+
 	Lets assume your remote 'origin' is setup already.
 
-	1. make changes on a feature branch say 'dev_kuddus', commit that changes on local
-	2. push that changes to remote branch 'dev_kuddus'
-	3. share your commits via 'staging' branch
+	1. make changes on a feature branch say 'dev_kuddus', commit those changes on local
+	2. check if there is any updated code and pull the updated code (if any): git pull
+	3. merge updated code (if any) with local code and push those changes to remote branch 'dev_kuddus': git push
+	4. share your commits via 'staging' branch
 		> switch to 'staging' local branch: git checkout staging
-		> merge the commits of your branch: git merge dev_kuddus
-		> push the changes to origin branch 'staging'
+		> pull the updated code: git pull
+		> merge the codes of your branch to 'staging': git merge dev_kuddus
+		> push the changes to origin branch 'staging' resolving merge conflict (if any): git push
 		> resume on your local branch: git checkout 'dev_kuddus'
+		> merge the updated code (if any) from 'staging' : git merge staging
+		> publish your updated code (if any): git push
 
-	4. whoever then, working on his branch say 'dev_boyati', merge the updated code from staging branch
+	5. whoever then, working on his branch say 'dev_boyati', merge the updated code from staging branch
 		> switch to 'staging' local branch: git checkout staging
 		> pull the new code: git pull
 		> switch to your local branch 'dev_boyati': git checkout dev_boyati
 		> update your local branch from 'staging': git merge staging
 		> update your remote branch 'dev_boyati': git push
 
+    * 2nd point needs to perform always for any branch you visit.

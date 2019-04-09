@@ -1,0 +1,23 @@
+<div id="restrictions-n-omissions">
+    {% if restrictions_omissions %}
+        <hr>
+        <h3>Disclaimers / Restrictions / Omissions</h3>
+        {% for bc in restrictions_omissions %}
+            <div>
+                <h4>{{ bc.get_instance.title }}</h4>
+                <div>{{ bc.get_instance.description|default:""|safe }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if add_On_Disclaimer_Dict %}
+        <h3>Enhancement Disclaimers</h3>
+        {% for ao_name, ao_disc in add_On_Disclaimer_Dict.items %}
+            <div>
+                <h4>{{ ao_name }}</h4>
+                <div>{{ ao_disc|default:""|safe }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<br>

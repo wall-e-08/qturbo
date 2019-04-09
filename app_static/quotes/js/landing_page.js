@@ -158,7 +158,7 @@ const v_survey_card = {
                     this.dob_err = '';
                     this.$parent.show_error = false;
                 }
-                console.warn("invalid date");
+                // console.warn("invalid date");
                 return false;
             }
             var age = Math.floor((new Date() - dob) / (365 * 24 * 60 * 60 * 1000));
@@ -229,11 +229,21 @@ const router = new VueRouter({
                     }
                 },
                 check_zipcode: function () {
-                    if (this.is_valid_zip) {
-                        this.$cookies.set(v_cookies_keys.zip_code, this.zip_code, 60 * 60 * 24);
-                        router.push({name: v_all_routes_name.quote});
+                    let _t = this;
+                    let id_loading_overlay = document.getElementById('overlay-loading');
+                    id_loading_overlay.style.display = "block";
+
+                    if (_t.is_valid_zip) {
+                        setTimeout(function () {
+                            id_loading_overlay.style.display = "none";
+                            _t.$cookies.set(v_cookies_keys.zip_code, _t.zip_code, 60 * 60 * 24);
+                            router.push({name: v_all_routes_name.quote});
+                        }, 1000);
                     } else {
-                        this.$cookies.remove(v_cookies_keys.zip_code);
+                        setTimeout(function () {
+                            _t.$cookies.remove(v_cookies_keys.zip_code);
+                            id_loading_overlay.style.display = "none";
+                        }, 1000);
                     }
                 }
             },
@@ -267,8 +277,7 @@ const router = new VueRouter({
                 data: function () {
                     return {
                         holder_types_enum: holder_types_enum,
-                        show_error: false,
-                        // dob_err: '',
+                        show_error: false,  // form validation error
                         own_input: {
                             dob: '',
                             gender: '',
@@ -283,6 +292,7 @@ const router = new VueRouter({
                         dependents: [],
                         dependents_data_correct: false,
                         max_dependents: 9,
+                        err_msg: '',    // ajax error
                     }
                 },
                 methods: {
@@ -311,11 +321,9 @@ const router = new VueRouter({
                             _t.$cookies.remove(v_cookies_keys.dependents);
                     },
                     start_celery_quote: function(redirect_url, csrf_token) {
-                        // console.log("Starting celery. url: " + redirect_url);
                         let _t = this;
-
                         let form_data = {
-                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this
+                            Zip_Code: this.$cookies.get(v_cookies_keys.zip_code),   // TODO: recheck cookie value before this @torsho
                             Include_Spouse: this.spouse ? 'Yes': 'No',
                             Payment_Option: '1',
                             Ins_Type: 'lim',
@@ -323,8 +331,11 @@ const router = new VueRouter({
                             'child-INITIAL_FORMS': 0,
                             'child-MIN_NUM_FORMS': 0,
                             'child-MAX_NUM_FORMS': this.max_dependents,
-
                         };
+                        let id_loading_overlay = document.getElementById('overlay-loading');
+
+                        id_loading_overlay.style.display = "block";
+                        _t.err_msg = '';
                         if(Object.keys(_t.own_input).every((k) => _t.own_input[k])){    // checking if all data present for applicant
                             form_data['Applicant_DOB'] = _t.own_input.dob;
                             form_data['Applicant_Gender'] = _t.own_input.gender;
@@ -336,7 +347,7 @@ const router = new VueRouter({
                             form_data['Effective_Date'] = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
 
                         } else {
-                            console.error("Please insert data to see plans");
+                            // console.error("Please insert data to see plans");
                             return null;
                         }
                         if (_t.spouse) {
@@ -345,26 +356,22 @@ const router = new VueRouter({
                                 form_data['Spouse_Gender'] = _t.spouse_input.gender;
                                 form_data['Spouse_Tobacco'] = _t.spouse_input.tobacco == 'true' ? 'Y' : 'N';
                             } else {
-                                console.error("Please insert spouse data correctly to see plans");
+                                // console.error("Please insert spouse data correctly to see plans");
                                 return null;
                             }
                         }
                         if(_t.dependents.length > 0) {
                             for(var i=0; i<_t.dependents.length; i++){
                                 if (Object.keys(_t.dependents[i]).every((k) => _t.dependents[i][k])) {
-
                                     form_data['child-' + i + '-Child_DOB'] = _t.dependents[i].dob;
                                     form_data['child-' + i + '-Child_Gender'] = _t.dependents[i].gender;
                                     form_data['child-' + i + '-Child_Tobacco'] = _t.dependents[i].tobacco == 'true' ? 'Y' : 'N';
-
                                 } else {
-                                    console.error("Please insert child data correctly to see plans");
+                                    // console.error("Please insert child data correctly to see plans");
                                     return null;
                                 }
                             }
                         }
-                        // console.table(form_data);
-                        // console.log("Redirect URL is: "+ redirect_url);
                         $.ajax({
                             url: redirect_url,
                             method: 'post',
@@ -378,15 +385,26 @@ const router = new VueRouter({
                                 // console.table(data);
                                 if (data.status === "false"){
                                     // console.log("Error in form data");
-                                    console.error(data.errors);
-                                    router.push({name: v_all_routes_name.quote});
+                                    // console.table(data.errors);
+                                    setTimeout(function () {
+                                         _t.err_msg = "Internal Server error!";
+                                        id_loading_overlay.style.display = "none";
+                                    }, 1000);
+                                } else {
+                                    setTimeout(function () {
+                                        router.push({name: v_all_routes_name.plan_type});
+                                        id_loading_overlay.style.display = "none";
+                                    }, 1000);
                                 }
                             },
-                            error: function(er) {
+                            error: function(data) {
                                 // console.log("Error");
                                 // console.table(data);
-                                console.error(er);
-                                router.push({name: v_all_routes_name.quote});
+                                setTimeout(function () {
+                                    if(data.message) _t.err_msg = data.message;
+                                    else  _t.err_msg = "Unexpected Error occurred!";
+                                    id_loading_overlay.style.display = "none";
+                                }, 1000);
                             }
                         })
                     },
@@ -450,21 +468,21 @@ const router = new VueRouter({
             path: 'plan',
             name: v_all_routes_name.plan_type,
             component: {
+                delimiters: ['[[', ']]'],
                 template: v_templates.plan_type,
                 data: function () {
                     return {
                         plan_type: '',
+                        err_msg: '',
                     }
                 },
                 methods: {
                     choose_plan_type: function(redirect_url, csrf_token, plan_type) {
                         let _t = this;
-                        _t.plan_type = plan_type;
-
                         let id_loading_overlay = document.getElementById('overlay-loading');
+                        _t.plan_type = plan_type;
+                        _t.err_msg = '';
                         id_loading_overlay.style.display = "block";
-
-                        // this.$cookies.set(v_cookies_keys.plan_type, this.plan_type, 60 * 60 * 24);
 
                         $.ajax({
                             url: redirect_url,
@@ -477,21 +495,22 @@ const router = new VueRouter({
                                 Ins_Type: plan_type
                             },
                             success: function (data) {
-                                console.log(`Set insurance type to ${plan_type}.`);
+                                // console.log(`Set insurance type to ${plan_type}.`);
                                 setTimeout(function () {
                                     id_loading_overlay.style.display = "none";
                                     router.push({name: v_all_routes_name.income});
-
                                 }, 1000);
                             },
                             error: function(data) {
-                                console.log("Error");
-                                console.table(data);
-                                router.push({name: v_all_routes_name.quote});
-
+                                // console.log("Error");
+                                // console.table(data);
+                                setTimeout(function () {
+                                    if(data.message) _t.err_msg = data.message;
+                                    else  _t.err_msg = "Unexpected Error occurred!";
+                                    id_loading_overlay.style.display = "none";
+                                }, 1000);
                             }
                         });
-
                     },
                 }
             }
@@ -499,11 +518,13 @@ const router = new VueRouter({
             path: 'income',
             name: v_all_routes_name.income,
             component: {
+                delimiters: ['[[', ']]'],
                 template: v_templates.annual_income,
                 data: function () {
                     return {
                         income: '',
-                        max_dependents: 9
+                        max_dependents: 9,
+                        err_msg: '',
                     }
                 },
                 methods: {
@@ -523,9 +544,9 @@ const router = new VueRouter({
                     },
                     redirect_to_plans: function (redirect_url, csrf_token, income) {
                         let _t = this;
-                        _t.income = income;
-
                         let id_loading_overlay = document.getElementById('overlay-loading');
+                        _t.income = income;
+                        _t.err_msg = '';
                         id_loading_overlay.style.display = "block";
 
                         $.ajax({
@@ -540,17 +561,24 @@ const router = new VueRouter({
                             },
                             success: function (data) {
                                 if (data.url){
-                                    console.log("Redirecting to "+ data.url);
+                                    // console.log("Redirecting to "+ data.url);
                                     location.href = data.url;
                                 } else {
-                                    router.push({name: v_all_routes_name.quote});
+                                    setTimeout(function () {
+                                        if(data.message) _t.err_msg = data.message;
+                                        else  _t.err_msg = "Unexpected Error occurred!";
+                                        id_loading_overlay.style.display = "none";
+                                    }, 1000);
                                 }
-                                id_loading_overlay.style.display = "none";
                             },
                             error: function(data) {
-                                console.log("Error");
-                                console.table(data);
-                                id_loading_overlay.style.display = "none";
+                                // console.log("Error");
+                                // console.table(data);
+                                setTimeout(function () {
+                                    if(data.message) _t.err_msg = data.message;
+                                    else  _t.err_msg = "Unexpected Error occurred!";
+                                    id_loading_overlay.style.display = "none";
+                                }, 1000);
                             }
                         });
                     },
