@@ -8,13 +8,17 @@ import string
 import random
 import hashlib
 import datetime
-from typing import Union, Dict
+from typing import Union, Dict, List
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
+import quotes
 from .logger import VimmLogger
 # from quotes.tasks import send_mail_task
+
+from typing import TypeVar
+Carrier = TypeVar('Carrier')
 
 
 logger = VimmLogger('quote_turbo')
@@ -507,20 +511,75 @@ def get_prop_context():
 
     return prop_context
 
+# def create_state_spec_quote_data(user_state: str, qm) -> Dict[str, Dict]:
+    """Unittest has been written"""
 
-def create_selection_data(completion_data: dict, stm_name: str, duration_coverage: str) -> Union [dict, None]:
+    # plan_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION)
+    # for i in plan_duration:
+    #     try:
+    #         carrier_specific_plan_duration = plan_duration[i]
+    #         state_specific_plan_duration_first = carrier_specific_plan_duration[user_state][0]
+    #         data[i] = {}
+    #         data[i]['Duration_Coverage'] = [state_specific_plan_duration_first]
+    #     except KeyError:
+    #         print(f'{i} is not available in {user_state}')
+
+    # return data
+
+
+def get_available_carriers(user_state: str, qm, ins_type: str) -> List[Carrier]:
+    carriers = []
+
+    kwargs = {
+        'ins_type': ins_type,
+        'is_active': True,
+        f'duration_coverages_in_states__{user_state}__isnull': False
+    }
+
+    try:
+        carriers = qm.Carrier.objects.filter(**kwargs)
+
+    except Exception as e:
+        print(e)
+        pass
+
+    return carriers
+
+
+
+def create_initial_data(user_state: str, qm, ins_type: str):
+    carriers = get_available_carriers(user_state, qm, ins_type)
+
+    preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
+    quote_data = copy.deepcopy(settings.INITIAL_QUOTE_DATA)
+
+    for carrier in carriers:
+        duration_dict = carrier.duration_coverages_in_states
+        duration_coverage_in_state = duration_dict.get(user_state)
+        first_arbitary_duration_coverage = duration_coverage_in_state[0]
+
+        preference_data[carrier.name]['Duration_Coverage'] = [first_arbitary_duration_coverage]
+        quote_data[carrier.name]['Duration_Coverage'] = [first_arbitary_duration_coverage]
+
+    return preference_data, quote_data
+
+
+def create_selection_data(completion_data: dict, current_stm_name: str, duration_coverage: str) -> Union [dict, None]:
     """ Create intermidiate quote request selection data from
     completed data and preferred coverage duration.
 
     :return: dict
     """
     quote_request_data = {}
+    for carrier_name in completion_data:
+        quote_request_data[carrier_name] = {}
+        quote_request_data[carrier_name]['Duration_Coverage'] = ['']
 
 
-    if duration_coverage not in completion_data[stm_name]['Duration_Coverage']:
-        if stm_name not in quote_request_data:
-            quote_request_data[stm_name] = {}
-        quote_request_data[stm_name]['Duration_Coverage'] = [duration_coverage]
+    if duration_coverage not in completion_data[current_stm_name]['Duration_Coverage']:
+        if current_stm_name not in quote_request_data:
+            quote_request_data[current_stm_name] = {}
+        quote_request_data[current_stm_name]['Duration_Coverage'] = [duration_coverage]
         return quote_request_data
     else:
         return None

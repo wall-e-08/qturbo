@@ -21,6 +21,7 @@ from celery.task import PeriodicTask, Task
 from celery.utils.log import get_task_logger
 
 # from quotes.mail import send_mail
+import quotes
 from quotes.models import Carrier
 from quotes.quote_thread import new_addon_plan_to_add, addon_plans_from_json_data, \
     addon_plans_from_dict
@@ -37,6 +38,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
+from quotes.utils import get_available_carriers
 
 QR_DATE_PATTERN = re.compile(r'^(\d{2})-(\d{2})-(\d{4})$')
 
@@ -268,32 +270,33 @@ def get_api_rate_obj(payload, form_data, ins_type, cls_name, plan_id, carrier_na
     return rate_cls(**payload)
 
 
-def get_carriers_for_preparing_task(form_data: Dict, ins_type: str) -> [Carrier]:
-    carriers = []
-    try:
-        carriers = Carrier.objects.filter(
-            is_active=True,
-            allowed_state__icontains=form_data['State'],
-            ins_type=ins_type
-        )
-    except Carrier.DoesNotExist:
-        pass
-
-    if not carriers:
-        carriers = Carrier.objects.filter(
-            ins_type=ins_type,
-            is_active=True
-        )
-
-    return carriers
+# def get_carriers_for_preparing_task(form_data: Dict, ins_type: str) -> [Carrier]:
+#     carriers = []
+#     try:
+#         carriers = Carrier.objects.filter(
+#             is_active=True,
+#             allowed_state__icontains=form_data['State'],
+#             ins_type=ins_type
+#         )
+#     except Carrier.DoesNotExist:
+#         pass
+#
+#     if not carriers:
+#         carriers = Carrier.objects.filter(
+#             ins_type=ins_type,
+#             is_active=True
+#         )
+#
+#     return carriers
 
 # TODO: Need Documentation and Unittest
 def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, preference_dictionary=None, request=None):
     """
     """
     rate_requests = []
-    carriers = get_carriers_for_preparing_task(form_data=form_data,
-                                               ins_type=ins_type)
+
+    user_state = form_data.get('State')
+    carriers = get_available_carriers(user_state, quotes.models, ins_type)
 
     # TODO: Handle non stm states.
 

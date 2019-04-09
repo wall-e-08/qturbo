@@ -11,12 +11,13 @@ from django.conf import settings
 from django.forms import BaseFormSet
 from django.forms import formset_factory
 from django.utils.translation import ugettext_lazy as _
+from django_json_widget.widgets import JSONEditorWidget
 
 from pycard import Card, ExpDate
 from pyzipcode import ZipCodeDatabase
 from ipware.ip import get_real_ip, get_ip
 
-from .models import Leads
+from .models import Leads, Carrier
 from .us_states import states
 from .quote_response import AddonPlan
 from .ssn import is_valid as is_valid_ssn, format as ssn_format
@@ -2031,3 +2032,13 @@ class AddonPlanForm(forms.Form):
             )
             return False
         return True
+
+
+class CarrierAdminForm(forms.ModelForm):
+    class Meta:
+        model = Carrier
+        widgets = {
+            'duration_coverages_in_states': JSONEditorWidget(mode='code'),
+        }
+        fields = ('duration_coverages_in_states', )
+
