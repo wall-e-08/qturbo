@@ -27,7 +27,7 @@ class LimQuoteResponse(object):
         self.request_data_combination = request_data_combination
 
         self.escaped_xml_text = xml_text.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&#39;')
-        print("LIM QUOTE RESPONSE - {2} - {0} : {1}".format(self.request_data_combination, self.escaped_xml_text, self.stm_name))
+        # MEMORY_EXHAUSTIVE print("LIM QUOTE RESPONSE - {2} - {0} : {1}".format(self.request_data_combination, self.escaped_xml_text, self.stm_name))
         self.root = ET.fromstring(self.escaped_xml_text)
 
         self.Quote_ID = None
@@ -373,8 +373,8 @@ class FreedomSpiritPlusResponse(object):
         self.escaped_xml_text = xml_text.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&#39;').replace(
             '50,000', self.xml_tag_map['50,000']).replace('100,000', self.xml_tag_map['100,000'])
 
-        print("Parsed and Formatted Quote Plan XML response: {0}".format(
-                    self.escaped_xml_text))
+        # MEMORY_EXHAUSTIVE print("Parsed and Formatted Quote Plan XML response: {0}".format(
+        # MEMORY_EXHAUSTIVE            self.escaped_xml_text))
         self.root = ET.fromstring(self.escaped_xml_text)
 
         self.Quote_ID = None
@@ -456,7 +456,7 @@ class FreedomSpiritPlusResponse(object):
         for p in plans:
 
             p.update(copy.deepcopy(attrs))
-            print('AncillaryQuoteResponse for Freedom Spirit Plus:\n individual_plans: {0}'.format(p))
+            # MEMORY_EXHAUSTIVE print('AncillaryQuoteResponse for Freedom Spirit Plus:\n individual_plans: {0}'.format(p))
             if p.get('Plan_Name', '') == 'Plan_9':
                 continue
             if self.product_type == 'add_on':
@@ -662,7 +662,7 @@ class StmQuoteResponse(object):
         self.State = state
         self.xml_text = xml_text
         self.escaped_xml_text = xml_text.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&#39;')
-        print("STM QUOTE RESPONSE FOR {1}: {0}".format(self.escaped_xml_text, self.stm_name))
+        # MEMORY_EXHAUSTIVE print("STM QUOTE RESPONSE FOR {1}: {0}".format(self.escaped_xml_text, self.stm_name))
         self.root = ET.fromstring(self.escaped_xml_text)
 
         self.Quote_ID = None

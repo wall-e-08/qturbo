@@ -834,8 +834,8 @@ class LifeShieldXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
 
     def process_response(self):
         response = self.get_response()
-        print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
-        print('{} Response: {}'.format(self.__class__.__name__, response))
+        # MEMORY_EXHAUSTIVE print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
+        # MEMORY_EXHAUSTIVE print('{} Response: {}'.format(self.__class__.__name__, response))
         if response is None:
             self.formatted_response = None
             return
@@ -880,7 +880,7 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
         if request:
             data['request'] = request
 
-        print('{0}:request_options: {1}'.format(cls.Name, request_options))
+        # MEMORY_EXHAUSTIVE print('{0}:request_options: {1}'.format(cls.Name, request_options))
         lst = []
         data_tuple_lst = []
         if int(data['Payment_Option']) == 2:
@@ -994,8 +994,8 @@ class AdvantHealthXML(QRXmlBase, DependentsMixIn, CoinsurancePercentageMixIn,
 
     def process_response(self):
         response = self.get_response()
-        print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
-        print('{} Response: {}'.format(self.__class__.__name__, response))
+        # MEMORY_EXHAUSTIVE print('{} Request: {}'.format(self.__class__.__name__, self.toXML()))
+        # MEMORY_EXHAUSTIVE print('{} Response: {}'.format(self.__class__.__name__, response))
         if response is None:
             self.formatted_response = None
             return

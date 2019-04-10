@@ -145,7 +145,7 @@ def save_lead_info(stm_lead_model, lead_form_cleaned_data):
             Gender=lead_form_cleaned_data['Applicant_Gender'],
             quote_store_key=lead_form_cleaned_data['quote_store_key'][:-4]
         )
-        print(f'Saving lead form info')
+        logger.info(f'Saving lead form info')
         stm_lead_obj.save()
         return stm_lead_obj
     except KeyError:
@@ -159,7 +159,7 @@ def update_lead_vimm_enroll_id(stm_lead_model, quote_store_key, vimm_enroll_id):
         stm_lead_obj.save()
         return stm_lead_obj
     except Exception as e:
-        print(f'Cannot update lead info Vimm enrollment ID. The following exception happened:\n'
+        logger.info(f'Cannot update lead info Vimm enrollment ID. The following exception happened:\n'
         f'{e}')
 
 
@@ -176,7 +176,7 @@ def update_leads_stm_id(stm_lead_model, stm_enroll_obj, quote_store_key):
         stm_lead_obj.save()
         return stm_lead_obj
     except Exception as e:
-        print(f'Cannot update lead info stm enrollment ID. The following exception happened:\n'
+        logger.info(f'Cannot update lead info stm enrollment ID. The following exception happened:\n'
               f'{e}')
 
 
@@ -232,7 +232,7 @@ def save_applicant_info(stm_enroll_model, applicant_info, applicant_parent_info,
                 'Principle Advantage', 'Cardinal Choice', 'Vitala Care',
                 'Health Choice', 'Legion Limited Medical', 'Foundation Dental',
                 'USA Dental', 'Safeguard Critical Illness', 'Freedom Spirit Plus']):
-            print("{0} is not needed in {1}".format(field, plan['Name']))
+            logger.info("{0} is not needed in {1}".format(field, plan['Name']))
             continue
         setattr(stm_enroll_obj, field, applicant_info[field])
     if applicant_parent_info:
@@ -347,7 +347,7 @@ def update_addon_plan_at_enroll(stm_enroll_obj, add_ons):
             add_on_obj.Member_ID = add_on.get('Member_ID', None)
             add_on_obj.save(update_fields=fields)
         except ObjectDoesNotExist as err:
-            print(err)
+            logger.error(err)
     return stm_enroll_obj
 
 
@@ -511,21 +511,6 @@ def get_prop_context():
 
     return prop_context
 
-# def create_state_spec_quote_data(user_state: str, qm) -> Dict[str, Dict]:
-    """Unittest has been written"""
-
-    # plan_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION)
-    # for i in plan_duration:
-    #     try:
-    #         carrier_specific_plan_duration = plan_duration[i]
-    #         state_specific_plan_duration_first = carrier_specific_plan_duration[user_state][0]
-    #         data[i] = {}
-    #         data[i]['Duration_Coverage'] = [state_specific_plan_duration_first]
-    #     except KeyError:
-    #         print(f'{i} is not available in {user_state}')
-
-    # return data
-
 
 def get_available_carriers(user_state: str, qm, ins_type: str) -> List[Carrier]:
     carriers = []
@@ -540,7 +525,7 @@ def get_available_carriers(user_state: str, qm, ins_type: str) -> List[Carrier]:
         carriers = qm.Carrier.objects.filter(**kwargs)
 
     except Exception as e:
-        print(e)
+        logger.error(e)
         pass
 
     return carriers
@@ -594,7 +579,7 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
     plan_set = set()
 
 
-    print("Finding out alternative coinsurance.")
+    logger.info("Finding out alternative coinsurance.")
     for plan in plan_list:
 
         if (plan["out_of_pocket_value"] == selected_plan['out_of_pocket_value'] and
@@ -606,7 +591,7 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
 
                 coins_set.add(plan['Coinsurance_Percentage'])
 
-    print("Finding out alternative max_out_of_pocket.")
+    logger.info("Finding out alternative max_out_of_pocket.")
     for plan in plan_list:
 
         if (plan["Coinsurance_Percentage"] == selected_plan['Coinsurance_Percentage'] and
@@ -620,7 +605,7 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
 
 
 
-    print("Finding out alternative maximum coverage.")
+    logger.info("Finding out alternative maximum coverage.")
 
     for plan in plan_list:
 
@@ -632,7 +617,7 @@ def get_dict_for_available_alternate_plans(plan_list: list, selected_plan) -> di
             plan != selected_plan):
                 coverage_max_set.add(plan['Coverage_Max'])
 
-    print("Finding out alternative plan type.")
+    logger.info("Finding out alternative plan type.")
 
     for plan in plan_list:
 
@@ -657,7 +642,7 @@ def get_available_coins_against_benefit(plan_list: list, benefit_amount: str, se
     coins_set = set()
 
 
-    print(f"Finding out alternative coinsurance for {benefit_amount}.")
+    logger.info(f"Finding out alternative coinsurance for {benefit_amount}.")
     for plan in plan_list:
 
         if (plan["out_of_pocket_value"] == benefit_amount and
@@ -677,7 +662,7 @@ def get_available_benefit_against_coins(plan_list: list, coinsurance: str, selec
     out_of_pocket_set = set()
 
 
-    print(f"Finding out alternative benefit amount for {coinsurance}.")
+    logger.info(f"Finding out alternative benefit amount for {coinsurance}.")
     for plan in plan_list:
 
         if (plan["Coinsurance_Percentage"] == coinsurance and
@@ -726,7 +711,7 @@ def get_neighbour_plans_and_attrs(plan: dict, plan_list: list):
                                            neighbour(x, 'Benefit_Amount', plan['Benefit_Amount'] == True), eligible_plans))
 
     except KeyError as k:
-        print(f"KeyError: {k}")
+        logger.error(f"KeyError: {k}")
 
     return neighbours, available_dict_from_plan_list(neighbours, string_at_list_boundaries=False)
 
@@ -781,7 +766,7 @@ def get_featured_plan(carrier_name, plan_list, ins_type):
         featured_plan_attr = settings.FEATURED_PLAN_DICT[carrier_name]
     except KeyError:
         featured_plan_attr = None
-        print(f'Featured plan attribute not found for {carrier_name}')
+        logger.info(f'Featured plan attribute not found for {carrier_name}')
 
     if ins_type:
         premium = settings.FEATURED_PLAN_PREMIUM_DICT.get(ins_type)

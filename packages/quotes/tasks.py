@@ -258,14 +258,14 @@ def get_api_rate_obj(payload, form_data, ins_type, cls_name, plan_id, carrier_na
     :param has_post_date_api:
     :return:
     """
-    print(f'plan_id: {plan_id}, ins_type: {ins_type}')
+    # MEMORY_EXHAUSTIVE print(f'plan_id: {plan_id}, ins_type: {ins_type}')
 
     try:
         rate_cls = PROVIDERS[carrier_name]
     except KeyError as err:
         print(f'provider class not found with Carrier ID: {plan_id}, Error: {err}')
         return []
-    print("rate_cls: {}; cls_name: {}".format(rate_cls.__class__.__name__, cls_name))
+    # MEMORY_EXHAUSTIVE print("rate_cls: {}; cls_name: {}".format(rate_cls.__class__.__name__, cls_name))
 
     return rate_cls(**payload)
 
@@ -452,7 +452,7 @@ class ProcessTask(Task):
             "filtering_conditions": [],
             "error": []
         }
-        print(f'task_data: {task_data}')
+        # MEMORY_EXHAUSTIVE print(f'task_data: {task_data}')
         try:
             task_obj = get_api_rate_obj(**task_data)
         except KeyError as err:
@@ -463,7 +463,7 @@ class ProcessTask(Task):
                 value=json_encoder.encode(fetched_data)
             )
             return False
-        print('task_obj: {}'.format(task_obj.__class__))
+        # MEMORY_EXHAUSTIVE print('task_obj: {}'.format(task_obj.__class__))
         task_obj.process_response()
 
         res = task_obj.get_formatted_response()
@@ -496,8 +496,8 @@ class ProcessTask(Task):
             "filtering_conditions": [],
             "error": error
         })
-        print('addon_plans: {}'.format(addon_plans))
-        print("saving content: {} , for key {}".format(fetched_data, redis_key))
+        # MEMORY_EXHAUSTIVE print('addon_plans: {}'.format(addon_plans))
+        # MEMORY_EXHAUSTIVE print("saving content: {} , for key {}".format(fetched_data, redis_key))
         REDIS_CLIENT.setex(
             name=redis_key,
             time=timedelta(hours=24),
