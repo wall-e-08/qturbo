@@ -1,20 +1,27 @@
 import copy
 import json
 import time
+from calendar import timegm
 from urllib import request
 
 import requests
 
 from datetime import datetime
+
+from django.contrib.sitemaps.views import x_robots_tag
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import http_date
 from django.views.decorators.http import require_POST
 
 from core import settings
@@ -56,6 +63,49 @@ redis_conn = redis_connect()
 
 def home(request: WSGIRequest) -> HttpResponse:
     return render(request, 'homepage.html', get_prop_context())
+
+@x_robots_tag
+def sitemap(request, sitemaps, section=None,
+            template_name='sitemap.xml', content_type='application/xml'):
+    logger.info("sitemaps: {0}".format(sitemaps))
+    req_protocol = request.scheme
+    logger.info("req_protocol: {0}".format(req_protocol))
+    req_site = get_current_site(request)
+
+    if section is not None:
+        if section not in sitemaps:
+            raise Http404("No sitemap available for section: %r" % section)
+        maps = [sitemaps[section]]
+    else:
+        maps = sitemaps.values()
+    page = request.GET.get("p", 1)
+
+    urls = []
+    for site in maps:
+        try:
+            if callable(site):
+                site = site()
+                site.protocol = 'https'
+            urls.extend(site.get_urls(page=page, site=req_site,
+                                      protocol=req_protocol))
+        except EmptyPage:
+            raise Http404("Page %s empty" % page)
+        except PageNotAnInteger:
+            raise Http404("No page '%s'" % page)
+    response = TemplateResponse(request, template_name, {'urlset': urls},
+                                content_type=content_type)
+    if hasattr(site, 'latest_lastmod'):
+        # if latest_lastmod is defined for site, set header so as
+        # ConditionalGetMiddleware is able to send 304 NOT MODIFIED
+        lastmod = site.latest_lastmod
+        response['Last-Modified'] = http_date(
+            timegm(
+                lastmod.utctimetuple() if isinstance(lastmod, datetime.datetime)
+                else lastmod.timetuple()
+            )
+        )
+    return response
+
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.

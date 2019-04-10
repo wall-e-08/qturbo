@@ -1,7 +1,19 @@
 from django.urls import path, include, re_path
 from quotes import views
+from quotes.views import sitemap
 
 app_name = 'quotes'
+
+import quotes.sitemap
+
+'''
+top_pages are homepage(priority 1.0), plans(priority 0.7)
+'''
+
+sitemaps = {
+    'top_pages': quotes.sitemap.Sitemap,
+}
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -19,6 +31,8 @@ urlpatterns = [
     path('health-insurance/redirect_to_plans/', views.set_annual_income_and_redirect_to_plans, name='redirect_to_plans'),
 
     path('li-demo/', views.life_insurance, name='life_insurance'),
+
+    re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
     re_path(r'^pages/legal/(?P<slug>[a-z\-]+)/$', views.legal, name='legal'),
 
