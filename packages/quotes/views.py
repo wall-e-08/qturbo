@@ -106,6 +106,9 @@ def sitemap(request, sitemaps, section=None,
         )
     return response
 
+def robots(request):
+    return render(request, 'robots.txt', content_type="text/plain")
+
 
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.

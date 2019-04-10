@@ -34,6 +34,8 @@ urlpatterns = [
 
     re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
+    re_path(r'^robots\.txt/$', views.robots, name='robots'),
+
     re_path(r'^pages/legal/(?P<slug>[a-z\-]+)/$', views.legal, name='legal'),
 
     # Limited Plans
