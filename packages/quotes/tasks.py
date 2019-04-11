@@ -334,7 +334,10 @@ def post_process_task(data, session_identifier_quote_store_key, request):
 
     if not redis_keys and REDIS_CLIENT.exists(session_identifier_quote_store_key):
         request.session['{}##status'.format(session_identifier_quote_store_key)] = 'complete'
-        return 'completed'
+        return 'complete'
+
+    elif not redis_keys:
+        return 'fail'
 
     results = {
         "stm_plans": [],

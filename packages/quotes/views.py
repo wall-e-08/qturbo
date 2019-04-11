@@ -274,9 +274,16 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     """
     ins_type = get_ins_type(request)
     quote_request_form_data = request.session.get('quote_request_form_data', None)
+    user_state = quote_request_form_data.get('State')
+    status = None
 
     logger.info(f" \n------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
+
+    response_failure = {
+        'status': 'fail',
+        'error': "Failed",
+    }
 
     if annual_income and quote_request_form_data:
         quote_request_form_data['Annual_Income'] = annual_income
@@ -293,20 +300,23 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         redis_status_key = f'{get_redis_key(request, ins_type)}##status'
         while request.session.get(redis_status_key) != 'complete':
             status = post_process_task_view(request)
-            if status == 'complete':
+            if status in ['complete', 'fail'] :
                 break
             time.sleep(2)
+        else:
+            status = 'complete'
 
-
-        response = {
-            'status': 'success',
-            'url': reverse('quotes:plan_quote', kwargs={'ins_type': ins_type})
-        }
+        if status == 'complete':
+            response = {
+                'status': 'success',
+                'url': reverse('quotes:plan_quote', kwargs={'ins_type': ins_type})
+            }
+        else:
+            response = response_failure
+            if user_state:
+                response['message'] = f'Could not find any {ins_type} plans for {user_state}'
     else:
-        response = {
-            'status': 'fail',
-            'error': "Failed",
-        }
+        response = response_failure
 
     return JsonResponse(response)
 
@@ -1575,7 +1585,7 @@ def post_process_task_view(request: WSGIRequest) -> str:
     session_quote_store_key_status = '{}##status'.format(session_identifier_quote_store_key)
     status = request.session.get(session_quote_store_key_status)
 
-    if status != 'completed':
+    if status != 'complete':
         status = post_process_task(quote_request_form_data, session_identifier_quote_store_key, request)
     return status
 
@@ -2507,19 +2517,4 @@ def legal(request, slug):
 
 def life_insurance(request):
     return render(request, 'quotes/lifeinsurance.html')
-
-
-def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
-    stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
-    stm_dict_values = stm_dictionary.values()
-    stm_available_states : set = set().union(*[*stm_dict_values])
-
-    form_data = request.session.get('quote_request_form_data', None)
-    if form_data is not None:
-        user_state = form_data['State']
-        if user_state in stm_available_states:
-            return JsonResponse({'status': 'success'})
-
-    return JsonResponse({'status': 'fail'})
-
 
