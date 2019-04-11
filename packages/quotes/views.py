@@ -166,10 +166,13 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
         else:
             print(f'----------------\nLead Form Errors :\n----------------\n{lead_form.errors}')
 
+        # availability = check_ins_availability_in_state(request)
+
         # Saving Lead Form Info
         save_lead_info(qm.Leads, lead_form.cleaned_data)
         return JsonResponse({
             'status': 'success',
+            # 'availability': availability
         })
 
 
@@ -2518,3 +2521,30 @@ def legal(request, slug):
 def life_insurance(request):
     return render(request, 'quotes/lifeinsurance.html')
 
+
+def check_ins_availability_in_state(request:WSGIRequest) -> JsonResponse:
+    quote_request_form_data = request.session.get('quote_request_form_data')
+    user_state = quote_request_form_data.get('State')
+
+    # if not user_state:
+    #     get user_state from zipcodedatabase
+
+    response = {}
+    for ins_type in ['stm', 'lim']:
+        kwargs = {
+            'ins_type': ins_type,
+            'is_active': True,
+            f'duration_coverages_in_states__{user_state}__isnull': False
+        }
+        try:
+            carriers = qm.Carrier.objects.filter(**kwargs)
+            if carriers.count() > 0:
+                response[ins_type] = True
+            else:
+                response[ins_type] = False
+
+        except Exception as e:
+            logger.error(e)
+            pass
+
+    return JsonResponse(response)

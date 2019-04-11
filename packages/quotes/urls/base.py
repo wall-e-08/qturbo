@@ -32,6 +32,8 @@ urlpatterns = [
 
     path('li-demo/', views.life_insurance, name='life_insurance'),
 
+    path('ins-avail-state/', views.check_ins_availability_in_state, name='check_ins_availability_in_state'),
+
     re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
     re_path(r'^robots\.txt/$', views.robots, name='robots'),

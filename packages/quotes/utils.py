@@ -512,6 +512,29 @@ def get_prop_context():
     return prop_context
 
 
+# def check_ins_availability_in_state(user_state: str, quote_models) -> Dict[str, str]:
+#     availability = {}
+#     for ins_type in ['stm', 'lim']:
+#         kwargs = {
+#             'ins_type': ins_type,
+#             'is_active': True,
+#             f'duration_coverages_in_states__{user_state}__isnull': False
+#         }
+#         try:
+#             carriers = quote_models.Carrier.objects.filter(**kwargs)
+#             if carriers.count() > 0:
+#                 availability[ins_type] = True
+#             else:
+#                 availability[ins_type] = False
+#
+#         except Exception as e:
+#             logger.error(e)
+#             pass
+#
+#     return availability
+
+
+
 def get_available_carriers(user_state: str, qm, ins_type: str) -> List[Carrier]:
     carriers = []
 

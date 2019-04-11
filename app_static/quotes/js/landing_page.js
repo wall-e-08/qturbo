@@ -474,7 +474,40 @@ const router = new VueRouter({
                     return {
                         plan_type: '',
                         err_msg: '',
+                        stm_avail: '',
+                        lim_avail: '',
                     }
+                },
+                created: function(){
+                    let _t = this;
+                    let zip_code = _t.$cookies.get(v_cookies_keys.zip_code);
+
+                    _t.stm_avail = true;
+                    _t.lim_avail = true;
+
+                    let data = {
+                        'zip_code': zip_code
+                    };
+                    console.log("গণপ্রজাতন্ত্রী");
+
+                    $.ajax({
+                        url: 'ins-avail-state/',
+                        method: 'GET',
+                        dataType: 'JSON',
+                        data: data,
+                        success: function (data) {
+                            console.log("Initial success");
+                            console.table(data);
+                                _t.stm_avail = data.stm;
+                                _t.lim_avail = data.lim;
+                            console.log(_t.stm_avail);
+                        },
+                        error: function(data) {
+                            // console.log("Error");
+                            // console.table(data);
+                        }
+                    });
+
                 },
                 methods: {
                     choose_plan_type: function(redirect_url, csrf_token, plan_type) {
