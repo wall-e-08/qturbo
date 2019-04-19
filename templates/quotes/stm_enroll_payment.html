@@ -644,6 +644,13 @@
 
 <!--disclaimer-->
 <div class="container" style="padding:0 15px 0 30px">
+
+    {% get_underwritten_info as gui %}
+    {% if gui %}
+        <hr>
+        <p>{{ gui }}</p>
+    {% endif %}
+
     {% addon_disclaimers selected_addon_plans as add_On_Disclaimer_Dict %}
     {% with restrictions_omissions=restrictions_omissions add_On_Disclaimer_Dict=add_On_Disclaimer_Dict %}
         {% include 'snippets/disclaimers.html' %}

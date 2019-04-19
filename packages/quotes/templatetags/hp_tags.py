@@ -362,3 +362,22 @@ def addon_disclaimers(addons):
 
 
 
+@register.simple_tag(takes_context=True)
+def get_underwritten_info(context):
+    try:
+        plan = context['plan']['Name']
+    except (AttributeError, TypeError, KeyError) as err:
+        print("hp_tags error: {}".format(err))
+        return None
+    data = {
+        "AdvantHealth_STM": "AdvantHealth STM is underwritten by American Financial Security Life Insurance Company",
+        "Legion_Limited_Medical": "Legion Limited Medical is underwritten by AXIS Insurance Company",
+        "VitalaCare": "VitalaCare is underwritten by LifeShield National Insurance Co",
+        "LifeShield_STM": "LifeShield STM is underwritten by LifeShield National Insurance Co."
+    }
+    print(data.get(plan.replace(' ', '_')))
+    return data.get(plan.replace(' ', '_'))
+
+
+
+
