@@ -6,6 +6,7 @@ from djrichtextfield.models import RichTextField
 from core import settings
 from .us_states import states, states_list
 from .utils import get_img_path, get_img_path_by_filename
+from django.contrib.postgres.fields import JSONField
 
 
 class PatchedMultiSelectField(MultiSelectField):
@@ -66,16 +67,13 @@ class Carrier(models.Model):
         default=True
     )
 
+    duration_coverages_in_states = JSONField(
+        null=True,
+    )
+
     def __str__(self):
         return self.name
 
-
-    # @property
-    # def plan_id(self):
-    #     """Is this necessary?
-    #     :return: int
-    #     """
-    #     return self.plan_id
 
     @classmethod
     def get_carrier_ins_type(cls, carrier_name):
@@ -112,6 +110,267 @@ class Carrier(models.Model):
 
     def get_sub_plan_first(self):
         return self.get_sub_plan_list()[0] if self.get_sub_plan_list() else None
+
+
+# class CarrierStates(models.Model):
+#     carrier_id = models.OneToOneField(
+#         Carrier,
+#         on_delete=models.SET_NULL,
+#         blank=True, null=True
+#     )
+#
+#     carrier_name =carrier_id.name
+#
+#     AL = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     AK = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     AZ = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     AR = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     CA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     CO = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     CT = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     DE = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     FL = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     GA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#
+#     HI = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     ID = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     IL = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     IN = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     IA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     KS = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     KY = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     LA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     ME = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MD = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MI = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MN = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MS = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MO = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     MT = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     NE = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     NV = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     OH = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     OK = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     OR = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     PA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     TN = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     TX = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     UT = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     VT = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     VA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     WA = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     WI = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
+#     WY = PatchedMultiSelectField(
+#         verbose_name=_("Duration Coverages"),
+#         max_length=500,
+#         choices=all_available_duration_coverages,
+#         blank=True, null=True
+#     )
 
 
 class StmEnroll(models.Model):

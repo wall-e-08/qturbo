@@ -1,7 +1,11 @@
 from __future__ import print_function, unicode_literals
 
+from django import forms
 from django.contrib import admin
+from django.contrib.postgres import fields
 from django.utils.html import format_html
+from django_json_widget.widgets import JSONEditorWidget
+
 from .models import (StmEnroll, Dependent, AddonPlan, Carrier, BenefitsAndCoverage, RestrictionsAndOmissions, MainPlan)
 
 
@@ -46,3 +50,8 @@ class StmEnrollAdmin(admin.ModelAdmin):
 @admin.register(Carrier)
 class CarrierAdmin(admin.ModelAdmin):
     list_display = ['name', 'plan_id', 'ins_type', 'is_active', 'created_at']
+    formfield_overrides = {
+        fields.JSONField: {
+            'widget': JSONEditorWidget
+        }
+    }

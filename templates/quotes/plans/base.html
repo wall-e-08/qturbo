@@ -327,6 +327,12 @@
                        class="qt-plan-brochure-file">View Plan Brochure</a>
                 </div>
 
+                {% get_underwritten_info as gui %}
+                {% if gui %}
+                    <hr>
+                    <p>{{ gui }}</p>
+                {% endif %}
+
                 {% comment %}{% if related_plans %}
                     <hr>
                     <h2 class="mrg-b-40">Other <i>{{ plan.Name }}</i> products in your area:</h2>

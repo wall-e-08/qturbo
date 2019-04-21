@@ -19,7 +19,7 @@ Project Run Steps:
 Celery run steps:
 - Step 0: run celery worker:
 ```bash
- celery -A core worker -l info -Q stm,lim,anc,esign_check -c 4
+ celery -A core worker -l info -Q process_task,esign_check -c 4
 ```
 - Step 1: run celery beat:
 ```bash

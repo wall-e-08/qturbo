@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /static/admin
+Disallow: /static/vue
+Disallow: /static/about
+Disallow: /static/bootstrap
+Disallow: /static/bootstrap-vue
+Disallow: /static/jquery
+Disallow: /static/nhaquote_old
+Disallow: /static/post/css
+Disallow: /static/post/scss
+Disallow: /static/quotes/js
+Disallow: /static/quotes/css
+Disallow: /static/quotes/scss

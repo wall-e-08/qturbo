@@ -5,7 +5,7 @@ import datetime
 
 from django.test import RequestFactory
 
-from quotes.views import check_stm_available_in_state
+from quotes.views import check_ins_availability_in_state
 
 # Set up pytest using pytest.ini first
 
@@ -99,7 +99,7 @@ def test_check_stm_available_in_texas():
 
     request = get_request(state='TX', zip='79499')
 
-    response = check_stm_available_in_state(request)
+    response = check_ins_availability_in_state(request)
     assert response.status_code == 200
     assert response.content.decode() == '{"status": "success"}'
 
@@ -107,7 +107,7 @@ def test_check_stm_available_in_ohio():
 
     request = get_request()
 
-    response = check_stm_available_in_state(request)
+    response = check_ins_availability_in_state(request)
     assert response.status_code == 200
     assert response.content.decode() == '{"status": "fail"}'
 
@@ -115,7 +115,7 @@ def test_check_stm_available_in_florida():
 
     request = get_request(state='FL', zip='33129')
 
-    response = check_stm_available_in_state(request)
+    response = check_ins_availability_in_state(request)
     assert response.status_code == 200
     assert response.content.decode() == '{"status": "success"}'
 

@@ -11,7 +11,8 @@
         "is_active": false,
         "created_at": "2017-03-27T20:19:32.404Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": null
     }
 },
 {
@@ -26,7 +27,78 @@
         "is_active": true,
         "created_at": "2017-04-10T11:39:21.043Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "AL": [
+                "12*1",
+                "12*3"
+            ],
+            "AZ": [
+                "6*2"
+            ],
+            "CO": [
+                "6*2"
+            ],
+            "DE": [
+                "12*1",
+                "12*3"
+            ],
+            "FL": [
+                "12*1",
+                "12*3"
+            ],
+            "GA": [
+                "12*1",
+                "12*3"
+            ],
+            "IL": [
+                "12*1",
+                "12*3"
+            ],
+            "LA": [
+                "6*6"
+            ],
+            "MN": [
+                "6*2"
+            ],
+            "MO": [
+                "6*6"
+            ],
+            "MS": [
+                "12*1",
+                "12*3"
+            ],
+            "NC": [
+                "12*1",
+                "12*3"
+            ],
+            "OK": [
+                "6*6"
+            ],
+            "PA": [
+                "12*1",
+                "12*3"
+            ],
+            "SD": [
+                "6*6"
+            ],
+            "TN": [
+                "12*1",
+                "12*3"
+            ],
+            "TX": [
+                "12*1",
+                "12*3"
+            ],
+            "VA": [
+                "12*1",
+                "12*3"
+            ],
+            "WV": [
+                "12*1",
+                "6*1"
+            ]
+        }
     }
 },
 {
@@ -36,12 +108,48 @@
         "plan_id": "136",
         "ins_type": "lim",
         "name": "Cardinal Choice",
-        "allowed_state": "AL,AZ,CA,DC,DE,FL,GA,HI,IL,IN,IA,KY,LA,MI,MS,MO,NE,NV,NM,NC,ND,OH,OK,OR,PA,RI,SC,TN,TX,UT,VA,WV,WI,WY",
+        "allowed_state": "AL,AZ,CA,DE,DC,FL,GA,HI,IL,IN,IA,KY,LA,MI,MS,MO,NE,NV,NM,NC,ND,OH,OK,OR,PA,RI,SC,TN,TX,UT,VA,WV,WI,WY",
         "has_question_api": true,
         "is_active": true,
         "created_at": "2017-05-05T15:30:04.302Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "AL": [],
+            "AZ": [],
+            "CA": [],
+            "DC": [],
+            "DE": [],
+            "FL": [],
+            "GA": [],
+            "HI": [],
+            "IA": [],
+            "IL": [],
+            "IN": [],
+            "KY": [],
+            "LA": [],
+            "MI": [],
+            "MO": [],
+            "MS": [],
+            "NC": [],
+            "ND": [],
+            "NE": [],
+            "NM": [],
+            "NV": [],
+            "OH": [],
+            "OK": [],
+            "OR": [],
+            "PA": [],
+            "RI": [],
+            "SC": [],
+            "TN": [],
+            "TX": [],
+            "UT": [],
+            "VA": [],
+            "WI": [],
+            "WV": [],
+            "WY": []
+        }
     }
 },
 {
@@ -51,12 +159,39 @@
         "plan_id": "152",
         "ins_type": "lim",
         "name": "Health Choice",
-        "allowed_state": "AL,AZ,CA,DC,FL,GA,IL,IA,KY,LA,MI,MS,NE,NV,NM,ND,OH,OK,PA,SC,TN,TX,VA,WV,WI,WY",
+        "allowed_state": "AL,AZ,CA,DC,GA,IL,IA,KY,LA,MI,MS,NE,NV,NM,ND,OH,OK,PA,SC,TN,TX,VA,WV,WI,WY",
         "has_question_api": false,
         "is_active": true,
         "created_at": "2017-11-26T07:21:39.596Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "AL": [],
+            "AZ": [],
+            "CA": [],
+            "DC": [],
+            "GA": [],
+            "IA": [],
+            "IL": [],
+            "KY": [],
+            "LA": [],
+            "MI": [],
+            "MS": [],
+            "ND": [],
+            "NE": [],
+            "NM": [],
+            "NV": [],
+            "OH": [],
+            "OK": [],
+            "PA": [],
+            "SC": [],
+            "TN": [],
+            "TX": [],
+            "VA": [],
+            "WI": [],
+            "WV": [],
+            "WY": []
+        }
     }
 },
 {
@@ -71,7 +206,18 @@
         "is_active": true,
         "created_at": "2017-12-15T10:28:22.763Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "CA": [],
+            "DC": [],
+            "FL": [],
+            "IA": [],
+            "LA": [],
+            "SC": [],
+            "TN": [],
+            "WV": [],
+            "WY": []
+        }
     }
 },
 {
@@ -86,7 +232,8 @@
         "is_active": true,
         "created_at": "2018-01-07T23:53:32Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": null
     }
 },
 {
@@ -101,7 +248,8 @@
         "is_active": false,
         "created_at": "2018-01-02T21:10:32Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": null
     }
 },
 {
@@ -116,7 +264,8 @@
         "is_active": true,
         "created_at": "2018-01-02T21:11:32Z",
         "child_allowed": false,
-        "spouse_allowed": false
+        "spouse_allowed": false,
+        "duration_coverages_in_states": null
     }
 },
 {
@@ -131,7 +280,8 @@
         "is_active": true,
         "created_at": "2018-01-02T21:11:32Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": null
     }
 },
 {
@@ -146,7 +296,60 @@
         "is_active": true,
         "created_at": "2018-05-15T11:31:29.140Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "AK": [],
+            "AL": [],
+            "AR": [],
+            "AZ": [],
+            "CA": [],
+            "CO": [],
+            "CT": [],
+            "DC": [],
+            "DE": [],
+            "FL": [],
+            "GA": [],
+            "HI": [],
+            "IA": [],
+            "ID": [],
+            "IL": [],
+            "IN": [],
+            "KS": [],
+            "KY": [],
+            "LA": [],
+            "MA": [],
+            "MD": [],
+            "ME": [],
+            "MI": [],
+            "MN": [],
+            "MO": [],
+            "MS": [],
+            "MT": [],
+            "NC": [],
+            "ND": [],
+            "NE": [],
+            "NH": [],
+            "NJ": [],
+            "NM": [],
+            "NV": [],
+            "NY": [],
+            "OH": [],
+            "OK": [],
+            "OR": [],
+            "PA": [],
+            "RI": [],
+            "SC": [],
+            "SD": [],
+            "TN": [],
+            "TX": [],
+            "UT": [],
+            "VA": [],
+            "VT": [],
+            "WA": [],
+            "WI": [],
+            "WV": [],
+            "WY": []
+        }
     }
 },
 {
@@ -161,7 +364,58 @@
         "is_active": true,
         "created_at": "2019-01-03T11:11:15.435Z",
         "child_allowed": true,
-        "spouse_allowed": true
+        "spouse_allowed": true,
+        "duration_coverages_in_states": {
+            "AL": [
+                "6*1",
+                "6*6"
+            ],
+            "AR": [
+                "6*1",
+                "6*6"
+            ],
+            "AZ": [
+                "6*1",
+                "6*2",
+                "6*6"
+            ],
+            "KY": [
+                "6*1",
+                "6*6"
+            ],
+            "MS": [
+                "6*1",
+                "6*6"
+            ],
+            "NE": [
+                "6*1",
+                "6*6"
+            ],
+            "NV": [
+                "6*1",
+                "6*6"
+            ],
+            "OH": [
+                "6*1",
+                "6*6"
+            ],
+            "OK": [
+                "6*1",
+                "6*6"
+            ],
+            "TX": [
+                "6*1",
+                "6*6"
+            ],
+            "VA": [
+                "6*1",
+                "6*6"
+            ],
+            "WI": [
+                "6*1",
+                "6*6"
+            ]
+        }
     }
 }
 ]

@@ -21,6 +21,7 @@ from celery.task import PeriodicTask, Task
 from celery.utils.log import get_task_logger
 
 # from quotes.mail import send_mail
+import quotes
 from quotes.models import Carrier
 from quotes.quote_thread import new_addon_plan_to_add, addon_plans_from_json_data, \
     addon_plans_from_dict
@@ -37,6 +38,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
+from quotes.utils import get_available_carriers
 
 QR_DATE_PATTERN = re.compile(r'^(\d{2})-(\d{2})-(\d{4})$')
 
@@ -256,44 +258,45 @@ def get_api_rate_obj(payload, form_data, ins_type, cls_name, plan_id, carrier_na
     :param has_post_date_api:
     :return:
     """
-    print(f'plan_id: {plan_id}, ins_type: {ins_type}')
+    # MEMORY_EXHAUSTIVE print(f'plan_id: {plan_id}, ins_type: {ins_type}')
 
     try:
         rate_cls = PROVIDERS[carrier_name]
     except KeyError as err:
         print(f'provider class not found with Carrier ID: {plan_id}, Error: {err}')
         return []
-    print("rate_cls: {}; cls_name: {}".format(rate_cls.__class__.__name__, cls_name))
+    # MEMORY_EXHAUSTIVE print("rate_cls: {}; cls_name: {}".format(rate_cls.__class__.__name__, cls_name))
 
     return rate_cls(**payload)
 
 
-def get_carriers_for_preparing_task(form_data: Dict, ins_type: str) -> [Carrier]:
-    carriers = []
-    try:
-        carriers = Carrier.objects.filter(
-            is_active=True,
-            allowed_state__icontains=form_data['State'],
-            ins_type=ins_type
-        )
-    except Carrier.DoesNotExist:
-        pass
-
-    if not carriers:
-        carriers = Carrier.objects.filter(
-            ins_type=ins_type,
-            is_active=True
-        )
-
-    return carriers
+# def get_carriers_for_preparing_task(form_data: Dict, ins_type: str) -> [Carrier]:
+#     carriers = []
+#     try:
+#         carriers = Carrier.objects.filter(
+#             is_active=True,
+#             allowed_state__icontains=form_data['State'],
+#             ins_type=ins_type
+#         )
+#     except Carrier.DoesNotExist:
+#         pass
+#
+#     if not carriers:
+#         carriers = Carrier.objects.filter(
+#             ins_type=ins_type,
+#             is_active=True
+#         )
+#
+#     return carriers
 
 # TODO: Need Documentation and Unittest
 def prepare_tasks(form_data, ins_type, session_identifier_quote_store_key, preference_dictionary=None, request=None):
     """
     """
     rate_requests = []
-    carriers = get_carriers_for_preparing_task(form_data=form_data,
-                                               ins_type=ins_type)
+
+    user_state = form_data.get('State')
+    carriers = get_available_carriers(user_state, quotes.models, ins_type)
 
     # TODO: Handle non stm states.
 
@@ -331,7 +334,10 @@ def post_process_task(data, session_identifier_quote_store_key, request):
 
     if not redis_keys and REDIS_CLIENT.exists(session_identifier_quote_store_key):
         request.session['{}##status'.format(session_identifier_quote_store_key)] = 'complete'
-        return 'completed'
+        return 'complete'
+
+    elif not redis_keys:
+        return 'fail'
 
     results = {
         "stm_plans": [],
@@ -449,7 +455,7 @@ class ProcessTask(Task):
             "filtering_conditions": [],
             "error": []
         }
-        print(f'task_data: {task_data}')
+        # MEMORY_EXHAUSTIVE print(f'task_data: {task_data}')
         try:
             task_obj = get_api_rate_obj(**task_data)
         except KeyError as err:
@@ -460,7 +466,7 @@ class ProcessTask(Task):
                 value=json_encoder.encode(fetched_data)
             )
             return False
-        print('task_obj: {}'.format(task_obj.__class__))
+        # MEMORY_EXHAUSTIVE print('task_obj: {}'.format(task_obj.__class__))
         task_obj.process_response()
 
         res = task_obj.get_formatted_response()
@@ -493,8 +499,8 @@ class ProcessTask(Task):
             "filtering_conditions": [],
             "error": error
         })
-        print('addon_plans: {}'.format(addon_plans))
-        print("saving content: {} , for key {}".format(fetched_data, redis_key))
+        # MEMORY_EXHAUSTIVE print('addon_plans: {}'.format(addon_plans))
+        # MEMORY_EXHAUSTIVE print("saving content: {} , for key {}".format(fetched_data, redis_key))
         REDIS_CLIENT.setex(
             name=redis_key,
             time=timedelta(hours=24),

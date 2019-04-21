@@ -1,20 +1,27 @@
 import copy
 import json
 import time
+from calendar import timegm
 from urllib import request
 
 import requests
 
 from datetime import datetime
+
+from django.contrib.sitemaps.views import x_robots_tag
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, HttpRequest, Http404, HttpResponse
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import http_date
 from django.views.decorators.http import require_POST
 
 from core import settings
@@ -35,7 +42,8 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     update_lead_vimm_enroll_id, update_leads_stm_id, create_selection_data,
                     get_dict_for_available_alternate_plans, get_available_coins_against_benefit,
                     get_available_benefit_against_coins, get_neighbour_plans_and_attrs, is_ins_type_valid,
-                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context)
+                    has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context,
+                    create_initial_data)
 from .logger import VimmLogger
 from .tasks import prepare_tasks, post_process_task
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
@@ -56,6 +64,52 @@ redis_conn = redis_connect()
 def home(request: WSGIRequest) -> HttpResponse:
     return render(request, 'homepage.html', get_prop_context())
 
+@x_robots_tag
+def sitemap(request, sitemaps, section=None,
+            template_name='sitemap.xml', content_type='application/xml'):
+    logger.info("sitemaps: {0}".format(sitemaps))
+    req_protocol = request.scheme
+    logger.info("req_protocol: {0}".format(req_protocol))
+    req_site = get_current_site(request)
+
+    if section is not None:
+        if section not in sitemaps:
+            raise Http404("No sitemap available for section: %r" % section)
+        maps = [sitemaps[section]]
+    else:
+        maps = sitemaps.values()
+    page = request.GET.get("p", 1)
+
+    urls = []
+    for site in maps:
+        try:
+            if callable(site):
+                site = site()
+                site.protocol = 'https'
+            urls.extend(site.get_urls(page=page, site=req_site,
+                                      protocol=req_protocol))
+        except EmptyPage:
+            raise Http404("Page %s empty" % page)
+        except PageNotAnInteger:
+            raise Http404("No page '%s'" % page)
+    response = TemplateResponse(request, template_name, {'urlset': urls},
+                                content_type=content_type)
+    if hasattr(site, 'latest_lastmod'):
+        # if latest_lastmod is defined for site, set header so as
+        # ConditionalGetMiddleware is able to send 304 NOT MODIFIED
+        lastmod = site.latest_lastmod
+        response['Last-Modified'] = http_date(
+            timegm(
+                lastmod.utctimetuple() if isinstance(lastmod, datetime.datetime)
+                else lastmod.timetuple()
+            )
+        )
+    return response
+
+def robots(request):
+    return render(request, 'robots.txt', content_type="text/plain")
+
+
 def plans(request: WSGIRequest, zip_code=None) -> HttpResponse:
     """View is handled in whole entiarity in vuejs.
 
@@ -75,7 +129,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     :param request: Django request object
     :return: Django JsonResponse Object
     """
-    print(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
+    logger.info(f" ------------\n| POST DATA  |:\n ------------\n{request.POST}")
 
     form = ApplicantInfoForm(request.POST)
     formset = ChildInfoFormSet(request.POST)
@@ -85,7 +139,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
     request.session.modified = True
     if form.is_valid() and formset.is_valid():
         logger.info("quote info form is valid")
-        print("quote info form is valid")
+        logger.info("quote info form is valid")
         quote_request_form_data = form.cleaned_data
 
         if quote_request_form_data.get('applicant_is_child', True):
@@ -106,22 +160,25 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
         lead_form = LeadForm(quote_request_form_data)
         if lead_form.is_valid():
-            print("lead form is valid")
+            logger.info("lead form is valid")
             logger.info("saving lead info")
             lead_form.save()
         else:
             print(f'----------------\nLead Form Errors :\n----------------\n{lead_form.errors}')
 
+        # availability = check_ins_availability_in_state(request)
+
         # Saving Lead Form Info
         save_lead_info(qm.Leads, lead_form.cleaned_data)
         return JsonResponse({
             'status': 'success',
+            # 'availability': availability
         })
 
 
     else:
-        print(form.errors)
-        print(formset.errors)
+        logger.info(f'form.errors: {form.errors}')
+        logger.info(f'formset.errors: {formset.errors}')
         return JsonResponse(
             {
                 'status': 'false',
@@ -134,7 +191,7 @@ def validate_quote_form(request: WSGIRequest) -> JsonResponse:
 
 
 def set_ins_type_and_start_celery(request: WSGIRequest) -> JsonResponse:
-    print(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
+    logger.info(f" ------------\n| INSURANCE TYPE  |:\n ------------\n{request.POST}")
     ins_type = request.POST.get('Ins_Type', None)
 
     if ins_type and request.session['quote_request_form_data']:
@@ -172,8 +229,8 @@ def start_celery(request: WSGIRequest) -> True:
     request.session.modified = True
     logger.info("PLAN QUOTE LIST - form data: {0}".format(form_data))
 
-    print('------------------------\nquote_request_form_data: \n------------------------')
-    print(json.dumps(form_data, indent=4, sort_keys=True))
+    logger.info('------------------------\nquote_request_form_data: \n------------------------')
+    logger.info(json.dumps(form_data, indent=4, sort_keys=True))
 
     # Changing quote store key regarding insurance type
     # for ins_type in ['lim', 'stm']:
@@ -183,39 +240,23 @@ def start_celery(request: WSGIRequest) -> True:
 
     # Calling celery for populating quote list
     redis_key = get_redis_key(request, ins_type)
-    print(f"Calling celery task for ins_type: {ins_type}")
-    print(f"redis_key: {redis_key}")
+    logger.info(f"Calling celery task for ins_type: {ins_type}")
+    logger.info(f"redis_key: {redis_key}")
     request_options = None
 
     if not redis_conn.exists(redis_key):
-        print("Redis connection does not exist for redis key")
-        print(f"Insurance type is {ins_type}")
+        logger.info("Redis connection does not exist for redis key")
+        logger.info(f"Insurance type is {ins_type}")
+        initial_quote_dictionary = None
         if ins_type == 'stm':
-            # We are here setting up a dictionary in the session for future usage
-
-            print(f'Setting quote request preference data')
-            quote_request_preference_data = copy.deepcopy(settings.USER_INITIAL_PREFERENCE_DATA)
-            request.session['quote_request_preference_data'] = quote_request_preference_data
-
-
-            # StmPlanTask.delay(request.session.session_key, form_data,
-            #                   quote_request_preference_data)
-
-            # prepare_tasks(
-            #     form_data=copy.deepcopy(form_data),
-            #     ins_type=ins_type,
-            #     session_identifier_quote_store_key = redis_key,
-            #     request=request
-            # )
-
-
-        # elif ins_type == 'lim':
-            # LimPlanTask.delay(request.session.session_key, form_data)
+            user_state = form_data.get('State')
+            preference_dictionary, initial_quote_dictionary = create_initial_data(user_state, qm, ins_type)
+            request.session['quote_request_preference_data'] = preference_dictionary
 
         prepare_tasks(form_data=copy.deepcopy(form_data),
             ins_type=ins_type,
             session_identifier_quote_store_key = redis_key,
-            preference_dictionary=settings.INITIAL_QUOTE_DATA,
+            preference_dictionary=initial_quote_dictionary,
             request=request)
 
     return True
@@ -236,9 +277,16 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
     """
     ins_type = get_ins_type(request)
     quote_request_form_data = request.session.get('quote_request_form_data', None)
+    user_state = quote_request_form_data.get('State')
+    status = None
 
-    print(f" ------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
+    logger.info(f" \n------------\n| ANNUAL INCOME DATA  |:\n ------------\n{request.POST}")
     annual_income = request.POST.get('Annual_Income', None)
+
+    response_failure = {
+        'status': 'fail',
+        'error': "Failed",
+    }
 
     if annual_income and quote_request_form_data:
         quote_request_form_data['Annual_Income'] = annual_income
@@ -255,20 +303,23 @@ def set_annual_income_and_redirect_to_plans(request: WSGIRequest) -> JsonRespons
         redis_status_key = f'{get_redis_key(request, ins_type)}##status'
         while request.session.get(redis_status_key) != 'complete':
             status = post_process_task_view(request)
-            if status == 'complete':
+            if status in ['complete', 'fail'] :
                 break
             time.sleep(2)
+        else:
+            status = 'complete'
 
-
-        response = {
-            'status': 'success',
-            'url': reverse('quotes:plan_quote', kwargs={'ins_type': ins_type})
-        }
+        if status == 'complete':
+            response = {
+                'status': 'success',
+                'url': reverse('quotes:plan_quote', kwargs={'ins_type': ins_type})
+            }
+        else:
+            response = response_failure
+            if user_state:
+                response['message'] = f'Could not find any {ins_type} plans for {user_state}'
     else:
-        response = {
-            'status': 'fail',
-            'error': "Failed",
-        }
+        response = response_failure
 
     return JsonResponse(response)
 
@@ -360,7 +411,7 @@ def plan_quote(request, ins_type):
             reset_preference(request)
             request.session['stm_general_url_chosen'] = False
     except KeyError:
-        print("User preference not found")
+        logger.info("User preference not found")
         pass
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
@@ -393,8 +444,8 @@ def plan_quote(request, ins_type):
 
     request.session['quote_request_form_data']['Ins_Type'] = ins_type # TODO: functionify
 
-    print('------------------------\nquote_request_form_data: \n------------------------')
-    print(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
+    logger.info('------------------------\nquote_request_form_data: \n------------------------')
+    logger.info(json.dumps(quote_request_form_data, indent=4, sort_keys=True))
 
     bncq = qm.BenefitsAndCoverage.objects.filter(plan__ins_type=ins_type)
     bnc_for_return = []
@@ -433,7 +484,7 @@ def get_plan_list(request: WSGIRequest, ins_type: str) -> Optional[List]:
         plan_data = json_decoder.decode(redis_conn.get(redis_key).decode())
         plan_list = plan_data.get('stm_plans')
     except AttributeError:
-        print(f'Plans not present in redis.')
+        logger.info(f'Plans not present in redis.')
 
     return plan_list
 
@@ -531,7 +582,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
                            mp['coverage_max_value'] == quote_request_preference_data[mp['Name']]['Coverage_Max'][0] and \
                            mp['Duration_Coverage'] == plan['Duration_Coverage'], sorted(plan_list, key=lambda x: x['Premium'])))
         except KeyError as k:
-            print(k)
+            logger.info(k)
             pass
 
         available_alternatives_as_set = get_dict_for_available_alternate_plans(plan_list, plan) # TODO: Make it a part of separate function or at least modularize branching.
@@ -541,7 +592,7 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
             filter(lambda mp: mp['Name'] == plan['Name'] and mp['actual_premium'] != plan['actual_premium'], plan_list))
 
     logger.info(f'Number of RELATED PLANS: {len(related_plans)}')
-    print('PLAN: ', plan)
+    logger.info(f'PLAN: {plan}')
 
     # addon plans
     selected_addon_plans = addon_plans_from_dict(
@@ -557,22 +608,20 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
     applicant_state_name = quote_request_form_data['State']
     plan_name = plan['Name']
 
+    carrier = None
     try:
-        alternate_coverage_duration = copy.deepcopy(settings.STATE_SPECIFIC_PLAN_DURATION[plan_name][applicant_state_name])
+        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
+    except qm.Carrier.DoesNotExist as err:
+        logger.info("Very weird error: {}".format(err))
+
+    try:
+        alternate_coverage_duration = carrier.duration_coverages_in_states[applicant_state_name]
 
         alternate_benefit_amount = list(neighbour_attrs['benefit_amount'])
         alternate_benefit_amount.sort(key=int)
 
         alternate_coinsurace_percentage = list(neighbour_attrs['coinsurance_percentage'])
         alternate_coinsurace_percentage.sort(key=int)
-
-        # Edge case 50 percent coinsurance for plan type 2
-        # if plan_name == 'LifeShield STM':
-        #     if plan['Plan'] == '1':
-        #         if '50' in alternate_coinsurace_percentage:
-        #             alternate_coinsurace_percentage.remove('50')
-        #         if '5000' in alternate_benefit_amount:
-        #             alternate_benefit_amount.remove('5000')
 
         alternate_coverage_max = list(neighbour_attrs['coverage_maximum'])
         alternate_coverage_max.sort(key=int)
@@ -581,19 +630,14 @@ def stm_plan(request: WSGIRequest, plan_url: str) -> HttpResponse:
         alternate_plan = list(alternate_plan_set)
 
 
-    except KeyError as k:
-        print(f'{k} - No duration coverage for {plan_name}')
+    except (KeyError, UnboundLocalError) as k:
+        logger.info(f'{k} - No alternate attributes for {plan_name}')
         alternate_coverage_duration = None
         alternate_benefit_amount = None
         alternate_coinsurace_percentage = None
         alternate_coverage_max = None
         alternate_plan = None
 
-    carrier = None
-    try:
-        carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
-    except qm.Carrier.DoesNotExist as er:
-        print("Very weird error: {}".format(er))
 
     # print("==============" + plan['Plan_Name'])
     return render(request,
@@ -668,7 +712,7 @@ def stm_apply(request: WSGIRequest, plan_url: str) -> HttpResponse:
     try:
         carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
     except qm.Carrier.DoesNotExist as er:
-        print("Very weird error: {}".format(er))
+        logger.info("Very weird error: {}".format(er))
 
     return render(request, 'quotes/stm_plan_apply.html',
                   {'plan': plan, 'quote_request_form_data': quote_request_form_data,
@@ -988,7 +1032,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             # TODO: destroy session vars.
             return HttpResponseRedirect(reverse('quotes:home'))
     except AttributeError as a:
-        print("Applicant is not enrolled")
+        logger.info("Applicant is not enrolled")
 
     application_url = stm_enroll_obj.app_url
 
@@ -1025,7 +1069,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
     try:
         carrier = qm.Carrier.objects.get(plan_id=plan["Plan_ID"])
     except qm.Carrier.DoesNotExist as er:
-        print("Very weird error: {}".format(er))
+        logger.info("Very weird error: {}".format(er))
 
     ctx = {'plan': plan, 'plan_url': application_url, 'form_data': quote_request_form_data,
            'stage': stage, 'selected_addon_plans': selected_addon_plans, 'stm_enroll_obj': stm_enroll_obj,
@@ -1085,18 +1129,18 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
                     if request.session['esign_req_sent_{0}'.format(stm_plan_obj.Quote_ID)] is True:
                         return HttpResponse(quote_error_html(stm_plan_obj.Quote_id))
                 except KeyError as k:
-                    print("Quote ID can be submitted -  Stage 1")
+                    logger.info("Quote ID can be submitted -  Stage 1")
                 except AttributeError as a:
-                    print("Stm Object exists but quote ID does not exist")
+                    logger.info("Stm Object exists but quote ID does not exist")
                     if plan:  # TODO: Refractor and reduce unncecessary branching.
                         try:
                             if 'esign_req_sent_{0}'.format(plan['Quote_ID']) in request.session:
                                 if request.session['esign_req_sent_{0}'.format(plan['Quote_ID'])] is True:
                                     return HttpResponse(quote_error_html(plan['Quote_ID']))
                         except KeyError as k:
-                            print("Esign req not sent for this quote - STAGE 1")
+                            logger.info("Esign req not sent for this quote - STAGE 1")
 
-                    # print("Stm Object exists... But Quote_ID does not exist... Deleting redis key")
+                    # logger.info("Stm Object exists... But Quote_ID does not exist... Deleting redis key")
                     # redis_conn.delete("{0}:{1}".format(request.session._get_session_key(),
                     #                                    quote_request_form_data['quote_store_key']))
                     # request.session[FEATURED_PLAN_DICT['plan_active_key']] = False
@@ -1166,14 +1210,14 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
                     if request.session['esign_req_sent_{0}'.format(stm_plan_obj.Quote_ID)] is True:
                         return HttpResponse(quote_error_html(stm_plan_obj.Quote_ID))
             except KeyError as k:
-                print("Esign req not sent for this quote - STAGE 2")
+                logger.info("Esign req not sent for this quote - STAGE 2")
         elif plan:  # TODO: Refractor and reduce unncecessary branching.
             try:
                 if 'esign_req_sent_{0}'.format(plan['Quote_ID']) in request.session:
                     if request.session['esign_req_sent_{0}'.format(plan['Quote_ID'])] is True:
                         return HttpResponse(quote_error_html(plan['Quote_ID']))
             except KeyError as k:
-                print("Esign req not sent for this quote - STAGE 2")
+                logger.info("Esign req not sent for this quote - STAGE 2")
         template = 'quotes/stm_enroll_info.html'
         has_parent = False
         has_dependents = False
@@ -1236,7 +1280,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
 
             if stage_2_errors:
                 stage_2_errors.update({'status': 'fail'})
-                print('stage_2_errors: {0}'.format(stage_2_errors))
+                logger.info('stage_2_errors: {0}'.format(stage_2_errors))
                 return JsonResponse(stage_2_errors)
             if 2 not in request.session['enroll_{0}_stm_stages'.format(application_url)]:
                 request.session['enroll_{0}_stm_stages'.format(application_url)].append(2)
@@ -1328,14 +1372,14 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
                     if request.session['esign_req_sent_{0}'.format(stm_plan_obj.Quote_ID)] is True:
                         return HttpResponse(quote_error_html(stm_plan_obj.Quote_ID))
                 except KeyError as k:
-                    print("Esign req not sent for this quote. Stage - 3")
+                    logger.info("Esign req not sent for this quote. Stage - 3")
         elif plan:  # TODO: Refractor and reduce unnessary branching.
             try:
                 if 'esign_req_sent_{0}'.format(plan['Quote_ID']) in request.session:
                     if request.session['esign_req_sent_{0}'.format(plan['Quote_ID'])] is True:
                         return HttpResponse(quote_error_html(plan['Quote_ID']))
             except KeyError as k:
-                print("Esign req not sent for this quote - STAGE 2")
+                logger.info("Esign req not sent for this quote - STAGE 2")
 
         template = 'quotes/stm_enroll_payment.html'
 
@@ -1443,7 +1487,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
             # request.session['enrolled_plan_{0}'.format(plan_url)] = res
 
             if formatted_enroll_response.applicant:
-                print("STAGE5: applicant info - {0}".format(formatted_enroll_response.applicant))
+                logger.info("STAGE5: applicant info - {0}".format(formatted_enroll_response.applicant))
                 logger.info("STAGE5: applicant info - {0}".format(formatted_enroll_response.applicant))
                 request.session['applicant_enrolled'] = {'plan_url': application_url}
                 save_enrolled_applicant_info(stm_enroll_obj, formatted_enroll_response.applicant)
@@ -1455,7 +1499,7 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
                                                    quote_request_form_data['quote_store_key']))
                 return HttpResponseRedirect(reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id]))
             else:
-                print("STAGE5: enrollment error - {0}".format(formatted_enroll_response.error))
+                logger.info("STAGE5: enrollment error - {0}".format(formatted_enroll_response.error))
                 logger.warning("STAGE5: enrollment error - {0}".format(formatted_enroll_response.error))
                 # if PREVIOUSLY_ENROLLED_ERROR_TEXT in str(formatted_enroll_response.error):
                 # removing plans from redis after failed enrollment - previously enrolled
@@ -1479,7 +1523,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
     :param request: Django HttpRequest
     :return: JsonResponse
     """
-    print(f'Calling AJAX. Time: {datetime.now().strftime("%H:%M:%S")}')
+    logger.info(f'Calling AJAX. Time: {datetime.now().strftime("%H:%M:%S")}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     ins_type = quote_request_form_data.get('Ins_Type', 'lim')
@@ -1517,7 +1561,7 @@ def get_plan_quote_data_ajax(request: WSGIRequest) -> Union[JsonResponse, HttpRe
             featured_plan['featured_plan'] = True
             plan_list[plan_list.index(featured_plan)] = featured_plan
         else:
-            print(f'Featured plan not found for {carrier}')
+            logger.info(f'Featured plan not found for {carrier}')
 
 
     plan_list.insert(0, 'START')
@@ -1544,7 +1588,7 @@ def post_process_task_view(request: WSGIRequest) -> str:
     session_quote_store_key_status = '{}##status'.format(session_identifier_quote_store_key)
     status = request.session.get(session_quote_store_key_status)
 
-    if status != 'completed':
+    if status != 'complete':
         status = post_process_task(quote_request_form_data, session_identifier_quote_store_key, request)
     return status
 
@@ -1615,10 +1659,10 @@ def e_signature_enrollment(request, vimm_enroll_id):
     except ObjectDoesNotExist as err:
         logger.debug('Object does not exist on StmEnroll table\n vimm_enroll_id: {0}'.format(vimm_enroll_id))
         logger.error("Error on esign enrollment: {0} \nvimm_enroll_id: {1}".format(err, vimm_enroll_id))
-        print("Stm enroll object does not exist or it is enrolled.")
+        logger.info("Stm enroll object does not exist or it is enrolled.")
         try:
             stm_enroll_obj = qm.StmEnroll.objects.get(vimm_enroll_id=vimm_enroll_id, enrolled=True)
-            print("STM enroll object exists and is enrolled")
+            logger.info("STM enroll object exists and is enrolled")
 
             # Is this risky? we may send login url to the wrong person. Whats the alternative? -ds87
             request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
@@ -1626,7 +1670,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
                 {'status': 'success', 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
 
         except ObjectDoesNotExist as err:
-            print("STM enroll object does not exist confirmed.")
+            logger.info("STM enroll object does not exist confirmed.")
 
     # finally:
     #     # This is useless and should be deleted
@@ -1652,7 +1696,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
         # hii_formatted_enroll_response = res and EnrollResponse(res, request=request_user_info)
 
     if hii_formatted_enroll_response:
-        print(hii_formatted_enroll_response)
+        logger.info(hii_formatted_enroll_response)
         return JsonResponse({
             'status': 'success',
             'res': hii_formatted_enroll_response.applicant,
@@ -1721,7 +1765,7 @@ def e_signature_enrollment(request, vimm_enroll_id):
     # stm_questions_values = sorted(stm_questions.values(), key=lambda x: x['order'])
 
     res = request.session.get('enrolled_plan_{0}'.format(application_url), '')
-    print(f'applicant_info: {json.dumps(applicant_info, indent=4, sort_keys=True)}')
+    logger.info(f'applicant_info: {json.dumps(applicant_info, indent=4, sort_keys=True)}')
     if not res:
         # applicant_info = applicant_info
         payment_info = request.session.get('payment_info_{0}'.format(application_url), {})
@@ -1748,10 +1792,10 @@ def e_signature_enrollment(request, vimm_enroll_id):
 
     res = enr.get_response()
     logger.info('Esign Verification applicant info:\nResponse: {0}\nlog_vimm_enroll_id: {1}'.format(res, vimm_enroll_id))
-    print('\n\nenrolled response: ', res)
+    logger.info(f'\n\nenrolled response: {res}')
     stm_enroll_obj.esign_verification_applicant_info = json_encoder.encode(res)
     stm_enroll_obj.save(update_fields=['esign_verification_applicant_info'])
-    print(esign_verification_update_fields)
+    logger.info(esign_verification_update_fields)
     res2_formatted = None
     # TODO Post date
     # if stm_enroll_obj.is_post_date:
@@ -1835,7 +1879,7 @@ def esign_verification_payment(request, vimm_enroll_id):
     # request_user_info = log_user_info(request.user)
     if request.is_ajax() and request.POST:
         requested_api_source = request.POST.get('api_source')
-        print(requested_api_source)
+        logger.info(requested_api_source)
     else:
         return JsonResponse({"status": "fail"})
 
@@ -1847,7 +1891,7 @@ def esign_verification_payment(request, vimm_enroll_id):
             esign_verification_pending=True
         )
     except ObjectDoesNotExist as err:
-        print("stm_enroll object does not exist/Enrolled!=False")
+        logger.info("stm_enroll object does not exist/Enrolled!=False")
         try:
             stm_enroll_obj = qm.StmEnroll.objects.get(
                 vimm_enroll_id=vimm_enroll_id,
@@ -1855,22 +1899,22 @@ def esign_verification_payment(request, vimm_enroll_id):
                 esign_verification_starts=True,
                 esign_verification_pending=False
             )
-            print("Object exists and is enrolled")
+            logger.info("Object exists and is enrolled")
             request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
 
             return JsonResponse({'applicant_enrolled': True, 'redirect_url': reverse('quotes:thank_you', args=[stm_enroll_obj.vimm_enroll_id])})
 
         except ObjectDoesNotExist as err:
-            print("stm_enroll object does not exist/Enrolled!=True")
+            logger.info("stm_enroll object does not exist/Enrolled!=True")
 
         return JsonResponse({"status": 'fail'})
 
-    print('\n\nHii Main plan esign check...')
+    logger.info('\n\nHii Main plan esign check...')
     fields_to_update_on_hii_enrollment = []
     esign_res = json_decoder.decode(stm_enroll_obj.esign_verification_applicant_info or '{}')
     # applicant_info_dict = json_decoder.decode(stm_enroll_obj.applicant_info or '{}')
     applicant_info_dict = request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url), {})
-    print(applicant_info_dict)
+    logger.info(applicant_info_dict)
     if not esign_res:
         return JsonResponse({'status': 'fail'})
     res2_formatted = None
@@ -1889,9 +1933,9 @@ def esign_verification_payment(request, vimm_enroll_id):
     #         esign_res = res1
     #     except IndexError:
     #         pass
-    print(esign_res)
+    logger.info(esign_res)
     formatted_esign_response = ESignResponse(esign_res)  # , request=request_user_info)
-    print("formatted_esign_response.applicant:", formatted_esign_response.applicant)
+    logger.info(f"formatted_esign_response.applicant: formatted_esign_response.applicant")
     # if formatted_esign_response.applicant and res2_formatted and res2_formatted.applicant:
     #     formatted_esign_response.applicant.update(res2_formatted.applicant)
 
@@ -1953,7 +1997,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         """ Now doing it like before eg. stm_enroll method """
         template = 'quotes/stm_enroll_done.html'
 
-        print("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
+        logger.info("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
         logger.info("STAGE5: applicant info - {0}".format(hii_formatted_enroll_response.applicant))
         request.session['applicant_enrolled'] = {'plan_url': stm_enroll_obj.app_url}
         save_enrolled_applicant_info(stm_enroll_obj, hii_formatted_enroll_response.applicant)
@@ -1979,7 +2023,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         #                'stage': 5,
         #                'stm_enroll_obj': stm_enroll_obj})
 
-        # print("formatting response: {}".format(formatted_esign_response))
+        # logger.info("formatting response: {}".format(formatted_esign_response))
 
         # enroll_info_panel_body = loader.render_to_string  (
         #     'quotes/thank_you.html',
@@ -2000,7 +2044,7 @@ def esign_verification_payment(request, vimm_enroll_id):
         logger.warning("ESign verification: {0}".format(hii_formatted_enroll_response.error))
         logger.info("User info: {0}".format(
             log_user_info(request.session.get('applicant_info_{0}'.format(stm_enroll_obj.app_url)))))
-        print(hii_formatted_enroll_response.error)
+        logger.info(hii_formatted_enroll_response.error)
         return JsonResponse({
             'status': "error",
             'error': hii_formatted_enroll_response.error
@@ -2075,7 +2119,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
     }
 
 
-    print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+    logger.info(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
 
@@ -2094,7 +2138,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
                                  quote_request_form_data['quote_store_key'])
     plan_list = get_plan_list(request, ins_type)
 
-    print(f"redis_key: {redis_key}")
+    logger.info(f"redis_key: {redis_key}")
 
     # TODO: Set an expiration timer for plans in redis.
 
@@ -2128,7 +2172,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
         input_change = preference_for_current_stm['input_change']
         plan_type = preference_for_current_stm['plan_type']
     except TypeError as t:
-        print(t)
+        logger.info(t)
 
 
     if input_change == 'Benefit_Amount':
@@ -2161,7 +2205,7 @@ def select_from_quoted_plans_ajax(request: WSGIRequest, plan_url: str) -> JsonRe
 
     request.session['stm_general_url_chosen'] = True
 
-    print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
+    logger.info(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_url}')
     logger.info(f'apply for plan - {alternative_plan_url}: {alternative_plan}')
 
@@ -2243,10 +2287,10 @@ def get_related_plans(plan, preference_dict, plan_list):
                        mp['coverage_max_value'] == preference_dict['Coverage_Max'] and \
                        mp['Duration_Coverage'] == plan['Duration_Coverage'], plan_list))
     except KeyError as k:
-        print(k)
+        logger.info(k)
         pass
 
-    print("related_plans:", related_plans)
+    logger.info(f"related_plans: {related_plans}")
     return related_plans
 
 
@@ -2287,14 +2331,14 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     ajax_attr_form = AjaxRequestAttrChangeForm(request.POST)
 
     if duration_coverage_form.is_valid():
-        print(f'Form is valid.')
+        logger.info(f'Form is valid.')
         coverage_duration = duration_coverage_form.cleaned_data.get('Duration_Coverage', None)
 
         if coverage_duration is None:
             raise Http404
 
     if ajax_attr_form.is_valid():
-        print(f'ajax_attr_form is valid.')
+        logger.info(f'ajax_attr_form is valid.')
         changed_benefit_amount = ajax_attr_form.cleaned_data.get('Benefit_Amount', None)
         changed_coinsurance_percentage = ajax_attr_form.cleaned_data.get('Coinsurance_Percentage', None)
         changed_coverage_maximum = ajax_attr_form.cleaned_data.get('Coverage_Max', None)
@@ -2303,7 +2347,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         # input_change = request.POST.get('changed', None) # Not Needed
 
 
-    print(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
+    logger.info(f'Fetching alternative coverage options for UNIQUE URL : {plan_url}')
 
     quote_request_form_data = request.session.get('quote_request_form_data', {})
     request.session['applicant_enrolled'] = False
@@ -2317,7 +2361,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
 
     redis_key = "{0}:{1}".format(request.session._get_session_key(), quote_request_form_data['quote_store_key'])
-    print(f"redis_key: {redis_key}")
+    logger.info(f"redis_key: {redis_key}")
 
     ins_type = get_ins_type(request)
     plan_list = get_plan_list(request, ins_type)
@@ -2340,7 +2384,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
         selection_data = create_selection_data(quote_request_completed_data, stm_name, coverage_duration)
 
         if not redis_conn.exists(redis_key):
-            print("Redis connection does not exist for redis key")
+            logger.info("Redis connection does not exist for redis key")
             raise Http404
         else:
             prepare_tasks(form_data=quote_request_form_data,
@@ -2390,7 +2434,7 @@ def alternate_duration_coverage(request: WSGIRequest, plan_url: str) -> JsonResp
     # Setting the duration coverage in preference data
     request.session['quote_request_preference_data'][stm_name]['Duration_Coverage'] = coverage_duration
 
-    print(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
+    logger.info(f'The ALTERNATIVE plan is {json.dumps(alternative_plan, indent=4, sort_keys=True)}')
     logger.info(f'CHANGING to alternative plan {alternative_plan_general_url}')
     logger.info(f'apply for plan - {alternative_plan_general_url}: {alternative_plan}')
 
@@ -2465,7 +2509,7 @@ def legal(request, slug):
         meta = metablog[0]['meta']
         template_response = render(request, "quotes/pages/legal/{0}.html".format(slug),
                                    {"slug": slug, "metaDesc": meta, })
-        print(template_response)
+        logger.info(template_response)
 
     else:
 
@@ -2478,17 +2522,29 @@ def life_insurance(request):
     return render(request, 'quotes/lifeinsurance.html')
 
 
-def check_stm_available_in_state(request: WSGIRequest) -> JsonResponse:
-    stm_dictionary = settings.STATE_SPECIFIC_PLAN_DURATION
-    stm_dict_values = stm_dictionary.values()
-    stm_available_states : set = set().union(*[*stm_dict_values])
+def check_ins_availability_in_state(request:WSGIRequest) -> JsonResponse:
+    quote_request_form_data = request.session.get('quote_request_form_data')
+    user_state = quote_request_form_data.get('State')
 
-    form_data = request.session.get('quote_request_form_data', None)
-    if form_data is not None:
-        user_state = form_data['State']
-        if user_state in stm_available_states:
-            return JsonResponse({'status': 'success'})
+    # if not user_state:
+    #     get user_state from zipcodedatabase
 
-    return JsonResponse({'status': 'fail'})
+    response = {}
+    for ins_type in ['stm', 'lim']:
+        kwargs = {
+            'ins_type': ins_type,
+            'is_active': True,
+            f'duration_coverages_in_states__{user_state}__isnull': False
+        }
+        try:
+            carriers = qm.Carrier.objects.filter(**kwargs)
+            if carriers.count() > 0:
+                response[ins_type] = True
+            else:
+                response[ins_type] = False
 
+        except Exception as e:
+            logger.error(e)
+            pass
 
+    return JsonResponse(response)
