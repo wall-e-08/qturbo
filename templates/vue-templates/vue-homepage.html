@@ -71,7 +71,7 @@
                                         <input type="tel" id="home-zip-code"
                                                class="font-md border-0 outline-0 w-100"
                                                :placeholder="zip_placeholder" v-model="zip_code" maxlength="5"
-                                               v-on:keydown="validate_zip($event)">
+                                                v-on:paste="on_paste_zip" v-on:keydown="validate_zip($event)">
                                         <div class="position-absolute vertical-center" style="left:96%"
                                              v-html="current_marker"></div>
                                     </div>
