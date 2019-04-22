@@ -129,6 +129,7 @@ CELERY_NEXT_ESIGN_CHECK_TIME = 30 * 60    # 30 min
 
 CELERY_TASK_ROUTES = {
     'quotes.tasks.ProcessTask': {'queue': 'process_task'},
+    'quotes.tasks.LeadPostSpecTask': {'queue': 'lead_post_task'},
 
     # 'quotes.tasks.StmPlanTask': {'queue': 'stm'},
     # 'quotes.tasks.LimPlanTask': {'queue': 'lim'},
@@ -592,6 +593,9 @@ PLAN_NAMES_LIST = {
 
 TEST_CARD_ALLOWED = True
 
+LEAD_GATEWAY_ADDRESS = os.environ.get('LEAD_GATEWAY_ADDRESS')
+LEAD_CAMPAIGN_ID = os.environ.get('LEAD_CAMPAIGN_ID')
+LEAD_IS_TEST = os.environ.get('LEAD_IS_TEST', False)
 
 
 try:

@@ -30,7 +30,7 @@ from quotes.quote_request import PROVIDERS
 # from quotes.quote_thread import threaded_request
 from quotes.models import StmEnroll
 from quotes.logger import VimmLogger
-
+from .lead_api import LeadCampaignApi
 from quotes.enroll import ESignResponse, ESignVerificationEnroll, Response as EnrollResponse
 
 from django.conf import settings
@@ -506,4 +506,15 @@ class ProcessTask(Task):
             time=timedelta(hours=24),
             value=json_encoder.encode(fetched_data)
         )
+        return True
+
+
+class LeadPostSpecTask(Task):
+    def run(self, lead_data):
+        api_lead_camp = LeadCampaignApi(**lead_data)
+        api_lead_id = api_lead_camp.get_lead_id()
+        if api_lead_id:
+            print("Successfully Lead uploaded in api")
+        else:
+            print("error in Lead api: {}".format(api_lead_camp.json_data.get('ResponseDetail')))
         return True
