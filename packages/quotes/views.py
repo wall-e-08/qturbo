@@ -45,7 +45,7 @@ from .utils import (form_data_is_valid, get_random_string, get_app_stage, get_as
                     has_dependents, get_enroll_object, get_plan_object, get_featured_plan, get_prop_context,
                     create_initial_data)
 from .logger import VimmLogger
-from .tasks import prepare_tasks, post_process_task
+from .tasks import prepare_tasks, post_process_task, LeadPostSpecTask
 from .enroll import Enroll, Response as EnrollResponse, ESignResponse, ESignVerificationEnroll
 
 import quotes.models as qm
@@ -1056,6 +1056,17 @@ def stm_enroll(request, vimm_enroll_id, stage=None, template=None):
     if not quote_request_form_data and not ajax_request:
         # need a fix for ajax request
         return HttpResponseRedirect(reverse('quotes:plans', args=[]))
+
+    if stage == 3 and not ajax_request:
+        lead_data = stm_enroll_obj.__dict__
+        try:
+            # the value of _state is not JSON serializable
+            lead_data.__delitem__('_state')
+        except KeyError:
+            pass
+        if lead_data.get('DOB'):
+            lead_data['DOB'] = lead_data['DOB'].strftime('%m/%d/%Y')
+        LeadPostSpecTask.delay(lead_data=lead_data)
 
     stm_stages = request.session.get('enroll_{0}_stm_stages'.format(application_url), None)
     if stm_stages is None:

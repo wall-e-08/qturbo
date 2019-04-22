@@ -219,9 +219,11 @@ const router = new VueRouter({
                     * backspace: 8      * left arrow: 37
                     * right arrow: 39   * del: 46
                     * num pad: 96-105   * number: 48-57
+                    * ctrl key: 17      * cmd key: 91
+                    * V: 86             * C key: 67
                     * */
                     var kc = e.keyCode;
-                    if (![8,37,39,46].includes(kc)) {
+                    if (![8,37,39,46,17,91,86].includes(kc)) {
                         if (!((kc >= 96 && kc <= 105) || (kc >= 48 && kc <= 57))){
                             // prevent user from inserting non number
                             e.preventDefault();
@@ -245,11 +247,18 @@ const router = new VueRouter({
                             id_loading_overlay.style.display = "none";
                         }, 1000);
                     }
+                },
+                on_paste_zip: function () {
+                    let _t = this;
+                    setTimeout(function () {
+                        if(!(_t.zip_code.length !== 5 && !isNaN(_t.zip_code)) && !_t.is_valid_zip)
+                            _t.zip_code = '';
+                    }, 50); // settimeout is using because of updating delay after paste item
                 }
             },
             watch: {
                 zip_code: function () {
-                    if (this.zip_code.length === 5) {
+                    if (this.zip_code.length === 5 && !isNaN(this.zip_code)) {
                         this.current_marker = marker.success_icon;
                         this.is_valid_zip = true;
                     } else {
@@ -488,7 +497,6 @@ const router = new VueRouter({
                     let data = {
                         'zip_code': zip_code
                     };
-                    console.log("গণপ্রজাতন্ত্রী");
 
                     $.ajax({
                         url: 'ins-avail-state/',
