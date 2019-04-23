@@ -9,6 +9,7 @@ import datetime
 from django import template
 from collections import deque
 from django.template import Context
+from django.conf import settings
 
 from dateutil.relativedelta import relativedelta
 
@@ -367,16 +368,9 @@ def get_underwritten_info(context):
     try:
         plan = context['plan']['Name']
     except (AttributeError, TypeError, KeyError) as err:
-        print("hp_tags error: {}".format(err))
+        print("hp_tags>get_underwritten_info error: {}".format(err))
         return None
-    data = {
-        "AdvantHealth_STM": "AdvantHealth STM is underwritten by American Financial Security Life Insurance Company",
-        "Legion_Limited_Medical": "Legion Limited Medical is underwritten by AXIS Insurance Company",
-        "VitalaCare": "VitalaCare is underwritten by LifeShield National Insurance Co",
-        "LifeShield_STM": "LifeShield STM is underwritten by LifeShield National Insurance Co."
-    }
-    print(data.get(plan.replace(' ', '_')))
-    return data.get(plan.replace(' ', '_'))
+    return settings.CARRIER_UNDERWRITTEN.get(plan.replace(' ', '_'))
 
 
 
