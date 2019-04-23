@@ -598,6 +598,15 @@ LEAD_CAMPAIGN_ID = os.environ.get('LEAD_CAMPAIGN_ID')
 LEAD_IS_TEST = os.environ.get('LEAD_IS_TEST', False)
 
 
+CARRIER_UNDERWRITTEN = {
+    "AdvantHealth_STM": "AdvantHealth STM is underwritten by American Financial Security Life Insurance Company",
+    "Legion_Limited_Medical": "Legion Limited Medical is underwritten by AXIS Insurance Company",
+    "Vitala_Care": "VitalaCare is underwritten by LifeShield National Insurance Co",
+    "LifeShield_STM": "LifeShield STM is underwritten by LifeShield National Insurance Co.",
+    "Health_Choice": "Health Choice is underwritten by American Financial Security Life Insurance Company",
+}
+
+
 try:
     from .local_settings import *
 except ImportError:
