@@ -28,6 +28,17 @@
     {% block vue_router %}{% endblock %}
 
     <link rel="stylesheet" href="{% static 'quotes/css/qt-default.css' %}">
+    <style>
+        @media (max-width: 767px) {
+            .rounded-sm {
+                border-radius: 6px !important;
+            }
+            .nav-link.dropdown-toggle {
+                border: none !important;
+            }
+    
+        }
+    </style>
 
     {% block head_css %}{% endblock %}
     {% block page_item_css %}{% endblock %}
